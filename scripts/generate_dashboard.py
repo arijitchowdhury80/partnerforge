@@ -327,6 +327,22 @@ def generate_html(data):
         }}
         .btn-secondary:hover {{ background: #e2e8f0; }}
 
+        .view-btn {{
+            padding: 6px 14px;
+            font-size: 0.85em;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            background: linear-gradient(135deg, #003DFF, #5468FF);
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }}
+        .view-btn:hover {{
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 61, 255, 0.3);
+        }}
+
         .search-stats {{
             font-size: 0.9em;
             color: #64748b;
@@ -1229,6 +1245,7 @@ def generate_html(data):
         <div class="section">
             <h2>📋 Displacement Targets</h2>
             <p style="color: #64748b; margin-bottom: 20px;">Click a row to view details. Click column headers to sort. Hover on scores to see breakdown.</p>
+            <p style="color: #94a3b8; margin-bottom: 20px; font-size: 0.95em; font-style: italic;">Click 'View' to see full intelligence</p>
             <div class="table-wrapper">
                 <table id="targetsTable">
                     <thead>
@@ -1258,6 +1275,7 @@ def generate_html(data):
                                     <div class="filter-dropdown" id="filter-dropdown-country"></div>
                                 </span>
                             </th>
+                            <th>Details</th>
                         </tr>
                     </thead>
                     <tbody id="targetsBody">
@@ -1675,6 +1693,7 @@ def generate_html(data):
                     </td>
                     <td class="traffic">${{t.trafficFmt}}</td>
                     <td>${{t.country}}</td>
+                    <td><button class="view-btn" onclick="event.stopPropagation(); openDetail(${{t.id}})">View →</button></td>
                 </tr>`;
             }}).join('');
         }}
