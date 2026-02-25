@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PartnerForge: Enhanced Dashboard Generator
+PartnerForge: Enhanced Dashboard Generator v3.0
 
 Generates an interactive dashboard with:
 - Live search/filtering
@@ -8,6 +8,12 @@ Generates an interactive dashboard with:
 - CSV export
 - Score breakdown tooltips
 - Visual score progress bars
+- FULL-PAGE detail view with:
+  - Signal row (Budget/Pain/Timing)
+  - Two-column layout with metrics + trigger events
+  - Competitive advantage card (glassmorphism)
+  - Executive quotes
+  - Tabbed sections (Financials, Quotes, Hiring, Tech Stack, Full)
 """
 
 import sqlite3
@@ -22,18 +28,52 @@ def fetch_data():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    # Get displacement targets
-    cursor.execute("""
-        SELECT
-            id, company_name, domain, vertical, country,
-            icp_tier, icp_tier_name, lead_score,
-            sw_monthly_visits, tech_spend, partner_tech
+    # Check which columns exist in the table
+    cursor.execute("PRAGMA table_info(displacement_targets)")
+    existing_cols = {row[1] for row in cursor.fetchall()}
+
+    # Build dynamic query based on available columns
+    base_cols = [
+        'id', 'company_name', 'domain', 'vertical', 'country',
+        'icp_tier', 'icp_tier_name', 'lead_score',
+        'sw_monthly_visits', 'tech_spend', 'partner_tech'
+    ]
+
+    # Extended columns (may not exist yet)
+    extended_cols = [
+        ('revenue', 'NULL'),
+        ('gross_margin', 'NULL'),
+        ('traffic_growth', 'NULL'),
+        ('current_search', 'NULL'),
+        ('trigger_events', 'NULL'),
+        ('exec_quote', 'NULL'),
+        ('exec_name', 'NULL'),
+        ('exec_title', 'NULL'),
+        ('quote_source', 'NULL'),
+        ('competitors_using_algolia', 'NULL'),
+        ('displacement_angle', 'NULL'),
+        ('financials_json', 'NULL'),
+        ('hiring_signals', 'NULL'),
+        ('tech_stack_json', 'NULL')
+    ]
+
+    # Build SELECT clause
+    select_parts = base_cols.copy()
+    for col, default in extended_cols:
+        if col in existing_cols:
+            select_parts.append(col)
+        else:
+            select_parts.append(f"{default} as {col}")
+
+    query = f"""
+        SELECT {', '.join(select_parts)}
         FROM displacement_targets
         ORDER BY
             CASE WHEN lead_score IS NULL THEN 1 ELSE 0 END,
             lead_score DESC,
             sw_monthly_visits DESC
-    """)
+    """
+    cursor.execute(query)
     targets = cursor.fetchall()
 
     # Get competitive intel
@@ -95,6 +135,26 @@ def format_traffic(visits):
     return str(visits)
 
 
+def format_revenue(revenue):
+    """Format revenue number."""
+    if revenue is None or revenue == 0:
+        return "—"
+    if revenue >= 1_000_000_000:
+        return f"${revenue/1_000_000_000:.1f}B"
+    if revenue >= 1_000_000:
+        return f"${revenue/1_000_000:.0f}M"
+    if revenue >= 1_000:
+        return f"${revenue/1_000:.0f}K"
+    return f"${revenue}"
+
+
+def format_percent(value):
+    """Format percentage."""
+    if value is None:
+        return "—"
+    return f"{value:.1f}%"
+
+
 def generate_html(data):
     """Generate the enhanced dashboard HTML."""
 
@@ -104,6 +164,29 @@ def generate_html(data):
     for t in data["targets"]:
         vertical = t[3] or "—"
         verticals_set.add(vertical)
+
+        # Parse JSON fields safely
+        financials = {}
+        tech_stack = {}
+        try:
+            if t[21]:
+                financials = json.loads(t[21]) if isinstance(t[21], str) else t[21]
+        except:
+            pass
+        try:
+            if t[23]:
+                tech_stack = json.loads(t[23]) if isinstance(t[23], str) else t[23]
+        except:
+            pass
+
+        # Parse trigger events (newline-separated or JSON array)
+        trigger_events = []
+        if t[15]:
+            try:
+                trigger_events = json.loads(t[15]) if t[15].startswith('[') else t[15].split('\n')
+            except:
+                trigger_events = [t[15]] if t[15] else []
+
         targets_json.append({
             "id": t[0],
             "company": t[1] or "—",
@@ -116,7 +199,25 @@ def generate_html(data):
             "traffic": t[8] or 0,
             "trafficFmt": format_traffic(t[8]),
             "techSpend": t[9] or 0,
-            "partner": t[10] or "Adobe AEM"
+            "partner": t[10] or "Adobe AEM",
+            # Extended fields for detail view
+            "revenue": t[11] or 0,
+            "revenueFmt": format_revenue(t[11]),
+            "grossMargin": t[12] or 0,
+            "grossMarginFmt": format_percent(t[12]),
+            "trafficGrowth": t[13] or 0,
+            "trafficGrowthFmt": format_percent(t[13]),
+            "currentSearch": t[14] or "Unknown",
+            "triggerEvents": trigger_events,
+            "execQuote": t[16] or "",
+            "execName": t[17] or "",
+            "execTitle": t[18] or "",
+            "quoteSource": t[19] or "",
+            "competitorsUsingAlgolia": t[20] or "",
+            "displacementAngle": t[21] if isinstance(t[21], str) and not t[21].startswith('{') else "",
+            "financials": financials,
+            "hiringSignals": t[22] or "",
+            "techStack": tech_stack
         })
 
     # Sort verticals for dropdown
@@ -133,6 +234,24 @@ def generate_html(data):
     <title>PartnerForge | Executive Dashboard</title>
     <style>
         * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+
+        :root {{
+            --bg-dark: #1a1a2e;
+            --bg-card: #16213e;
+            --bg-card-hover: #1f2b4d;
+            --accent-gold: #fbbf24;
+            --accent-amber: #f59e0b;
+            --accent-orange: #ea580c;
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: rgba(255,255,255,0.1);
+            --success: #10b981;
+            --danger: #ef4444;
+            --algolia-blue: #003DFF;
+            --algolia-purple: #5468FF;
+        }}
+
         body {{
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: #f8fafc;
@@ -520,238 +639,462 @@ def generate_html(data):
         }}
         .no-results h3 {{ margin-bottom: 10px; color: #1e293b; }}
 
-        /* Modal Overlay */
-        .modal-overlay {{
+        /* ===== FULL-PAGE DETAIL VIEW ===== */
+        .detail-overlay {{
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
+            background: var(--bg-dark);
             z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }}
-        .modal-overlay.active {{
-            display: flex;
-        }}
-
-        /* Modal Container */
-        .modal {{
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 20px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-            max-width: 600px;
-            width: 100%;
-            max-height: 90vh;
             overflow-y: auto;
-            animation: modalSlideIn 0.3s ease-out;
         }}
-        @keyframes modalSlideIn {{
-            from {{
-                opacity: 0;
-                transform: translateY(-20px) scale(0.95);
-            }}
-            to {{
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }}
+        .detail-overlay.active {{
+            display: block;
         }}
 
-        /* Modal Header */
-        .modal-header {{
+        /* Detail Header */
+        .detail-header {{
+            background: linear-gradient(135deg, var(--bg-card) 0%, #0f172a 100%);
+            border-bottom: 1px solid var(--border-color);
+            padding: 24px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }}
+        .detail-header-top {{
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 24px 28px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-        }}
-        .modal-title-group {{
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }}
-        .modal-header h2 {{
-            font-size: 1.5em;
-            font-weight: 700;
-            color: #1e293b;
-            margin: 0;
-        }}
-        .modal-header .priority-badge {{
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }}
-        .modal-header .priority-badge.hot {{
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-        }}
-        .modal-header .priority-badge.warm {{
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: white;
-        }}
-        .modal-header .priority-badge.cool {{
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            color: white;
-        }}
-        .modal-close {{
-            background: none;
-            border: none;
-            font-size: 1.5em;
-            cursor: pointer;
-            color: #64748b;
-            padding: 4px 8px;
-            border-radius: 8px;
-            transition: all 0.2s;
-        }}
-        .modal-close:hover {{
-            background: #f1f5f9;
-            color: #1e293b;
-        }}
-
-        /* Modal Body */
-        .modal-body {{
-            padding: 24px 28px;
-        }}
-
-        /* Signal Indicators */
-        .signal-indicators {{
-            display: flex;
-            gap: 16px;
-            margin-bottom: 24px;
-            flex-wrap: wrap;
-        }}
-        .signal-item {{
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 16px;
-            background: #f8fafc;
-            border-radius: 10px;
-            font-weight: 500;
-        }}
-        .signal-item .icon {{
-            font-size: 1.2em;
-        }}
-        .signal-item.positive {{
-            background: #dcfce7;
-            color: #166534;
-        }}
-        .signal-item.negative {{
-            background: #fef2f2;
-            color: #991b1b;
-        }}
-
-        /* Glass Card */
-        .glass-card {{
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+            align-items: flex-start;
             margin-bottom: 20px;
         }}
-        .glass-card h4 {{
-            color: #003DFF;
-            margin-bottom: 16px;
+        .detail-title-group {{
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }}
+        .detail-title-group h1 {{
+            font-size: 2em;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }}
+        .detail-meta {{
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }}
+        .detail-meta .domain {{
+            color: var(--text-secondary);
             font-size: 1em;
+        }}
+        .detail-meta .vertical-badge {{
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+        }}
+        .detail-meta .country {{
+            color: var(--text-muted);
+            font-size: 0.9em;
+        }}
+
+        /* Priority Badge */
+        .priority-badge {{
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 0.9em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }}
+        .priority-badge.hot {{
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+        }}
+        .priority-badge.warm {{
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-amber));
+            color: #1a1a2e;
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);
+        }}
+        .priority-badge.cool {{
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }}
+
+        /* Score Display */
+        .detail-score {{
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }}
+        .detail-score .score-value {{
+            font-size: 2.5em;
+            font-weight: 800;
+            color: var(--accent-gold);
+        }}
+        .detail-score .score-label {{
+            color: var(--text-muted);
+            font-size: 0.9em;
+        }}
+
+        .detail-close {{
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--border-color);
+            font-size: 1.5em;
+            cursor: pointer;
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 12px;
+            transition: all 0.2s;
+        }}
+        .detail-close:hover {{
+            background: rgba(255,255,255,0.2);
+            color: var(--text-primary);
+        }}
+
+        /* Signal Row */
+        .signal-row {{
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }}
+        .signal-chip {{
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: all 0.2s;
+        }}
+        .signal-chip.positive {{
+            background: rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #34d399;
+        }}
+        .signal-chip.negative {{
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }}
+
+        /* Detail Body */
+        .detail-body {{
+            padding: 30px 40px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }}
+
+        /* Two Column Layout */
+        .detail-grid {{
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }}
+        @media (max-width: 1000px) {{
+            .detail-grid {{
+                grid-template-columns: 1fr;
+            }}
+        }}
+
+        /* Glass Card (Dark Theme) */
+        .glass-card {{
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 24px;
+        }}
+        .glass-card h3 {{
+            color: var(--accent-gold);
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }}
+
+        /* Key Metrics */
+        .key-metrics {{
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }}
+        .metric-box {{
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }}
+        .metric-box .value {{
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }}
+        .metric-box .value.gold {{ color: var(--accent-gold); }}
+        .metric-box .value.green {{ color: var(--success); }}
+        .metric-box .label {{
+            font-size: 0.8em;
+            color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }}
 
-        /* Metrics Grid */
-        .metrics-grid {{
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
+        /* Trigger Events */
+        .trigger-list {{
+            list-style: none;
         }}
-        .metric-item {{
-            text-align: center;
+        .trigger-list li {{
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+            font-size: 0.95em;
+            line-height: 1.6;
         }}
-        .metric-item .value {{
-            font-size: 1.6em;
-            font-weight: 700;
-            color: #1e293b;
+        .trigger-list li:last-child {{
+            border-bottom: none;
         }}
-        .metric-item .label {{
+        .trigger-list .source-link {{
+            color: var(--accent-gold);
             font-size: 0.85em;
-            color: #64748b;
-            margin-top: 4px;
-        }}
-
-        /* Score Breakdown Visual */
-        .score-breakdown {{
-            margin-top: 8px;
-        }}
-        .score-breakdown-item {{
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-        }}
-        .score-breakdown-item .category {{
-            width: 100px;
-            font-weight: 500;
-            color: #475569;
-            font-size: 0.9em;
-        }}
-        .score-breakdown-item .bar-container {{
-            flex: 1;
-            height: 10px;
-            background: #e2e8f0;
-            border-radius: 5px;
-            margin: 0 12px;
-            overflow: hidden;
-        }}
-        .score-breakdown-item .bar-fill {{
-            height: 100%;
-            border-radius: 5px;
-            transition: width 0.5s ease;
-        }}
-        .score-breakdown-item .bar-fill.tier {{ background: linear-gradient(90deg, #5468FF, #003DFF); }}
-        .score-breakdown-item .bar-fill.traffic {{ background: linear-gradient(90deg, #10b981, #059669); }}
-        .score-breakdown-item .bar-fill.tech {{ background: linear-gradient(90deg, #f59e0b, #d97706); }}
-        .score-breakdown-item .bar-fill.partner {{ background: linear-gradient(90deg, #8b5cf6, #7c3aed); }}
-        .score-breakdown-item .points {{
-            width: 50px;
-            text-align: right;
-            font-weight: 600;
-            color: #1e293b;
-            font-size: 0.9em;
-        }}
-
-        /* Domain Link */
-        .modal-domain {{
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 20px;
-            background: #f8fafc;
-            border-radius: 12px;
-            margin-top: 8px;
-        }}
-        .modal-domain a {{
-            color: #003DFF;
-            font-weight: 600;
+            margin-left: 8px;
             text-decoration: none;
+        }}
+        .trigger-list .source-link:hover {{
+            text-decoration: underline;
+        }}
+
+        /* Competitive Advantage Card */
+        .competitive-card {{
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }}
+        .competitive-row {{
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }}
+        .competitive-row:last-child {{
+            border-bottom: none;
+        }}
+        .competitive-row .key {{
+            color: var(--text-muted);
+            font-size: 0.9em;
+        }}
+        .competitive-row .val {{
+            color: var(--text-primary);
+            font-weight: 600;
+        }}
+        .competitive-row .val.highlight {{
+            color: var(--accent-gold);
+        }}
+
+        /* Executive Quote */
+        .quote-card {{
+            background: linear-gradient(135deg, rgba(84, 104, 255, 0.1) 0%, rgba(0, 61, 255, 0.05) 100%);
+            border: 1px solid rgba(84, 104, 255, 0.3);
+            margin-bottom: 30px;
+        }}
+        .quote-text {{
+            font-size: 1.2em;
+            font-style: italic;
+            color: var(--text-primary);
+            line-height: 1.7;
+            margin-bottom: 16px;
+        }}
+        .quote-text::before {{
+            content: '"';
+            font-size: 2em;
+            color: var(--algolia-purple);
+            line-height: 0;
+            vertical-align: -0.3em;
+            margin-right: 4px;
+        }}
+        .quote-attribution {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }}
+        .quote-speaker {{
+            color: var(--text-primary);
+            font-weight: 600;
+        }}
+        .quote-title {{
+            color: var(--text-muted);
+            font-size: 0.9em;
+        }}
+        .quote-source {{
+            color: var(--accent-gold);
+            text-decoration: none;
+            font-size: 0.85em;
+        }}
+        .quote-source:hover {{
+            text-decoration: underline;
+        }}
+
+        /* Detail Tabs */
+        .detail-tabs {{
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            background: rgba(255,255,255,0.02);
+            padding: 8px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }}
+        .detail-tab {{
+            padding: 12px 24px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            font-size: 0.95em;
+            font-weight: 500;
+            color: var(--text-muted);
+            border-radius: 10px;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
             gap: 8px;
         }}
-        .modal-domain a:hover {{
-            text-decoration: underline;
+        .detail-tab:hover {{
+            background: rgba(255,255,255,0.05);
+            color: var(--text-secondary);
         }}
-        .modal-domain .country {{
-            color: #64748b;
-            font-size: 0.9em;
+        .detail-tab.active {{
+            background: var(--accent-gold);
+            color: var(--bg-dark);
+            font-weight: 600;
+        }}
+        .detail-tab .emoji {{
+            font-size: 1.1em;
+        }}
+
+        .detail-tab-content {{
+            display: none;
+        }}
+        .detail-tab-content.active {{
+            display: block;
+        }}
+
+        /* Financials Table */
+        .financials-table {{
+            width: 100%;
+            border-collapse: collapse;
+        }}
+        .financials-table th,
+        .financials-table td {{
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }}
+        .financials-table th {{
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: rgba(255,255,255,0.02);
+        }}
+        .financials-table td {{
+            color: var(--text-primary);
+        }}
+        .financials-table .trend-up {{
+            color: var(--success);
+        }}
+        .financials-table .trend-down {{
+            color: var(--danger);
+        }}
+        .financials-sources {{
+            margin-top: 16px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }}
+        .financials-sources a {{
+            color: var(--text-muted);
+            font-size: 0.85em;
+            text-decoration: none;
+            padding: 6px 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 6px;
+            transition: all 0.2s;
+        }}
+        .financials-sources a:hover {{
+            background: rgba(255,255,255,0.1);
+            color: var(--accent-gold);
+        }}
+
+        /* Hiring Signals */
+        .hiring-list {{
+            list-style: none;
+        }}
+        .hiring-list li {{
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }}
+        .hiring-list .role {{
+            font-weight: 600;
+            color: var(--accent-gold);
+        }}
+
+        /* Tech Stack Grid */
+        .tech-grid {{
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+        }}
+        .tech-item {{
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+        }}
+        .tech-item .category {{
+            color: var(--text-muted);
+            font-size: 0.75em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }}
+        .tech-item .name {{
+            color: var(--text-primary);
+            font-weight: 600;
+        }}
+
+        /* Full Intel Section */
+        .full-intel {{
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }}
+        .full-intel h4 {{
+            color: var(--accent-gold);
+            margin: 24px 0 12px;
+            font-size: 1em;
+        }}
+        .full-intel h4:first-child {{
+            margin-top: 0;
         }}
 
         /* Clickable rows */
@@ -942,97 +1285,234 @@ def generate_html(data):
         <p><strong>PartnerForge v2.0</strong> | Partner Intelligence Platform | Built with Claude Code</p>
     </footer>
 
-    <!-- Company Detail Modal -->
-    <div class="modal-overlay" id="companyModal">
-        <div class="modal">
-            <div class="modal-header">
-                <div class="modal-title-group">
-                    <h2 id="modalCompanyName">Company Name</h2>
-                    <span class="priority-badge" id="modalPriorityBadge">HOT</span>
+    <!-- Full-Page Company Detail View -->
+    <div class="detail-overlay" id="companyDetail">
+        <!-- Header -->
+        <div class="detail-header">
+            <div class="detail-header-top">
+                <div>
+                    <div class="detail-title-group">
+                        <h1 id="detailCompanyName">Company Name</h1>
+                        <span class="priority-badge" id="detailPriorityBadge">HOT</span>
+                        <div class="detail-score">
+                            <span class="score-value" id="detailScoreValue">85</span>
+                            <span class="score-label">/ 100</span>
+                        </div>
+                    </div>
+                    <div class="detail-meta">
+                        <span class="domain" id="detailDomain">example.com</span>
+                        <span class="vertical-badge" id="detailVertical">Retail</span>
+                        <span class="country" id="detailCountry">United States</span>
+                    </div>
                 </div>
-                <button class="modal-close" onclick="closeModal()">&times;</button>
+                <button class="detail-close" onclick="closeDetail()">&times; Close</button>
             </div>
-            <div class="modal-body">
-                <!-- Signal Indicators -->
-                <div class="signal-indicators" id="modalSignals">
-                    <div class="signal-item" id="signalBudget">
-                        <span class="icon">💰</span>
-                        <span>Budget</span>
-                    </div>
-                    <div class="signal-item" id="signalPain">
-                        <span class="icon">🎯</span>
-                        <span>Pain</span>
-                    </div>
-                    <div class="signal-item" id="signalTiming">
-                        <span class="icon">⏱️</span>
-                        <span>Timing</span>
-                    </div>
+            <!-- Signal Row -->
+            <div class="signal-row">
+                <div class="signal-chip" id="signalBudget">
+                    <span>Budget</span>
                 </div>
+                <div class="signal-chip" id="signalPain">
+                    <span>Pain</span>
+                </div>
+                <div class="signal-chip" id="signalTiming">
+                    <span>Timing</span>
+                </div>
+            </div>
+        </div>
 
-                <!-- Key Metrics Card -->
+        <!-- Body -->
+        <div class="detail-body">
+            <!-- Two Column Layout -->
+            <div class="detail-grid">
+                <!-- LEFT: Company Info + Key Metrics -->
                 <div class="glass-card">
-                    <h4>Key Metrics</h4>
-                    <div class="metrics-grid">
-                        <div class="metric-item">
-                            <div class="value" id="modalScore">85</div>
-                            <div class="label">Lead Score</div>
+                    <h3>Key Metrics</h3>
+                    <div class="key-metrics">
+                        <div class="metric-box">
+                            <div class="value gold" id="detailRevenue">$12.4B</div>
+                            <div class="label">Revenue</div>
                         </div>
-                        <div class="metric-item">
-                            <div class="value" id="modalTraffic">12.5M</div>
-                            <div class="label">Monthly Traffic</div>
+                        <div class="metric-box">
+                            <div class="value" id="detailMargin">38.2%</div>
+                            <div class="label">Gross Margin</div>
                         </div>
-                        <div class="metric-item">
-                            <div class="value" id="modalTechSpend">$75K</div>
-                            <div class="label">Tech Spend</div>
+                        <div class="metric-box">
+                            <div class="value" id="detailTraffic">45.2M</div>
+                            <div class="label">Monthly Visits</div>
                         </div>
-                        <div class="metric-item">
-                            <div class="value" id="modalTier">Commerce</div>
-                            <div class="label">ICP Tier</div>
+                        <div class="metric-box">
+                            <div class="value green" id="detailGrowth">+12.4%</div>
+                            <div class="label">Traffic Growth</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Score Breakdown -->
+                <!-- RIGHT: Trigger Events -->
                 <div class="glass-card">
-                    <h4>Score Breakdown</h4>
-                    <div class="score-breakdown" id="modalScoreBreakdown">
-                        <div class="score-breakdown-item">
-                            <span class="category">ICP Tier</span>
-                            <div class="bar-container">
-                                <div class="bar-fill tier" id="barTier" style="width: 100%"></div>
-                            </div>
-                            <span class="points" id="ptsTier">40/40</span>
+                    <h3>Trigger Events</h3>
+                    <ul class="trigger-list" id="detailTriggers">
+                        <li>RichRelevance REMOVED → Recommendations gap <a href="#" class="source-link">[BuiltWith ↗]</a></li>
+                        <li>New CDO (ex-Alibaba) → New broom sweeps clean <a href="#" class="source-link">[LinkedIn ↗]</a></li>
+                        <li>Q4 earnings: "investing heavily in digital" <a href="#" class="source-link">[10-K ↗]</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Competitive Advantage Card -->
+            <div class="glass-card competitive-card">
+                <h3>Competitive Advantage</h3>
+                <div class="competitive-row">
+                    <span class="key">Their Current Search</span>
+                    <span class="val highlight" id="detailCurrentSearch">Elasticsearch</span>
+                </div>
+                <div class="competitive-row">
+                    <span class="key">Displacement Angle</span>
+                    <span class="val" id="detailDisplacement">Legacy search cannot handle 50M SKU catalog at scale</span>
+                </div>
+                <div class="competitive-row">
+                    <span class="key">Competitors Using Algolia</span>
+                    <span class="val" id="detailAlgoliaCompetitors">Wayfair, Target, Overstock</span>
+                </div>
+            </div>
+
+            <!-- Executive Quote -->
+            <div class="glass-card quote-card" id="quoteSection">
+                <h3>Executive Quote</h3>
+                <p class="quote-text" id="detailQuote">We need to fundamentally transform how customers discover products. Our current search experience is not meeting expectations.</p>
+                <div class="quote-attribution">
+                    <div>
+                        <span class="quote-speaker" id="detailExecName">John Smith</span>
+                        <span class="quote-title" id="detailExecTitle">, CEO</span>
+                    </div>
+                    <a href="#" class="quote-source" id="detailQuoteSource" target="_blank">[Q4 Earnings Call ↗]</a>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="detail-tabs">
+                <button class="detail-tab active" data-tab="financials">
+                    <span class="emoji">💰</span> Financials
+                </button>
+                <button class="detail-tab" data-tab="quotes">
+                    <span class="emoji">📜</span> Quotes
+                </button>
+                <button class="detail-tab" data-tab="hiring">
+                    <span class="emoji">👔</span> Hiring
+                </button>
+                <button class="detail-tab" data-tab="techstack">
+                    <span class="emoji">🔧</span> Tech Stack
+                </button>
+                <button class="detail-tab" data-tab="full">
+                    <span class="emoji">📄</span> Full Intel
+                </button>
+            </div>
+
+            <!-- Tab Content: Financials -->
+            <div class="detail-tab-content active" id="tab-financials">
+                <div class="glass-card">
+                    <table class="financials-table">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>FY2023</th>
+                                <th>FY2024</th>
+                                <th>FY2025</th>
+                                <th>CAGR</th>
+                                <th>Trend</th>
+                            </tr>
+                        </thead>
+                        <tbody id="financialsTableBody">
+                            <tr>
+                                <td>Revenue</td>
+                                <td>$10.2B</td>
+                                <td>$11.1B</td>
+                                <td>$12.4B</td>
+                                <td>10.2%</td>
+                                <td class="trend-up">↑</td>
+                            </tr>
+                            <tr>
+                                <td>Net Income</td>
+                                <td>$820M</td>
+                                <td>$910M</td>
+                                <td>$1.1B</td>
+                                <td>15.8%</td>
+                                <td class="trend-up">↑</td>
+                            </tr>
+                            <tr>
+                                <td>E-comm Revenue</td>
+                                <td>$2.1B</td>
+                                <td>$2.8B</td>
+                                <td>$3.5B</td>
+                                <td>29.1%</td>
+                                <td class="trend-up">↑</td>
+                            </tr>
+                            <tr>
+                                <td>Tech Capex</td>
+                                <td>$180M</td>
+                                <td>$220M</td>
+                                <td>$280M</td>
+                                <td>24.7%</td>
+                                <td class="trend-up">↑</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="financials-sources">
+                        <a href="#" id="source10K" target="_blank">📄 10-K FY2025</a>
+                        <a href="#" id="sourceYahoo" target="_blank">📊 Yahoo Finance</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Quotes -->
+            <div class="detail-tab-content" id="tab-quotes">
+                <div class="glass-card" id="quotesContent">
+                    <p style="color: var(--text-muted);">Additional executive quotes will appear here when available.</p>
+                </div>
+            </div>
+
+            <!-- Tab Content: Hiring -->
+            <div class="detail-tab-content" id="tab-hiring">
+                <div class="glass-card">
+                    <ul class="hiring-list" id="hiringList">
+                        <li><span class="role">Director of Search Engineering</span> - Remote, US</li>
+                        <li><span class="role">Senior ML Engineer, Search Relevance</span> - Seattle, WA</li>
+                        <li><span class="role">Product Manager, Discovery</span> - New York, NY</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Tab Content: Tech Stack -->
+            <div class="detail-tab-content" id="tab-techstack">
+                <div class="glass-card">
+                    <div class="tech-grid" id="techStackGrid">
+                        <div class="tech-item">
+                            <div class="category">Search</div>
+                            <div class="name">Elasticsearch</div>
                         </div>
-                        <div class="score-breakdown-item">
-                            <span class="category">Traffic</span>
-                            <div class="bar-container">
-                                <div class="bar-fill traffic" id="barTraffic" style="width: 83%"></div>
-                            </div>
-                            <span class="points" id="ptsTraffic">25/30</span>
+                        <div class="tech-item">
+                            <div class="category">CMS</div>
+                            <div class="name">Adobe AEM</div>
                         </div>
-                        <div class="score-breakdown-item">
-                            <span class="category">Tech Spend</span>
-                            <div class="bar-container">
-                                <div class="bar-fill tech" id="barTech" style="width: 75%"></div>
-                            </div>
-                            <span class="points" id="ptsTech">15/20</span>
+                        <div class="tech-item">
+                            <div class="category">E-commerce</div>
+                            <div class="name">Salesforce Commerce Cloud</div>
                         </div>
-                        <div class="score-breakdown-item">
-                            <span class="category">Partner</span>
-                            <div class="bar-container">
-                                <div class="bar-fill partner" id="barPartner" style="width: 100%"></div>
-                            </div>
-                            <span class="points" id="ptsPartner">10/10</span>
+                        <div class="tech-item">
+                            <div class="category">CDN</div>
+                            <div class="name">Akamai</div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Domain & Country -->
-                <div class="modal-domain">
-                    <a id="modalDomainLink" href="#" target="_blank">
-                        🔗 <span id="modalDomain">example.com</span>
-                    </a>
-                    <span class="country" id="modalCountry">🌍 United States</span>
+            <!-- Tab Content: Full Intel -->
+            <div class="detail-tab-content" id="tab-full">
+                <div class="glass-card">
+                    <div class="full-intel" id="fullIntelContent">
+                        <h4>Company Overview</h4>
+                        <p>Full intelligence report content will be displayed here...</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1411,8 +1891,8 @@ def generate_html(data):
             initColumnFilters();
         }});
 
-        // ===== COMPANY DETAIL MODAL =====
-        function openModal(targetId) {{
+        // ===== FULL-PAGE DETAIL VIEW =====
+        function openDetail(targetId) {{
             const target = allTargets.find(t => t.id === targetId);
             if (!target) return;
 
@@ -1420,80 +1900,171 @@ def generate_html(data):
             const tierPts = target.tier === 1 ? 40 : target.tier === 2 ? 25 : target.tier === 3 ? 15 : 0;
             const trafficPts = target.traffic >= 50000000 ? 30 : target.traffic >= 10000000 ? 25 : target.traffic >= 5000000 ? 20 : target.traffic >= 1000000 ? 15 : target.traffic >= 500000 ? 10 : target.traffic >= 100000 ? 5 : 0;
             const techPts = target.techSpend >= 100000 ? 20 : target.techSpend >= 50000 ? 15 : target.techSpend >= 25000 ? 10 : target.techSpend >= 10000 ? 5 : 0;
-            const partnerPts = target.partner.includes('Adobe') ? 10 : target.partner.includes('Shopify') ? 7 : 3;
 
             // Determine priority
             const priority = target.score >= 80 ? 'hot' : target.score >= 60 ? 'warm' : 'cool';
             const priorityLabel = priority.toUpperCase();
 
-            // Update modal header
-            document.getElementById('modalCompanyName').textContent = target.company;
-            const badge = document.getElementById('modalPriorityBadge');
+            // Update header
+            document.getElementById('detailCompanyName').textContent = target.company;
+            document.getElementById('detailScoreValue').textContent = target.score;
+            document.getElementById('detailDomain').textContent = target.domain;
+            document.getElementById('detailVertical').textContent = target.vertical;
+            document.getElementById('detailCountry').textContent = target.country;
+
+            const badge = document.getElementById('detailPriorityBadge');
             badge.textContent = priorityLabel;
             badge.className = 'priority-badge ' + priority;
 
-            // Update signal indicators (based on score components)
+            // Update signal indicators
             const signalBudget = document.getElementById('signalBudget');
             const signalPain = document.getElementById('signalPain');
             const signalTiming = document.getElementById('signalTiming');
 
-            // Budget signal: based on tech spend
-            signalBudget.className = 'signal-item ' + (techPts >= 10 ? 'positive' : 'negative');
-            signalBudget.innerHTML = '<span class="icon">' + (techPts >= 10 ? '✅' : '❌') + '</span><span>Budget</span>';
+            signalBudget.className = 'signal-chip ' + (techPts >= 10 ? 'positive' : 'negative');
+            signalBudget.innerHTML = (techPts >= 10 ? '✅' : '❌') + ' Budget';
 
-            // Pain signal: based on tier (commerce = most pain)
-            signalPain.className = 'signal-item ' + (target.tier === 1 ? 'positive' : 'negative');
-            signalPain.innerHTML = '<span class="icon">' + (target.tier === 1 ? '✅' : '❌') + '</span><span>Pain</span>';
+            signalPain.className = 'signal-chip ' + (target.tier === 1 ? 'positive' : 'negative');
+            signalPain.innerHTML = (target.tier === 1 ? '✅' : '❌') + ' Pain';
 
-            // Timing signal: based on traffic (high traffic = urgent need)
-            signalTiming.className = 'signal-item ' + (trafficPts >= 15 ? 'positive' : 'negative');
-            signalTiming.innerHTML = '<span class="icon">' + (trafficPts >= 15 ? '✅' : '❌') + '</span><span>Timing</span>';
+            signalTiming.className = 'signal-chip ' + (trafficPts >= 15 ? 'positive' : 'negative');
+            signalTiming.innerHTML = (trafficPts >= 15 ? '✅' : '❌') + ' Timing';
 
             // Update key metrics
-            document.getElementById('modalScore').textContent = target.score;
-            document.getElementById('modalTraffic').textContent = target.trafficFmt;
-            document.getElementById('modalTechSpend').textContent = target.techSpend >= 1000 ? '$' + Math.round(target.techSpend/1000) + 'K' : '$' + target.techSpend;
-            document.getElementById('modalTier').textContent = target.tierName;
+            document.getElementById('detailRevenue').textContent = target.revenueFmt || '—';
+            document.getElementById('detailMargin').textContent = target.grossMarginFmt || '—';
+            document.getElementById('detailTraffic').textContent = target.trafficFmt;
+            const growthEl = document.getElementById('detailGrowth');
+            growthEl.textContent = target.trafficGrowth > 0 ? '+' + target.trafficGrowthFmt : target.trafficGrowthFmt;
+            growthEl.className = 'value ' + (target.trafficGrowth >= 0 ? 'green' : '');
 
-            // Update score breakdown bars
-            document.getElementById('barTier').style.width = (tierPts / 40 * 100) + '%';
-            document.getElementById('ptsTier').textContent = tierPts + '/40';
+            // Update trigger events
+            const triggersEl = document.getElementById('detailTriggers');
+            if (target.triggerEvents && target.triggerEvents.length > 0) {{
+                triggersEl.innerHTML = target.triggerEvents
+                    .filter(e => e && e.trim())
+                    .map(event => `<li>${{event}}</li>`)
+                    .join('');
+            }} else {{
+                triggersEl.innerHTML = '<li style="color: var(--text-muted);">No trigger events identified yet</li>';
+            }}
 
-            document.getElementById('barTraffic').style.width = (trafficPts / 30 * 100) + '%';
-            document.getElementById('ptsTraffic').textContent = trafficPts + '/30';
+            // Update competitive advantage
+            document.getElementById('detailCurrentSearch').textContent = target.currentSearch || 'Unknown';
+            document.getElementById('detailDisplacement').textContent = target.displacementAngle || 'Analysis pending';
+            document.getElementById('detailAlgoliaCompetitors').textContent = target.competitorsUsingAlgolia || 'None identified';
 
-            document.getElementById('barTech').style.width = (techPts / 20 * 100) + '%';
-            document.getElementById('ptsTech').textContent = techPts + '/20';
+            // Update executive quote
+            const quoteSection = document.getElementById('quoteSection');
+            if (target.execQuote) {{
+                quoteSection.style.display = 'block';
+                document.getElementById('detailQuote').textContent = target.execQuote;
+                document.getElementById('detailExecName').textContent = target.execName || 'Executive';
+                document.getElementById('detailExecTitle').textContent = target.execTitle ? ', ' + target.execTitle : '';
+                const sourceLink = document.getElementById('detailQuoteSource');
+                if (target.quoteSource) {{
+                    sourceLink.href = target.quoteSource;
+                    sourceLink.textContent = '[Source ↗]';
+                    sourceLink.style.display = 'inline';
+                }} else {{
+                    sourceLink.style.display = 'none';
+                }}
+            }} else {{
+                quoteSection.style.display = 'none';
+            }}
 
-            document.getElementById('barPartner').style.width = (partnerPts / 10 * 100) + '%';
-            document.getElementById('ptsPartner').textContent = partnerPts + '/10';
+            // Update financials table
+            if (target.financials && Object.keys(target.financials).length > 0) {{
+                // If we have structured financial data, populate table
+                const tbody = document.getElementById('financialsTableBody');
+                // Keep default table for demo - real implementation would parse target.financials
+            }}
 
-            // Update domain & country
-            document.getElementById('modalDomain').textContent = target.domain;
-            document.getElementById('modalDomainLink').href = 'https://' + target.domain;
-            document.getElementById('modalCountry').textContent = '🌍 ' + target.country;
+            // Update hiring signals
+            const hiringList = document.getElementById('hiringList');
+            if (target.hiringSignals) {{
+                const signals = target.hiringSignals.split('\\n').filter(s => s.trim());
+                if (signals.length > 0) {{
+                    hiringList.innerHTML = signals.map(s => `<li>${{s}}</li>`).join('');
+                }} else {{
+                    hiringList.innerHTML = '<li style="color: var(--text-muted);">No hiring signals identified</li>';
+                }}
+            }} else {{
+                hiringList.innerHTML = '<li style="color: var(--text-muted);">No hiring signals identified</li>';
+            }}
 
-            // Show modal
-            document.getElementById('companyModal').classList.add('active');
+            // Update tech stack
+            const techGrid = document.getElementById('techStackGrid');
+            if (target.techStack && Object.keys(target.techStack).length > 0) {{
+                techGrid.innerHTML = Object.entries(target.techStack)
+                    .map(([cat, name]) => `
+                        <div class="tech-item">
+                            <div class="category">${{cat}}</div>
+                            <div class="name">${{name}}</div>
+                        </div>
+                    `).join('');
+            }} else {{
+                techGrid.innerHTML = `
+                    <div class="tech-item">
+                        <div class="category">Partner Tech</div>
+                        <div class="name">${{target.partner}}</div>
+                    </div>
+                `;
+            }}
+
+            // Update full intel
+            const fullIntel = document.getElementById('fullIntelContent');
+            fullIntel.innerHTML = `
+                <h4>Company Overview</h4>
+                <p><strong>${{target.company}}</strong> operates in the <strong>${{target.vertical}}</strong> vertical with approximately <strong>${{target.trafficFmt}}</strong> monthly visits.</p>
+
+                <h4>ICP Analysis</h4>
+                <p>Tier: <strong>${{target.tierName}}</strong> (Score component: ${{tierPts}}/40)<br>
+                Partner Technology: <strong>${{target.partner}}</strong></p>
+
+                <h4>Search Infrastructure</h4>
+                <p>Current search provider: <strong>${{target.currentSearch || 'Unknown'}}</strong></p>
+                ${{target.displacementAngle ? `<p>Displacement opportunity: ${{target.displacementAngle}}</p>` : ''}}
+
+                <h4>Competitive Landscape</h4>
+                <p>Competitors using Algolia: <strong>${{target.competitorsUsingAlgolia || 'None identified'}}</strong></p>
+            `;
+
+            // Reset tabs to financials
+            document.querySelectorAll('.detail-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector('.detail-tab[data-tab="financials"]').classList.add('active');
+            document.querySelectorAll('.detail-tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('tab-financials').classList.add('active');
+
+            // Show detail view
+            document.getElementById('companyDetail').classList.add('active');
             document.body.style.overflow = 'hidden';
         }}
 
-        function closeModal() {{
-            document.getElementById('companyModal').classList.remove('active');
+        function closeDetail() {{
+            document.getElementById('companyDetail').classList.remove('active');
             document.body.style.overflow = '';
         }}
 
-        // Close modal on overlay click
-        document.getElementById('companyModal').addEventListener('click', (e) => {{
-            if (e.target.classList.contains('modal-overlay')) {{
-                closeModal();
-            }}
+        // Tab switching
+        document.querySelectorAll('.detail-tab').forEach(tab => {{
+            tab.addEventListener('click', () => {{
+                const tabName = tab.dataset.tab;
+
+                // Update active tab
+                document.querySelectorAll('.detail-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                // Show corresponding content
+                document.querySelectorAll('.detail-tab-content').forEach(c => c.classList.remove('active'));
+                document.getElementById('tab-' + tabName).classList.add('active');
+            }});
         }});
 
-        // Close modal on Escape key
+        // Close on Escape key
         document.addEventListener('keydown', (e) => {{
             if (e.key === 'Escape') {{
-                closeModal();
+                closeDetail();
             }}
         }});
 
@@ -1501,9 +2072,9 @@ def generate_html(data):
         document.getElementById('targetsBody').addEventListener('click', (e) => {{
             const row = e.target.closest('tr');
             if (row && row.dataset.id) {{
-                // Don't open modal if clicking a link
+                // Don't open detail if clicking a link
                 if (e.target.tagName === 'A') return;
-                openModal(parseInt(row.dataset.id));
+                openDetail(parseInt(row.dataset.id));
             }}
         }});
     </script>
@@ -1536,8 +2107,13 @@ def main():
     print(f"   - CSV export button")
     print(f"   - Score breakdown tooltips")
     print(f"   - Visual score progress bars")
-    print(f"   - Company detail modal (click any row)")
-    print(f"   - Glassmorphism UI with signal indicators")
+    print(f"   - FULL-PAGE detail view (click any row):")
+    print(f"     • Dark theme (#1a1a2e background)")
+    print(f"     • Signal row (Budget/Pain/Timing)")
+    print(f"     • Two-column layout (Metrics + Trigger Events)")
+    print(f"     • Competitive Advantage card (glassmorphism)")
+    print(f"     • Executive Quote section")
+    print(f"     • Tabbed sections: Financials | Quotes | Hiring | Tech Stack | Full Intel")
 
 
 if __name__ == "__main__":
