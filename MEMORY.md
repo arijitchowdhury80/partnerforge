@@ -420,11 +420,112 @@ CREATE TABLE strategic_triggers (
 
 ---
 
+## v2.1 Architecture — On-Demand Enrichment (Feb 25, 2026)
+
+### Problem Solved
+Pre-populating intelligence data wasted API credits on companies that may never be viewed. v2.1 implements on-demand enrichment: data is fetched ONLY when a user clicks "View →" on a specific company.
+
+### FastAPI Backend
+
+**Location:** `api/` directory
+
+**Files:**
+| File | Purpose |
+|------|---------|
+| `api/main.py` | FastAPI application with endpoints |
+| `api/enrichment.py` | BuiltWith/SimilarWeb/Yahoo Finance integration |
+| `api/config.py` | CORS + API keys configuration |
+| `api/__init__.py` | Package initialization |
+
+**Endpoints:**
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/company/{domain}` | GET | Get company data (cached or fresh) |
+| `/api/enrich/{domain}` | POST | Trigger enrichment (with ?force=true option) |
+| `/api/targets` | GET | List paginated targets with filtering |
+| `/api/stats` | GET | Summary statistics |
+
+**Run locally:**
+```bash
+cd PartnerForge
+pip3 install -r requirements.txt
+uvicorn api.main:app --port 8000
+```
+
+**Cache TTL:** 7 days — data is only re-fetched when stale OR when user clicks "Refresh Data" button
+
+### Dashboard v2.1 Features
+
+**Sorting Fix:** Dashboard now sorted by `icp_score DESC` (Mercedes-Benz 95 pts first)
+
+**Detail View Enhancements:**
+- **"Refresh Data" button** — Triggers `/api/enrich/{domain}?force=true`
+- **Enrichment status badge** — Shows "Data fresh" / "Updated Xd ago" / "Not enriched"
+- **Loading spinner** — Displays during API calls with progress text
+- **Live data updates** — Tech stack, financials, traffic updated in real-time
+
+**API Client:**
+`api-client.js` provides JavaScript functions for frontend integration:
+- `fetchCompanyFromAPI(domain)` - Get cached company data
+- `enrichCompanyFromAPI(domain, force)` - Trigger enrichment
+- `showLoading(message)` / `hideLoading()` - Spinner control
+- `updateEnrichmentStatus(lastEnriched, level)` - Badge updates
+
+### Dependencies
+
+**requirements.txt:**
+```
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+requests>=2.31.0
+python-dotenv>=1.0.0
+yfinance>=0.2.36
+```
+
+### CORS Configuration
+
+Allowed origins in `api/config.py`:
+- `http://localhost:3000`, `http://localhost:8000`
+- `https://partnerforge.vercel.app`
+- Additional via `CORS_EXTRA_ORIGINS` env var
+
+### Backend Deployment Options
+
+The FastAPI backend needs separate hosting from Vercel (which only serves static HTML):
+
+| Option | Pros | Cons |
+|--------|------|------|
+| **Railway** | Easy deploy, free tier, auto-scaling | Limited free hours |
+| **Render** | Free tier, auto-deploy from GitHub | Cold starts on free tier |
+| **Fly.io** | Global edge, low latency | More complex setup |
+| **Vercel Serverless** | Same platform as frontend | Requires function conversion |
+
+---
+
+## /partnerforge Skill (Created Feb 25, 2026)
+
+**Location:** `~/.claude/skills/partnerforge/SKILL.md`
+
+**Commands:**
+| Command | Description |
+|---------|-------------|
+| `/partnerforge enrich <domain>` | Enrich single company |
+| `/partnerforge batch <N>` | Enrich top N hot leads |
+| `/partnerforge intel <domain>` | Deep competitive intelligence |
+| `/partnerforge find <partner>` | Find displacement targets |
+| `/partnerforge report <domain>` | Generate PDF report |
+| `/partnerforge status` | Show enrichment stats |
+| `/partnerforge dashboard` | Regenerate dashboard HTML |
+
+---
+
 ## Next Steps (Updated Feb 25, 2026)
 1. ✅ Build enhanced dashboard with detail view + glassmorphism (DONE)
 2. ✅ Add Excel-style column filtering (DONE)
-3. Run batch enrichment on top 100 targets (in progress)
-4. Create `/partnerforge` skill for on-demand analysis
-5. Add Shopify pipeline (needs BuiltWith credits)
-6. Implement predictive scoring (ML model for optimal timing)
-7. Add Salesforce integration (direct lead sync)
+3. ✅ Create `/partnerforge` skill for on-demand analysis (DONE)
+4. ✅ Build FastAPI backend for on-demand enrichment (DONE)
+5. **NEXT: Deploy FastAPI backend** (Railway/Render/Fly.io)
+6. Run batch enrichment on top 100 targets
+7. Add Shopify pipeline (needs BuiltWith credits)
+8. Implement predictive scoring (ML model for optimal timing)
+9. Add Salesforce integration (direct lead sync)

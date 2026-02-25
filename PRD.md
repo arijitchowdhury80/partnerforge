@@ -1025,6 +1025,46 @@ From `Customer Evidence - Algolia.xlsx`:
 
 ---
 
+## Release Notes - v2.1 (2026-02-25)
+
+### Major Features Added
+1. **FastAPI Backend** — On-demand enrichment via REST API instead of pre-population
+2. **Refresh Data Button** — Users can trigger live data refresh from BuiltWith/SimilarWeb/Yahoo Finance
+3. **Enrichment Status Badge** — Visual indicator showing data freshness (fresh/stale/not enriched)
+4. **Loading Spinner** — Progress feedback during API calls
+5. **Proper Sorting** — Dashboard now sorted by ICP score (Mercedes-Benz 95 pts first)
+6. **`/partnerforge` Skill** — Claude Code skill for CLI-based enrichment and analysis
+7. **Cache TTL** — 7-day cache with force refresh option
+
+### Architecture Change
+**Before (v2.0):** Pre-populate intelligence data for all 2,687 targets → wastes API credits
+
+**After (v2.1):** On-demand enrichment → data fetched ONLY when user clicks "View →" → cached for 7 days
+
+### New Files
+| File | Purpose |
+|------|---------|
+| `api/main.py` | FastAPI application with 4 endpoints |
+| `api/enrichment.py` | BuiltWith/SimilarWeb/Yahoo Finance integration |
+| `api/config.py` | CORS + API keys configuration |
+| `api-client.js` | JavaScript client for frontend |
+| `requirements.txt` | Python dependencies |
+| `.env.example` | API keys template |
+| `~/.claude/skills/partnerforge/SKILL.md` | Claude Code skill |
+
+### API Endpoints (v2.1)
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `GET /api/company/{domain}` | GET | Get company data (cached or needs enrichment flag) |
+| `POST /api/enrich/{domain}` | POST | Trigger enrichment (?force=true to refresh) |
+| `GET /api/targets` | GET | List targets with pagination + filtering |
+| `GET /api/stats` | GET | Summary statistics |
+
+### Backend Deployment (Pending)
+FastAPI backend requires Python hosting (Railway/Render/Fly.io). Vercel only serves static HTML.
+
+---
+
 ## Release Notes - v2.0 (2026-02-25)
 
 ### Major Features Added
@@ -1062,8 +1102,8 @@ From `Customer Evidence - Algolia.xlsx`:
 
 ---
 
-*Document Version: 2.0*
+*Document Version: 2.1*
 *Created: 2026-02-25*
 *Last Updated: 2026-02-25*
 *Author: Claude + Arijit*
-*Features Documented: All v2.0 components complete*
+*Features Documented: All v2.1 components complete (FastAPI backend, /partnerforge skill, on-demand enrichment)*
