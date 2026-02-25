@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PartnerForge Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #1a1a2e;
+            line-height: 1.6;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        
+        header {
+            background: linear-gradient(135deg, #003DFF 0%, #5468FF 100%);
+            color: white;
+            padding: 40px 20px;
+            margin-bottom: 30px;
+        }
+        header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        header p { opacity: 0.9; font-size: 1.1em; }
+        
+        .logic-box {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        .logic-box h2 { 
+            color: #003DFF; 
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logic-box h2::before { content: "💡"; }
+        
+        .formula {
+            background: #f0f4ff;
+            border-left: 4px solid #003DFF;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 1.1em;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        .stat-card.hot { border-top: 4px solid #ff4757; }
+        .stat-card.warm { border-top: 4px solid #ffa502; }
+        .stat-card.cool { border-top: 4px solid #3742fa; }
+        .stat-card.info { border-top: 4px solid #2ed573; }
+        
+        .stat-number { font-size: 2.5em; font-weight: 700; color: #1a1a2e; }
+        .stat-label { color: #666; margin-top: 5px; }
+        
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        .section h2 { 
+            margin-bottom: 20px; 
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th { 
+            background: #f8f9fa; 
+            font-weight: 600;
+            color: #333;
+        }
+        tr:hover { background: #f8f9fa; }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+        .badge.commerce { background: #d4edda; color: #155724; }
+        .badge.content { background: #cce5ff; color: #004085; }
+        .badge.support { background: #fff3cd; color: #856404; }
+        .badge.unknown { background: #e2e3e5; color: #383d41; }
+        .badge.hot { background: #ff4757; color: white; }
+        .badge.warm { background: #ffa502; color: white; }
+        .badge.target { background: #2ed573; color: white; }
+        .badge.algolia { background: #5468FF; color: white; }
+        
+        .chart-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        @media (max-width: 900px) {
+            .chart-row { grid-template-columns: 1fr; }
+        }
+        
+        .bar {
+            height: 30px;
+            background: linear-gradient(90deg, #003DFF, #5468FF);
+            border-radius: 4px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            color: white;
+            font-weight: 500;
+        }
+        
+        .traffic { color: #666; font-size: 0.9em; }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🚀 PartnerForge Dashboard</h1>
+            <p>Partner Intelligence Platform for Algolia Sales | Generated: 2026-02-25 11:34</p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <!-- Logic Explanation -->
+        <div class="logic-box">
+            <h2>How This Works</h2>
+            <p><strong>PartnerForge finds companies using Algolia partner technologies (like Adobe AEM) who are NOT yet using Algolia for search.</strong></p>
+            
+            <div class="formula">
+                <strong>Displacement Targets</strong> = Companies using Partner Tech − Existing Algolia Customers
+            </div>
+            
+            <p><strong>Data Sources:</strong></p>
+            <ul style="margin: 15px 0 15px 30px;">
+                <li><strong>BuiltWith</strong> → Technology detection (who uses what)</li>
+                <li><strong>SimilarWeb</strong> → Traffic data + competitor discovery</li>
+                <li><strong>Customer Evidence Excel</strong> → Existing Algolia customers to exclude</li>
+            </ul>
+            
+            <p><strong>Scoring (0-100 points):</strong></p>
+            <ul style="margin: 15px 0 15px 30px;">
+                <li>Vertical/ICP Tier (40 pts) → Commerce sites score highest</li>
+                <li>Traffic Volume (30 pts) → More traffic = bigger opportunity</li>
+                <li>Tech Spend (20 pts) → Higher spend = better fit</li>
+                <li>Partner Tech (10 pts) → Adobe/Salesforce get bonus</li>
+            </ul>
+        </div>
+        
+        <!-- Key Stats -->
+        <div class="stats-grid">
+            <div class="stat-card hot">
+                <div class="stat-number">5</div>
+                <div class="stat-label">🔥 Hot Leads (80+)</div>
+            </div>
+            <div class="stat-card warm">
+                <div class="stat-number">149</div>
+                <div class="stat-label">🌡️ Warm Leads (60-79)</div>
+            </div>
+            <div class="stat-card cool">
+                <div class="stat-number">1472</div>
+                <div class="stat-label">❄️ Cool Leads (40-59)</div>
+            </div>
+            <div class="stat-card info">
+                <div class="stat-number">2,687</div>
+                <div class="stat-label">📊 Total Targets</div>
+            </div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card info">
+                <div class="stat-number">400</div>
+                <div class="stat-label">✅ Existing Algolia Customers</div>
+            </div>
+            <div class="stat-card info">
+                <div class="stat-number">161</div>
+                <div class="stat-label">📚 Case Studies Available</div>
+            </div>
+            <div class="stat-card info">
+                <div class="stat-number">379</div>
+                <div class="stat-label">💬 Customer Quotes</div>
+            </div>
+            <div class="stat-card info">
+                <div class="stat-number">Adobe AEM</div>
+                <div class="stat-label">🔧 Partner Technology</div>
+            </div>
+        </div>
+        
+        <!-- Charts Row -->
+        <div class="chart-row">
+            <div class="section">
+                <h2>📊 ICP Tier Distribution</h2>
+                <p style="color: #666; margin-bottom: 20px;">Tier 1 (Commerce) = highest priority for Algolia</p>
+
+                <div style="margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span><span class="badge commerce">Commerce</span></span>
+                        <span><strong>1,598</strong></span>
+                    </div>
+                    <div style="background: #eee; border-radius: 4px; height: 20px;">
+                        <div style="width: 100.0%; height: 100%; background: linear-gradient(90deg, #003DFF, #5468FF); border-radius: 4px;"></div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span><span class="badge unknown">Unknown</span></span>
+                        <span><strong>807</strong></span>
+                    </div>
+                    <div style="background: #eee; border-radius: 4px; height: 20px;">
+                        <div style="width: 50.50062578222778%; height: 100%; background: linear-gradient(90deg, #003DFF, #5468FF); border-radius: 4px;"></div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span><span class="badge internal support">Internal Support</span></span>
+                        <span><strong>223</strong></span>
+                    </div>
+                    <div style="background: #eee; border-radius: 4px; height: 20px;">
+                        <div style="width: 13.954943679599499%; height: 100%; background: linear-gradient(90deg, #003DFF, #5468FF); border-radius: 4px;"></div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span><span class="badge content">Content</span></span>
+                        <span><strong>59</strong></span>
+                    </div>
+                    <div style="background: #eee; border-radius: 4px; height: 20px;">
+                        <div style="width: 3.6921151439299122%; height: 100%; background: linear-gradient(90deg, #003DFF, #5468FF); border-radius: 4px;"></div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="section">
+                <h2>🏷️ Top Verticals</h2>
+                <p style="color: #666; margin-bottom: 20px;">Most common industries in target list</p>
+
+                <div style="margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                        <span></span>
+                        <span><strong>807</strong></span>
+                    </div>
+                    <div style="background: #eee; border-radius: 4px; height: 16px;">
+                        <div style="width: 100.0%; height: 100%; background: #2ed573; border-radius: 4px;"></div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                        <span>Business And Industrial</span>
+                        <span><strong>305</strong></span>
+                    </div>
+                    <div style="background: #eee; border-radius: 4px; height: 16px;">
+                        <div style="width: 37.79429987608427%; height: 100%; background: #2ed573; border-radius: 4px;"></div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                        <span>Technology And Computing</span>
+                        <span><strong>209</strong></span>
+                    </div>
+                    <div style="background: #eee; border-radius: 4px; height: 16px;">
+                        <div style="width: 25.89838909541512%; height: 100%; background: #2ed573; border-radius: 4px;"></div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                        <span>Automotive And Vehicles</span>
+                        <span><strong>197</strong></span>
+                    </div>
+                    <div style="background: #eee; border-radius: 4px; height: 16px;">
+                        <div style="width: 24.411400247831473%; height: 100%; background: #2ed573; border-radius: 4px;"></div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                        <span>Health And Fitness</span>
+                        <span><strong>109</strong></span>
+                    </div>
+                    <div style="background: #eee; border-radius: 4px; height: 16px;">
+                        <div style="width: 13.506815365551425%; height: 100%; background: #2ed573; border-radius: 4px;"></div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                        <span>Finance</span>
+                        <span><strong>85</strong></span>
+                    </div>
+                    <div style="background: #eee; border-radius: 4px; height: 16px;">
+                        <div style="width: 10.532837670384138%; height: 100%; background: #2ed573; border-radius: 4px;"></div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                        <span>Art And Entertainment</span>
+                        <span><strong>59</strong></span>
+                    </div>
+                    <div style="background: #eee; border-radius: 4px; height: 16px;">
+                        <div style="width: 7.311028500619579%; height: 100%; background: #2ed573; border-radius: 4px;"></div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                        <span>Science</span>
+                        <span><strong>38</strong></span>
+                    </div>
+                    <div style="background: #eee; border-radius: 4px; height: 16px;">
+                        <div style="width: 4.708798017348203%; height: 100%; background: #2ed573; border-radius: 4px;"></div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                        <span>Food And Drink</span>
+                        <span><strong>38</strong></span>
+                    </div>
+                    <div style="background: #eee; border-radius: 4px; height: 16px;">
+                        <div style="width: 4.708798017348203%; height: 100%; background: #2ed573; border-radius: 4px;"></div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                        <span>Law, Govt And Politics</span>
+                        <span><strong>34</strong></span>
+                    </div>
+                    <div style="background: #eee; border-radius: 4px; height: 16px;">
+                        <div style="width: 4.2131350681536555%; height: 100%; background: #2ed573; border-radius: 4px;"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
+        <!-- Top Targets Table -->
+        <div class="section">
+            <h2>🎯 Top 25 Displacement Targets</h2>
+            <p style="color: #666; margin-bottom: 20px;">Companies using Adobe AEM but NOT Algolia - sorted by lead score</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Company</th>
+                        <th>Domain</th>
+                        <th>Vertical</th>
+                        <th>ICP Tier</th>
+                        <th>Score</th>
+                        <th>Monthly Traffic</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <td>1</td>
+                        <td><strong>HUAWEI</strong></td>
+                        <td><a href="https://huawei.com" target="_blank">huawei.com</a></td>
+                        <td>Business And Industrial</td>
+                        <td><span class="badge commerce">Commerce</span></td>
+                        <td><span class="badge hot">90</span></td>
+                        <td class="traffic">75,744,731</td>
+                    </tr>
+
+                    <tr>
+                        <td>2</td>
+                        <td><strong>National Australia Bank</strong></td>
+                        <td><a href="https://nab.com.au" target="_blank">nab.com.au</a></td>
+                        <td>Finance</td>
+                        <td><span class="badge commerce">Commerce</span></td>
+                        <td><span class="badge hot">90</span></td>
+                        <td class="traffic">11,493,900</td>
+                    </tr>
+
+                    <tr>
+                        <td>3</td>
+                        <td><strong>Mercedes-Benz Group AG</strong></td>
+                        <td><a href="https://mercedes-benz.com" target="_blank">mercedes-benz.com</a></td>
+                        <td>Automotive And Vehicles</td>
+                        <td><span class="badge commerce">Commerce</span></td>
+                        <td><span class="badge hot">85</span></td>
+                        <td class="traffic">6,577,475</td>
+                    </tr>
+
+                    <tr>
+                        <td>4</td>
+                        <td><strong>CVS Caremark</strong></td>
+                        <td><a href="https://caremark.com" target="_blank">caremark.com</a></td>
+                        <td>Law, Govt And Politics</td>
+                        <td><span class="badge commerce">Commerce</span></td>
+                        <td><span class="badge hot">80</span></td>
+                        <td class="traffic">4,498,750</td>
+                    </tr>
+
+                    <tr>
+                        <td>5</td>
+                        <td><strong>SP Global</strong></td>
+                        <td><a href="https://spglobal.com" target="_blank">spglobal.com</a></td>
+                        <td>Business And Industrial</td>
+                        <td><span class="badge commerce">Commerce</span></td>
+                        <td><span class="badge hot">80</span></td>
+                        <td class="traffic">3,486,096</td>
+                    </tr>
+
+                    <tr>
+                        <td>6</td>
+                        <td><strong>Mark's</strong></td>
+                        <td><a href="https://marks.com" target="_blank">marks.com</a></td>
+                        <td>Style And Fashion</td>
+                        <td><span class="badge commerce">Commerce</span></td>
+                        <td><span class="badge warm">75</span></td>
+                        <td class="traffic">4,982,280</td>
+                    </tr>
+
+                    <tr>
+                        <td>7</td>
+                        <td><strong>Infinite USA Inc</strong></td>
+                        <td><a href="https://infinitiusa.com" target="_blank">infinitiusa.com</a></td>
+                        <td>Automotive And Vehicles</td>
+                        <td><span class="badge commerce">Commerce</span></td>
+                        <td><span class="badge warm">75</span></td>
+                        <td class="traffic">4,443,055</td>
+                    </tr>
+
+                    <tr>
+                        <td>8</td>
+                        <td><strong>HOFER</strong></td>
+                        <td><a href="https://hofer.at" target="_blank">hofer.at</a></td>
+                        <td>Sports</td>
+                        <td><span class="badge commerce">Commerce</span></td>
+                        <td><span class="badge warm">75</span></td>
+                        <td class="traffic">3,212,394</td>
+                    </tr>
+
+                    <tr>
+                        <td>9</td>
+                        <td><strong>ALLIANZ INFORMATIQUE G.I.E</strong></td>
+                        <td><a href="https://allianz.fr" target="_blank">allianz.fr</a></td>
+                        <td>Sports</td>
+                        <td><span class="badge commerce">Commerce</span></td>
+                        <td><span class="badge warm">75</span></td>
+                        <td class="traffic">3,071,688</td>
+                    </tr>
+
+                    <tr>
+                        <td>10</td>
+                        <td><strong>Chevrolet Mexico</strong></td>
+                        <td><a href="https://chevrolet.com.mx" target="_blank">chevrolet.com.mx</a></td>
+                        <td>Automotive And Vehicles</td>
+                        <td><span class="badge commerce">Commerce</span></td>
+                        <td><span class="badge warm">75</span></td>
+                        <td class="traffic">2,776,244</td>
+                    </tr>
+
+                    <tr>
+                        <td>11</td>
+                        <td><strong>Bever B.V</strong></td>
+                        <td><a href="https://bever.nl" target="_blank">bever.nl</a></td>
+                        <td>Home And Garden</td>
+                        <td><span class="badge commerce">Commerce</span></td>
+                        <td><span class="badge warm">75</span></td>
+                        <td class="traffic">2,594,356</td>
+                    </tr>
+
+                    <tr>
+                        <td>12</td>
+                        <td><strong>Fiat Automobiles S.p.A.</strong></td>
+                        <td><a href="https://fiat.com" target="_blank">fiat.com</a></td>
+                        <td>Automotive And Vehicles</td>
+                        <td><span class="badge commerce">Commerce</span></td>
+                        <td><span class="badge warm">75</span></td>
+                        <td class="traffic">2,589,621</td>
+                    </tr>
+
+                    <tr>
+                        <td>13</td>
+                        <td><strong>F5, Inc.</strong></td>
+                        <td><a href="https://f5.com" target="_blank">f5.com</a></td>
+                        <td>Business And Industrial</td>
+                        <td><span class="badge commerce">Commerce</span></td>
+                        <td><span class="badge warm">75</span></td>
+                        <td class="traffic">994,757</td>
+                    </tr>
+
+                    <tr>
+                        <td>14</td>
+                        <td><strong>Bristol Myers Squibb</strong></td>
+                        <td><a href="https://bms.com" target="_blank">bms.com</a></td>
+                        <td>Business And Industrial</td>
+                        <td><span class="badge commerce">Commerce</span></td>
+                        <td><span class="badge warm">75</span></td>
+                        <td class="traffic">809,790</td>
+                    </tr>
+
+                    <tr>
+                        <td>15</td>
+                        <td><strong>Moody's Investors Service Inc</strong></td>
+                        <td><a href="https://moodys.com" target="_blank">moodys.com</a></td>
+                        <td>Business And Industrial</td>
+                        <td><span class="badge commerce">Commerce</span></td>
+                        <td><span class="badge warm">75</span></td>
+                        <td class="traffic">716,310</td>
+                    </tr>
+
+                    <tr>
+                        <td>16</td>
+                        <td><strong>Nissan</strong></td>
+                        <td><a href="https://nissan.it" target="_blank">nissan.it</a></td>
+                        <td>Automotive And Vehicles</td>
+                        <td><span class="badge commerce">Commerce</span></td>
+                        <td><span class="badge warm">70</span></td>
+                        <td class="traffic">522,824</td>
+                    </tr>
+
+                    <tr>
+                        <td>17</td>
+                        <td><strong>Odpbusiness LLC</strong></td>
+                        <td><a href="https://odpbusiness.com" target="_blank">odpbusiness.com</a></td>
+                        <td>Business And Industrial</td>
+                        <td><span class="badge commerce">Commerce</span></td>
+                        <td><span class="badge warm">70</span></td>
+                        <td class="traffic">505,137</td>
+                    </tr>
+
+                    <tr>
+                        <td>18</td>
+                        <td><strong>Sunstar Americas Inc</strong></td>
+                        <td><a href="https://sunstargum.com" target="_blank">sunstargum.com</a></td>
+                        <td>Health And Fitness</td>
+                        <td><span class="badge commerce">Commerce</span></td>
+                        <td><span class="badge warm">70</span></td>
+                        <td class="traffic">395,405</td>
+                    </tr>
+
+                    <tr>
+                        <td>19</td>
+                        <td><strong>NV Bekaert SA</strong></td>
+                        <td><a href="https://bekaert.com" target="_blank">bekaert.com</a></td>
+                        <td>Business And Industrial</td>
+                        <td><span class="badge commerce">Commerce</span></td>
+                        <td><span class="badge warm">70</span></td>
+                        <td class="traffic">127,163</td>
+                    </tr>
+
+                    <tr>
+                        <td>20</td>
+                        <td><strong>Nissan Motors India Pvt Ltd</strong></td>
+                        <td><a href="https://nissan.in" target="_blank">nissan.in</a></td>
+                        <td>Automotive And Vehicles</td>
+                        <td><span class="badge commerce">Commerce</span></td>
+                        <td><span class="badge warm">65</span></td>
+                        <td class="traffic">366,123</td>
+                    </tr>
+
+                    <tr>
+                        <td>21</td>
+                        <td><strong>Avery Dennison</strong></td>
+                        <td><a href="https://averydennison.com" target="_blank">averydennison.com</a></td>
+                        <td>Business And Industrial</td>
+                        <td><span class="badge commerce">Commerce</span></td>
+                        <td><span class="badge warm">65</span></td>
+                        <td class="traffic">322,225</td>
+                    </tr>
+
+                    <tr>
+                        <td>22</td>
+                        <td><strong>ChevroletEcuador</strong></td>
+                        <td><a href="https://chevrolet.com.ec" target="_blank">chevrolet.com.ec</a></td>
+                        <td>Automotive And Vehicles</td>
+                        <td><span class="badge commerce">Commerce</span></td>
+                        <td><span class="badge warm">65</span></td>
+                        <td class="traffic">256,034</td>
+                    </tr>
+
+                    <tr>
+                        <td>23</td>
+                        <td><strong>VRAYLAR CO</strong></td>
+                        <td><a href="https://vraylar.com" target="_blank">vraylar.com</a></td>
+                        <td>Health And Fitness</td>
+                        <td><span class="badge commerce">Commerce</span></td>
+                        <td><span class="badge warm">65</span></td>
+                        <td class="traffic">254,473</td>
+                    </tr>
+
+                    <tr>
+                        <td>24</td>
+                        <td><strong>Identity Force</strong></td>
+                        <td><a href="https://identityforce.com" target="_blank">identityforce.com</a></td>
+                        <td>Law, Govt And Politics</td>
+                        <td><span class="badge commerce">Commerce</span></td>
+                        <td><span class="badge warm">65</span></td>
+                        <td class="traffic">125,798</td>
+                    </tr>
+
+                    <tr>
+                        <td>25</td>
+                        <td><strong>Nissan</strong></td>
+                        <td><a href="https://nissan.se" target="_blank">nissan.se</a></td>
+                        <td>Automotive And Vehicles</td>
+                        <td><span class="badge commerce">Commerce</span></td>
+                        <td><span class="badge warm">60</span></td>
+                        <td class="traffic">97,709</td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Competitive Intel -->
+        <div class="section">
+            <h2>🔍 Competitive Intelligence</h2>
+            <p style="color: #666; margin-bottom: 20px;">From analyzing Costco & Target competitors via SimilarWeb + BuiltWith</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Competitor</th>
+                        <th>Partner Techs</th>
+                        <th>Current Search</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <td><a href="https://kmart.com" target="_blank">kmart.com</a></td>
+                        <td>Shopify, Shopify Plus</td>
+                        <td>Elasticsearch</td>
+                        <td><span class="badge target">Displacement Target</span></td>
+                    </tr>
+
+                    <tr>
+                        <td><a href="https://samsclub.com" target="_blank">samsclub.com</a></td>
+                        <td>Adobe Commerce, Adobe AEM</td>
+                        <td>Elasticsearch</td>
+                        <td><span class="badge target">Displacement Target</span></td>
+                    </tr>
+
+                    <tr>
+                        <td><a href="https://kmart.com" target="_blank">kmart.com</a></td>
+                        <td>Shopify, Shopify Plus, Adobe AEM</td>
+                        <td>Elasticsearch</td>
+                        <td><span class="badge target">Displacement Target</span></td>
+                    </tr>
+
+                    <tr>
+                        <td><a href="https://sears.com" target="_blank">sears.com</a></td>
+                        <td>Shopify, Shopify Plus, Adobe AEM</td>
+                        <td>Elasticsearch</td>
+                        <td><span class="badge target">Displacement Target</span></td>
+                    </tr>
+
+                    <tr>
+                        <td><a href="https://macys.com" target="_blank">macys.com</a></td>
+                        <td>Adobe AEM</td>
+                        <td>Elasticsearch</td>
+                        <td><span class="badge target">Displacement Target</span></td>
+                    </tr>
+
+                    <tr>
+                        <td><a href="https://walmart.com" target="_blank">walmart.com</a></td>
+                        <td>Shopify</td>
+                        <td>Algolia</td>
+                        <td><span class="badge algolia">Uses Algolia</span></td>
+                    </tr>
+
+                    <tr>
+                        <td><a href="https://samsclub.com" target="_blank">samsclub.com</a></td>
+                        <td>—</td>
+                        <td>Elasticsearch</td>
+                        <td><span class="badge unknown">No Match</span></td>
+                    </tr>
+
+                    <tr>
+                        <td><a href="https://target.com" target="_blank">target.com</a></td>
+                        <td>—</td>
+                        <td>Elasticsearch</td>
+                        <td><span class="badge unknown">No Match</span></td>
+                    </tr>
+
+                    <tr>
+                        <td><a href="https://amazon.com" target="_blank">amazon.com</a></td>
+                        <td>—</td>
+                        <td>Unknown/Custom</td>
+                        <td><span class="badge unknown">No Match</span></td>
+                    </tr>
+
+                    <tr>
+                        <td><a href="https://bjs.com" target="_blank">bjs.com</a></td>
+                        <td>—</td>
+                        <td>Coveo</td>
+                        <td><span class="badge unknown">No Match</span></td>
+                    </tr>
+
+                    <tr>
+                        <td><a href="https://ebay.com" target="_blank">ebay.com</a></td>
+                        <td>—</td>
+                        <td>Algolia</td>
+                        <td><span class="badge algolia">Uses Algolia</span></td>
+                    </tr>
+
+                    <tr>
+                        <td><a href="https://kohls.com" target="_blank">kohls.com</a></td>
+                        <td>—</td>
+                        <td>Algolia</td>
+                        <td><span class="badge algolia">Uses Algolia</span></td>
+                    </tr>
+
+                    <tr>
+                        <td><a href="https://wayfair.com" target="_blank">wayfair.com</a></td>
+                        <td>—</td>
+                        <td>Bloomreach</td>
+                        <td><span class="badge unknown">No Match</span></td>
+                    </tr>
+
+                    <tr>
+                        <td><a href="https://biglots.com" target="_blank">biglots.com</a></td>
+                        <td>—</td>
+                        <td>Elasticsearch</td>
+                        <td><span class="badge unknown">No Match</span></td>
+                    </tr>
+
+                    <tr>
+                        <td><a href="https://walmart.com" target="_blank">walmart.com</a></td>
+                        <td>Shopify, Adobe Commerce, Adobe AEM</td>
+                        <td>Algolia</td>
+                        <td><span class="badge algolia">Uses Algolia</span></td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Data Pipeline -->
+        <div class="logic-box">
+            <h2 style="color: #003DFF;">📈 Data Pipeline Flow</h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px;">
+                <div style="flex: 1; min-width: 200px; background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 2em;">📥</div>
+                    <strong>BuiltWith</strong>
+                    <p style="font-size: 0.9em; color: #666;">Lists of AEM users</p>
+                </div>
+                <div style="display: flex; align-items: center; font-size: 2em;">→</div>
+                <div style="flex: 1; min-width: 200px; background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 2em;">➖</div>
+                    <strong>Filter</strong>
+                    <p style="font-size: 0.9em; color: #666;">Remove Algolia customers</p>
+                </div>
+                <div style="display: flex; align-items: center; font-size: 2em;">→</div>
+                <div style="flex: 1; min-width: 200px; background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 2em;">📊</div>
+                    <strong>Score</strong>
+                    <p style="font-size: 0.9em; color: #666;">ICP tier + traffic</p>
+                </div>
+                <div style="display: flex; align-items: center; font-size: 2em;">→</div>
+                <div style="flex: 1; min-width: 200px; background: #d4edda; padding: 20px; border-radius: 8px; text-align: center;">
+                    <div style="font-size: 2em;">🎯</div>
+                    <strong>Targets</strong>
+                    <p style="font-size: 0.9em; color: #155724;">Prioritized lead list</p>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    
+    <footer>
+        <p>PartnerForge v1.0 | Database: partnerforge.db (1.6MB) | Built with Claude Code</p>
+    </footer>
+</body>
+</html>

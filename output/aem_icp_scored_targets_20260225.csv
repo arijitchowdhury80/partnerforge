@@ -1,0 +1,2701 @@
+Rank,Company,Domain,Vertical,Country,ICP Tier,ICP Score,Monthly Visits,Tech Spend,Has Case Study Match
+1,Kia Corporation,kia.com,Automotive And Vehicles,US,Tier 1,100,25488904,76402,Yes
+2,Mercedes-Benz Group AG,mercedes-benz.com,Automotive And Vehicles,DE,Tier 1,95,6577475,77414,Yes
+3,Volvo AB,volvo.com,Automotive And Vehicles,SE,Tier 1,90,1191497,65825,Yes
+4,Mark's,marks.com,Style And Fashion,CA,Tier 1,85,4982280,42949,Yes
+5,Infinite USA Inc,infinitiusa.com,Automotive And Vehicles,US,Tier 1,85,4443055,42617,Yes
+6,HOFER,hofer.at,Sports,US,Tier 1,85,3212394,34639,No
+7,ALLIANZ INFORMATIQUE G.I.E,allianz.fr,Sports,FR,Tier 1,85,3071688,38122,No
+8,Chevrolet Mexico,chevrolet.com.mx,Automotive And Vehicles,MX,Tier 1,85,2776244,36843,No
+9,Bever B.V,bever.nl,Home And Garden,NL,Tier 1,85,2594356,29080,No
+10,Fiat Automobiles S.p.A.,fiat.com,Automotive And Vehicles,IT,Tier 1,85,2589621,33429,No
+11,Sunstar Americas Inc,sunstargum.com,Health And Fitness,CA,Tier 1,80,395405,51625,No
+12,Boston Pizza International Inc,bostonpizza.com,Food And Drink,CA,Tier 1,75,632726,32906,No
+13,Radley + Co. Limited,radley.co.uk,Style And Fashion,GB,Tier 1,75,557837,34075,No
+14,Nissan,nissan.it,Automotive And Vehicles,IT,Tier 1,75,522824,33165,No
+15,Nissan Motors India Pvt Ltd,nissan.in,Automotive And Vehicles,IN,Tier 1,75,366123,38495,No
+16,ChevroletEcuador,chevrolet.com.ec,Automotive And Vehicles,EC,Tier 1,75,256034,33377,No
+17,VRAYLAR CO,vraylar.com,Health And Fitness,US,Tier 1,75,254473,30787,No
+18,Nissan,nissan.nl,Automotive And Vehicles,NL,Tier 1,75,101362,36437,No
+19,Nissan,nissan.se,Automotive And Vehicles,FR,Tier 1,65,97709,32275,No
+20,asadventure inc,asadventure.nl,Shopping,BE,Tier 1,65,85550,27865,No
+21,Bose,bose.tw,Automotive And Vehicles,US,Tier 1,65,75067,35574,No
+22,Nissan,nissan.no,Automotive And Vehicles,FR,Tier 1,65,48715,33825,No
+23,Szott M59 Toyota,szottm59toyota.com,Automotive And Vehicles,US,Tier 1,65,28671,31350,No
+24,Unilever Food Solutions,ufs.com,Food And Drink,US,Tier 1,65,21852,37909,No
+25,TUSENFRYD AS,tusenfryd.no,Shopping,NO,Tier 1,65,21115,34065,No
+26,Bo Sommarland AS,sommarland.no,Shopping,NO,Tier 1,65,12149,38105,No
+27,,gatewaytoyota.com,Automotive And Vehicles,US,Tier 1,65,10888,31670,No
+28,,boothehvac.com,Style And Fashion,US,Tier 1,65,10129,29178,No
+29,Intense Lighting,intenselighting.com,Home And Garden,US,Tier 1,65,3697,29250,No
+30,Kellogg Company,kelloggsawayfromhome.com,Food And Drink,US,Tier 1,65,2806,29500,No
+31,Creature Comforts Animal Inn,ccanimalinn.com,Pets,US,Tier 1,65,1917,27575,No
+32,chevroletperu,chevrolet.com.pe,Automotive And Vehicles,PE,Tier 1,60,,27377,No
+33,Nissan,nissan.si,Automotive And Vehicles,SI,Tier 1,60,,26957,No
+34,Nissan Ireland Ltd.,nissan.ie,Automotive And Vehicles,IE,Tier 1,60,,26857,No
+35,CupraOfficial,cupraofficial.fr,Automotive And Vehicles,FR,Tier 1,60,,26775,No
+36,MetLife Inc.,metlife.co.jp,Health And Fitness,JP,Tier 1,60,,26290,No
+37,Sabal Chase Animal Clinic,sabalchaseanimalclinic.com,Pets,US,Tier 1,60,,26245,No
+38,,cotacchevrolet.com.br,Automotive And Vehicles,,Tier 1,60,,26177,No
+39,,cvcchevroletguarapari.com.br,Automotive And Vehicles,,Tier 1,60,,26177,No
+40,,cipautochevrolet.com.br,Automotive And Vehicles,,Tier 1,60,,26177,No
+41,oestechevrolet Se,oestechevrolet.com.br,Automotive And Vehicles,,Tier 1,60,,26177,No
+42,,ccvcatarinensechevrolet.com.br,Automotive And Vehicles,,Tier 1,60,,26177,No
+43,,sponchiadochevroletcaxias.com.br,Automotive And Vehicles,,Tier 1,60,,26177,No
+44,,autoshowchevrolet.com.br,Automotive And Vehicles,,Tier 1,60,,26177,No
+45,,chevroletuvelbrusque.com.br,Automotive And Vehicles,,Tier 1,60,,26177,No
+46,,cvcchevroletnovavenecia.com.br,Automotive And Vehicles,,Tier 1,60,,26177,No
+47,,caxangachevrolet.com.br,Automotive And Vehicles,,Tier 1,60,,26177,No
+48,,daosilveirachevrolet.com.br,Automotive And Vehicles,BR,Tier 1,60,,26177,No
+49,Nissan,nissan.lu,Automotive And Vehicles,LU,Tier 1,60,,26100,No
+50,,chevroletpesadocastro.com.ar,Automotive And Vehicles,,Tier 1,60,,25937,No
+51,,chevroletlago.com.ar,Automotive And Vehicles,,Tier 1,60,,25937,No
+52,Nissan,nissan.co.il,Automotive And Vehicles,IL,Tier 1,60,,25715,No
+53,Kellogg NA Co,cheezit.com,Food And Drink,US,Tier 1,60,,25624,No
+54,,fi-events.com.br,Food And Drink,GB,Tier 1,60,,25465,No
+55,Cadillac Canada,cadillaccanada.ca,Automotive And Vehicles,CA,Tier 1,60,,25254,No
+56,Mercedes-Benz,mbusa.com,Automotive And Vehicles,US,Tier 1,60,,25143,No
+57,Golden Outlook Insurance Services,goldenoutlook.com,Pets,US,Tier 1,60,,25060,No
+58,Allianz SE,allianz.hu,Sports,HU,Tier 1,50,,24975,No
+59,Mastercard,mastercard.fi,Shopping,FI,Tier 1,50,,24800,No
+60,Mastercard,mastercard.it,Pets,IT,Tier 1,50,,24800,No
+61,Novo Nordisk,novonordisk.se,Health And Fitness,SE,Tier 1,50,,24617,No
+62,Alecensa,alecensa.com,Health And Fitness,,Tier 1,50,,24604,No
+63,,saltlakemoderndentistry.com,Health And Fitness,US,Tier 1,50,,24301,No
+64,,clairemontsmilesdentistry.com,Health And Fitness,US,Tier 1,50,,24301,No
+65,SoDo Smiles Dentistry,sodosmilesdentistry.com,Health And Fitness,US,Tier 1,50,,24301,No
+66,Woods Dental Group,woodsdentalgroup.com,Health And Fitness,US,Tier 1,50,,24301,No
+67,Downey Promenade Dental Group,downeypromenadedentalgroup.com,Health And Fitness,US,Tier 1,50,,24301,No
+68,Mesquite Dental Group,mesquitedentalgroup.com,Health And Fitness,US,Tier 1,50,,24301,No
+69,Daniels Modern Dentistry,danielsmoderndentistry.com,Health And Fitness,US,Tier 1,50,,24301,No
+70,Monet Dental Group,monetdentalgroup.com,Health And Fitness,US,Tier 1,50,,24301,No
+71,Snellville Smiles Dentistry,snellvillesmilesdentistry.com,Health And Fitness,US,Tier 1,50,,24301,No
+72,Dentists of Rowlett,dentistsofrowlett.com,Health And Fitness,US,Tier 1,50,,24301,No
+73,,dentistsofstudiocity.com,Health And Fitness,US,Tier 1,50,,24301,No
+74,Hemet Modern Dentistry,hemetmoderndentistry.com,Health And Fitness,US,Tier 1,50,,24301,No
+75,,renomoderndentistry.com,Health And Fitness,US,Tier 1,50,,24301,No
+76,Downey Modern Dentistry,downeymoderndentistry.com,Health And Fitness,US,Tier 1,50,,24301,No
+77,,sugarlandmoderndentistry.com,Health And Fitness,US,Tier 1,50,,24301,No
+78,,mesavalleymoderndentistry.com,Health And Fitness,US,Tier 1,50,,24301,No
+79,Catalina Smiles Dentistry,catalinasmiles.com,Health And Fitness,US,Tier 1,50,,24301,No
+80,Desert Crossing Dental Group,desertcrossingdental.com,Health And Fitness,US,Tier 1,50,,24301,No
+81,Tangerine Dental Group,tangerinedentalgroup.com,Health And Fitness,US,Tier 1,50,,24301,No
+82,Southcenter Modern Dentistry,southcentermoderndentistry.com,Health And Fitness,US,Tier 1,50,,24301,No
+83,Dentists of Glendale,dentistsofglendale.com,Health And Fitness,US,Tier 1,50,,24301,No
+84,Sparks Marina Dentistry,sparksmarinadentistry.com,Health And Fitness,US,Tier 1,50,,24301,No
+85,East Murrieta Dental Group,eastmurrietadental.com,Health And Fitness,US,Tier 1,50,,24301,No
+86,Santee Smiles Dentistry,santeesmilesdentistry.com,Health And Fitness,US,Tier 1,50,,24301,No
+87,,scottsdaleandsheadentalgroup.com,Health And Fitness,US,Tier 1,50,,24301,No
+88,,dentistsoflakeworth.com,Health And Fitness,US,Tier 1,50,,24301,No
+89,,dentistsofhighlandpark.com,Health And Fitness,US,Tier 1,50,,24301,No
+90,Spring Market Dental Group,springmarketdentalgroup.com,Health And Fitness,AU,Tier 1,50,,24301,No
+91,Woodbridge Dental Group,woodbridgedentalgroup.com,Health And Fitness,US,Tier 1,50,,24301,No
+92,,simivalleysmiles.com,Health And Fitness,US,Tier 1,50,,24301,No
+93,,cheyennemtnmoderndentistry.com,Health And Fitness,US,Tier 1,50,,24301,No
+94,Bristow Fountain Dentistry,bristowfountaindentistry.com,Health And Fitness,US,Tier 1,50,,24301,No
+95,Mission Valley Dentists,missionvalleydentists.com,Health And Fitness,US,Tier 1,50,,24301,No
+96,Bulverde Dentistry,bulverdedentistry.com,Health And Fitness,US,Tier 1,50,,24301,No
+97,,montecitotowncenterdental.com,Health And Fitness,US,Tier 1,50,,24301,No
+98,Elk Grove Dental Group,elkgrovedental.com,Health And Fitness,US,Tier 1,50,,24301,No
+99,Champlin Dentistry,champlindentistry.com,Health And Fitness,US,Tier 1,50,,24301,No
+100,Promenade Dental Group,promenadedentist.com,Health And Fitness,US,Tier 1,50,,24301,No
+101,,deerspringsmoderndentistry.com,Health And Fitness,US,Tier 1,50,,24301,No
+102,,marylandparkwaysmilesdentistry.com,Health And Fitness,US,Tier 1,50,,24301,No
+103,Springdale Modern Dentistry,springdalemoderndentistry.com,Health And Fitness,US,Tier 1,50,,24301,No
+104,Lindero Canyon Dental Group,linderocanyondentalgroup.com,Health And Fitness,US,Tier 1,50,,24301,No
+105,,dentistsofanaheimhills.com,Health And Fitness,US,Tier 1,50,,24301,No
+106,,nuttreesmilesdentistry.com,Health And Fitness,US,Tier 1,50,,24301,No
+107,Dentists of Hanover,dentistsofhanover.com,Health And Fitness,US,Tier 1,50,,24301,No
+108,,botoxone.com,Health And Fitness,,Tier 1,50,,24220,No
+109,Pro Health MD Network,prohealthmd.com,Health And Fitness,US,Tier 1,50,,24194,No
+110,Viera Modern Dentistry,vieramoderndentistry.com,Health And Fitness,US,Tier 1,50,,23991,No
+111,"Nissan Slovakia, s.r.o",nissan.sk,Automotive And Vehicles,FR,Tier 1,50,,23828,No
+112,,dentistsofcampuscommons.com,Health And Fitness,US,Tier 1,50,,23811,No
+113,,hemetkidsdental.com,Health And Fitness,US,Tier 1,50,,23811,No
+114,,lakeworthmoderndentistry.com,Health And Fitness,US,Tier 1,50,,23811,No
+115,Clemson Modern Dentistry,clemsonmoderndentistry.com,Health And Fitness,US,Tier 1,50,,23811,No
+116,Belton Modern Dentistry,beltonmoderndentistry.com,Health And Fitness,US,Tier 1,50,,23811,No
+117,,thedentalofficeofchandler.com,Health And Fitness,US,Tier 1,50,,23811,No
+118,,stonebridgemoderndentistry.com,Health And Fitness,US,Tier 1,50,,23811,No
+119,,dentistsofwestseattle.com,Health And Fitness,US,Tier 1,50,,23811,No
+120,,newmarkmoderndentistry.com,Health And Fitness,US,Tier 1,50,,23811,No
+121,,thedentalofficeofmckinney.com,Health And Fitness,US,Tier 1,50,,23811,No
+122,Nissan,nissan.ro,Automotive And Vehicles,JP,Tier 1,50,,23800,No
+123,Nissan Islandi,nissan.is,Automotive And Vehicles,JP,Tier 1,50,,23800,No
+124,AbbVie Inc,faceyourbackpain.com,Health And Fitness,US,Tier 1,50,,23640,No
+125,Genentech USA Inc,columvi-hcp.com,Health And Fitness,,Tier 1,50,,23487,No
+126,Escolha endesa,escolhaendesa.pt,Sports,,Tier 1,50,,23345,No
+127,AbbVie Inc,rinvoqpr.com,Health And Fitness,US,Tier 1,50,,23320,No
+128,Nissan Motor Latvia S.L,nissan.lv,Automotive And Vehicles,FR,Tier 1,50,,23299,No
+129,"OnePlus Technology (Shenzhen) Co., Ltd.",oneplus.com,Health And Fitness,US,Tier 1,50,,23073,No
+130,Abbott Laboratories,latam.abbott,Health And Fitness,AR,Tier 1,50,,23040,No
+131,Service de destruction securisees de documents,shredit.fr,Health And Fitness,FR,Tier 1,50,,23007,No
+132,Colgate Palmolive GmbH,colgate.at,Health And Fitness,US,Tier 1,50,,22836,No
+133,Mastercard,mastercard.hr,Pets,US,Tier 1,50,,22800,No
+134,Mastercard,mastercard.kz,Pets,US,Tier 1,50,,22800,No
+135,Mastercard,mastercard.lu,Pets,LU,Tier 1,50,,22800,No
+136,Hemlibra Inc,hemlibra.com,Health And Fitness,US,Tier 1,50,,22584,No
+137,Sormlands Sparbank,sormlandssparbank.se,Automotive And Vehicles,ES,Tier 1,50,,22532,No
+138,www.healthybluenc.com,healthybluenc.com,Food And Drink,US,Tier 1,50,,22160,No
+139,Das Mezzanin Interiors GmbH,dasmezzanin.at,Food And Drink,,Tier 1,50,,21970,No
+140,,atvidabergsspb.se,Health And Fitness,SE,Tier 1,50,,21700,No
+141,SageRx Corporation,sagerx.com,Health And Fitness,US,Tier 1,50,,21557,No
+142,Mercedes-Benz Ltd,mercedes-benz.com.cn,Automotive And Vehicles,CN,Tier 1,50,,21440,No
+143,ChevroletParaguay,chevrolet.com.py,Automotive And Vehicles,,Tier 1,50,,21297,No
+144,Nissan,nissan.re,Automotive And Vehicles,RE,Tier 1,50,,20939,No
+145,,chevroletriogrande.com.mx,Automotive And Vehicles,MX,Tier 1,50,,20337,No
+146,Morris-Jenkins,morrisjenkins.com,Home And Garden,US,Tier 1,50,,20310,No
+147,MINI,mini.com.mo,Automotive And Vehicles,DE,Tier 1,50,,20235,No
+148,,landisgyr.se,Automotive And Vehicles,BR,Tier 1,50,,20210,No
+149,,landisgyr.it,Automotive And Vehicles,BR,Tier 1,50,,20210,No
+150,,landisgyr.de,Automotive And Vehicles,BR,Tier 1,50,,20210,No
+151,,chevroletacuna.com.mx,Automotive And Vehicles,MX,Tier 1,50,,20097,No
+152,,chevroletoaxaca.com.mx,Automotive And Vehicles,MX,Tier 1,50,,20097,No
+153,,chevroletacapulco.com.mx,Automotive And Vehicles,MX,Tier 1,50,,20097,No
+154,,chevroletamericasmotors.com.mx,Automotive And Vehicles,MX,Tier 1,50,,20097,No
+155,,chevroletmotoresdemorelia.com.mx,Automotive And Vehicles,MX,Tier 1,50,,20097,No
+156,,chevroletze.com.mx,Automotive And Vehicles,MX,Tier 1,50,,20097,No
+157,,buickgmcsaltillo.com.mx,Automotive And Vehicles,MX,Tier 1,50,,20097,No
+158,,vivendocomdiabetes.com.br,Health And Fitness,,Tier 1,50,,19655,No
+159,,landisgyr.si,Automotive And Vehicles,,Tier 1,50,,19603,No
+160,,landisgyr.es,Automotive And Vehicles,BR,Tier 1,50,,19603,No
+161,ImmoScout24,immobilienscout24.at,Health And Fitness,AT,Tier 1,50,,19324,No
+162,Tool Japan Co. Ltd,tooljapan.jp,Home And Garden,JP,Tier 1,50,,19197,No
+163,Drinkjapan Inc,drinkjapan.jp,Food And Drink,JP,Tier 1,50,,19197,No
+164,LAVAZZA S.p.A,lavazza.co.uk,Food And Drink,GB,Tier 1,50,,19050,No
+165,PLEGRIDY inc,plegridy.com,Health And Fitness,US,Tier 1,50,,18700,No
+166,,buickgmcanzures.com.mx,Automotive And Vehicles,MX,Tier 1,50,,18697,No
+167,Severn Trent Water,stwater.co.uk,Food And Drink,GB,Tier 1,50,,18492,No
+168,Lavazza RO,lavazza.ro,Food And Drink,RO,Tier 1,50,,18050,No
+169,Lavazza SG,lavazza.sg,Food And Drink,IT,Tier 1,50,,18050,No
+170,Lavazza PT,lavazza.pt,Food And Drink,PT,Tier 1,50,,18050,No
+171,Fiat Group Automobiles S.p.A,fiat-india.com,Automotive And Vehicles,PH,Tier 1,50,,17600,No
+172,,landisgyr.fr,Automotive And Vehicles,BR,Tier 1,50,,17060,No
+173,,landisgyr.fi,Automotive And Vehicles,BR,Tier 1,50,,17020,No
+174,Popsicle Foods,popsicle.com,Food And Drink,US,Tier 1,50,,16828,No
+175,Volkswagen Group,volkswagengroup.it,Automotive And Vehicles,IT,Tier 1,50,,16800,No
+176,,mastercard.gr,Pets,US,Tier 1,50,,16800,No
+177,Mastercard,mastercard.hu,Pets,US,Tier 1,50,,16800,No
+178,Mastercard,mastercard.no,Pets,,Tier 1,50,,16800,No
+179,Colgate-Palmolive Company,colgate.hr,Health And Fitness,HR,Tier 1,50,,16733,No
+180,,landisgyr.sk,Automotive And Vehicles,BR,Tier 1,50,,16710,No
+181,,landisgyr.ch,Automotive And Vehicles,BR,Tier 1,50,,16710,No
+182,,landisgyr.dk,Automotive And Vehicles,BR,Tier 1,50,,16710,No
+183,HousecallsVisits Inc,housecallsvisit.com,Home And Garden,,Tier 1,50,,16397,No
+184,"Alfa Romeo,Alfa Romeo",alfaromeo-lebanon.com,Automotive And Vehicles,US,Tier 1,50,,16200,No
+185,,alfaromeo-bd.com,Automotive And Vehicles,,Tier 1,50,,16200,No
+186,YYYY Colgate-Palmolive Company,colgate.ie,Health And Fitness,IE,Tier 1,50,,16196,No
+187,,riocarchevroletpetrolina.com.br,Automotive And Vehicles,BR,Tier 1,50,,15837,No
+188,,myamltreatment.com.au,Health And Fitness,AU,Tier 1,50,,15800,No
+189,Abbott Laboratories,abbott.com.sg,Style And Fashion,SG,Tier 1,50,,15800,No
+190,Simple Skincare,simpleskincare.com,Health And Fitness,US,Tier 1,50,,15757,No
+191,Boston Scientific Corporation,treattheheart.com,Health And Fitness,,Tier 1,50,,15628,No
+192,Sanex,sanex.nl,Sports,NL,Tier 1,50,,15599,No
+193,Toyota Finance Australia Ltd,toyotafinanceonline.com.au,Automotive And Vehicles,AU,Tier 1,50,,15220,No
+194,Basil Toyota,basiltoyota.com,Automotive And Vehicles,US,Tier 1,50,,15004,No
+195,Unox NV,unox.nl,Food And Drink,NL,Tier 1,50,,14921,No
+196,Bridgestone SchlieAYen,bridgestone.de,Automotive And Vehicles,DE,Tier 1,50,,14905,No
+197,Leioa Motor,leioamotor.es,Automotive And Vehicles,ES,Tier 1,50,,14800,No
+198,BREZTRI co,breztri.com,Health And Fitness,,Tier 1,50,,14738,No
+199,Bridgestone Corporation,bridgestone.it,Sports,IT,Tier 1,50,,14587,No
+200,Lavazza ZA,lavazza.co.za,Food And Drink,ZA,Tier 1,50,,14550,No
+201,Volkswagen,vw.ca,Automotive And Vehicles,CA,Tier 1,50,,14204,No
+202,BMW,bmwmyanmar.com,Automotive And Vehicles,DE,Tier 1,50,,14100,No
+203,,testingprostatecancer.com,Health And Fitness,,Tier 1,50,,14070,No
+204,WSzW w Gorzowie Wlkp. Sp. z o.o,gorzow.pl,Sports,US,Tier 1,50,,14069,No
+205,Frankfort Toyota,frankforttoyota.com,Automotive And Vehicles,US,Tier 1,50,,13913,No
+206,,customerpreferencecenter.com,Automotive And Vehicles,,Tier 1,50,,13800,No
+207,,actonckd-eg.com,Health And Fitness,,Tier 1,50,,13750,No
+208,,rangerover.com,Automotive And Vehicles,,Tier 1,50,,13635,No
+209,Browning Arms Company,browning.com,Style And Fashion,US,Tier 1,50,,13570,No
+210,LYBALVI inc,lybalvi.com,Health And Fitness,US,Tier 1,50,,13095,No
+211,renault,renault.hr,Automotive And Vehicles,FR,Tier 1,50,,13077,No
+212,Mid State Toyota,midstatetoyota.com,Automotive And Vehicles,US,Tier 1,50,,13057,No
+213,Interface Inc,interface.com.cn,Home And Garden,CN,Tier 1,50,,13000,No
+214,Fred Hutchinson Cancer Research Center,obliteride.org,Health And Fitness,US,Tier 1,50,,12925,No
+215,BMW,bmwjamaica.com,Automotive And Vehicles,DE,Tier 1,50,,12700,No
+216,Delta Dental Plan of New Mexico Inc,deltadentalnm.com,Health And Fitness,US,Tier 1,50,,12314,No
+217,Bridgestone Corporation,bridgestone.cz,Automotive And Vehicles,FR,Tier 1,50,,12240,No
+218,The Medical Staff of Cooley Dickinson Hospital Inc,cooleydickinson.org,Health And Fitness,US,Tier 1,50,,12205,No
+219,,volkswagen-jamaica.com,Automotive And Vehicles,GB,Tier 1,50,,12200,No
+220,,indooroopillyshopping.com.au,Shopping,AU,Tier 1,50,,12114,No
+221,Abbott Laboratorios Do Brasil Ltda,abbottbrasil.com.br,Health And Fitness,BR,Tier 1,50,,11890,No
+222,South Coast Toyota,southcoasttoyota.com,Automotive And Vehicles,US,Tier 1,50,,11779,No
+223,,casulamall.com.au,Food And Drink,AU,Tier 1,50,,11727,No
+224,,imfinzihcp.com,Health And Fitness,,Tier 1,50,,11718,No
+225,Kia Motors Nederland B.V,kia.nl,Automotive And Vehicles,NL,Tier 1,50,,11530,No
+226,Toyota Polska,toyotaostroleka.pl,Automotive And Vehicles,US,Tier 1,50,,11443,No
+227,Toyota Polska,toyota.katowice.pl,Automotive And Vehicles,US,Tier 1,50,,11443,No
+228,,kingssquare.com.au,Shopping,AU,Tier 1,50,,11330,No
+229,Recepedia,recepedia.com,Food And Drink,,Tier 1,50,,11278,No
+230,Toyota Cesko,toyota-emilfrey.cz,Automotive And Vehicles,CZ,Tier 1,50,,11189,No
+231,GASGAS MOTORCYCLES GmbH,gasgas.com,Automotive And Vehicles,,Tier 1,50,,11183,No
+232,Toyota Polska,toyota-zg.pl,Automotive And Vehicles,US,Tier 1,50,,11043,No
+233,Danone Ltd,oykos.co.uk,Food And Drink,GB,Tier 1,50,,11012,No
+234,Puratos Group,puratos-konding.hr,Food And Drink,HR,Tier 1,50,,10967,No
+235,,cavatoyota.com,Automotive And Vehicles,US,Tier 1,50,,10856,No
+236,The Bartell Drug Company,bartelldrugs.com,Food And Drink,US,Tier 1,50,,10775,No
+237,Toyota Slovensko,toyotaprievidza.sk,Automotive And Vehicles,SK,Tier 1,50,,10707,No
+238,Toyota Polska,toyota-bialapodlaska.com.pl,Automotive And Vehicles,US,Tier 1,50,,10707,No
+239,Mercedes-Benz Mexico S. de R.L. de C.V.,mercedes-benz.com.mx,Automotive And Vehicles,MX,Tier 1,50,,10660,No
+240,,toyotahemet.com,Automotive And Vehicles,US,Tier 1,50,,10556,No
+241,Algida Czech Republic,algida.cz,Food And Drink,,Tier 1,50,,10521,No
+242,Moog Inc,moog.es,Home And Garden,ES,Tier 1,50,,10260,No
+243,bavariatt.sk,bavariatt.sk,Automotive And Vehicles,SK,Tier 1,50,,10213,No
+244,Autostadt GmbH,volkswagen-zubehoer.de,Automotive And Vehicles,DE,Tier 1,50,,10100,No
+245,Shell PLC,shell.com.ar,Automotive And Vehicles,NL,Tier 1,50,,10040,No
+246,,toyota7su.kz,Automotive And Vehicles,,Tier 1,50,,9930,No
+247,Mercedes-Benz,mercedes-benz.com.au,Automotive And Vehicles,DE,Tier 1,50,,9820,No
+248,Avacon AG,avacon.de,Sports,DE,Tier 1,50,,9812,No
+249,ALCO Partners LLC,alcopartners.com,Automotive And Vehicles,US,Tier 1,50,,9800,No
+250,joyatparty,joyatparty.com.my,Home And Garden,ZA,Tier 1,50,,9800,No
+251,Primeiros 1000 dias,primeiros1000dias.com.br,Health And Fitness,BR,Tier 1,50,,9682,No
+252,fusionZONE Automotive LLC,greenstoyotaoflexington.com,Automotive And Vehicles,US,Tier 1,50,,9616,No
+253,Vancouver Girls Softball Association,vancouvergirlssoftball.org,Sports,,Tier 1,50,,9506,No
+254,,kl-motors.es,Automotive And Vehicles,,Tier 1,50,,9500,No
+255,Biogen Canada Inc,biogentherapies.ca,Health And Fitness,ES,Tier 1,50,,9500,No
+256,80 Collins Melbourne,80collins.com.au,Food And Drink,AU,Tier 1,50,,9437,No
+257,Puyallup Modern Dentistry,puyallupmoderndentistry.com,Health And Fitness,US,Tier 1,50,,9410,No
+258,Solutran Inc,healthybenefitsplus.com,Food And Drink,US,Tier 1,50,,9207,No
+259,Mercedes-Benz,mercedes-benz.com.my,Automotive And Vehicles,DE,Tier 1,50,,9188,No
+260,LINIC,linic.pt,Sports,PT,Tier 1,50,,9121,No
+261,www.controlatudolor.es,controlatudolor.es,Home And Garden,,Tier 1,50,,9043,No
+262,,jeep-dubai.com,Automotive And Vehicles,US,Tier 1,50,,9000,No
+263,Le Royal Monceau,leroyalmonceau.com,Food And Drink,FR,Tier 1,50,,8885,No
+264,Mercedes-Benz AG,mercedes-benz.com.bo,Automotive And Vehicles,BO,Tier 1,50,,8700,No
+265,,toyotakilbarrack.ie,Automotive And Vehicles,,Tier 1,50,,8500,No
+266,Chrysler Group,jeep.com.ph,Automotive And Vehicles,US,Tier 1,50,,8400,No
+267,Chrysler Group,jeep.com.sg,Automotive And Vehicles,US,Tier 1,50,,8400,No
+268,,iblues.it,Style And Fashion,IT,Tier 1,50,,8050,No
+269,,generaltire.com.ec,Sports,EC,Tier 1,50,,7668,No
+270,De Vegetarische Slager,devegetarischeslager.nl,Food And Drink,,Tier 1,50,,7600,No
+271,Mercedes-Benz AG,mbparramatta.com.au,Automotive And Vehicles,DE,Tier 1,50,,7567,No
+272,Lakme Salon,lakmesalon.in,Style And Fashion,IN,Tier 1,50,,7530,No
+273,Mercedes-Benz,mercedes-benz.com.ar,Automotive And Vehicles,DE,Tier 1,50,,7350,No
+274,Mercedes-Benz,mercedes-benz.com.hk,Automotive And Vehicles,HK,Tier 1,50,,7260,No
+275,Sudtirol Alto Adige,suedtirol.info,Sports,IT,Tier 1,50,,7097,No
+276,Daimler Truck AG,mercedes-benz-trucks-sieg.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+277,Daimler Truck AG,mercedes-benz-trucks-restaco.ro,Automotive And Vehicles,RO,Tier 1,50,,7000,No
+278,Daimler Truck AG,mercedes-benz-trucks-avg.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+279,Daimler Truck AG,mercedes-benz-trucks-merbag-aegerten.ch,Automotive And Vehicles,CH,Tier 1,50,,7000,No
+280,LACHIC,lachic.jp,Food And Drink,,Tier 1,50,,7000,No
+281,Mercedes-Benz AG,mercedes-benz-tallervictoria.es,Automotive And Vehicles,ES,Tier 1,50,,7000,No
+282,Daimler Truck AG,mercedes-benz-trucks-beresa.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+283,,mercedes-benz-reissmann.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+284,,mercedes-benz-flackus-maurer.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+285,Daimler Truck AG,mercedes-benz-trucks-wackenhut.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+286,Daimler Truck AG,mercedes-benz-trucks-interservice.it,Automotive And Vehicles,IT,Tier 1,50,,7000,No
+287,Daimler Truck AG,mercedes-benz-trucks-brinkmann.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+288,Daimler Truck AG,mercedes-benz-trucks-btc.pl,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+289,Daimler Truck AG,mercedes-benz-trucks-domenicoesposito.it,Automotive And Vehicles,IT,Tier 1,50,,7000,No
+290,Daimler Truck AG,mercedes-benz-trucks-ruppert.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+291,,mercedes-benz-korn.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+292,Daimler Truck AG,mercedes-benz-trucks-partsch.at,Automotive And Vehicles,AT,Tier 1,50,,7000,No
+293,Daimler Truck AG,mercedes-benz-trucks-mensch.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+294,,mercedes-benz-kalbacher.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+295,Daimler Truck AG,mercedes-benz-trucks-sandonauto.it,Automotive And Vehicles,IT,Tier 1,50,,7000,No
+296,Daimler Truck AG,mercedes-benz-trucks-ebert.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+297,Daimler Truck AG,mercedes-benz-trucks-centrostar.pt,Automotive And Vehicles,PT,Tier 1,50,,7000,No
+298,Daimler Truck AG,mercedes-benz-trucks-neu-ulm.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+299,,mercedes-benz-schloz-woellenstein.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+300,Daimler Truck AG,mercedes-benz-trucks-dto.ro,Automotive And Vehicles,RO,Tier 1,50,,7000,No
+301,,mercedes-benz-weippert.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+302,,mercedes-benz-nord-ostsee.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+303,Daimler Truck AG,mercedes-benz-trucks-reich-kfz.at,Automotive And Vehicles,AT,Tier 1,50,,7000,No
+304,Daimler Truck AG,mercedes-benz-trucks-haan.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+305,Daimler Truck AG,mercedes-benz-trucks-werner.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+306,Mercedes Benz Group,mercedes-benz-geneve.ch,Automotive And Vehicles,CH,Tier 1,50,,7000,No
+307,Daimler Truck AG,mercedes-benz-trucks-merbag-uetendorf.ch,Automotive And Vehicles,CH,Tier 1,50,,7000,No
+308,Daimler Truck AG,mercedes-benz-trucks-thorwesten.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+309,Daimler Truck AG,mercedes-benz-trucks-emilfrey-mainfranken.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+310,Daimler Truck AG,mercedes-benz-trucks-euro-trucks-claes.be,Automotive And Vehicles,,Tier 1,50,,7000,No
+311,Daimler Truck AG,mercedes-benz-trucks-peters.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+312,,mercedes-benz-schreiner-woellenstein.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+313,,mercedes-benz-beineke.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+314,Daimler Truck AG,mercedes-benz-trucks-sondriodiesel.it,Automotive And Vehicles,IT,Tier 1,50,,7000,No
+315,Daimler AG,mercedes-benz-leuggern.ch,Automotive And Vehicles,CH,Tier 1,50,,7000,No
+316,,mercedes-benz-kestenholzgruppe.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+317,,mercedes-benz-schmid.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+318,Daimler Truck AG,mercedes-benz-trucks-rkh.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+319,Daimler Truck AG,mercedes-benz-trucks-smc.be,Automotive And Vehicles,BE,Tier 1,50,,7000,No
+320,Daimler Truck AG,mercedes-benz-trucks-raters.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+321,Daimler Truck AG,mercedes-benz-trucks-meyer-neustadt.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+322,Daimler Truck AG,mercedes-benz-trucks-fiegler.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+323,Daimler Truck AG,mercedes-benz-trucks-uretamotor.es,Automotive And Vehicles,ES,Tier 1,50,,7000,No
+324,,mercedes-benz-abel-ruf.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+325,Daimler Truck AG,mercedes-benz-trucks-soccsantos.pt,Automotive And Vehicles,PT,Tier 1,50,,7000,No
+326,Daimler Truck AG,mercedes-benz-trucks-gramling.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+327,Daimler Truck AG,mercedes-benz-trucks-orad.it,Automotive And Vehicles,IT,Tier 1,50,,7000,No
+328,Daimler Truck AG,mercedes-benz-trucks-thomann.ch,Automotive And Vehicles,CH,Tier 1,50,,7000,No
+329,Mercedes-Benz AG,mercedes-benz-autokrator.es,Automotive And Vehicles,ES,Tier 1,50,,7000,No
+330,,mercedes-benz-burmester.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+331,,mercedes-benz-bald.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+332,Daimler Truck AG,mercedes-benz-trucks-schurr.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+333,Daimler Truck AG,mercedes-benz-trucks-assenheimer-mulfinger.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+334,MERCEDES-BENZ Group,mercedes-benzofepsom.co.uk,Automotive And Vehicles,GB,Tier 1,50,,7000,No
+335,Daimler Truck AG,mercedes-benz-trucks-zorn.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+336,Daimler Truck AG,mercedes-benz-trucks-kehm.de,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+337,Daimler Truck AG,mercedes-benz-trucks-akmikom.rs,Automotive And Vehicles,DE,Tier 1,50,,7000,No
+338,Mercedes-Benz AG,mercedes-benz-vipgalicia.es,Automotive And Vehicles,ES,Tier 1,50,,7000,No
+339,My Grizzly,mygrizzly.com,Shopping,US,Tier 1,50,,6797,No
+340,,imfinzi.ca,Style And Fashion,,Tier 1,50,,6750,No
+341,Stanford Blue Shield Facts,stanfordblueshieldfacts.com,Health And Fitness,US,Tier 1,50,,6400,No
+342,Dicerna Pharmaceuticals Inc,uncoveringph.com,Health And Fitness,US,Tier 1,50,,6300,No
+343,NextPayDay,nextpayday.com.au,Shopping,US,Tier 1,50,,6050,No
+344,Tweed Heads Crematorium,tweedheadscrem.com.au,Home And Garden,AU,Tier 1,50,,6000,No
+345,Visa,visa.com.uy,Shopping,US,Tier 1,50,,5947,No
+346,Stove Health,stovehealth.com,Health And Fitness,GB,Tier 1,50,,5885,No
+347,WICKEDCLEANLAUNDRY,wickedcleanlaundry.com,Home And Garden,US,Tier 1,50,,5729,No
+348,,crestor.com,Health And Fitness,US,Tier 1,50,,5700,No
+349,Keurig Green Mountain Inc,tullys.com,Food And Drink,US,Tier 1,50,,5660,No
+350,Faber Range Hoods North America,faberonline.com,Home And Garden,US,Tier 1,50,,5527,No
+351,,sixty60.co.za,Food And Drink,ZA,Tier 1,50,,5311,No
+352,Griecotoyota.com,griecotoyota.com,Automotive And Vehicles,US,Tier 1,50,,5260,No
+353,Mercedes-Benz AG,z-w-mercedes-benz.de,Automotive And Vehicles,DE,Tier 1,50,,5254,No
+354,,azmedconnect.in,Health And Fitness,IN,Tier 1,50,,5050,No
+355,,lvng.ca,Health And Fitness,,Tier 1,50,,5050,No
+356,,understandingio.com,Health And Fitness,,Tier 1,50,,5050,No
+357,,giveyourlungsavoice.com,Health And Fitness,,Tier 1,50,,5050,No
+358,year Henkel Australia Pty Ltd,coldpower.com.au,Health And Fitness,AU,Tier 1,50,,4960,No
+359,,ceresit.rs,Shopping,US,Tier 1,50,,4900,No
+360,Henkel Canada Corporation,salonory.ca,Style And Fashion,,Tier 1,50,,4900,No
+361,HENKEL ROMANIA S.R.L,ceresit.ro,Home And Garden,,Tier 1,50,,4900,No
+362,Brandsma Spanga,brandsmaspanga.nl,Automotive And Vehicles,NL,Tier 1,50,,4695,No
+363,Sculpt Your Life,sculptyourlife.ie,Food And Drink,AE,Tier 1,50,,4639,No
+364,,whvhandball.de,Sports,DE,Tier 1,50,,4560,No
+365,Diamond Paints,diamondpaints.com,Home And Garden,PK,Tier 1,50,,4547,No
+366,JugalBakers,jugalbakers.com,Food And Drink,IN,Tier 1,50,,4360,No
+367,,sofadex-puratos.ma,Home And Garden,BE,Tier 1,50,,4320,No
+368,FleetPartner Se,fleetpartner.de,Automotive And Vehicles,DE,Tier 1,50,,4300,No
+369,MOVILSAN Co,movilsan.com,Sports,ES,Tier 1,50,,4200,No
+370,,generaltire.com.br,Automotive And Vehicles,BR,Tier 1,50,,4168,No
+371,Performance NC,performancenc.ca,Automotive And Vehicles,,Tier 1,50,,4165,No
+372,,batvending.ch,Food And Drink,,Tier 1,50,,4100,No
+373,Mercedes-Benz,mercedes-benz.com.br,Automotive And Vehicles,BR,Tier 1,50,,4090,No
+374,Ganado Feed and More,ganadofeedandmore.com,Shopping,US,Tier 1,50,,3948,No
+375,TOYOTA,toyota.zp.ua,Automotive And Vehicles,UA,Tier 1,50,,3850,No
+376,Sparkasse Hattingen,sparkasse-hattingen.de,Shopping,DE,Tier 1,50,,3800,No
+377,Mercedes-Benz,mercedes-benz.com.eg,Automotive And Vehicles,DE,Tier 1,50,,3740,No
+378,Willow Glen Pet Hospital,willowglenpethospital.com,Health And Fitness,US,Tier 1,50,,3639,No
+379,,alfaromeousaofontario.com,Automotive And Vehicles,US,Tier 1,50,,3560,No
+380,,zodiac-poolcare.it,Automotive And Vehicles,ES,Tier 1,50,,3500,No
+381,nivalisconstrucciones.com Inc,nivalisconstrucciones.com,Shopping,,Tier 1,50,,3500,No
+382,Toyota Dream Car USA Art Contest,toyotadreamcarusa.com,Automotive And Vehicles,US,Tier 1,50,,3500,No
+383,,kohlersignaturestoreparamus.com,Home And Garden,US,Tier 1,50,,3500,No
+384,SingHealth Group,cgh.com.sg,Health And Fitness,SG,Tier 1,50,,3500,No
+385,,girlvolunteercorps.org,Sports,,Tier 1,50,,3500,No
+386,,allianz-worldwide-partners.pt,Automotive And Vehicles,,Tier 1,50,,3500,No
+387,,lurefishing.jp,Sports,JP,Tier 1,50,,3500,No
+388,AMAG Group AG - Blog,amag-group.blog,Automotive And Vehicles,,Tier 1,50,,3500,No
+389,,nmaudio.com.au,Style And Fashion,,Tier 1,50,,3500,No
+390,,strollingtablesmiami.com,Sports,US,Tier 1,50,,3500,No
+391,Lockheed Martin Corporation,authenticluxurywatches.com,Automotive And Vehicles,,Tier 1,50,,3500,No
+392,,samsung-customer.com,Home And Garden,EG,Tier 1,50,,3500,No
+393,,haier-customer.com,Home And Garden,EG,Tier 1,50,,3500,No
+394,,casiostore.com.cn,Food And Drink,,Tier 1,50,,3500,No
+395,Primary Care Plus,primarycareplus.com,Health And Fitness,US,Tier 1,50,,3147,No
+396,,brospizzeriabar.com,Food And Drink,US,Tier 1,50,,2022,No
+397,Virginia Commonwealth University,muluseo.com,Sports,CN,Tier 1,50,,1770,No
+398,jimmydean SE,jimmydean.com,Food And Drink,US,Tier 1,50,,1410,No
+399,,jet-net.org,Sports,,Tier 1,50,,1400,No
+400,Moteogroup,moteogroup.com,Automotive And Vehicles,BE,Tier 1,50,,1254,No
+401,FuneralParlour,funeralparlour.com,Sports,,Tier 1,50,,1063,No
+402,,padanauto.it,Automotive And Vehicles,,Tier 1,50,,727,No
+403,Alliance Medical,alliancemedical.med.br,Health And Fitness,,Tier 1,50,,677,No
+404,William Simpson Cars,williamsimpson.co.za,Automotive And Vehicles,ZA,Tier 1,50,,396,No
+405,PJW Electrics,pjwelectrics.com,Home And Garden,GB,Tier 1,50,,322,No
+406,Trinity Homes AZ,trinityhomesaz.com,Home And Garden,US,Tier 1,50,,0,No
+407,,fiat-kuwait.com,Automotive And Vehicles,US,Tier 1,50,,0,No
+408,Atco Blue Flame Kitchen,atcoblueflamekitchen.com,Food And Drink,CA,Tier 1,50,,0,No
+409,BOCA MMXII - Official website,bocatime.com,Style And Fashion,MX,Tier 1,50,,0,No
+410,The Girlfriend,thegirlfriend.com,Health And Fitness,US,Tier 1,50,,0,No
+411,,rhbabyandchild.ca,Home And Garden,,Tier 1,50,,0,No
+412,,worthyhealth.com,Food And Drink,,Tier 1,50,,0,No
+413,Cokaiina,cokaiina.com,Style And Fashion,AU,Tier 1,50,,0,No
+414,Bridgestone Corporation,bridgestone.dk,Automotive And Vehicles,BE,Tier 1,50,,0,No
+415,Woburn Toyota,woburntoyota.com,Automotive And Vehicles,US,Tier 1,50,,0,No
+416,,palamesanursery.com,Home And Garden,US,Tier 1,50,,0,No
+417,BRIDGESTONE BRANDS LLC,bridgestonegolf.com,Style And Fashion,US,Tier 1,50,,0,No
+418,,howtogetridofcarpenterants.org,Home And Garden,,Tier 1,50,,0,No
+419,,squirrelstashnuts.com,Food And Drink,US,Tier 1,50,,0,No
+420,,automaticartisan.com,Automotive And Vehicles,US,Tier 1,50,,0,No
+421,HealBerry.com,healberry.com,Health And Fitness,US,Tier 1,50,,0,No
+422,,chevroletamerican.com.ar,Automotive And Vehicles,,Tier 1,50,,0,No
+423,KMS Hair,kmshair.com,Style And Fashion,AU,Tier 1,50,,0,No
+424,KIA MOTORS DEUTSCHLAND GmbH,kia-heinen-dortmund.de,Automotive And Vehicles,DE,Tier 1,50,,0,No
+425,holistichealing.space,holistichealing.space,Health And Fitness,US,Tier 1,50,,0,No
+426,Deanwood Youth Empowerment Association,dyea.org,Sports,US,Tier 1,50,,0,No
+427,CG Autos Wakefield,cgautoswakefield.co.uk,Automotive And Vehicles,GB,Tier 1,50,,0,No
+428,,airync.com,Sports,GB,Tier 1,50,,0,No
+429,Anheuser Busch LLC,theritas.com,Food And Drink,,Tier 1,50,,0,No
+430,Los Angeles Organizing Committee For The Olympic And Paralympic Games 2028,la28.org,Sports,US,Tier 1,50,,0,No
+431,,sflplumbingmiami.com,Home And Garden,US,Tier 1,50,,0,No
+432,Happydandis,happydandis.com,Shopping,US,Tier 1,50,,0,No
+433,,gmparts.com,Automotive And Vehicles,US,Tier 1,50,,0,No
+434,Divine Canine,divinecanine.com,Pets,US,Tier 1,50,,0,No
+435,,birkhomes.ca,Shopping,CA,Tier 1,50,,0,No
+436,Ad Practitioners LLC,getfrontiercard.com,Art And Entertainment,US,Tier 2,45,,37640,No
+437,Footlocker.com,footlocker.eu,Art And Entertainment,US,Tier 2,45,,36510,No
+438,Bridgestone,bridgestone.cl,Art And Entertainment,US,Tier 2,45,,34915,No
+439,Allianz SE,allianz.de,Art And Entertainment,DE,Tier 2,45,,31257,No
+440,Cognizant Foundation,cognizantfoundation.org,Education,,Tier 2,45,,26900,No
+441,Colpofer,colpofer.org,Art And Entertainment,IT,Tier 2,45,,26800,No
+442,Novo Nordisk,novonordisk.ru,Education,RU,Tier 2,35,,24670,No
+443,Rocklin Modern Dentistry,rocklinmoderndentistry.com,Art And Entertainment,US,Tier 2,35,,24301,No
+444,,exploretfpi.com,Art And Entertainment,DK,Tier 2,35,,23800,No
+445,Allianz Handwerker Services,allianz-handwerker.de,Art And Entertainment,DE,Tier 2,35,,23410,No
+446,Natural History Museum,nhm.ac.uk,Art And Entertainment,GB,Tier 2,35,,23380,No
+447,,sdparks.org,Art And Entertainment,US,Tier 2,35,,22557,No
+448,Patheon,patheon.kr,Education,KR,Tier 2,35,,22200,No
+449,Simon Fraser University,sfu.ca,Education,CA,Tier 2,35,,21714,No
+450,World Vision Canada,worldvision.ca,Art And Entertainment,CA,Tier 2,35,,20852,No
+451,year Corteva Agriscience,corteva.com.br,Art And Entertainment,US,Tier 2,35,,20800,No
+452,afaa-e-eeafe-cToi,patheon.jp,Education,US,Tier 2,35,,20800,No
+453,CBC,cbc.be,Art And Entertainment,BE,Tier 2,35,,20650,No
+454,FS News,fsnews.it,Art And Entertainment,IT,Tier 2,35,,20200,No
+455,,necrestorationshow.com,Art And Entertainment,GB,Tier 2,35,,20125,No
+456,Villanova University,villanova.edu,Education,US,Tier 2,35,,19650,No
+457,Japan IT Co. Ltd,japan-it.jp,Education,JP,Tier 2,35,,19354,No
+458,Minecraft,minecraft.net,Art And Entertainment,US,Tier 2,35,,17906,No
+459,Clube Giro,clubegiro.com.br,Art And Entertainment,BR,Tier 2,35,,17540,No
+460,Reed Exhibitions Ltd,londonbookfair.co.uk,Art And Entertainment,GB,Tier 2,35,,17447,No
+461,WorldTravelCateringExpo,worldtravelcateringexpo.com,Art And Entertainment,GB,Tier 2,35,,16447,No
+462,Wetrust-Study,wetrust-study.com,Education,,Tier 2,35,,16150,No
+463,cloudLibrary,yourcloudlibrary.com,Art And Entertainment,,Tier 2,35,,15796,No
+464,Activision Publishing Inc,highmoonstudios.com,Education,US,Tier 2,35,,15460,No
+465,Reed Exhibitions Ltd,expolux.com.br,Art And Entertainment,BR,Tier 2,35,,14400,No
+466,Taylor's University College,taylors.edu.my,Education,MY,Tier 2,35,,12495,No
+467,Biogen Japan Ltd,ms-supportnavi.com,Art And Entertainment,JP,Tier 2,35,,12097,No
+468,Chris-Craft,chriscraft.com,Art And Entertainment,US,Tier 2,35,,10860,No
+469,Novellini S.p.A,novellini.co.uk,Art And Entertainment,GB,Tier 2,35,,10325,No
+470,,spktw.de,Art And Entertainment,DE,Tier 2,35,,9850,No
+471,,spken.de,Art And Entertainment,DE,Tier 2,35,,9850,No
+472,Sparkasse Rhein-Maas,sparkasse-rhein-maas.de,Art And Entertainment,DE,Tier 2,35,,9850,No
+473,Novellini S.p.A,novellini.at,Art And Entertainment,AT,Tier 2,35,,9770,No
+474,Commercieel - Novellini,novellini.be,Art And Entertainment,BE,Tier 2,35,,9500,No
+475,,artsyzpv.com.ua,Art And Entertainment,UA,Tier 2,35,,8565,No
+476,Racine School,ecoleracine.com,Art And Entertainment,US,Tier 2,35,,6717,No
+477,Stichting Openbare Bibliotheek Barneveld,bibliotheekbarneveld.nl,Art And Entertainment,NL,Tier 2,35,,6263,No
+478,ASSA ABLOY Yale,assaabloy.cl,Art And Entertainment,,Tier 2,35,,5700,No
+479,Henkel AG & Co,schauma.de,Art And Entertainment,DE,Tier 2,35,,5437,No
+480,,digitaldiscoverysummit.com,Art And Entertainment,US,Tier 2,35,,4900,No
+481,mie Wibail n.wibailvisit.brussels,visit.brussels,Art And Entertainment,BE,Tier 2,35,,4510,No
+482,,vae-clem.fr,Education,,Tier 2,35,,4464,No
+483,SheSapiens,shesapiens.com,Art And Entertainment,,Tier 2,35,,4459,No
+484,Whatson,whatson.no,Art And Entertainment,,Tier 2,35,,4420,No
+485,,emma-cc.com,Art And Entertainment,DE,Tier 2,35,,4150,No
+486,Dominik Ketz Rheinland-Pfalz Tourismus GmbH,stadt-hermeskeil.de,Art And Entertainment,IE,Tier 2,35,,4147,No
+487,Stichting Openbare Bibliotheek Zoetermeer,bibliotheek-zoetermeer.nl,Art And Entertainment,NL,Tier 2,35,,3850,No
+488,AbbVie Ltd,skyrizi.eu,Art And Entertainment,DE,Tier 2,35,,3835,No
+489,Dealers Choice LLC,dealerschoicellc.com,Art And Entertainment,US,Tier 2,35,,3834,No
+490,,debibliotheekdeplataan.nl,Education,NL,Tier 2,35,,3500,No
+491,,gioielleriabracco.com,Art And Entertainment,IT,Tier 2,35,,3500,No
+492,Qik co,qik.do,Art And Entertainment,,Tier 2,35,,3500,No
+493,,eddychan.org,Art And Entertainment,,Tier 2,35,,3500,No
+494,Moog GmbH,moog.no,Art And Entertainment,DE,Tier 2,35,,3500,No
+495,Tennessee Shrm State Council Inc,tnshrm.org,Art And Entertainment,US,Tier 2,35,,1352,No
+496,,angelyau.com,Art And Entertainment,US,Tier 2,35,,0,No
+497,Renuka the Designers,renukathedesigners.com,Art And Entertainment,IN,Tier 2,35,,0,No
+498,,barmovies.com,Art And Entertainment,AU,Tier 2,35,,0,No
+499,DuPont,dupont.it,Art And Entertainment,IT,Tier 2,35,,0,No
+500,,ne2a.org,Art And Entertainment,US,Tier 2,35,,0,No
+501,,cross-geek.com,Art And Entertainment,,Tier 2,35,,0,No
+502,Fairfield Dentists Dental Group,fairfielddentists.com,Art And Entertainment,US,Tier 2,35,,0,No
+503,AVPI,avpi.org.au,Art And Entertainment,AU,Tier 2,35,,0,No
+504,TheChateauNightclub.com,thechateaunightclub.com,Art And Entertainment,US,Tier 2,35,,0,No
+505,Highlands Pre-school,highlands-preschool.org,Education,US,Tier 2,35,,0,No
+506,,13thdistrictame.org,Art And Entertainment,US,Tier 2,35,,0,No
+507,Saudi Commission for Tourism & National Heritage,visitsaudi.com,Art And Entertainment,SA,Tier 2,35,,0,No
+508,Sanuk Svenska skolan Thailand,svenskaskolanthailand.se,Education,,Tier 2,35,,0,No
+509,TD Bank,td.com,Finance,CA,Tier 3,70,43178055,52705,No
+510,National Australia Bank,nab.com.au,Finance,AU,Tier 3,70,11493900,71847,No
+511,Morgan Stanley,morganstanley.com,Finance,US,Tier 3,70,4700697,101331,No
+512,SP Global,spglobal.com,Business And Industrial,US,Tier 3,70,3486096,81523,Yes
+513,Avalara Inc,avalara.com,Business And Industrial,US,Tier 3,70,1990002,77700,Yes
+514,HUAWEI,huawei.com,Business And Industrial,CN,Tier 3,65,75744731,46820,Yes
+515,CVS Caremark,caremark.com,"Law, Govt And Politics",US,Tier 3,65,4498750,56835,Yes
+516,Microchip Technology Incorporated,microchip.com,Technology And Computing,US,Tier 3,65,1332073,50164,Yes
+517,Miles & More,miles-and-more.com,Technology And Computing,,Tier 3,60,6054821,43622,Yes
+518,"Juniper Networks, Inc.",juniper.net,Technology And Computing,US,Tier 3,60,968020,84111,Yes
+519,Changi Airport Singapore,changiairport.com,Travel,SG,Tier 3,55,2084724,41893,Yes
+520,"F5, Inc.",f5.com,Business And Industrial,US,Tier 3,55,994757,68678,Yes
+521,Bristol Myers Squibb,bms.com,Business And Industrial,US,Tier 3,55,809790,63517,Yes
+522,Moody's Investors Service Inc,moodys.com,Business And Industrial,US,Tier 3,55,716310,72670,No
+523,Constellation Generation Group,constellation.com,Business And Industrial,US,Tier 3,55,528554,50024,No
+524,NV Bekaert SA,bekaert.com,Business And Industrial,BE,Tier 3,55,127163,55482,No
+525,Flinders University of South Australia,flinders.edu.au,Science,AU,Tier 3,50,938479,43415,Yes
+526,Allianz Insurance Australia,allianz.com.au,Technology And Computing,AU,Tier 3,50,903209,49953,Yes
+527,Odpbusiness LLC,odpbusiness.com,Business And Industrial,US,Tier 3,50,505137,46419,No
+528,Avery Dennison,averydennison.com,Business And Industrial,US,Tier 3,50,322225,44973,No
+529,Identity Force,identityforce.com,"Law, Govt And Politics",US,Tier 3,50,125798,44547,No
+530,Software Aktiengesellschaft,softwareag.com,Business And Industrial,DE,Tier 3,45,97703,62190,No
+531,BlueScope Steel Ltd,bluescope.com,Business And Industrial,AU,Tier 3,40,56082,45920,No
+532,Ideal Industries Inc,idealindustries.com,Business And Industrial,,Tier 3,40,10548,44583,No
+533,Amazon.com Inc,aboutamazon.com,Business And Industrial,,Tier 3,35,,41637,No
+534,Widia Technologies Pvt Ltd,widia.com,Business And Industrial,US,Tier 3,35,,40746,No
+535,"Wesco International, Inc.",wesco.com,Business And Industrial,US,Tier 3,35,,40671,No
+536,Waukesha Bearings Corporation,inpro-seal.com,Business And Industrial,US,Tier 3,35,,40572,No
+537,FLEETCOR,fleetcor.com,Business And Industrial,US,Tier 3,35,,39706,No
+538,HealthSmart,healthsmart.com,"Law, Govt And Politics",US,Tier 3,35,,39577,No
+539,Nouryon,akzonobel.com,Business And Industrial,NL,Tier 3,35,,39388,No
+540,MINI,mini.com.mx,Technology And Computing,MX,Tier 3,35,,39307,No
+541,Nutanix,nutanix.cn,Technology And Computing,US,Tier 3,35,,39284,No
+542,Armstrong World Industries,armstrongceilings.com,Business And Industrial,US,Tier 3,35,,39040,No
+543,BT Group PLC,btwholesale.com,Business And Industrial,US,Tier 3,35,,38888,No
+544,Robert Half International,roberthalf.com,Business And Industrial,US,Tier 3,35,,38603,No
+545,Corteva,corteva.com.au,Business And Industrial,AU,Tier 3,35,,37750,No
+546,University of Sydney,sydney.edu.au,Science,AU,Tier 3,35,,37240,No
+547,Cooper US Inc,cooperlighting.com,Business And Industrial,US,Tier 3,35,,36875,No
+548,Allianz SE,allianz.pl,"Law, Govt And Politics",PL,Tier 3,35,,36754,No
+549,"Pioneer Hi-Bred International, Inc.",pioneer.com,Science,US,Tier 3,35,,36692,No
+550,Navico,navico.com,Business And Industrial,US,Tier 3,35,,36354,No
+551,,fsvpaymentsystems.com,Business And Industrial,US,Tier 3,35,,36285,No
+552,Allianz Nederland,allianz.nl,Business And Industrial,NL,Tier 3,35,,35216,No
+553,Dubai Airshow,dubaiairshow.aero,Business And Industrial,GB,Tier 3,35,,35059,No
+554,Bose,bose.pe,Technology And Computing,US,Tier 3,35,,35037,No
+555,Allianz Seguros,allianz.com.mx,Finance,MX,Tier 3,35,,34671,No
+556,Vodafone Idea Ltd,myvi.in,Business And Industrial,IN,Tier 3,35,,34550,No
+557,Zions Bancorporation,zionsbank.com,Finance,US,Tier 3,35,,34019,No
+558,CeraWeek,ceraweek.com,Business And Industrial,US,Tier 3,35,,33755,No
+559,John Lewis Financial Services Ltd,johnlewisfinance.com,Finance,GB,Tier 3,35,,33552,No
+560,Allianz SE,allianz.it,Finance,DE,Tier 3,35,,33503,No
+561,Sennheiser,sennheiser-hearing.com,Technology And Computing,US,Tier 3,35,,33358,No
+562,Allianz Malaysia Berhad,allianz.com.my,Business And Industrial,MY,Tier 3,35,,33010,No
+563,proinity LLC,top-db.com,Technology And Computing,,Tier 3,35,,32929,No
+564,Enel S.p.A.,enel.com,Business And Industrial,DE,Tier 3,35,,32555,No
+565,Mastercard,mastercard.fr,Business And Industrial,,Tier 3,35,,32200,No
+566,kwiktripfleet,kwiktripfleet.com,Technology And Computing,US,Tier 3,35,,32030,No
+567,Parker & Sons,parkerandsons.com,Technology And Computing,US,Tier 3,35,,32000,No
+568,Immobilien Scout GmbH,immobilienscout24.de,Business And Industrial,DE,Tier 3,35,,31860,No
+569,HOFER,hofer.si,"Law, Govt And Politics",,Tier 3,35,,31420,No
+570,TDS Telecommunications Corporation,tdstelecom.com,Technology And Computing,US,Tier 3,35,,31410,No
+571,,fptgroup.com,Technology And Computing,GB,Tier 3,35,,31137,No
+572,United HealthCare Services Inc,aarpmedicareplans.com,Business And Industrial,US,Tier 3,35,,31099,No
+573,Avis Budget Group,avisbudgetgroup.com,Business And Industrial,US,Tier 3,35,,31074,No
+574,Enterprise Car Club Ltd,enterprisecarclub.co.uk,Technology And Computing,GB,Tier 3,35,,31074,No
+575,Allmand Bros Inc,allmand.com,Business And Industrial,US,Tier 3,35,,30980,No
+576,Mastercard,mastercard.nl,Business And Industrial,US,Tier 3,35,,30970,No
+577,Magnolia Health Plan,magnoliahealthplan.com,Technology And Computing,US,Tier 3,35,,30930,No
+578,divvyDOSE,divvydose.com,Technology And Computing,US,Tier 3,35,,30577,No
+579,www.carelonbehavioralhealth.com,carelonbehavioralhealth.com,"Law, Govt And Politics",US,Tier 3,35,,30522,No
+580,Williams Comfort Air,williamscomfortair.com,Business And Industrial,US,Tier 3,35,,30325,No
+581,Allianz Ireland,allianz.ie,Business And Industrial,IE,Tier 3,35,,29910,No
+582,AIA Company Ltd,aia.co.th,Technology And Computing,CN,Tier 3,35,,29855,No
+583,Landis Gyr GmbH,landisgyr.eu,Business And Industrial,BR,Tier 3,35,,29710,No
+584,Bose,bose.se,Technology And Computing,NL,Tier 3,35,,29634,No
+585,Bose,bose.dk,Technology And Computing,NL,Tier 3,35,,29634,No
+586,Solidigm,solidigm.com,Business And Industrial,US,Tier 3,35,,29488,No
+587,Shredding Secure Paper Shredding Services,shredit.ie,Business And Industrial,US,Tier 3,35,,29317,No
+588,Enterprise Holdings Inc,enterprise.dk,Technology And Computing,DK,Tier 3,35,,29293,No
+589,Costco Payment Processing LLC,costcopaymentprocessing.com,Business And Industrial,US,Tier 3,35,,29247,No
+590,Novo Nordisk,novonordisk.pl,Technology And Computing,AL,Tier 3,35,,29170,No
+591,Bose,bose.pl,Technology And Computing,NL,Tier 3,35,,29097,No
+592,Enel S.p.A,enelgreenpower.com,Business And Industrial,DE,Tier 3,35,,29020,No
+593,Mr. Plumber,mrplumberatlanta.com,Technology And Computing,US,Tier 3,35,,28838,No
+594,Contacta con nosotros,enterprise.es,Technology And Computing,GB,Tier 3,35,,28490,No
+595,PNB MetLife,pnbmetlife.com,Finance,IN,Tier 3,35,,28404,No
+596,Lee Health Optional Benefits,leehealthoptionalbenefits.com,Finance,US,Tier 3,35,,27990,No
+597,Mercer LLC,voluntarybenefitsforchevron.com,Finance,US,Tier 3,35,,27990,No
+598,Cook County Voluntary Benefits,cookcountyvoluntarybenefits.com,Finance,US,Tier 3,35,,27990,No
+599,FLSmidth Voluntary Benefits,flsmidthvoluntarybenefits.com,Finance,US,Tier 3,35,,27990,No
+600,Hearst Voluntary Benefits,hearstvoluntarybenefits.com,Finance,US,Tier 3,35,,27990,No
+601,,cupraofficial.eg,Technology And Computing,EG,Tier 3,35,,27905,No
+602,PTI Security Systems,ptisecurity.com,Technology And Computing,US,Tier 3,35,,27661,No
+603,American Bureau of Shipping,eagle.org,Business And Industrial,US,Tier 3,35,,27653,No
+604,Traka Automation Ltd,traka.com,Technology And Computing,US,Tier 3,35,,27278,No
+605,YorkStateBank,yorkstatebank.com,Finance,US,Tier 3,35,,27110,No
+606,Allianz Insurance Lanka Ltd,allianz.lk,Business And Industrial,LK,Tier 3,35,,26790,No
+607,Securian Canada,securiancanada.ca,Finance,CA,Tier 3,35,,26465,No
+608,The Beverly Bank,thebeverlybank.com,Finance,US,Tier 3,35,,26450,No
+609,Downers Grove Bank & Trust Co,downersgrovebank.com,Finance,US,Tier 3,35,,26450,No
+610,Deerfield Bank,deerfieldbank.com,Finance,US,Tier 3,35,,26450,No
+611,,medicuspensionplan.com,Finance,CA,Tier 3,35,,26440,No
+612,PT Hexindo Adiperkasa Tbk,hexindo-tbk.co.id,Technology And Computing,IN,Tier 3,35,,26415,No
+613,Man's Best Friend,mansbestfriend.com,Business And Industrial,US,Tier 3,35,,26342,No
+614,Novo Nordisk,novonordisk.si,Technology And Computing,SI,Tier 3,35,,26317,No
+615,SEAT S.A,cupraofficial.es,Finance,ES,Tier 3,35,,26305,No
+616,Novo Nordisk,novonordisk.sg,Business And Industrial,SG,Tier 3,35,,26182,No
+617,Vicwest,vicwest.com,Business And Industrial,CA,Tier 3,35,,26125,No
+618,CIMB Bank Philippines Corporation,cimbbank.com.ph,Technology And Computing,PH,Tier 3,35,,25712,No
+619,Briggs & Stratton Corporation,branco.com.br,"Law, Govt And Politics",BR,Tier 3,35,,25690,No
+620,United HealthCare Services Inc,umr.com,Technology And Computing,US,Tier 3,35,,25680,No
+621,Novo Nordisk,novonordisk.ro,Technology And Computing,AL,Tier 3,35,,25670,No
+622,MAXIMUS Canada Inc,maximuscanada.ca,Business And Industrial,CA,Tier 3,35,,25654,No
+623,The Three Accessories Store,three.ie,Technology And Computing,IE,Tier 3,35,,25593,No
+624,CereX B.V,cerex.nl,"Law, Govt And Politics",NL,Tier 3,35,,25253,No
+625,Sony Electronics Pte Ltd,sony-asia.com,Technology And Computing,SG,Tier 3,35,,25221,No
+626,Vancouver Harbour Flight Centre,vhfc.ca,Business And Industrial,CA,Tier 3,35,,25140,No
+627,Bank of Nova Scotia,banquescotia.com,Business And Industrial,CA,Tier 3,35,,25021,No
+628,,ihgresidences.com,,,Tier 3,30,,39637,No
+629,,hawaiianairlinesbohcard.com,Travel,US,Tier 3,30,,37640,No
+630,,medtronicdm.com,Unknown,,Tier 3,30,,36440,No
+631,Stanford University School of Medicine,med.stanford.edu,Unknown,US,Tier 3,30,,34431,No
+632,Heroes Vacation Club,heroesvacationclub.com,Travel,US,Tier 3,30,,33358,No
+633,Weltvogelpark,weltvogelpark.de,Travel,DE,Tier 3,30,,33305,No
+634,,gmenvolve.com,Unknown,,Tier 3,30,,32837,No
+635,Chevron U.S.A. Inc,chevroncontechron.com,Unknown,,Tier 3,30,,32385,No
+636,,northlandam.com,,,Tier 3,30,,31540,No
+637,,supplysideconnect.com,Unknown,GB,Tier 3,30,,31238,No
+638,,novonordiskpro.fr,Unknown,,Tier 3,30,,29902,No
+639,GRUPO NACIONAL PROVINCIAL S.A.B,gnp.com.mx,Society,MX,Tier 3,30,,29699,No
+640,,supplysideglobal.com,Unknown,GB,Tier 3,30,,29438,No
+641,,vyalevhcp.com,Unknown,US,Tier 3,30,,28620,No
+642,Schindler Group,schindler.com.tr,Careers,TR,Tier 3,30,,28315,No
+643,Zillow Inc,bhgre.com,Real Estate,US,Tier 3,30,,28211,No
+644,Thermo Fisher Scientific,thermofisher.cn,Unknown,US,Tier 3,30,,28194,No
+645,,medevicesiliconvalley.com,,,Tier 3,30,,28142,No
+646,Magic Fashion Events,magicfashionevents.com,Hobbies And Interests,GB,Tier 3,30,,27865,No
+647,Allianz Telefono numeris,allianz.lt,Unknown,,Tier 3,30,,27840,No
+648,,stage-leqselvi.com,,,Tier 3,30,,27485,No
+649,Schindler Terminos,schindler.com.ve,Unknown,VE,Tier 3,30,,27040,No
+650,,financierehorizons.com,Unknown,CA,Tier 3,30,,26710,No
+651,ChemarautoChevrolet Se,chemarautochevrolet.com.br,Unknown,,Tier 3,30,,26177,No
+652,Chugai Pharmaceutical Co,chugai-pharm.jp,Unknown,JP,Tier 3,30,,26125,No
+653,,dentemaxportal.com,Unknown,,Tier 3,30,,25940,No
+654,,incamotorschevrolet.com.pe,Unknown,,Tier 3,30,,25937,No
+655,Happy Dogs Play And Stay,happydogsplayandstay.com,Unknown,US,Tier 3,30,,25875,No
+656,Nissan Motor Co. Ltd,nissan.lt,Unknown,FR,Tier 3,30,,25846,No
+657,,bfm-gvb.ch,,,Tier 3,30,,25805,No
+658,,mgbijapur.co.in,,,Tier 3,30,,25140,No
+659,,cropscience.bayer.com,,CA,Tier 3,30,,25075,No
+660,,myjemperlijourney.com,,,Tier 3,30,,25047,No
+661,CIMB Bank Cambodia PLC,cimbbank.com.kh,Business And Industrial,JP,Tier 3,25,,24912,No
+662,,mhr.co.za,Business And Industrial,ZA,Tier 3,25,,24868,No
+663,Novo Nordisk Portugal Lda,novonordisk.pt,Technology And Computing,PT,Tier 3,25,,24617,No
+664,Shell Plc,shell.com.au,Business And Industrial,AU,Tier 3,25,,24411,No
+665,Mkdalexander,mkdalexander.com,Technology And Computing,US,Tier 3,25,,24301,No
+666,mkdFortbend.com,mkdfortbend.com,Technology And Computing,US,Tier 3,25,,24301,No
+667,,mkdlasvegas.com,Technology And Computing,US,Tier 3,25,,24301,No
+668,,mykidsdentistorchard.com,Technology And Computing,,Tier 3,25,,24301,No
+669,Mastercard,mastercard.ie,Business And Industrial,IE,Tier 3,25,,24200,No
+670,Lombard Ireland,lombard.ie,Finance,IE,Tier 3,25,,24099,No
+671,Advantage Plus Network Connecticut,advantageplusnetwork.com,Technology And Computing,US,Tier 3,25,,24089,No
+672,,vinerandselig.ca,Finance,CA,Tier 3,25,,23997,No
+673,,norterrakidsdentistry.com,Technology And Computing,US,Tier 3,25,,23991,No
+674,Novo Nordisk,novonordisk.sk,Technology And Computing,SK,Tier 3,25,,23970,No
+675,,novonordisk-xk.com,Technology And Computing,AL,Tier 3,25,,23970,No
+676,Enterprise DE,enterprise.de,Technology And Computing,DE,Tier 3,25,,23950,No
+677,Costa Kreuzfahrten Switzerland AG,costakreuzfahrten.ch,Business And Industrial,IT,Tier 3,25,,23879,No
+678,,mykidsdentistwildomar.com,Technology And Computing,US,Tier 3,25,,23811,No
+679,,mykidsdentistmurrieta.com,Technology And Computing,US,Tier 3,25,,23811,No
+680,,dentistsofcentennial.com,Finance,US,Tier 3,25,,23811,No
+681,Sony Latin America Inc,sony.com.pa,Technology And Computing,US,Tier 3,25,,23550,No
+682,Sony Corporation,sony.com.pe,Technology And Computing,,Tier 3,25,,23550,No
+683,Allianz SE,allianz.sg,Business And Industrial,SG,Tier 3,25,,23410,No
+684,,indiafoldingcarton.com,Business And Industrial,IN,Tier 3,25,,23337,No
+685,AbbVie Inc,rxabbvie.com,Technology And Computing,US,Tier 3,25,,23320,No
+686,Colgate-Palmolive Company,colgate.it,Business And Industrial,IT,Tier 3,25,,23196,No
+687,Farmlands Co-operative Society Ltd,farmlands.co.nz,Business And Industrial,NZ,Tier 3,25,,23153,No
+688,Robert Walters Plc,robertwalters.com.au,Business And Industrial,AU,Tier 3,25,,23070,No
+689,Sony Corporation,sony.co.uk,Technology And Computing,GB,Tier 3,25,,22864,No
+690,Ayear Corteva,corteva.co.uk,Business And Industrial,GB,Tier 3,25,,22847,No
+691,Secil Group,secil.es,Science,ES,Tier 3,25,,22837,No
+692,Dynamic Materials Corporation,nobelclad.com,Business And Industrial,US,Tier 3,25,,22810,No
+693,Centene Corporation,coordinatedcarehealth.com,Technology And Computing,US,Tier 3,25,,22700,No
+694,www.mybcbswny.com,mybcbswny.com,Technology And Computing,US,Tier 3,25,,22510,No
+695,,ulricehamnssparbank.se,Finance,SE,Tier 3,25,,22400,No
+696,Tata Capital Moneyfy,tatacapitalmoneyfy.com,Finance,IN,Tier 3,25,,22340,No
+697,Colgate-Palmolive Company,colgate.nl,Business And Industrial,NL,Tier 3,25,,22299,No
+698,,esri-austria.at,Technology And Computing,AT,Tier 3,25,,22220,No
+699,Roche Products Pty Ltd,roche-infohub.co.za,Technology And Computing,,Tier 3,25,,22100,No
+700,Roche Austria GmbH,rochescience.at,Business And Industrial,AT,Tier 3,25,,22100,No
+701,Centene Corporation,wellcarecomplete.com,Technology And Computing,US,Tier 3,25,,22020,No
+702,Artisan Partners Ltd Partnership,artisanpartners.com,Technology And Computing,GB,Tier 3,25,,21774,No
+703,Infosys Ltd,infosys.org,Science,US,Tier 3,25,,21600,No
+704,Novo Nordisk,novonordisk.rs,Technology And Computing,AL,Tier 3,25,,21517,No
+705,Langenbeck-Virchow-Haus,langenbeck-virchow-haus.com,Science,DE,Tier 3,25,,21517,No
+706,QS Partners LLC,qspartners.com,Technology And Computing,US,Tier 3,25,,21517,No
+707,Innovation Health Medicare,innovationhealthmedicare.com,Technology And Computing,US,Tier 3,25,,21500,No
+708,NextEra Energy Inc,nexteraenergy.com,Business And Industrial,US,Tier 3,25,,21428,No
+709,,schindler-marine.com,Business And Industrial,IT,Tier 3,25,,21200,No
+710,DuPont Canada,dupont.ca,Business And Industrial,US,Tier 3,25,,21055,No
+711,Sony Group,sony.com.ph,Technology And Computing,SG,Tier 3,25,,21050,No
+712,KIA MOTORS DEUTSCHLAND GmbH,kia-christmann-ludwigshafen.de,Technology And Computing,KR,Tier 3,25,,21000,No
+713,Kia-Muehlenbein GmbH,kia-muehlenbein-detmold.de,Technology And Computing,DE,Tier 3,25,,21000,No
+714,Kia-Jungmann Vonzumhoff Wuppertal-Barmen GmbH,kia-jungmann-vonzumhoff-wuppertal-barmen.de,Technology And Computing,DE,Tier 3,25,,21000,No
+715,KIA MOTORS DEUTSCHLAND GmbH,kia-renck-weindel-mannheim-neckarau.de,Technology And Computing,DE,Tier 3,25,,21000,No
+716,Kia FUGEL GmbH & Co. KG,kia-fugel-chemnitz.de,Technology And Computing,DE,Tier 3,25,,20865,No
+717,Banco Santander S.A.,santander.com,Finance,ES,Tier 3,25,,20840,No
+718,North Haven Private Income Fund LLC,northhavenprivateincomefund.com,Finance,US,Tier 3,25,,20797,No
+719,Cells For Life,cellsforlife.com,Business And Industrial,CA,Tier 3,25,,20796,No
+720,Pleatco Filtration,pleatcofiltration.com,Business And Industrial,US,Tier 3,25,,20773,No
+721,Yoast BV,yoast.com,Technology And Computing,NL,Tier 3,25,,20682,No
+722,UNFI,unfi.com,Business And Industrial,US,Tier 3,25,,20553,No
+723,erkat Anbaufrnsen PC GmbH,erkat.com,Business And Industrial,,Tier 3,25,,20465,No
+724,NextEra Energy Inc,fplmaps.com,Business And Industrial,US,Tier 3,25,,20400,No
+725,,landisgyr.co.uk,Business And Industrial,BR,Tier 3,25,,20210,No
+726,Allianz Seguros e Inversiones,allianz.es,Finance,US,Tier 3,25,,20115,No
+727,,ncm.co.za,Business And Industrial,ZA,Tier 3,25,,19765,No
+728,International Paint Ltd,international-pc.com,Business And Industrial,GB,Tier 3,25,,19748,No
+729,Allianz Argentina Compania de Seguros S.A,allianz.com.ar,Science,AR,Tier 3,25,,19702,No
+730,CupraOfficial,cupraofficial.fi,Finance,FI,Tier 3,25,,19665,No
+731,Esri Inc,hnit-baltic.lt,Technology And Computing,,Tier 3,25,,19619,No
+732,,landisgyr.lv,Business And Industrial,,Tier 3,25,,19603,No
+733,Daikin Europe N.V,daikineurope.com,Business And Industrial,,Tier 3,25,,19528,No
+734,Allianz Hrvatska d.d,allianz.hr,"Law, Govt And Politics",HR,Tier 3,25,,19470,No
+735,LGCNS,lgcns.com,Business And Industrial,KR,Tier 3,25,,19451,No
+736,InvoCare Australia Pty Ltd,lesterandson.com.au,Technology And Computing,AU,Tier 3,25,,19415,No
+737,,stanfordhealthcareballot.com,"Law, Govt And Politics",,Tier 3,25,,19400,No
+738,RX Japan Ltd,wsew.jp,Business And Industrial,JP,Tier 3,25,,19354,No
+739,DuPont,dupont.mx,Business And Industrial,MX,Tier 3,25,,19325,No
+740,KIA MOTORS DEUTSCHLAND GmbH,kia-korn-schwenk-kulmbach.de,Technology And Computing,DE,Tier 3,25,,19300,No
+741,KIA MOTORS DEUTSCHLAND GmbH,kia-bulenda-wesel.de,Technology And Computing,DE,Tier 3,25,,19300,No
+742,KIA DEUTSCHLAND GmbH,kia-koenig-teltow.de,Technology And Computing,DE,Tier 3,25,,19300,No
+743,Kia Deutschland GmbH,kia-kunzmann-gelnhausen.de,Technology And Computing,DE,Tier 3,25,,19300,No
+744,KIA MOTORS DEUTSCHLAND GmbH,kia-burian-peine.de,Technology And Computing,DE,Tier 3,25,,19300,No
+745,Kia Schmitz GmbH Co. KG,kia-schmitz-dinslaken.de,Technology And Computing,DE,Tier 3,25,,19300,No
+746,Kia Durkop Braunschweig GmbH,kia-duerkop-braunschweig.de,Technology And Computing,DE,Tier 3,25,,19300,No
+747,KIA MOTORS DEUTSCHLAND GmbH,kia-billwiller-biberach.de,Technology And Computing,DE,Tier 3,25,,19300,No
+748,Kia Reckhaus Erwitte GmbH & Co. KG,kia-reckhaus-erwitte.de,Technology And Computing,DE,Tier 3,25,,19300,No
+749,KIA MOTORS DEUTSCHLAND GmbH,kia-dinnebier-berlin-spandau.de,Technology And Computing,DE,Tier 3,25,,19300,No
+750,Kia Wagner GmbH & Co. KG,kia-wagner-gladbeck.de,Technology And Computing,CH,Tier 3,25,,19300,No
+751,KIA Engbert GmbH & Co. KG,kia-engbert-datteln.de,Technology And Computing,DE,Tier 3,25,,19300,No
+752,CARIAD,cariad.technology,Business And Industrial,DE,Tier 3,25,,19200,No
+753,Evonik Industries AG,evonik.com,Business And Industrial,DE,Tier 3,25,,19023,No
+754,Fred Hutchinson Cancer Center,fredhutch.org,Science,US,Tier 3,25,,19006,No
+755,ANZ New Zealand Investments Ltd,mflmutual.co.nz,Finance,,Tier 3,25,,18997,No
+756,Servizio Elettrico Nazionale SpA,servizioelettriconazionale.it,"Law, Govt And Politics",IT,Tier 3,25,,18720,No
+757,,bnpparibasdeveloppement.com,Business And Industrial,FR,Tier 3,25,,18617,No
+758,,ahlconindia.com,Business And Industrial,IN,Tier 3,25,,18427,No
+759,Enterprise Holdings Inc,enterpriserentacar.com.au,Technology And Computing,AU,Tier 3,25,,18300,No
+760,Bridgestone Corporation,bridgestone.ie,Business And Industrial,FR,Tier 3,25,,18240,No
+761,Suncorp Stadium is,suncorpstadium.com.au,Business And Industrial,AU,Tier 3,25,,18150,No
+762,Nextera Energy Services,nexteraenergyservices.com,Business And Industrial,US,Tier 3,25,,18071,No
+763,Lavazza SV,lavazza.se,Business And Industrial,SE,Tier 3,25,,18050,No
+764,MG Motor India Pvt. Ltd,mgmeerut.co.in,Business And Industrial,IN,Tier 3,25,,17931,No
+765,Mg Bharuch Pvt. Ltd,mgbharuch.co.in,Business And Industrial,IN,Tier 3,25,,17931,No
+766,MG Motor India Pvt. Ltd,mgkaithal.co.in,Business And Industrial,IN,Tier 3,25,,17931,No
+767,MG Motor India Pvt. Ltd,mgnavimumbai.co.in,Business And Industrial,IN,Tier 3,25,,17900,No
+768,Mgvellore.co.in,mgvellore.co.in,Business And Industrial,IN,Tier 3,25,,17900,No
+769,Gridspertise,gridspertise.com,Business And Industrial,,Tier 3,25,,17900,No
+770,Emdserono Canada,emdserono.ca,Science,CA,Tier 3,25,,17799,No
+771,DuPont Polymers Inc,dupont.es,Business And Industrial,AU,Tier 3,25,,17555,No
+772,DuPont Chile,dupont.cl,Finance,,Tier 3,25,,17555,No
+773,DuPont,dupont.hk,Business And Industrial,HK,Tier 3,25,,17555,No
+774,DuPont,dupont.ae,Business And Industrial,AE,Tier 3,25,,17555,No
+775,FleetcardsUSA,fleetcardsusa.com,Business And Industrial,US,Tier 3,25,,17300,No
+776,Shell PLC,shell.com.mx,Business And Industrial,MX,Tier 3,25,,17035,No
+777,Mastercard Group,mastercard.md,Technology And Computing,US,Tier 3,25,,16800,No
+778,,sikkenscv.com,Technology And Computing,,Tier 3,25,,16778,No
+779,,landisgyr.nl,Business And Industrial,BR,Tier 3,25,,16710,No
+780,Phillips 66,phillips66gas.com,Business And Industrial,US,Tier 3,25,,16650,No
+781,Wind Tre S.p.A,tre.it,Technology And Computing,IT,Tier 3,25,,16600,No
+782,Moog Inc,moog.it,Business And Industrial,IT,Tier 3,25,,16542,No
+783,Saccom Group,batimat.com,Business And Industrial,FR,Tier 3,25,,16447,No
+784,,mip-china.com,Business And Industrial,,Tier 3,25,,16447,No
+785,MAPIC - Italy,mapic-italy.it,Business And Industrial,IT,Tier 3,25,,16447,No
+786,,zeposiaespanol.com,Technology And Computing,,Tier 3,25,,16400,No
+787,Sun Pharmaceutical Industries Inc,bromsite.com,Business And Industrial,,Tier 3,25,,16400,No
+788,,duluxtrade.co.za,Business And Industrial,ZA,Tier 3,25,,16382,No
+789,smart529,smart529.com,Finance,US,Tier 3,25,,16295,No
+790,Abbott Laboratories,th.abbott,Business And Industrial,US,Tier 3,25,,16150,No
+791,,medicalaffairs.abbott,Science,,Tier 3,25,,16150,No
+792,,landisgyr.lt,Business And Industrial,,Tier 3,25,,16103,No
+793,SoluForce B.V.,soluforce.com,Business And Industrial,NL,Tier 3,25,,15895,No
+794,All Covered Inc,allcovered.com,Technology And Computing,US,Tier 3,25,,15876,No
+795,Casco - Limmar Faster Fogar,casco.se,Technology And Computing,SE,Tier 3,25,,15790,No
+796,,ncmedicaidplans.gov,Technology And Computing,US,Tier 3,25,,15750,No
+797,Astellas Pharma Ltd,evrenzo.nl,Technology And Computing,NL,Tier 3,25,,15707,No
+798,Pierer Industrie AG,husqvarna-bicycles.com,Business And Industrial,AT,Tier 3,25,,15640,No
+799,Colgate-Palmolive,colgate.no,Finance,NO,Tier 3,25,,15599,No
+800,Colgate Palmolive Company,palmolive.ph,Business And Industrial,,Tier 3,25,,15599,No
+801,STIHL Inc,stihlusa.com,Technology And Computing,US,Tier 3,25,,15530,No
+802,Bristol-Myers Squibb GmbH,psoriasis-initiative-ich.de,Science,,Tier 3,25,,15500,No
+803,"Allianz, Seguros",allianz.pt,"Law, Govt And Politics",PT,Tier 3,25,,15470,No
+804,Exemplis Corporation,exemplis.com,Business And Industrial,US,Tier 3,25,,15307,No
+805,NSK Ltd.,nsk.com,Technology And Computing,US,Tier 3,25,,15222,No
+806,Prudential IP Services Ltd,prudentialplc.com,Business And Industrial,GB,Tier 3,25,,15139,No
+807,Progress Rail Services Corporation,progressrail.com,Business And Industrial,US,Tier 3,25,,15060,No
+808,Viking River Cruises Inc,viking.com,Technology And Computing,US,Tier 3,25,,15009,No
+809,Champion Home Builders Inc,silvercrest.com,Business And Industrial,US,Tier 3,25,,14732,No
+810,Capquest Group,capquest.co.uk,Finance,GB,Tier 3,25,,14690,No
+811,,tobinscanberrafunerals.com.au,Technology And Computing,AU,Tier 3,25,,14565,No
+812,Somerville Funerals,somervillefunerals.com.au,Technology And Computing,AU,Tier 3,25,,14565,No
+813,Oceanology International Americas,oceanologyinternationalamericas.com,Business And Industrial,US,Tier 3,25,,14400,No
+814,Takeda Pharmaceuticals U.S.A. Inc,takedamedconnect.com,Business And Industrial,US,Tier 3,25,,14397,No
+815,ENI PLENITUDE IBERIA S.L,eniplenitude.es,Business And Industrial,ES,Tier 3,25,,14250,No
+816,Avery Dennison Corporation,makingpackagingcircular.com,Business And Industrial,,Tier 3,25,,14200,No
+817,Visa,visa.com.tw,Finance,US,Tier 3,25,,14117,No
+818,USHEALTH Group,ushealthgroup.com,Business And Industrial,US,Tier 3,25,,13985,No
+819,Smart Japam Co. Ltd,shopjapan.co.jp,Technology And Computing,JP,Tier 3,25,,13940,No
+820,ZenTrades,zentrades.pro,Business And Industrial,US,Tier 3,25,,13924,No
+821,Safe Guard Products International LLC,power-protect.com,Business And Industrial,US,Tier 3,25,,13900,No
+822,MLCAM.COM.AU Pty Ltd,mlcam.com.au,Business And Industrial,AU,Tier 3,25,,13900,No
+823,Herschel Supply Co,herschelsupply.de,Business And Industrial,GB,Tier 3,25,,13372,No
+824,Herschel Supply Co,herschelsupply.fr,Business And Industrial,GB,Tier 3,25,,13372,No
+825,Bridgestone Corporation,bridgestone.fr,Business And Industrial,FR,Tier 3,25,,13340,No
+826,,ch.abbott,Technology And Computing,CH,Tier 3,25,,13050,No
+827,RBC Trust,rbctrust.com,Finance,US,Tier 3,25,,13025,No
+828,Federal Mogul Motorparts Corporation,wagnerbrake.com,Technology And Computing,US,Tier 3,25,,12968,No
+829,,stockq.org,Finance,CN,Tier 3,25,,12940,No
+830,,brazilwindpower.com.br,Business And Industrial,GB,Tier 3,25,,12865,No
+831,,daikin-ce.com,Business And Industrial,BE,Tier 3,25,,12842,No
+832,Halliburton Labs,halliburtonlabs.com,Business And Industrial,,Tier 3,25,,12799,No
+833,,e-dis.de,Technology And Computing,DE,Tier 3,25,,12747,No
+834,,si-am.de,Business And Industrial,DE,Tier 3,25,,12665,No
+835,Clear Mobile,clearmobile.ie,Business And Industrial,IE,Tier 3,25,,12650,No
+836,Factor This,renewableenergyworld.com,Business And Industrial,US,Tier 3,25,,12615,No
+837,Advanced Security Systems Inc,advancedsecurity.us,Technology And Computing,US,Tier 3,25,,12605,No
+838,Akzo Nobel N.V,lesonal.pl,Business And Industrial,PL,Tier 3,25,,12481,No
+839,Kia Deutschland GmbH,kia-ahag-duelmen.de,Technology And Computing,,Tier 3,25,,12300,No
+840,Bridgestone Corporation,bridgestone.gr,Business And Industrial,BE,Tier 3,25,,12240,No
+841,Costa Kreuzfahrten GmbH,costakreuzfahrten.at,Business And Industrial,IT,Tier 3,25,,12220,No
+842,,eniplenitude.eu,Technology And Computing,,Tier 3,25,,12150,No
+843,National Comprehensive Cancer Network Inc,calquencehcp.com,Business And Industrial,,Tier 3,25,,12050,No
+844,,eveprogramme.com,Technology And Computing,,Tier 3,25,,11317,No
+845,Ketocafe,ketocafe.nl,Technology And Computing,FR,Tier 3,25,,11312,No
+846,Akzo Nobel N.V,duluxtradepaintexpert.co.uk,Business And Industrial,GB,Tier 3,25,,11308,No
+847,MINI,mini.com.mk,Technology And Computing,,Tier 3,25,,11300,No
+848,,whirlpool.sa,Technology And Computing,AE,Tier 3,25,,11282,No
+849,Girl Scouts Of Louisiana - Pines To The Gulf,gslpg.org,Technology And Computing,US,Tier 3,25,,11219,No
+850,Kreissparkasse Saarlouis,ksk-saarlouis.de,Finance,DE,Tier 3,25,,11217,No
+851,,erste-am.de,Finance,HU,Tier 3,25,,11160,No
+852,Erste Asset Management d.o.o,erste-am.hr,Business And Industrial,HR,Tier 3,25,,11160,No
+853,Business Mirror,businessmirror.net,Business And Industrial,US,Tier 3,25,,10918,No
+854,,international-yachtpaint.com,"Law, Govt And Politics",,Tier 3,25,,10859,No
+855,,erste-am.at,Finance,HU,Tier 3,25,,10850,No
+856,,erste-am.hu,Finance,,Tier 3,25,,10850,No
+857,potnoodle,potnoodle.com,Business And Industrial,GB,Tier 3,25,,10811,No
+858,Sparkasse Mainfranken Wurzburg,sparkasse-mainfranken.de,Finance,DE,Tier 3,25,,10632,No
+859,Artsana S.p.a,picsolution.com,Business And Industrial,IT,Tier 3,25,,10610,No
+860,,samlubes.in,Business And Industrial,IN,Tier 3,25,,10540,No
+861,,viscomitalia.it,"Law, Govt And Politics",IT,Tier 3,25,,10527,No
+862,Kreissparkasse Ravensburg,kreissparkasse-ravensburg.de,Technology And Computing,DE,Tier 3,25,,10500,No
+863,Weberbank Actiengesellschaft,weberbank.de,Technology And Computing,DE,Tier 3,25,,10500,No
+864,Zweckverbandssparkasse Rhoen-Rennsteig,rhoen-rennsteig-sparkasse.de,Finance,DE,Tier 3,25,,10500,No
+865,Sparkasse Saarbrucken,sparkasse-saarbruecken.de,Finance,DE,Tier 3,25,,10500,No
+866,Kreissparkasse Steinfurt,ksk-steinfurt.de,Business And Industrial,DE,Tier 3,25,,10500,No
+867,Sparkasse Donnersberg,sparkasse-donnersberg.de,Finance,DE,Tier 3,25,,10500,No
+868,,nordsjo.se,Technology And Computing,SE,Tier 3,25,,10465,No
+869,Hamilton Bond Ltd,hamilton-bond.co.uk,Business And Industrial,GB,Tier 3,25,,10410,No
+870,AMD Indonesia,amd-id.com,Technology And Computing,ID,Tier 3,25,,10311,No
+871,Mercer LLC,nzasretirementfund.com,Business And Industrial,NZ,Tier 3,25,,10300,No
+872,Reed Exhibitions Ltd,reedexport.cn,Science,CN,Tier 3,25,,10300,No
+873,Regis-TR,regis-tr.com,Business And Industrial,DE,Tier 3,25,,10219,No
+874,,gcmliberia.org,Technology And Computing,,Tier 3,25,,10217,No
+875,Imperial Chemical Industries Ltd,dulux.com.hk,"Law, Govt And Politics",HK,Tier 3,25,,10178,No
+876,Sparkasse Berchtesgadener Land,sparkasse-bgl.de,Technology And Computing,DE,Tier 3,25,,10150,No
+877,Stadtsparkasse Grebenstein,stadtsparkasse-grebenstein.de,Finance,DE,Tier 3,25,,10150,No
+878,Sparkasse Hochsauerland,sparkasse-hochsauerland.de,Finance,DE,Tier 3,25,,10150,No
+879,,yachtcoatings.com,Technology And Computing,,Tier 3,25,,10130,No
+880,SIX Exchange Regulation AG,ser-ag.com,Finance,CH,Tier 3,25,,9985,No
+881,Central California Society for Human Resource Management,centralcalshrm.org,Business And Industrial,US,Tier 3,25,,9947,No
+882,MINI,mini.com.mt,Business And Industrial,MT,Tier 3,25,,9935,No
+883,Sparkasse Freiburg - Nordlicher Breisgau,sparkasse-freiburg.de,Finance,DE,Tier 3,25,,9910,No
+884,mybenefitsolutions.com Inc,mybenefitsolutions.com,Finance,US,Tier 3,25,,9850,No
+885,Kreissparkasse Doebeln,sparkasse-doebeln.de,Finance,DE,Tier 3,25,,9850,No
+886,Kreissparkasse Heilbronn,sparkasse-heilbronn.de,Technology And Computing,DE,Tier 3,25,,9800,No
+887,Adeptus,adeptus.co.za,Business And Industrial,,Tier 3,25,,9650,No
+888,,sparkasse-guetersloh-rietberg-versmold.de,Finance,DE,Tier 3,25,,9500,No
+889,Sparkasse Neuburg-Rain,sparkasse-neuburg-rain.de,Finance,DE,Tier 3,25,,9500,No
+890,,facingfearinterviews.com,Technology And Computing,AU,Tier 3,25,,9500,No
+891,,biogentriallink.com,"Law, Govt And Politics",US,Tier 3,25,,9500,No
+892,Stadtsparkasse Schwedt,sparkasse-schwedt.de,Finance,DE,Tier 3,25,,9500,No
+893,United Natural Foods Inc,iunfi.com,Business And Industrial,,Tier 3,25,,9500,No
+894,KoS Informatik AG,kos.ch,Technology And Computing,CH,Tier 3,25,,9500,No
+895,,mykidsdentistfountain.com,Technology And Computing,US,Tier 3,25,,9410,No
+896,,reno.dk,Business And Industrial,DK,Tier 3,25,,9317,No
+897,Haven Mortgages Ltd,havenmortgages.ie,Technology And Computing,IE,Tier 3,25,,9310,No
+898,,bingosnacks.com,Technology And Computing,,Tier 3,25,,9200,No
+899,The Tiffany And CO Foundation,tiffanyandcofoundation.org,Business And Industrial,US,Tier 3,25,,9200,No
+900,Australian Trade Commission,tra.gov.au,"Law, Govt And Politics",AU,Tier 3,25,,9102,No
+901,,taylorfoundation.org,Business And Industrial,US,Tier 3,25,,9028,No
+902,4Ward Communications,4ward-communications.co.uk,Technology And Computing,GB,Tier 3,25,,8982,No
+903,Robert Walters,robertwalters.com.hk,Business And Industrial,GB,Tier 3,25,,8900,No
+904,ALTERNA OPERADOR INTEGRAL S.L,alternaonline.es,Business And Industrial,ES,Tier 3,25,,8871,No
+905,,clienteherbalife.com.br,Technology And Computing,BR,Tier 3,25,,8870,No
+906,,nordsjo.no,Science,NO,Tier 3,25,,8778,No
+907,Palmolive Co,palmolive.pl,Business And Industrial,PL,Tier 3,25,,8750,No
+908,Next Venture Motorsports LLC,nextventuremotorsports.com,Business And Industrial,US,Tier 3,25,,8727,No
+909,,q8.com,Business And Industrial,ES,Tier 3,25,,8630,No
+910,,fraserspropertyindustrial.com,Business And Industrial,DE,Tier 3,25,,8615,No
+911,,mufgms.jp,Business And Industrial,,Tier 3,25,,8597,No
+912,McKinney,mckinneyhinge.com,Business And Industrial,US,Tier 3,25,,8519,No
+913,hillrom corp,hillrom.com.au,Business And Industrial,,Tier 3,25,,8500,No
+914,Telefonica Germany GmbH,fonic.de,Technology And Computing,DE,Tier 3,25,,8470,No
+915,Shell PLC,shell.com.hk,Business And Industrial,HK,Tier 3,25,,8400,No
+916,SHELL INFORMATION TECHNOLOGY INTERNATIONAL B.V,shell.com.vn,"Law, Govt And Politics",VN,Tier 3,25,,8400,No
+917,Contact Us,devegetarischeslager.be,Technology And Computing,BE,Tier 3,25,,8400,No
+918,Shell PLC,shell.com.ve,Business And Industrial,VE,Tier 3,25,,8400,No
+919,Shell PLC,shell.com.kw,Business And Industrial,KW,Tier 3,25,,8400,No
+920,startalittlegood,startalittlegood.com,Science,,Tier 3,25,,8400,No
+921,Shell PLC,shell.com.my,Business And Industrial,NL,Tier 3,25,,8400,No
+922,Shell PLC,shell.com.na,Business And Industrial,NA,Tier 3,25,,8400,No
+923,Shell Petroleum Development Company of Nigeria Limited,shell.com.ng,Business And Industrial,NG,Tier 3,25,,8400,No
+924,Shell International Petroleum Company Ltd,shell.com.om,Business And Industrial,OM,Tier 3,25,,8400,No
+925,,usmfcu.org,Finance,US,Tier 3,25,,8398,No
+926,,valleydirect.com,Finance,US,Tier 3,25,,8132,No
+927,Spence Doors Warranty,spencedoors.com.au,Business And Industrial,AU,Tier 3,25,,8110,No
+928,BHH Affiliates LLC,berkshirehathawayhomeservicesrealestatecenter.com,Business And Industrial,US,Tier 3,25,,7937,No
+929,Choice Hotels International Inc,joinchoicehotels.com.au,Business And Industrial,AU,Tier 3,25,,7860,No
+930,BHHS Heritage Realtors,bhhsheritagerealtors.com,Business And Industrial,US,Tier 3,25,,7837,No
+931,INSTACHAUF SaS,instachauf.fr,Science,FR,Tier 3,25,,7720,No
+932,Spherium Streamline Your Business Operations,spheriuminc.com,Technology And Computing,,Tier 3,25,,7660,No
+933,,alert.swiss,Science,CH,Tier 3,25,,7607,No
+934,InvoTools,invotools.io,Technology And Computing,,Tier 3,25,,7600,No
+935,,unilock.co.kr,Science,KR,Tier 3,25,,7600,No
+936,Apartment Income REIT LLC,lincolnplaceapthomes.com,Technology And Computing,US,Tier 3,25,,7600,No
+937,IntelligentCARE,intelligentcare.com,Science,DK,Tier 3,25,,7553,No
+938,,workcafe.es,Technology And Computing,ES,Tier 3,25,,7550,No
+939,Integrated Benefit Solutions,integratedbenefits.ca,Finance,CA,Tier 3,25,,7547,No
+940,ASSA ABLOY Door Group,flemingdoor.com,Business And Industrial,CA,Tier 3,25,,7517,No
+941,,asmokelessworld.com,Science,,Tier 3,25,,7500,No
+942,Embody Inc,embody-inc.com,Technology And Computing,US,Tier 3,25,,7434,No
+943,707 Leahy Apartments,live707leahy.com,Technology And Computing,US,Tier 3,25,,7350,No
+944,,ploom.gr,Technology And Computing,,Tier 3,25,,7317,No
+945,Ministry of Corporate Affairs,mca.gov.in,Business And Industrial,IN,Tier 3,25,,7300,No
+946,BHHs Hill Country Properties,bhhshillcountryproperties.com,Business And Industrial,US,Tier 3,25,,7237,No
+947,Provincie Antwerpen CVO Vitant,cvovitant.be,Technology And Computing,BE,Tier 3,25,,7227,No
+948,BHH Affiliates LLC,jillsellswichita.com,Business And Industrial,US,Tier 3,25,,7219,No
+949,BHH Affiliates LLC,gigieharpel.com,Business And Industrial,US,Tier 3,25,,7219,No
+950,Moog Medical,moogultrasonics.com,Science,US,Tier 3,25,,7200,No
+951,Big Tree Solar Project,bigtreesolar.com,Business And Industrial,US,Tier 3,25,,7182,No
+952,Fountain Wind Project,fountainwind.com,Business And Industrial,US,Tier 3,25,,7182,No
+953,Shell PLC,shell.com.kz,Business And Industrial,RU,Tier 3,25,,7000,No
+954,Chubb INA Holdings Inc,chubbtravelinsurance.co.id,Finance,US,Tier 3,25,,7000,No
+955,KVH DevilDogs z.s,devildogs.eu,"Law, Govt And Politics",CZ,Tier 3,25,,7000,No
+956,Kadex B.V,kadex.eu,Technology And Computing,NL,Tier 3,25,,7000,No
+957,Mastercard Group,mastercard.ke,Business And Industrial,US,Tier 3,25,,7000,No
+958,Tech Inoviq Solutions,techinoviq.com,Technology And Computing,AE,Tier 3,25,,6900,No
+959,Fire Engineering Books,fireengineeringbooks.com,"Law, Govt And Politics",US,Tier 3,25,,6898,No
+960,Ardrossan Insurance Brokers Pty,ardrossaninsurance.com.au,Business And Industrial,AU,Tier 3,25,,6567,No
+961,Nevada IT Solutions,nevadaitsolutions.com,Technology And Computing,US,Tier 3,25,,6561,No
+962,,edmca.com,Business And Industrial,CA,Tier 3,25,,6483,No
+963,IHS Ltd,ihstowers.com,Business And Industrial,GB,Tier 3,25,,6371,No
+964,Camai Community Health Center Inc,camaichc.org,Finance,US,Tier 3,25,,6207,No
+965,Visa,visa.com.tr,Technology And Computing,US,Tier 3,25,,6038,No
+966,,franktaglienti.com,Business And Industrial,US,Tier 3,25,,5989,No
+967,FCCI Insurance Group Inc,fcci-group.com,Business And Industrial,US,Tier 3,25,,5910,No
+968,,toxicology.abbott,Technology And Computing,,Tier 3,25,,5860,No
+969,VOS Virtual Operative Services OU,virtualopservices.com,Technology And Computing,EE,Tier 3,25,,5799,No
+970,Henkel AG & Co,tucasaclub.com,Finance,,Tier 3,25,,5760,No
+971,Cloudbusters Inc,mycloudbusters.com,Technology And Computing,US,Tier 3,25,,5704,No
+972,,tbsl.bz,Business And Industrial,,Tier 3,25,,5700,No
+973,Infoprotection,infoprotection.fr,Business And Industrial,FR,Tier 3,25,,5672,No
+974,,anzctr.org.au,Business And Industrial,AU,Tier 3,25,,5650,No
+975,Novareti S.p.A,novareti.eu,Technology And Computing,IT,Tier 3,25,,5600,No
+976,Viasat Satellite Internet,viasatprovider.com,Technology And Computing,US,Tier 3,25,,5447,No
+977,globalfpo.com,globalfpo.com,Business And Industrial,US,Tier 3,25,,5415,No
+978,Elevator Ventures,elevator-ventures.com,Business And Industrial,,Tier 3,25,,5378,No
+979,SIGNAL Krankenversicherung a.G,signal-iduna-park.de,Technology And Computing,DE,Tier 3,25,,5365,No
+980,,trustforeducators.com,Business And Industrial,US,Tier 3,25,,5340,No
+981,ceresit co,ceresit.ua,Business And Industrial,UA,Tier 3,25,,5250,No
+982,Pruittcares Foundation Inc,pruittcares.org,Finance,US,Tier 3,25,,5250,No
+983,Crown Equipment Corporation,employee.crown,Technology And Computing,US,Tier 3,25,,5225,No
+984,Visa,visa.com.vn,Technology And Computing,JP,Tier 3,25,,5220,No
+985,Girl Scouts Heart of The South,girlscoutshs.org,Technology And Computing,US,Tier 3,25,,5219,No
+986,engage-systems.com -,engage-systems.com,Technology And Computing,US,Tier 3,25,,5160,No
+987,AD Movers,admoversla.com,Business And Industrial,US,Tier 3,25,,5125,No
+988,,acciona-construccion.com,Business And Industrial,,Tier 3,25,,5065,No
+989,Hymans Robertson LLP,warburtonsdbpension.co.uk,Finance,GB,Tier 3,25,,5065,No
+990,,nuskin.com.tw,Technology And Computing,,Tier 3,25,,5065,No
+991,Hymans Robertson LLP,travisperkinspensions.co.uk,Finance,GB,Tier 3,25,,5065,No
+992,,azmed.uy,Technology And Computing,,Tier 3,25,,5050,No
+993,Visa,visasoutheasteurope.com,Technology And Computing,US,Tier 3,25,,5050,No
+994,,azmedconnect.sg,Science,SG,Tier 3,25,,5050,No
+995,,nbfstud.com,Technology And Computing,US,Tier 3,25,,5000,No
+996,ADEE CONSULTING Pty Ltd,adee.com.au,Technology And Computing,AU,Tier 3,25,,4900,No
+997,Max Ufficio,maxufficio.it,Business And Industrial,IT,Tier 3,25,,4900,No
+998,Allianz SE,allianz.mg,Business And Industrial,MG,Tier 3,25,,4900,No
+999,Henkel AG,pril-isis.com,"Law, Govt And Politics",DZ,Tier 3,25,,4900,No
+1000,,ceresit.pl,"Law, Govt And Politics",PL,Tier 3,25,,4900,No
+1001,coloreria co,coloreria.it,Science,IT,Tier 3,25,,4900,No
+1002,Nelsen Co,nelsen.it,Science,IT,Tier 3,25,,4900,No
+1003,Henkel Italia S.r.l,ariasana.it,Business And Industrial,IT,Tier 3,25,,4900,No
+1004,,dylon.se,Business And Industrial,SE,Tier 3,25,,4900,No
+1005,EpicStash Ltd,epicstash.co.uk,Technology And Computing,GB,Tier 3,25,,4900,No
+1006,,mybetterworld.be,Finance,BE,Tier 3,25,,4897,No
+1007,Syracuse Fire Department Credit Union,syrfirecu.com,"Law, Govt And Politics",US,Tier 3,25,,4788,No
+1008,Raiffeisen Bank International,stepicceecharity.org,Business And Industrial,FR,Tier 3,25,,4768,No
+1009,ASTROAID FOUNDATION,astroaid.org,Business And Industrial,US,Tier 3,25,,4719,No
+1010,Vetlanta,vetlanta.org,"Law, Govt And Politics",,Tier 3,25,,4688,No
+1011,Viewpoint Innovations,viewpointinnovations.com,Technology And Computing,,Tier 3,25,,4636,No
+1012,,agrolabriola.com,"Law, Govt And Politics",AR,Tier 3,25,,4625,No
+1013,GridLiance,gridliance.com,Business And Industrial,US,Tier 3,25,,4610,No
+1014,,thechildrensctr.com,"Law, Govt And Politics",US,Tier 3,25,,4575,No
+1015,Moog Inc,moog.de,Technology And Computing,DE,Tier 3,25,,4560,No
+1016,ERP LOGISTICS,erp-logistics.com,Technology And Computing,,Tier 3,25,,4560,No
+1017,,allerganaesthetics.it,Technology And Computing,IT,Tier 3,25,,4546,No
+1018,,amerihealthcaritaschc.com,Technology And Computing,US,Tier 3,25,,4510,No
+1019,AMERIHEALTH CARITAS FLORIDA,amerihealthcaritasfl.com,Business And Industrial,US,Tier 3,25,,4510,No
+1020,LASHARE.EU,lashare.eu,Business And Industrial,DE,Tier 3,25,,4500,No
+1021,Chubb INA Holdings Inc,chubbinsured.com,Business And Industrial,US,Tier 3,25,,4450,No
+1022,,gdvehiculos.com,Finance,ES,Tier 3,25,,4440,No
+1023,Allergan Aesthetics,allerganaesthetics.nl,Science,NL,Tier 3,25,,4435,No
+1024,Torrent Technologies LLC,torrentcorp.com,Business And Industrial,US,Tier 3,25,,4410,No
+1025,,aigfacdesklatam.com,Business And Industrial,US,Tier 3,25,,4300,No
+1026,,enginerebuildcenter.com,Business And Industrial,,Tier 3,25,,4250,No
+1027,Ohio Business Machines,ohiobusinessmachines.com,Technology And Computing,US,Tier 3,25,,4247,No
+1028,,capeconsulting.net,Business And Industrial,,Tier 3,25,,4200,No
+1029,Family Hearing Center,hearnh.com,Technology And Computing,US,Tier 3,25,,4200,No
+1030,,railwaytools.de,Science,DE,Tier 3,25,,4150,No
+1031,,futureworklab.de,Finance,DE,Tier 3,25,,4150,No
+1032,Ortsgemeinde Niederelbert,niederelbert.de,Technology And Computing,DE,Tier 3,25,,4147,No
+1033,,reinsfeld.de,Business And Industrial,DE,Tier 3,25,,4147,No
+1034,Redemaq,redemaq.com.br,Business And Industrial,BR,Tier 3,25,,4128,No
+1035,,centrooestemassey.com.br,Business And Industrial,,Tier 3,25,,4128,No
+1036,"Alticor, Inc.",alticor.com,Technology And Computing,US,Tier 3,25,,4110,No
+1037,Design Shanghai CN,designshanghai.cn,Technology And Computing,GB,Tier 3,25,,4100,No
+1038,,actuarius.com.mx,Technology And Computing,,Tier 3,25,,4057,No
+1039,Riedel Automobile GmbH,bmw-riedel.de,Technology And Computing,DE,Tier 3,25,,4042,No
+1040,Smiledoc S.r.l,smiledoc.it,Technology And Computing,IT,Tier 3,25,,3992,No
+1041,Kia Ruedatur,kiamalaga.es,Technology And Computing,ES,Tier 3,25,,3949,No
+1042,Techbuys,techbuys.pk,Technology And Computing,PK,Tier 3,25,,3927,No
+1043,Stichting de Bibliotheek aan de Vliet,bibliotheekaandevliet.nl,Technology And Computing,NL,Tier 3,25,,3850,No
+1044,Flyingstar,thermopads.com,"Law, Govt And Politics",IN,Tier 3,25,,3850,No
+1045,,massgeneralbrighamadvantage.org,Technology And Computing,US,Tier 3,25,,3840,No
+1046,Tint Works LLC,tintworksllc.com,Business And Industrial,US,Tier 3,25,,3837,No
+1047,,germany-bearing.com,Business And Industrial,US,Tier 3,25,,3836,No
+1048,,bearing-centre.com,Business And Industrial,US,Tier 3,25,,3836,No
+1049,Allergan Aesthetics,allerganaesthetics.be,Science,BE,Tier 3,25,,3835,No
+1050,Isynbus,isynbus.com,Business And Industrial,IN,Tier 3,25,,3831,No
+1051,,insolutionsworld.com,Business And Industrial,GB,Tier 3,25,,3810,No
+1052,,tequestainsurance.com,Business And Industrial,US,Tier 3,25,,3810,No
+1053,,gethealthinsurance.com,Finance,US,Tier 3,25,,3810,No
+1054,Employee Benefits Group,ebg.com,Business And Industrial,US,Tier 3,25,,3810,No
+1055,AC Risk Management Inc,acriskmanagement.com,Finance,US,Tier 3,25,,3810,No
+1056,Moog Inc,moog.lu,Science,LU,Tier 3,25,,3810,No
+1057,Sparkasse Pfaffenhofen,sparkasse-pfaffenhofen.de,Business And Industrial,DE,Tier 3,25,,3800,No
+1058,Stadtsparkasse Bad Pyrmont,ssk-bad-pyrmont.de,Technology And Computing,DE,Tier 3,25,,3800,No
+1059,More Natural,morenatural.nl,Business And Industrial,NL,Tier 3,25,,3787,No
+1060,,maximusgestao.com,Business And Industrial,,Tier 3,25,,3740,No
+1061,Stichting Heuvellandbibliotheken,heuvellandbibliotheken.nl,Technology And Computing,NL,Tier 3,25,,3717,No
+1062,,bde.es,Technology And Computing,,Tier 3,25,,3710,No
+1063,PawBox,pawbox.ch,"Law, Govt And Politics",CH,Tier 3,25,,3660,No
+1064,Rockingham Mitsubishi Dealer Lic,rockinghammitsubishi.com.au,Finance,AU,Tier 3,25,,3650,No
+1065,Sulinda,sulinda.com.ua,Business And Industrial,SA,Tier 3,25,,3580,No
+1066,Swami Narayanan Temple,swaaminarayanantemple.com,Business And Industrial,IN,Tier 3,25,,3580,No
+1067,Peak Plans LLC,peakplans.health,Finance,US,Tier 3,25,,3580,No
+1068,,smh-analytics.de,Science,DE,Tier 3,25,,3560,No
+1069,,radiance.com.my,Business And Industrial,,Tier 3,25,,3560,No
+1070,,marketingbytheo.com,Business And Industrial,,Tier 3,25,,3560,No
+1071,,phsscotland.com,Business And Industrial,,Tier 3,25,,3560,No
+1072,Tlutch.com,tlutch.com,Business And Industrial,,Tier 3,25,,3560,No
+1073,Breve Media,brevemedia.com,Business And Industrial,MX,Tier 3,25,,3560,No
+1074,YAP PAKISTAN,yappakistan.com,Finance,PK,Tier 3,25,,3560,No
+1075,,nicetomeetcha.com,Business And Industrial,,Tier 3,25,,3560,No
+1076,tryckluftspoolen.se,tryckluftspoolen.se,Technology And Computing,,Tier 3,25,,3560,No
+1077,Claims Funding International,claimsfundinginternational.eu,"Law, Govt And Politics",IE,Tier 3,25,,3500,No
+1078,Fluency Way,fluencyway.com.br,Technology And Computing,,Tier 3,25,,3500,No
+1079,,eco-combat.com,Business And Industrial,DE,Tier 3,25,,3500,No
+1080,RKS Consulting Services,rksconsultingservices.com,Business And Industrial,,Tier 3,25,,3500,No
+1081,,bhhsbaystreetrealtygroup.com,Business And Industrial,US,Tier 3,25,,3500,No
+1082,M4 Expo Thailand,m4expo.com,Business And Industrial,IN,Tier 3,25,,3500,No
+1083,Tan90 Thermal,tan90thermal.com,Business And Industrial,IN,Tier 3,25,,3500,No
+1084,MikroTribologie Centrum TC,mikrotribologiecentrum.de,Science,DE,Tier 3,25,,3500,No
+1085,,maatticladder.ie,Business And Industrial,,Tier 3,25,,3500,No
+1086,Attiehmedico,attiehmedico.com,Business And Industrial,SA,Tier 3,25,,3500,No
+1087,Stichting Basisbibliotheek Montferland,bibliotheekmontferland.nl,Technology And Computing,NL,Tier 3,25,,3500,No
+1088,Lifetime Roof & Solar,lifetimeroofandsolar.com,Business And Industrial,US,Tier 3,25,,3500,No
+1089,Stichting Openbare Bibliotheek Gulpen-Wittem,bibliotheekgulpen-wittem.nl,Technology And Computing,NL,Tier 3,25,,3500,No
+1090,Christchurch Garden Machinery,christchurchgm.co.uk,Business And Industrial,GB,Tier 3,25,,3500,No
+1091,,zero-power-electronic.de,Business And Industrial,DE,Tier 3,25,,3500,No
+1092,Jesta Infotech,jestainfotech.com,Technology And Computing,IN,Tier 3,25,,3500,No
+1093,Money Talk With Melanie,moneytalkwithmelanie.com,Technology And Computing,,Tier 3,25,,3500,No
+1094,Mt Challenger Wind Farm,mtchallengerwindfarm.com,Business And Industrial,AU,Tier 3,25,,3500,No
+1095,CYAN Wireless,cyanwireless.net,Technology And Computing,,Tier 3,25,,3500,No
+1096,Allianz Global Investors GmbH,allianz.ma,Business And Industrial,,Tier 3,25,,3500,No
+1097,Yuanta Securities Plc,yuantacambodia.com.kh,Finance,,Tier 3,25,,3500,No
+1098,SociisGroup,sociisgroup.com,Technology And Computing,US,Tier 3,25,,3500,No
+1099,Aig Australia Ltd,aigpcg.com.au,Finance,,Tier 3,25,,3500,No
+1100,Zodiac Poolcare,zodiac-poolcare.pt,Business And Industrial,ES,Tier 3,25,,3500,No
+1101,,technogas-customer.com,Technology And Computing,,Tier 3,25,,3500,No
+1102,My Store,solarhomenergy.com.br,Business And Industrial,,Tier 3,25,,3500,No
+1103,Mercer Co. Ltd,mercer.co.jp,Business And Industrial,US,Tier 3,25,,3500,No
+1104,Assa Abloy AB,assaabloy.cn,Business And Industrial,SE,Tier 3,25,,3500,No
+1105,American International Group,aigpcg.ae,Finance,,Tier 3,25,,3500,No
+1106,,zodiac-poolcare.se,"Law, Govt And Politics",ES,Tier 3,25,,3500,No
+1107,Madhyanchal Gramin Bank,mgbank.co.in,Finance,IN,Tier 3,25,,3500,No
+1108,South Bay Studios,southbaystudios.net,Business And Industrial,US,Tier 3,25,,3500,No
+1109,Notice Honeywell International Inc,honeywellfirstresponder.com,Technology And Computing,US,Tier 3,25,,3500,No
+1110,The Tech Blog,thetechblog.tech,Technology And Computing,,Tier 3,25,,3500,No
+1111,Cardiolabs Healthcare,cardiolabshealthcare.com,Technology And Computing,IN,Tier 3,25,,3500,No
+1112,ABB Management Holding Ltd,hitachiabb-powergrids.com,Business And Industrial,CH,Tier 3,25,,3500,No
+1113,,remoteusb.com,Technology And Computing,,Tier 3,25,,3500,No
+1114,Lohia Kia,lohiakia.com,Finance,IN,Tier 3,25,,3500,No
+1115,Rotobake Close Menu,rotobake.com,Business And Industrial,MY,Tier 3,25,,3500,No
+1116,Armurerie Desforges,armurerie-desforges.com,Finance,FR,Tier 3,25,,3500,No
+1117,US Bank National Association Payment Services,usbpayment.com,Business And Industrial,US,Tier 3,25,,1550,No
+1118,Beshortlisted,beshortlisted.com,Business And Industrial,NG,Tier 3,25,,1386,No
+1119,Takas Ltd,takas.lk,Technology And Computing,,Tier 3,25,,1334,No
+1120,Springarm by Metalform,springarm.co.nz,Business And Industrial,NZ,Tier 3,25,,688,No
+1121,Mogupets,mogupets.com,Science,SG,Tier 3,25,,597,No
+1122,Sparerows,sparerows.com,Business And Industrial,IN,Tier 3,25,,557,No
+1123,,solutioninfrasecinfo.com,Business And Industrial,FR,Tier 3,25,,497,No
+1124,Multipolar Technology,multipolar.com,Business And Industrial,ID,Tier 3,25,,350,No
+1125,,zelium.net,Business And Industrial,MY,Tier 3,25,,60,No
+1126,,ctelecom.net,Technology And Computing,,Tier 3,25,,0,No
+1127,Equitable Holdings Inc,equitable.com,Finance,US,Tier 3,25,,0,No
+1128,Baker Street Publishing,bakerstreetpublishing.com,Business And Industrial,US,Tier 3,25,,0,No
+1129,Experian Information Solutions Inc,datacredito.com.co,Technology And Computing,,Tier 3,25,,0,No
+1130,King & Wood Mallesons Ltd,kwm.com,Business And Industrial,GB,Tier 3,25,,0,No
+1131,Wix.com Inc,greatconferencing.com,Technology And Computing,CN,Tier 3,25,,0,No
+1132,Plus Your Business,plusyourbusiness.com,Business And Industrial,GB,Tier 3,25,,0,No
+1133,Dentsply International,dentsply.com,Business And Industrial,US,Tier 3,25,,0,No
+1134,,jostarifa.com,Business And Industrial,CA,Tier 3,25,,0,No
+1135,,truckerplates.com,Business And Industrial,US,Tier 3,25,,0,No
+1136,Cyber Times,cyber-times.org,Business And Industrial,,Tier 3,25,,0,No
+1137,Patheon,patheon.cn,Science,US,Tier 3,25,,0,No
+1138,Premium Funding Pty Ltd,premiumfunding.net.au,Finance,AU,Tier 3,25,,0,No
+1139,,wcbank.com,Finance,US,Tier 3,25,,0,No
+1140,BrightSpeed LLC,brightspeed.com,Technology And Computing,US,Tier 3,25,,0,No
+1141,Henkel AG & Co,natureboxbeauty.nl,Science,,Tier 3,25,,0,No
+1142,Tactica Consulting,tacticaconsulting.com,Business And Industrial,,Tier 3,25,,0,No
+1143,,dieselgrace.com,Business And Industrial,US,Tier 3,25,,0,No
+1144,,jjkellerdatasense.com,Business And Industrial,US,Tier 3,25,,0,No
+1145,ChoiExper Ltd,choiexpert.com,Science,GR,Tier 3,25,,0,No
+1146,,ekranac.com,Finance,,Tier 3,25,,0,No
+1147,Mining TAG,miningtag.com,Business And Industrial,MX,Tier 3,25,,0,No
+1148,,fbrmetal.com.br,Business And Industrial,,Tier 3,25,,0,No
+1149,Activision Publishing Inc,cpcod.top,Technology And Computing,,Tier 3,25,,0,No
+1150,medflex,medflex.de,Technology And Computing,DE,Tier 3,25,,0,No
+1151,Stuck Door Rehab,stuckdoor.com,Business And Industrial,US,Tier 3,25,,0,No
+1152,OnWorks,onworks.net,Technology And Computing,EE,Tier 3,25,,0,No
+1153,Quick Rice Purity Test,quickricepuritytest.com,"Law, Govt And Politics",,Tier 3,25,,0,No
+1154,,amagency.fr,Technology And Computing,FR,Tier 3,25,,0,No
+1155,,macroink-technology.cl,Technology And Computing,,Tier 3,25,,0,No
+1156,John Wiley & Sons Inc,wiley.com,Science,US,Tier 3,25,,0,No
+1157,Corning Incorporated,akinfefatou.com,Science,US,Tier 3,25,,0,No
+1158,Master Payments,masterpayments.net,Business And Industrial,CA,Tier 3,25,,0,No
+1159,,bakersfieldkidsdentistry.com,Technology And Computing,US,Tier 3,25,,0,No
+1160,,blutec.co.in,Business And Industrial,IN,Tier 3,25,,0,No
+1161,Girl Scouts of Gulfcoast Florida Inc,gsgcf.org,Technology And Computing,US,Tier 3,25,,0,No
+1162,,ffcalgary.org,"Law, Govt And Politics",CA,Tier 3,25,,0,No
+1163,Hamilton Douglas Legal,hdclaims.co.uk,Business And Industrial,GB,Tier 3,25,,0,No
+1164,Facebook Inc,facebook.net,Technology And Computing,US,Tier 3,25,,0,No
+1165,FedEx Corporation,fedex.com,Business And Industrial,US,Tier 3,25,,0,No
+1166,,proudproduct.com,Business And Industrial,,Tier 3,25,,0,No
+1167,Moog Inc,moog.fr,Business And Industrial,FR,Tier 3,25,,0,No
+1168,Visionbridge Life Sciences Management L.P,visionbridge.com,Science,,Tier 3,25,,0,No
+1169,Hymans Robertson LLP,morganpensionschemes.co.uk,Technology And Computing,GB,Tier 3,25,,0,No
+1170,Oxa Group,oxa-group.com,Business And Industrial,,Tier 3,25,,0,No
+1171,Markham Bank,markhambank.com,Finance,US,Tier 3,25,,0,No
+1172,MAGS Skin,magsskin.com,Business And Industrial,,Tier 3,25,,0,No
+1173,Banque PSA Finance,stellantisfinancialservices.com,Finance,FR,Tier 3,25,,0,No
+1174,Constellation Energy Resources LLC,nebraskagas.com,Business And Industrial,,Tier 3,25,,0,No
+1175,91 University,olympuspresa.com,Technology And Computing,CA,Tier 3,25,,0,No
+1176,Aspire Wealth,asspirewealth.ltd,Finance,GB,Tier 3,25,,0,No
+1177,The Normal Christian Life,thenormalchristianlife.org,Technology And Computing,AU,Tier 3,25,,0,No
+1178,,alln1cellular.com,Technology And Computing,US,Tier 3,25,,0,No
+1179,,ccicompass.com,Business And Industrial,US,Tier 3,25,,0,No
+1180,Sawcafe,sawcafe.com,Business And Industrial,AR,Tier 3,25,,0,No
+1181,,social-media-ads.com,Science,,Tier 3,25,,0,No
+1182,EPLAN GmbH,eplan.com,Technology And Computing,US,Tier 3,25,,0,No
+1183,,all-on.com,Business And Industrial,,Tier 3,25,,0,No
+1184,,ndsmods.com,Technology And Computing,,Tier 3,25,,0,No
+1185,CVFunerals,cvfunerals.com.au,Technology And Computing,AU,Tier 3,25,,0,No
+1186,Janela Imoveis,janelaimoveis.com.br,Business And Industrial,BR,Tier 3,25,,0,No
+1187,babellsp.com,babellsp.com,Science,AE,Tier 3,25,,0,No
+1188,Engineering,eng.it,Business And Industrial,IT,Tier 3,25,,0,No
+1189,,b2bleadgeneration.us,Business And Industrial,BD,Tier 3,25,,0,No
+1190,mail.honeywelltj.com,honeywelltj.com,Science,CN,Tier 3,25,,0,No
+1191,Audio Immersive,audioimmersive.com,Technology And Computing,,Tier 3,25,,0,No
+1192,,gcmethiopia.org,Business And Industrial,US,Tier 3,25,,0,No
+1193,Mega Group,megagroup-eg.com,Business And Industrial,,Tier 3,25,,0,No
+1194,AXA Holdings Belgium,axa.fr,Business And Industrial,FR,Tier 3,25,,0,No
+1195,Champion Home Builders Inc,dutch-housing.com,Technology And Computing,US,Tier 3,25,,0,No
+1196,Invincible Digital Private Ltd,invincibledigital.com,Business And Industrial,IN,Tier 3,25,,0,No
+1197,Coconut Software,coconutsoftware.com,Technology And Computing,CA,Tier 3,25,,0,No
+1198,Banco Financiera Comercial Hondurena S.A,ficohsa.com,Finance,HN,Tier 3,25,,0,No
+1199,Osiris Technologies Ltd,osirisit.co.uk,Technology And Computing,GB,Tier 3,25,,0,No
+1200,BHH Affiliates LLC,michellesells316.com,Business And Industrial,US,Tier 3,25,,0,No
+1201,"Solstice Advanced Materials, Inc.",solstice.com,Business And Industrial,US,Tier 3,25,,0,No
+1202,,bc0a.com,Business And Industrial,,Tier 3,25,,0,No
+1203,Startease,startease.in,Business And Industrial,US,Tier 3,25,,0,No
+1204,,signal-iduna-agentur.de,Business And Industrial,DE,Tier 3,25,,0,No
+1205,,sustainera.com,Business And Industrial,NL,Tier 3,25,,0,No
+1206,,syriantalent.com,Business And Industrial,AE,Tier 3,25,,0,No
+1207,,sherwoodfurniture.design,Business And Industrial,,Tier 3,25,,0,No
+1208,Diamond Girl Marketing,diamondgirlmarketing.com,Business And Industrial,,Tier 3,25,,0,No
+1209,,hotelstarps.com,"Law, Govt And Politics",US,Tier 3,25,,0,No
+1210,AXA Versicherungen AG,axa.ch,Finance,CH,Tier 3,25,,0,No
+1211,Guardian Industries Corp,guardianglass.com,"Law, Govt And Politics",,Tier 3,25,,0,No
+1212,NBIT,nbit.com,Business And Industrial,US,Tier 3,25,,0,No
+1213,,jtrey.com,Finance,US,Tier 3,25,,0,No
+1214,Simplyfly LLC,simplyflynow.com,Business And Industrial,US,Tier 3,25,,0,No
+1215,Resilient Technology Specialists Ltd,resilienttechnologyspecialists.com,Business And Industrial,GB,Tier 3,25,,0,No
+1216,moonpreneur,moonpreneur.com,Technology And Computing,US,Tier 3,25,,0,No
+1217,,cpcrdcongo.org,Business And Industrial,CD,Tier 3,25,,0,No
+1218,Messe Hannover GmbH,euroblech.com,Business And Industrial,GB,Tier 3,25,,0,No
+1219,,billcordell.com,Business And Industrial,US,Tier 3,25,,0,No
+1220,CIMB Bank,cimbbank.com.vn,Religion And Spirituality,MY,Tier 3,20,,24602,No
+1221,,protea.marriott.com,Unknown,US,Tier 3,20,,24498,No
+1222,Costa Cruises,costacruises.co.uk,Travel,IT,Tier 3,20,,24179,No
+1223,Puberty Too Soon,pubertytoosoon.com,Society,US,Tier 3,20,,24117,No
+1224,Novo Nordisk Pharma Ltd,novonordisk.pk,Careers,PK,Tier 3,20,,23970,No
+1225,Keller Williams,timothypshea.com,Real Estate,,Tier 3,20,,23919,No
+1226,,manulifeim.com.vn,Unknown,VN,Tier 3,20,,23900,No
+1227,Dupont,dupont.de,Travel,DE,Tier 3,20,,23855,No
+1228,,dentistsofsantaclara.com,,,Tier 3,20,,23811,No
+1229,,dentistsofkatypark.com,,,Tier 3,20,,23811,No
+1230,,rivernorthmoderndentistry.com,,,Tier 3,20,,23811,No
+1231,,bellflowergatewaymoderndentistry.com,,,Tier 3,20,,23811,No
+1232,,dentistsofkenwood.com,,,Tier 3,20,,23811,No
+1233,,harperskidsdentistry.com,,,Tier 3,20,,23811,No
+1234,,dentistsofsanjuancapistrano.com,,,Tier 3,20,,23811,No
+1235,,dentistsofbocavillage.com,Unknown,US,Tier 3,20,,23811,No
+1236,,dentistsonsandcanyon.com,,,Tier 3,20,,23811,No
+1237,,dentistsatbuckeyecommons.com,,,Tier 3,20,,23811,No
+1238,F. Hoffmann-La Roche Ltd,findrochetrials.ca,Unknown,CA,Tier 3,20,,23800,No
+1239,Marriott International INC,traveler.marriott.com,Unknown,US,Tier 3,20,,23748,No
+1240,Genentech USA Inc,piasky-hcp.com,Unknown,,Tier 3,20,,23487,No
+1241,,avo.africa,,,Tier 3,20,,23418,No
+1242,Bristol Myers Squibb Australia Pty Ltd,gastro-hub.com.au,Unknown,AU,Tier 3,20,,23400,No
+1243,,bms-oncall.com.au,Unknown,AU,Tier 3,20,,23400,No
+1244,,powerofcolo.com,,,Tier 3,20,,23185,No
+1245,,pkzh.ch,,,Tier 3,20,,23067,No
+1246,Brisbane Se,brisbane.qld.gov.au,Unknown,AU,Tier 3,20,,22555,No
+1247,HUK24 AG,huk24.de,Unknown,DE,Tier 3,20,,22540,No
+1248,,ni-oita.nissan-dealer.jp,,JP,Tier 3,20,,22340,No
+1249,Corteva Co,corteva.co.th,Unknown,,Tier 3,20,,22150,No
+1250,Corteva,corteva.com.ar,Unknown,US,Tier 3,20,,22150,No
+1251,Cupraofficial,cupraofficial.gr,Careers,GR,Tier 3,20,,22065,No
+1252,,alpenhotel-ammerwald.at,,,Tier 3,20,,21788,No
+1253,Skyrizi,skyrizi.com,Unknown,,Tier 3,20,,21735,No
+1254,,kcmetrosports.com,Unknown,US,Tier 3,20,,21640,No
+1255,,stage-yonsarx.com,,,Tier 3,20,,21600,No
+1256,HANG SENG BANK Ltd,hangsenginvestment.com,Unknown,HK,Tier 3,20,,21443,No
+1257,Secil,secil.eu,Unknown,NL,Tier 3,20,,21437,No
+1258,Evanta,evanta.com,Careers,US,Tier 3,20,,21365,No
+1259,Envolve Benefit Options Inc,centenevision.com,Unknown,,Tier 3,20,,21220,No
+1260,Marriott International Inc,delta-hotels.marriott.com,Unknown,US,Tier 3,20,,21198,No
+1261,Marriott International Inc,autograph-hotels.marriott.com,Unknown,US,Tier 3,20,,21198,No
+1262,,mpx.com,,,Tier 3,20,,21075,No
+1263,,eurodreams.be,,,Tier 3,20,,21065,No
+1264,Lebara B.V,lebara.co.uk,Travel,GB,Tier 3,20,,21030,No
+1265,,crumissoes.com.br,,,Tier 3,20,,20997,No
+1266,,gpa.at,Unknown,AT,Tier 3,20,,20992,No
+1267,,chevroletanz.com,,,Tier 3,20,,20800,No
+1268,,morganstanleynetreit.com,Unknown,US,Tier 3,20,,20797,No
+1269,,rocheresource.ie,,,Tier 3,20,,20600,No
+1270,Roche Products Pty Ltd,myhemlibra.com.au,Society,AU,Tier 3,20,,20600,No
+1271,,rutpay.cl,,,Tier 3,20,,20295,No
+1272,,chevyinterlomas.com.mx,Unknown,MX,Tier 3,20,,20097,No
+1273,,chevroletvancei.com.ar,Unknown,,Tier 3,20,,20097,No
+1274,NSW SE,legalaid.nsw.gov.au,Unknown,AU,Tier 3,20,,20070,No
+1275,Bayerische Motoren Werke AG,bmw-motorrad-dubai.com,Unknown,,Tier 3,20,,20000,No
+1276,Illinois co,labor.illinois.gov,Unknown,US,Tier 3,20,,20000,No
+1277,,jinmaohyattsh.com.cn,Unknown,,Tier 3,20,,19750,No
+1278,Stanford Health Care,stanfordhealthcare.com,Unknown,,Tier 3,20,,19600,No
+1279,,imunologiabms.com.br,,,Tier 3,20,,19400,No
+1280,Japan Freight Express Co. Ltd,jfex.jp,Unknown,JP,Tier 3,20,,19354,No
+1281,RX Japan Ltd,fiweek.jp,Unknown,JP,Tier 3,20,,19354,No
+1282,,devnoveljewels.com,Unknown,IN,Tier 3,20,,19300,No
+1283,RX Japan Ltd,amlex.jp,Unknown,JP,Tier 3,20,,19197,No
+1284,,h2oai.com,Unknown,AU,Tier 3,20,,19033,No
+1285,LATEST NEWS A man ,library.sydney.edu.au,Unknown,AU,Tier 3,20,,18900,No
+1286,ETHZ - ETH Zurich,ethz.ch,Unknown,CH,Tier 3,20,,18790,No
+1287,,optimumgly.ca,,,Tier 3,20,,18700,No
+1288,,portzamparc.bnpparibas,Unknown,,Tier 3,20,,18617,No
+1289,,avocats.deloitte.com,,US,Tier 3,20,,18500,No
+1290,,aramark-stage.es,,,Tier 3,20,,18475,No
+1291,,aramark-stage.cz,,,Tier 3,20,,18475,No
+1292,,aramark-stage.ca,,,Tier 3,20,,18475,No
+1293,,aramark-stage.cl,,,Tier 3,20,,18475,No
+1294,investor.accenture.com,investor.accenture.com,Unknown,US,Tier 3,20,,18433,No
+1295,Reed Exhibitions Ltd,wtm.com,Travel,SA,Tier 3,20,,18364,No
+1296,,mybekaert.com,Unknown,,Tier 3,20,,18231,No
+1297,,gaes.com.ar,Unknown,AR,Tier 3,20,,18222,No
+1298,Ziff Davis LLC,co-stage.norton.com,Unknown,,Tier 3,20,,18200,No
+1299,,mgkalyan.co.in,,,Tier 3,20,,17900,No
+1300,,mghosur.co.in,,,Tier 3,20,,17900,No
+1301,,imfigeur.org,,,Tier 3,20,,17900,No
+1302,Marriott Se,hotel-development.marriott.com,Unknown,US,Tier 3,20,,17870,No
+1303,,sinaisraros.com.br,,,Tier 3,20,,17800,No
+1304,,novonordisk-trials.us,Unknown,DK,Tier 3,20,,17800,No
+1305,,amedidadoabraco.com.br,Unknown,,Tier 3,20,,17680,No
+1306,Ziff Davis LLC,cz.norton.com,Unknown,,Tier 3,20,,17600,No
+1307,Norton inc,ar-stage.norton.com,Unknown,,Tier 3,20,,17600,No
+1308,MARRIOTT CO,corporatedealset.marriott.com,Unknown,US,Tier 3,20,,17381,No
+1309,,qnityelectronics.com,Unknown,,Tier 3,20,,17365,No
+1310,Franke Group,artemis-holding.com,Real Estate,,Tier 3,20,,17307,No
+1311,,mercedes-benz-yokohama-higashi.jp,Unknown,JP,Tier 3,20,,17300,No
+1312,,mercedes-benz-nishinomiya.jp,Unknown,JP,Tier 3,20,,17300,No
+1313,,mercedes-benz-chofu.jp,Unknown,JP,Tier 3,20,,17300,No
+1314,,mercedes-benz-okayamanishi.jp,,,Tier 3,20,,17300,No
+1315,Skip to main co,rise-aem-perf.scholastic.com,Unknown,US,Tier 3,20,,17300,No
+1316,,mercedes-benz-hirakata.jp,Unknown,JP,Tier 3,20,,17300,No
+1317,,mercedes-benz-nishitokyo.com,Unknown,JP,Tier 3,20,,17300,No
+1318,,mercedes-benz-sendaihigashi.jp,Unknown,JP,Tier 3,20,,17300,No
+1319,,mercedes-benz-sennonji.jp,Unknown,JP,Tier 3,20,,17300,No
+1320,,mercedes-benz-konosu.jp,Unknown,JP,Tier 3,20,,17300,No
+1321,,mercedes-benz-saitamachuo.jp,,,Tier 3,20,,17300,No
+1322,,mercedes-benz-sapporonishi.jp,Unknown,JP,Tier 3,20,,17300,No
+1323,,mercedes-benz-tokyoshibaura.jp,,,Tier 3,20,,17300,No
+1324,,mercedes-benz-nagaoka.jp,Unknown,JP,Tier 3,20,,17300,No
+1325,,mercedes-benz-tsuruga.jp,Unknown,JP,Tier 3,20,,17300,No
+1326,,mercedes-benz-kishiwada.jp,Unknown,JP,Tier 3,20,,17300,No
+1327,,mercedes-benz-kobechuo.jp,Unknown,JP,Tier 3,20,,17300,No
+1328,,mercedes-benz-fukuokachuo.jp,Unknown,JP,Tier 3,20,,17300,No
+1329,,mercedes-benz-kashiwa.jp,Unknown,JP,Tier 3,20,,17300,No
+1330,,np-kanagawa.nissan-dealer.jp,,JP,Tier 3,20,,17140,No
+1331,,shop-perf.scholastic.com,,US,Tier 3,20,,17134,No
+1332,,pacient-sma.cz,,,Tier 3,20,,17100,No
+1333,csr-marriott,serve360.marriott.com,Unknown,US,Tier 3,20,,17078,No
+1334,Conoco Inc.,conoco.com,Travel,US,Tier 3,20,,17000,No
+1335,iltm.com,iltm.com,Travel,GB,Tier 3,20,,16937,No
+1336,"Allianz - Slovenska poistovna, a.s",allianz.sk,Society,SK,Tier 3,20,,16920,No
+1337,Marriott International Inc,courtyard.marriott.com,Unknown,US,Tier 3,20,,16825,No
+1338,,mastercard.me,Unknown,,Tier 3,20,,16800,No
+1339,,betvibe-in.net,,,Tier 3,20,,16785,No
+1340,,prks.com.au,Unknown,AU,Tier 3,20,,16707,No
+1341,,hfsonline.com.au,,,Tier 3,20,,16620,No
+1342,,wincheckr.be,,,Tier 3,20,,16565,No
+1343,,averdadesobreopeso.pt,,,Tier 3,20,,16555,No
+1344,,ni-kagoshima.nissan-dealer.jp,,JP,Tier 3,20,,16500,No
+1345,,accounts.illinois.gov,,US,Tier 3,20,,16500,No
+1346,TELEFONICA DE ESPANA SA,telefonicaempresas.es,Unknown,ES,Tier 3,20,,16450,No
+1347,National Comprehensive Cancer Network Inc,onuregpro.com,Unknown,,Tier 3,20,,16400,No
+1348,,commerce-proxyamds.site,,,Tier 3,20,,16200,No
+1349,,bhoptions.com,Unknown,US,Tier 3,20,,16110,No
+1350,,welcometorochems.co.uk,,,Tier 3,20,,16100,No
+1351,,isabel-serrano.herbalife.com,,,Tier 3,20,,16067,No
+1352,,kelly.herbalife.com,,US,Tier 3,20,,16067,No
+1353,,core.herbalife.com,,US,Tier 3,20,,16050,No
+1354,,pedragonchevroletsp.com.br,Unknown,US,Tier 3,20,,15837,No
+1355,,supervelveiculoschevrolet.com.br,Unknown,,Tier 3,20,,15837,No
+1356,,ondigtallacps.online,,,Tier 3,20,,15817,No
+1357,United HealthCare Services Inc,myulicnyfp.com,Unknown,,Tier 3,20,,15800,No
+1358,,durystasavingsprogram.com,,,Tier 3,20,,15735,No
+1359,,botoxoveractivebladder.com,,,Tier 3,20,,15735,No
+1360,September Astellas Pharma Inc,evrenzo.eu,Unknown,ES,Tier 3,20,,15700,No
+1361,,scjyfz.com,,,Tier 3,20,,15700,No
+1362,,danmar.herbalife.com,,,Tier 3,20,,15620,No
+1363,YYYY Colgate Palmolive Company,colgate.ng,Unknown,NG,Tier 3,20,,15599,No
+1364,Colgate-Palmolive,colgate.az,Unknown,AZ,Tier 3,20,,15599,No
+1365,,colgateprofissional.pt,,,Tier 3,20,,15599,No
+1366,,dunlet.dk,Unknown,DK,Tier 3,20,,15599,No
+1367,YYYY Colgate Palmolive Company,colgate.hu,Unknown,,Tier 3,20,,15599,No
+1368,,qibc.cn,Unknown,CN,Tier 3,20,,15400,No
+1369,,sparkassenverband.at,Travel,,Tier 3,20,,15350,No
+1370,,thenutritionmission.herbalife.com,,US,Tier 3,20,,15270,No
+1371,,mariaballester.herbalife.com,,US,Tier 3,20,,15270,No
+1372,,tshebenik.herbalife.com,,US,Tier 3,20,,15270,No
+1373,,jfiore.herbalife.com,,,Tier 3,20,,15270,No
+1374,,shanaford.herbalife.com,,US,Tier 3,20,,15270,No
+1375,,alexisdickens.herbalife.com,,,Tier 3,20,,15270,No
+1376,,herbanutricion.herbalife.com,,US,Tier 3,20,,15270,No
+1377,,resultswithlauren.herbalife.com,,US,Tier 3,20,,15270,No
+1378,,niscowalker.herbalife.com,,US,Tier 3,20,,15270,No
+1379,,rc24fit.herbalife.com,,US,Tier 3,20,,15270,No
+1380,,stockfit7.herbalife.com,,US,Tier 3,20,,15270,No
+1381,,herbaloulet.herbalife.com,,US,Tier 3,20,,15270,No
+1382,,lynnecongreve.herbalife.com,,US,Tier 3,20,,15270,No
+1383,,richardhowlett.herbalife.com,,US,Tier 3,20,,15270,No
+1384,,andreahale.herbalife.com,,,Tier 3,20,,15270,No
+1385,,coachshawn.herbalife.com,,US,Tier 3,20,,15270,No
+1386,,hlfshop.herbalife.com,,US,Tier 3,20,,15270,No
+1387,Apartment Income REIT Corp,aircommunities.com,Careers,US,Tier 3,20,,15200,No
+1388,,isp.illinois.gov,Unknown,US,Tier 3,20,,15100,No
+1389,EVRENZO co,evrenzo.fi,Unknown,FI,Tier 3,20,,15100,No
+1390,EVRENZO co,evrenzo.dk,Unknown,DK,Tier 3,20,,15100,No
+1391,,venoferhcp.com,Unknown,US,Tier 3,20,,14978,No
+1392,,serinosports.com,Unknown,US,Tier 3,20,,14839,No
+1393,,ni-hamamatsu.nissan-dealer.jp,,JP,Tier 3,20,,14800,No
+1394,,scotiaprivateclientgroup.com,Unknown,,Tier 3,20,,14800,No
+1395,,ni-mie.nissan-dealer.jp,,JP,Tier 3,20,,14800,No
+1396,DHL International GmbH,ondemand.dhl.com,Unknown,DE,Tier 3,20,,14800,No
+1397,,np-nagasaki.nissan-dealer.jp,,JP,Tier 3,20,,14800,No
+1398,,westpaciq.com.au,Unknown,,Tier 3,20,,14800,No
+1399,,np-kochi.nissan-dealer.jp,,JP,Tier 3,20,,14800,No
+1400,,ni-matsumoto.nissan-dealer.jp,,,Tier 3,20,,14800,No
+1401,,zhansuan.com,,,Tier 3,20,,14757,No
+1402,Kanebo Cosmetics Inc,nomorerules.net,Unknown,JP,Tier 3,20,,14600,No
+1403,Banco de Galicia y Buenos Aires S.A.U,galiciasecurities.com.ar,Unknown,AR,Tier 3,20,,14565,No
+1404,Bridgestone Corporation,bridgestone.hu,Unknown,HU,Tier 3,20,,14547,No
+1405,,stg01.herbalife.com,,US,Tier 3,20,,14450,No
+1406,,globalhealthsaudi.com,Unknown,GB,Tier 3,20,,14402,No
+1407,Shimonoseki Mitsui Chemicals Inc,shimonoseki-mci.co.jp,Unknown,JP,Tier 3,20,,14400,No
+1408,,natureadvantage.ca,,,Tier 3,20,,14347,No
+1409,,fondazionesnam.it,Unknown,IT,Tier 3,20,,13927,No
+1410,Bridgestone Corporation,bridgestone.es,Travel,FR,Tier 3,20,,13805,No
+1411,Bridgestone Corporation,bridgestone.fi,Unknown,BE,Tier 3,20,,13805,No
+1412,,azmedconnect.vn,Unknown,VN,Tier 3,20,,13750,No
+1413,,azmedconnect.ph,,,Tier 3,20,,13750,No
+1414,BYD(H.K.)CO. LIMITED,bmeasyliftline.com,Unknown,CN,Tier 3,20,,13512,No
+1415,PA Co,huntfish.pa.gov,Unknown,US,Tier 3,20,,13500,No
+1416,,allstatecareer.org,Unknown,,Tier 3,20,,13400,No
+1417,"Allianz Slovenija, podruznica",allianz-slovenija.si,Unknown,,Tier 3,20,,13400,No
+1418,,pearsoneltusa.com,,,Tier 3,20,,13358,No
+1419,,teachables-qa.scholastic.com,,,Tier 3,20,,13200,No
+1420,,teachables-stage.scholastic.com,,,Tier 3,20,,13200,No
+1421,Skip to main co,art.scholastic.com,Unknown,US,Tier 3,20,,13118,No
+1422,,kingspanroofing.com,,,Tier 3,20,,13000,No
+1423,,sparbankenmalardalen.se,,,Tier 3,20,,13000,No
+1424,Bridgestone Chiudi,bridgestone.ch,Unknown,FR,Tier 3,20,,12957,No
+1425,BBVA Allianz Seguros y Reaseguros,bbvaallianz.es,Unknown,,Tier 3,20,,12950,No
+1426,AbbVie Inc,aclaremosdeunavez.com.co,Unknown,,Tier 3,20,,12897,No
+1427,Skip to main co,superstem-aem64-qa.scholastic.com,Unknown,US,Tier 3,20,,12768,No
+1428,Skip to main co,classroommagazines-aem64-dev.scholastic.com,Unknown,US,Tier 3,20,,12768,No
+1429,Skip to main co,choices.scholastic.com,Unknown,US,Tier 3,20,,12768,No
+1430,Skip to main co,upfront-aem-perf.scholastic.com,Unknown,US,Tier 3,20,,12768,No
+1431,,gonvda.cc,,,Tier 3,20,,12700,No
+1432,,chiesiconnect.fr,,,Tier 3,20,,12700,No
+1433,,chiesiconnect.es,,,Tier 3,20,,12700,No
+1434,,chiesiconnect.de,,,Tier 3,20,,12700,No
+1435,UMZUG Se,umzug.de,Unknown,DE,Tier 3,20,,12647,No
+1436,,panpacificresort.com,,,Tier 3,20,,12350,No
+1437,Abbott Laboratories,de.abbott,Unknown,DE,Tier 3,20,,12350,No
+1438,Bridgestone Corporation,bridgestone.ee,Unknown,,Tier 3,20,,12240,No
+1439,Bridgestone SchlieAYen,bridgestone.at,Unknown,AT,Tier 3,20,,12240,No
+1440,Bridgestone Corporation,bridgestone.lt,Unknown,BE,Tier 3,20,,12240,No
+1441,Bridgestone,bridgestone.be,Unknown,FR,Tier 3,20,,12240,No
+1442,Bridgestone Corporation,bridgestone.lv,Unknown,,Tier 3,20,,12240,No
+1443,,bridgestone.hr,Unknown,IT,Tier 3,20,,12240,No
+1444,Florida KidCare,floridakidcare.org,Unknown,US,Tier 3,20,,12239,No
+1445,,library-projects.flinders.edu.au,Unknown,AU,Tier 3,20,,12200,No
+1446,Hyatt Corporation,baiyuejiudian.com.cn,Unknown,,Tier 3,20,,12050,No
+1447,,icf.com.br,Unknown,,Tier 3,20,,11949,No
+1448,BYD(H.K.)CO. LIMITED,hbzhuangying.com,Unknown,,Tier 3,20,,11947,No
+1449,,swickardtoyota101.com,Unknown,US,Tier 3,20,,11934,No
+1450,,miposeinaihcm.gr,,,Tier 3,20,,11900,No
+1451,,bmson.tv,,,Tier 3,20,,11900,No
+1452,,camzyos-safety-patient.be,,,Tier 3,20,,11900,No
+1453,,amag-classic.ch,Unknown,CH,Tier 3,20,,11900,No
+1454,,chiesiconnect.gr,,,Tier 3,20,,11900,No
+1455,,bmsplus.se,,,Tier 3,20,,11900,No
+1456,,drjanusz.herbalife.com,,,Tier 3,20,,11770,No
+1457,,slimu.herbalife.com,,,Tier 3,20,,11770,No
+1458,,ompshydro.com.au,Unknown,,Tier 3,20,,11665,No
+1459,,ngtqa.com,,,Tier 3,20,,11661,No
+1460,,ua.abbott,Unknown,UA,Tier 3,20,,11650,No
+1461,,toyotaofbayridge.com,Unknown,US,Tier 3,20,,11554,No
+1462,Autodesk Bran,brand.autodesk.com,Unknown,US,Tier 3,20,,11475,No
+1463, HEALTH DASHB,hds-stg.autodesk.com,Unknown,US,Tier 3,20,,11474,No
+1464,,allerganaesthetics.pl,Unknown,,Tier 3,20,,11435,No
+1465,,allerganaesthetics.gr,Unknown,,Tier 3,20,,11435,No
+1466,,topconpositioning.asia,,,Tier 3,20,,11300,No
+1467,,blu-u.com,Careers,US,Tier 3,20,,11300,No
+1468,,improsafondos.com,Unknown,,Tier 3,20,,11300,No
+1469,Hong Kong Baptist University,lsc.hkbu.edu.hk,Unknown,HK,Tier 3,20,,11300,No
+1470,Eidgenossisches Institut fur Metrologie METAS,metas.ch,Unknown,CH,Tier 3,20,,11250,No
+1471,,alhammad.sa.com,,,Tier 3,20,,11200,No
+1472,Loprofin GmbH,loprofin.de,Unknown,DE,Tier 3,20,,11078,No
+1473,VIREA,virea.se,Unknown,,Tier 3,20,,11058,No
+1474,,tenderbox.de,Unknown,DE,Tier 3,20,,10920,No
+1475,,automobielbedrijfcito-jaguar.nl,Unknown,NL,Tier 3,20,,10692,No
+1476,FresuCare AG,fresucare.ch,Unknown,CH,Tier 3,20,,10464,No
+1477,,cheetahproducts.com.au,,,Tier 3,20,,10440,No
+1478,,sites.udel.edu,Unknown,US,Tier 3,20,,10400,No
+1479,,china-ipif.com,Unknown,CN,Tier 3,20,,10300,No
+1480,MetLife Insurance Company of Korea Ltd,metlife.co.kr,Unknown,KR,Tier 3,20,,10300,No
+1481,,zinokdaugiau.lt,Unknown,LT,Tier 3,20,,10289,No
+1482,,schweizerkulturpreise.ch,,,Tier 3,20,,10286,No
+1483,,lexus-shymkent.kz,Unknown,,Tier 3,20,,10250,No
+1484,,ece.udel.edu,Unknown,US,Tier 3,20,,10208,No
+1485,Sparkasse der Stadt Iserlohn,sparkasse-iserlohn.de,Travel,DE,Tier 3,20,,10150,No
+1486,,blv.admin.ch,,CH,Tier 3,20,,10150,No
+1487,TeamViewer,teamviewer.cn,Unknown,US,Tier 3,20,,10140,No
+1488,,almiclub.cy,Unknown,,Tier 3,20,,10019,No
+1489,Massachusetts Behavioral Health Partnership,masspartnership.com,Unknown,US,Tier 3,20,,10000,No
+1490,,acciona-energia.pl,Unknown,,Tier 3,20,,9965,No
+1491,Flinders Se,researchnow.flinders.edu.au,Unknown,AU,Tier 3,20,,9965,No
+1492,Sparkasse Trier,sparkasse-trier.de,Travel,DE,Tier 3,20,,9850,No
+1493,,pringles-clicknfly.com,,,Tier 3,20,,9800,No
+1494,afreshstartfunding.com,afreshstartfunding.com,Unknown,,Tier 3,20,,9800,No
+1495,Mastercard,mastercard.mt,Unknown,,Tier 3,20,,9800,No
+1496,ELE Verteilnetz GmbH,evng.de,Unknown,DE,Tier 3,20,,9779,No
+1497,Autodesk Inc.,research.autodesk.com,Unknown,GB,Tier 3,20,,9672,No
+1498,,ncsc.admin.ch,,CH,Tier 3,20,,9670,No
+1499,,hsbfrontdoor.com,,,Tier 3,20,,9510,No
+1500,,secoalv.admin.ch,,CH,Tier 3,20,,9500,No
+1501,,fondazionevaticanagpi.va,,,Tier 3,20,,9500,No
+1502,Highmark,highmarkbcbswv.com,Unknown,US,Tier 3,20,,9500,No
+1503,Bank of China Ltd,bankofchina.co.id,Unknown,HK,Tier 3,20,,9500,No
+1504,BenQ Corporation,benq.com.cn,Unknown,DE,Tier 3,20,,9500,No
+1505,DZ BANK AG,foerder-welt.de,Unknown,DE,Tier 3,20,,9500,No
+1506,,bazg.admin.ch,,CH,Tier 3,20,,9500,No
+1507,,museo-vela.admin.ch,,,Tier 3,20,,9500,No
+1508,,hvachub-stg.samsung.com,,,Tier 3,20,,9500,No
+1509,,adveva.com.br,,,Tier 3,20,,9500,No
+1510,,sas.admin.ch,,CH,Tier 3,20,,9500,No
+1511,,stmmyntet.se,Unknown,SE,Tier 3,20,,9500,No
+1512,Zweckverbandssparkasse Duderstadt,sparkasse-duderstadt.de,Travel,DE,Tier 3,20,,9500,No
+1513,,cpccameroun.org,Unknown,,Tier 3,20,,9500,No
+1514,Synodus Episcoporum,synod.va,Unknown,VA,Tier 3,20,,9500,No
+1515,,bar.admin.ch,,CH,Tier 3,20,,9500,No
+1516,,fullypresent.website,Society,,Tier 3,20,,9500,No
+1517,Campo Santo Teutonico Vatikanstadt,camposantoteutonico.va,Unknown,VA,Tier 3,20,,9500,No
+1518,,fsg23.va,,,Tier 3,20,,9500,No
+1519,,biogen.com.mx,Unknown,,Tier 3,20,,9500,No
+1520,,scuolavaticanapaleografia.va,,,Tier 3,20,,9500,No
+1521,VS Salons UK Limited,sassoon-global.com,Unknown,GB,Tier 3,20,,9325,No
+1522,,danonehealthacademy.com.br,Unknown,,Tier 3,20,,9215,No
+1523,,hellmanns.pt,Unknown,PT,Tier 3,20,,9121,No
+1524,Algida HU,algida.hu,Unknown,HU,Tier 3,20,,9010,No
+1525,,bridgestone.bg,Unknown,,Tier 3,20,,8905,No
+1526,Conheca a Linha Milnutri da Danone Milnutri,milnutri.com.br,Unknown,BR,Tier 3,20,,8865,No
+1527,,cuprinol.se,Unknown,SE,Tier 3,20,,8778,No
+1528,,thepersonalizedknee.com,,,Tier 3,20,,8765,No
+1529,www.beatafib.com.au,beatafib.com.au,Unknown,,Tier 3,20,,8693,No
+1530,,books.wiley.com,Unknown,US,Tier 3,20,,8597,No
+1531,,fortymilewindproject.com,,,Tier 3,20,,8565,No
+1532,Chubb INA Holdings Inc,chubbtravelinsurance.jp,Unknown,US,Tier 3,20,,8565,No
+1533,Hillrom Corporate Headquarters,hillrom.com.sg,Unknown,,Tier 3,20,,8500,No
+1534,,cvssuppliers.com,Unknown,US,Tier 3,20,,8400,No
+1535,,zm.shell,,,Tier 3,20,,8400,No
+1536,,hellmanns.ro,Unknown,,Tier 3,20,,8400,No
+1537,Astellas Pharma Canada Inc,claudin182.ca,Unknown,,Tier 3,20,,8307,No
+1538,Astellas Pharma Inc,cldn182.com.br,Unknown,,Tier 3,20,,8307,No
+1539,Astellas Pharma Inc,claudin182.be,Unknown,BE,Tier 3,20,,8307,No
+1540,Astellas Pharma Inc,digitivahcp.com,Unknown,BR,Tier 3,20,,8307,No
+1541,,risecranbournewest.com,,,Tier 3,20,,8265,No
+1542,,conoce-iqos.com,Unknown,BR,Tier 3,20,,8154,No
+1543,,hsbmemberclaims.com,,,Tier 3,20,,8110,No
+1544,,xpdeep.com,,,Tier 3,20,,8022,No
+1545,,auth-b2b-twc.ibm.com,,US,Tier 3,20,,7960,No
+1546,BHH Affiliates LLC,bhhsdemovellan.com,Unknown,US,Tier 3,20,,7937,No
+1547,,hankooktire.cn,,,Tier 3,20,,7900,No
+1548,,batsweden.se,Unknown,SE,Tier 3,20,,7893,No
+1549,Hong Kong Baptist University,ccir.hkbu.edu.hk,Unknown,HK,Tier 3,20,,7800,No
+1550,,banbookbans.com,,,Tier 3,20,,7800,No
+1551,,scotiacardpoint.com,,,Tier 3,20,,7800,No
+1552,Hong Kong Baptist University,interdisciplinary-research.hkbu.edu.hk,Unknown,CN,Tier 3,20,,7800,No
+1553,Skip to main content ,rehabilitationresearch.jefferson.edu,Unknown,US,Tier 3,20,,7727,No
+1554,,cldn182.com.au,,,Tier 3,20,,7707,No
+1555,,viessmann.info,Unknown,DE,Tier 3,20,,7700,No
+1556,,opentalent.deloitte.com,Unknown,US,Tier 3,20,,7700,No
+1557,,shayeyou.com,,,Tier 3,20,,7647,No
+1558,,virtualunderwriter.com,Real Estate,US,Tier 3,20,,7600,No
+1559,,kingdoorcloser.com,Unknown,KR,Tier 3,20,,7600,No
+1560,,assaabloyfenestration.com,,,Tier 3,20,,7600,No
+1561,,enienergystore.it,Unknown,IT,Tier 3,20,,7350,No
+1562,BHH Affiliates LLC,maryeves.com,Real Estate,US,Tier 3,20,,7219,No
+1563,BHH Affiliates LLC,janishansen.com,Real Estate,US,Tier 3,20,,7219,No
+1564,Skip to main co,choices-aem64-qa.scholastic.com,Unknown,US,Tier 3,20,,7200,No
+1565,,maisoncelesteprive.com,Unknown,,Tier 3,20,,7025,No
+1566,Daimler Truck AG,mercedes-benz-trucks-stern-center.de,Unknown,DE,Tier 3,20,,7000,No
+1567,,mercedes-benz-trucks-merbag-wiesbaden.de,,,Tier 3,20,,7000,No
+1568,Daimler Truck AG,mercedes-benz-trucks-reutlingen.de,Unknown,DE,Tier 3,20,,7000,No
+1569,Chubb INA Holdings Inc,chubbtravelinsurance.co.nz,Travel,US,Tier 3,20,,7000,No
+1570,,shell.com.hn,,,Tier 3,20,,7000,No
+1571,,mercedes-benz-av-ott.at,,,Tier 3,20,,7000,No
+1572,,mercedes-benz-pontresina.ch,,,Tier 3,20,,7000,No
+1573,,www-techlib-prod-r9-1656943743.us-west-2.elb.amazonaws.com,,,Tier 3,20,,7000,No
+1574,,mercedes-benz-trucks-baronia.es,,,Tier 3,20,,7000,No
+1575,,mercedes-benz-trucks-credendinoservice.it,,,Tier 3,20,,7000,No
+1576,,mercedes-benz-ciceley.co.uk,,,Tier 3,20,,7000,No
+1577,,p6-ap-author.samsung.com,,US,Tier 3,20,,7000,No
+1578,,mercedes-benz-trucks-vipgalicia.es,,,Tier 3,20,,7000,No
+1579,dignityhealthathomecom,dignityhealthathome.org,Unknown,US,Tier 3,20,,7000,No
+1580,,ceresit.ru,Unknown,RU,Tier 3,20,,6864,No
+1581,Autodesk Inc,autodesklicense.com,Unknown,,Tier 3,20,,6850,No
+1582,Livraison Inc,livraisoncs.com,Unknown,,Tier 3,20,,6721,No
+1583,American Express,onecms.americanexpress.com,Unknown,US,Tier 3,20,,6600,No
+1584,BASF Corporation,fibermax-cottonyields.us,Unknown,,Tier 3,20,,6580,No
+1585,,kinrgy.de,,,Tier 3,20,,6574,No
+1586,www.sonpc88.com.vn,sonpc88.com.vn,Unknown,VN,Tier 3,20,,6480,No
+1587,BHH Affiliates LLC,enthusiastnae.com,Real Estate,US,Tier 3,20,,6419,No
+1588,,betmiga.no,,,Tier 3,20,,6307,No
+1589,,betmiga.dk,,,Tier 3,20,,6307,No
+1590,,betmiga.fi,,,Tier 3,20,,6307,No
+1591,,cro-aut-chamber.at,Unknown,AT,Tier 3,20,,6300,No
+1592,,rmas.marriott.com,Unknown,US,Tier 3,20,,6300,No
+1593,,unidaderainha.com.br,,,Tier 3,20,,6300,No
+1594,Red Informativa Digital,redinformativadigital.com,Unknown,DO,Tier 3,20,,6300,No
+1595,,amplifon.news,,,Tier 3,20,,6222,No
+1596,,polcard.pl,Hobbies And Interests,PL,Tier 3,20,,6145,No
+1597,Visa,visa.com.sg,Travel,US,Tier 3,20,,6117,No
+1598,,tzjdpr.com,,,Tier 3,20,,6047,No
+1599,,toyotaproace.es,,,Tier 3,20,,6040,No
+1600,Truist Financial Corporation,texassterlingfinancial.com,Unknown,,Tier 3,20,,6025,No
+1601,,revomkt.com.br,,,Tier 3,20,,6024,No
+1602,,wcr.ethz.ch,,CH,Tier 3,20,,6000,No
+1603,,zavod-rti.ru,Unknown,RU,Tier 3,20,,5989,No
+1604,Skip to Content Stan,dunleviemfm.stanford.edu,Unknown,,Tier 3,20,,5952,No
+1605,Stanford co,snma.stanford.edu,Unknown,,Tier 3,20,,5952,No
+1606,Stanford co,facialplastics.stanford.edu,Unknown,,Tier 3,20,,5952,No
+1607,Skip to Content Stan,oncology.stanford.edu,Unknown,,Tier 3,20,,5952,No
+1608,,deinheilportal.de,,,Tier 3,20,,5900,No
+1609,,broadband.pa.gov,Unknown,US,Tier 3,20,,5860,No
+1610,,digitalbubble.it,Unknown,,Tier 3,20,,5835,No
+1611,BHH Affiliates LLC,thekarihigginsteam.com,Real Estate,US,Tier 3,20,,5819,No
+1612,,wichitahomeseller.com,Real Estate,US,Tier 3,20,,5819,No
+1613,BHH Affiliates LLC,coltonbpropertyontheplains.com,Unknown,,Tier 3,20,,5819,No
+1614,,kylejustsellshomes.com,,,Tier 3,20,,5819,No
+1615,The Farmhouse Horley,thefarmhousehorley.co.uk,Unknown,GB,Tier 3,20,,5800,No
+1616,Lebara Group,lebara.com,Careers,GB,Tier 3,20,,5800,No
+1617,,vtmit.vt.edu,Unknown,,Tier 3,20,,5747,No
+1618,AmberTech Solutions,ambertech.solutions,Unknown,,Tier 3,20,,5732,No
+1619,Los artAculos que se,dialogoroche.cl,Unknown,CL,Tier 3,20,,5700,No
+1620,Astellas Pharma Inc,cldn182.com.co,Unknown,,Tier 3,20,,5700,No
+1621,Scholastic Logo,litcampteacher.scholastic.com,Unknown,,Tier 3,20,,5568,No
+1622,,simpo.ai,Unknown,IN,Tier 3,20,,5454,No
+1623,,smeta.ai,Unknown,RU,Tier 3,20,,5299,No
+1624,Visa,visa.com.sv,Unknown,US,Tier 3,20,,5298,No
+1625,,consultoriaf5.com,Unknown,,Tier 3,20,,5238,No
+1626,,fouracresleadership.com,Unknown,GB,Tier 3,20,,5237,No
+1627,,cdstockroom.com,Unknown,CN,Tier 3,20,,5225,No
+1628,,visa.com.ru,Unknown,RU,Tier 3,20,,5220,No
+1629,Visa Inc,visa.com.ua,Unknown,US,Tier 3,20,,5220,No
+1630,EY Se,usearlycareers.ey.com,Unknown,US,Tier 3,20,,5208,No
+1631,,giannarellifunerals.com.au,,,Tier 3,20,,5200,No
+1632,Pflegeinfo.ch,pflegeinfo.ch,Unknown,DE,Tier 3,20,,5200,No
+1633,,pre-about.att.com,Unknown,US,Tier 3,20,,5200,No
+1634,,brandbaddies.biz,,,Tier 3,20,,5179,No
+1635,,keyxpress.store,Unknown,,Tier 3,20,,5174,No
+1636,argenx Disclaimer Privacy policy,argenx.uk,Unknown,BE,Tier 3,20,,5150,No
+1637,,miramoreiraimoveis.com.br,,,Tier 3,20,,5125,No
+1638,,zeropath.click,,,Tier 3,20,,5100,No
+1639,,virtualdeck.sa.com,,,Tier 3,20,,5100,No
+1640,,hypertech.ru.com,,,Tier 3,20,,5100,No
+1641,Micsoroft Co,micsoroft.com,Unknown,ES,Tier 3,20,,5099,No
+1642,,gogarden.online,,,Tier 3,20,,5065,No
+1643,,omolavanderia.com.br,Unknown,,Tier 3,20,,5051,No
+1644,,azmedconnect.my,,,Tier 3,20,,5050,No
+1645,,azmedicareupdates.com,,,Tier 3,20,,5050,No
+1646,,lavazza.uk,,,Tier 3,20,,5050,No
+1647,Visa,visa.com.tt,Travel,US,Tier 3,20,,5050,No
+1648,,akcigersagligiinisiyatifi.com,Unknown,,Tier 3,20,,5050,No
+1649,,mangguoclub.eu.org,,,Tier 3,20,,5050,No
+1650,,actoncopd.com.ph,,,Tier 3,20,,5050,No
+1651,,gluesky.ai,,,Tier 3,20,,5040,No
+1652,Skip to main content,prevention.stanford.edu,Unknown,,Tier 3,20,,5000,No
+1653,,privacyhub-dev.pwc.com,,US,Tier 3,20,,4980,No
+1654,Henkel AG,palette-hair.com,Unknown,,Tier 3,20,,4960,No
+1655,,tecitaly.pe,Unknown,MX,Tier 3,20,,4960,No
+1656,Henkel Ltd,ceresit.uk,Unknown,,Tier 3,20,,4900,No
+1657,Hong Kong Baptist University,tiis.hkbu.edu.hk,Unknown,HK,Tier 3,20,,4900,No
+1658,,loctite-superbond.ee,Unknown,EE,Tier 3,20,,4900,No
+1659,,tangit.hu,Unknown,HU,Tier 3,20,,4900,No
+1660,,weru-jp.com,,,Tier 3,20,,4900,No
+1661,,tangit.es,Unknown,ES,Tier 3,20,,4900,No
+1662,,loctite-superbond.sk,Unknown,,Tier 3,20,,4900,No
+1663,,silanbe.com,,,Tier 3,20,,4900,No
+1664,Henkel Slovenija d.o.o,loctite-superbond.si,Unknown,SI,Tier 3,20,,4900,No
+1665,HENKEL ROMANIA S.R.L,loctite-superglue.ro,Unknown,RO,Tier 3,20,,4900,No
+1666,,stoppara.hu,Unknown,HU,Tier 3,20,,4900,No
+1667,,siafm.com,,,Tier 3,20,,4900,No
+1668,,mybetterworld.es,,,Tier 3,20,,4897,No
+1669,,dreamcodersclub.in,Unknown,,Tier 3,20,,4888,No
+1670,,jobs.vt.edu,,,Tier 3,20,,4847,No
+1671,metaredx.org Inc,metaredx.org,Society,ES,Tier 3,20,,4821,No
+1672,Allianz Life Luxembourg SA,allianz.lu,Unknown,LU,Tier 3,20,,4817,No
+1673,argenx Aviso legal,argenx.es,Unknown,PT,Tier 3,20,,4800,No
+1674,,cairogirlscouts.org,Unknown,,Tier 3,20,,4778,No
+1675,,groupebiebank.com,Unknown,,Tier 3,20,,4775,No
+1676,,geospherex.com,,,Tier 3,20,,4698,No
+1677,FedEx,careers.fedex.com,Unknown,US,Tier 3,20,,4697,No
+1678,Visit main University we,marine-science.sydney.edu.au,Unknown,AU,Tier 3,20,,4697,No
+1679,,risestate.ca,Unknown,CA,Tier 3,20,,4654,No
+1680,,sgcvoluntarybenefits.com,,,Tier 3,20,,4650,No
+1681,,securelifeplanning.info,,,Tier 3,20,,4629,No
+1682,,equitrac-valtra.com.ar,Unknown,,Tier 3,20,,4625,No
+1683,,timberoutdoor.be,Unknown,,Tier 3,20,,4618,No
+1684,Festas Brilhantes,festasbrilhantes.com.br,Unknown,,Tier 3,20,,4576,No
+1685,Fuel1Direct se,fuel1direct.com,Unknown,,Tier 3,20,,4567,No
+1686,,iosb.fraunhofer.de,Unknown,,Tier 3,20,,4530,No
+1687,,gemo.fraunhofer.de,Unknown,DE,Tier 3,20,,4500,No
+1688,Revuity,revuity.com,Unknown,,Tier 3,20,,4460,No
+1689,,loesencialenfamilia.com,,,Tier 3,20,,4459,No
+1690,,isi.fraunhofer.de,Unknown,DE,Tier 3,20,,4450,No
+1691,AbbVie Inc,allerganaesthetics.pt,Unknown,,Tier 3,20,,4435,No
+1692,,allerganaesthetics.es,Unknown,,Tier 3,20,,4435,No
+1693,Allergan GmbH,allerganaesthetics.de,Unknown,DE,Tier 3,20,,4435,No
+1694,,allerganaesthetics.fr,Unknown,FR,Tier 3,20,,4435,No
+1695,,gounchartedroads.com,,,Tier 3,20,,4430,No
+1696,Vorwerk Deutschland Stiftung & Co,rezeptwelt.de,Society,DE,Tier 3,20,,4400,No
+1697,,julianachotollipsicologa.com.br,,,Tier 3,20,,4399,No
+1698,,secretpantacy.com,Unknown,,Tier 3,20,,4377,No
+1699,Encounter Global Inc,theencounterglobal.com,Unknown,,Tier 3,20,,4370,No
+1700,,career.vt.edu,Unknown,,Tier 3,20,,4357,No
+1701,Makoma d.o.o,makoma.si,Unknown,,Tier 3,20,,4319,No
+1702,,engage.vt.edu,Unknown,,Tier 3,20,,4304,No
+1703,,mcb.vt.edu,,,Tier 3,20,,4304,No
+1704,,space.vt.edu,,,Tier 3,20,,4304,No
+1705,,gpss.vt.edu,Unknown,,Tier 3,20,,4304,No
+1706,,chem.vt.edu,Unknown,,Tier 3,20,,4304,No
+1707,,hnfe.vt.edu,Unknown,,Tier 3,20,,4304,No
+1708,,xl.vt.edu,,,Tier 3,20,,4304,No
+1709,,wellingmotor.com,,,Tier 3,20,,4300,No
+1710,Hong Kong Baptist University,eic.hkbu.edu.hk,Unknown,HK,Tier 3,20,,4300,No
+1711,Hong Kong Baptist University,cpdr.hkbu.edu.hk,Unknown,HK,Tier 3,20,,4300,No
+1712,Hong Kong Baptist University,busrpg.hkbu.edu.hk,Unknown,HK,Tier 3,20,,4300,No
+1713,Activision Publishing Inc,cpbundle.com,Unknown,,Tier 3,20,,4300,No
+1714,Astellas Pharma Inc,cldn182.com.hk,Unknown,,Tier 3,20,,4300,No
+1715,,longsng-tech.com,,,Tier 3,20,,4300,No
+1716,Hong Kong Baptist University,policies.hkbu.edu.hk,Unknown,HK,Tier 3,20,,4300,No
+1717,,fleetpartner.ch,,,Tier 3,20,,4300,No
+1718,,picnicpt-h.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,4297,No
+1719,,ashcroft-p.schools.nsw.gov.au,,,Tier 3,20,,4297,No
+1720,,toronto-h.schools.nsw.gov.au,,,Tier 3,20,,4297,No
+1721,,bellevuehi-p.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,4297,No
+1722,,auburnnth-p.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,4297,No
+1723,Supplements Aromatik,aromatik.ca,Unknown,CA,Tier 3,20,,4294,No
+1724,,myrachi.ru,Unknown,,Tier 3,20,,4270,No
+1725,Brandboy,brandboy.nl,Unknown,,Tier 3,20,,4248,No
+1726,,kratosfitness.es,,,Tier 3,20,,4240,No
+1727,,accessacademy.io,Unknown,,Tier 3,20,,4200,No
+1728,,marriottdac.com,,,Tier 3,20,,4200,No
+1729,,carvip.com.vn,,,Tier 3,20,,4200,No
+1730,,ammonvektor.fraunhofer.de,,,Tier 3,20,,4150,No
+1731,Fraunhofer IWM,cpm.fraunhofer.de,Unknown,DE,Tier 3,20,,4150,No
+1732,,ivi-forscherkids.de,Family And Parenting,DE,Tier 3,20,,4150,No
+1733,Fraunhofer JOSEPH VON FRAUNHOFER-GEDENKJAHR Am,ibp.fraunhofer.de,Unknown,,Tier 3,20,,4150,No
+1734,,manitu.fraunhofer.de,Unknown,DE,Tier 3,20,,4150,No
+1735,Fraunhofer IAIS,fzml.fraunhofer.de,Unknown,DE,Tier 3,20,,4150,No
+1736,Photonics Days Jena,photonicsdays.de,Unknown,DE,Tier 3,20,,4150,No
+1737,,zwarp.fraunhofer.de,Unknown,DE,Tier 3,20,,4150,No
+1738,,hate-fluor.de,Unknown,DE,Tier 3,20,,4150,No
+1739,,dresden.fraunhofer.de,Unknown,DE,Tier 3,20,,4150,No
+1740,,aal.fraunhofer.de,Unknown,DE,Tier 3,20,,4150,No
+1741,,gs-weidenthal.de,Unknown,DE,Tier 3,20,,4147,No
+1742,It Group,orenkz.ru,Unknown,RU,Tier 3,20,,4147,No
+1743,,wirfus.de,,,Tier 3,20,,4147,No
+1744,,essentive.in,,,Tier 3,20,,4137,No
+1745,,tawfikdigital.com,Unknown,,Tier 3,20,,4131,No
+1746,,mpelectric.info,,,Tier 3,20,,4128,No
+1747,,mmagraduateprograms.com,,,Tier 3,20,,4128,No
+1748,Sister Storage,sisterstorage.com,Unknown,,Tier 3,20,,4128,No
+1749,Valence Agro,valencemasseyferguson.com.br,Unknown,PT,Tier 3,20,,4128,No
+1750,UGA Co,extension.uga.edu,Unknown,,Tier 3,20,,4107,No
+1751,UGA Co,pecanbreeding.uga.edu,Unknown,,Tier 3,20,,4107,No
+1752,,boeing-sea.com,Unknown,ID,Tier 3,20,,4100,No
+1753,Hyderabad Realtors Association,hraindia.org,Real Estate,,Tier 3,20,,4100,No
+1754,,argenx.fr,Unknown,ES,Tier 3,20,,4100,No
+1755,it co,mylotteriesplay.it.com,Unknown,,Tier 3,20,,4100,No
+1756,,batmexico.com.mx,Unknown,MX,Tier 3,20,,4100,No
+1757,Henkel AG & Co,persil-kz.com,Unknown,,Tier 3,20,,4100,No
+1758,,menariniamla.com,Unknown,ES,Tier 3,20,,4100,No
+1759,TREASURE COAST YOGA ACADEMY,treasurecoastyogaacademy.com,Unknown,,Tier 3,20,,4057,No
+1760,VELTONE PAINT,veltonepaint.com,Unknown,,Tier 3,20,,4057,No
+1761,,cynthiaokozabrands.com,,,Tier 3,20,,4057,No
+1762,,rtonline.co.za,,,Tier 3,20,,3997,No
+1763,,erturkakademi.com.tr,,,Tier 3,20,,3997,No
+1764,,transporthubexpress.com,,,Tier 3,20,,3997,No
+1765,,420logy.com,Unknown,US,Tier 3,20,,3997,No
+1766,,pltransportation.co.uk,,,Tier 3,20,,3997,No
+1767,,matchboxfund.org,Unknown,,Tier 3,20,,3997,No
+1768,,globalhitechprojects.com,Unknown,IN,Tier 3,20,,3997,No
+1769,Transport i rozdrabnianie odpadow,gep24.pl,Unknown,PL,Tier 3,20,,3990,No
+1770,,bandlab.store,,,Tier 3,20,,3987,No
+1771,Viessmann,partner-viessmann.it,Unknown,IT,Tier 3,20,,3968,No
+1772,,k2-vitamin.no,,,Tier 3,20,,3957,No
+1773,Medianz,medianz.net,Unknown,ES,Tier 3,20,,3930,No
+1774,,aiplay.it,,,Tier 3,20,,3914,No
+1775,Skinova Aesthetics,skinovaaesthetics.com,Unknown,,Tier 3,20,,3910,No
+1776,,atabek.online,,,Tier 3,20,,3907,No
+1777,,mawadbenaa-mobasat.com,,,Tier 3,20,,3907,No
+1778,Distri Vision Service,distri-vision.fr,Unknown,,Tier 3,20,,3907,No
+1779,,azin-gl.co.uk,Unknown,GB,Tier 3,20,,3907,No
+1780,Bitmern Mining,bitmernmining.com,Unknown,AE,Tier 3,20,,3907,No
+1781,,elvisnaturetours.com,,,Tier 3,20,,3907,No
+1782,,photokrome.com,,,Tier 3,20,,3906,No
+1783,Alpha Sentinel Pvt Ltd,alphasentinel.africa,Unknown,,Tier 3,20,,3851,No
+1784,,hyundai.biz.ua,Unknown,,Tier 3,20,,3850,No
+1785,,mitalisharanfinance.com,Unknown,,Tier 3,20,,3837,No
+1786,,antiguedadeszaragoza.com,,,Tier 3,20,,3837,No
+1787,,regardezvotredosenface.com,,,Tier 3,20,,3835,No
+1788,Moog GmbH,moog.fi,Unknown,FI,Tier 3,20,,3810,No
+1789,Marsh SaldaAA Inc,marshsaldana.com,Unknown,PR,Tier 3,20,,3810,No
+1790,Rosenfeld Einstein,rosenfeldeinstein.com,Unknown,US,Tier 3,20,,3810,No
+1791,,bearcompany.eu,,,Tier 3,20,,3803,No
+1792,,camaradecaraubas.pb.gov.br,Unknown,,Tier 3,20,,3800,No
+1793,,calendar.uc.edu,,,Tier 3,20,,3800,No
+1794,,trevalo.net,,,Tier 3,20,,3800,No
+1795,,camaradecabaceiras.pb.gov.br,Unknown,,Tier 3,20,,3800,No
+1796,,camaradeserrabranca.pb.gov.br,,,Tier 3,20,,3800,No
+1797,PROMO-VORWERK,promo-vorwerk.fr,Unknown,,Tier 3,20,,3787,No
+1798,,mabengineeringservices.com,,,Tier 3,20,,3745,No
+1799,,normacontrol.com.br,,,Tier 3,20,,3740,No
+1800,,clickivaa.com,,,Tier 3,20,,3740,No
+1801,,fixpop.com.br,,,Tier 3,20,,3740,No
+1802,Psicologo Espresso,psicologoespresso.com,Unknown,IT,Tier 3,20,,3739,No
+1803,MB Haarlem,mbhaarlem.nl,Unknown,NL,Tier 3,20,,3739,No
+1804,Front Line Financial Group,frontline-finance.com,Unknown,,Tier 3,20,,3730,No
+1805,,tripad-miami-airport.marriott.com,Unknown,US,Tier 3,20,,3728,No
+1806,,tolawd.com,,,Tier 3,20,,3720,No
+1807,,windtresardegna.it,,,Tier 3,20,,3719,No
+1808,,rachilliloveswaim.com,,,Tier 3,20,,3680,No
+1809,,practicalbusinessskills.org,,,Tier 3,20,,3670,No
+1810,,concord-hospital.org,Unknown,CN,Tier 3,20,,3667,No
+1811,,discautolpeugeot.com.br,,,Tier 3,20,,3660,No
+1812,,nexida.se,,,Tier 3,20,,3650,No
+1813,AmplioMedia,ampliomedia.de,Unknown,DE,Tier 3,20,,3640,No
+1814,Braslit Abrasivos,braslit.com.br,Unknown,,Tier 3,20,,3640,No
+1815,,campusresidences.hu,,,Tier 3,20,,3640,No
+1816,,kgs-airport.gr,Travel,,Tier 3,20,,3640,No
+1817,,portaflash.com.br,,,Tier 3,20,,3640,No
+1818,,nosagencia.com,,,Tier 3,20,,3640,No
+1819,,concorsoguide.it,,,Tier 3,20,,3640,No
+1820,Depilacion Laser en Lima - El mejor Centro Estetico de Depilacion Laser en Lima,depilacionlaser.pe,Unknown,,Tier 3,20,,3640,No
+1821,,joelaskowski.net,,,Tier 3,20,,3640,No
+1822,,pvk-airport.gr,Travel,,Tier 3,20,,3640,No
+1823,,hotelrosadailhaguaruja.com.br,Unknown,,Tier 3,20,,3640,No
+1824,,clinicaharmony.net,,,Tier 3,20,,3620,No
+1825,,kinetpsy.ch,Unknown,CH,Tier 3,20,,3620,No
+1826,,callcipher.com,,,Tier 3,20,,3620,No
+1827,,sioufas.com,Careers,GR,Tier 3,20,,3620,No
+1828,,iclaserenaresearch.cl,Unknown,CL,Tier 3,20,,3604,No
+1829,,laura-ia.com.br,,,Tier 3,20,,3580,No
+1830,Farah Makeover,farahmakeover.com,Unknown,,Tier 3,20,,3580,No
+1831,,dradaphnne.med.br,Unknown,,Tier 3,20,,3580,No
+1832,,klccc.uk,Society,GB,Tier 3,20,,3580,No
+1833,,msmultiservices31.fr,,,Tier 3,20,,3580,No
+1834,,aura-prestige.fr,,,Tier 3,20,,3580,No
+1835,Nearestprintingshopnearme.co.uk,nearestprintingshopnearme.co.uk,Unknown,,Tier 3,20,,3580,No
+1836,,vitalprasaude.com.br,,,Tier 3,20,,3576,No
+1837,,jccm.jp,,,Tier 3,20,,3565,No
+1838,,haulage-logistics.com,,,Tier 3,20,,3561,No
+1839,,abalphabrokerage.com,,,Tier 3,20,,3561,No
+1840,,imperialtb.org,,,Tier 3,20,,3561,No
+1841,Almaz Corporation,almazgloballtd.com,Unknown,,Tier 3,20,,3561,No
+1842,,lawandawillblawanda.com,Unknown,,Tier 3,20,,3560,No
+1843,CardiagHub The Automotive Diagnostic Hub,cardiaghub.com,Unknown,,Tier 3,20,,3560,No
+1844,,parksmobiledetailing.com,,,Tier 3,20,,3560,No
+1845,SAAD LAMJARRED MUSIC,saadlamjarredmusic.com,Unknown,,Tier 3,20,,3560,No
+1846,,empoweringthroughlove.org,,,Tier 3,20,,3560,No
+1847,,wonkaoptics.com,,,Tier 3,20,,3560,No
+1848,,eletricaroni.com.br,Unknown,,Tier 3,20,,3560,No
+1849,,bellaquay.com,Unknown,US,Tier 3,20,,3560,No
+1850,,metalesmarbella.es,,,Tier 3,20,,3560,No
+1851,,thecalmscience.com,,,Tier 3,20,,3560,No
+1852,,kingfishersheriff.gov,,,Tier 3,20,,3560,No
+1853,,jengadirect.co.ke,,,Tier 3,20,,3560,No
+1854,,justherstories.com,Unknown,,Tier 3,20,,3560,No
+1855,,lumeaswiss.com,,,Tier 3,20,,3560,No
+1856,,auraedgemedia.com,,,Tier 3,20,,3560,No
+1857,,4usfarms.com,,,Tier 3,20,,3560,No
+1858,,cajunolinda.com.br,,,Tier 3,20,,3560,No
+1859,Nikoosar,nikoosar.com,Unknown,,Tier 3,20,,3560,No
+1860,,rankrash.com,,,Tier 3,20,,3560,No
+1861,Not So Humble,notso-humble.com,Unknown,,Tier 3,20,,3560,No
+1862,,rnmontage.com,,,Tier 3,20,,3560,No
+1863,unpluggedrocker,unpluggedrocker.com,Unknown,CA,Tier 3,20,,3560,No
+1864,,idelka.com,,,Tier 3,20,,3560,No
+1865,,activecreativestudio.com,,,Tier 3,20,,3560,No
+1866,,alquranhidayahacademy.com,Unknown,,Tier 3,20,,3560,No
+1867,,fairylegendaryrevelation.com,,,Tier 3,20,,3560,No
+1868,umatech,umatech.de,Unknown,DE,Tier 3,20,,3560,No
+1869,,genconcept.com.br,Unknown,US,Tier 3,20,,3560,No
+1870,,mimospraloja.com.br,,,Tier 3,20,,3560,No
+1871,,projectcargologistics.com,,,Tier 3,20,,3560,No
+1872,,daralhosn.ae,,,Tier 3,20,,3560,No
+1873,TapNext,tapnext.in,Unknown,IN,Tier 3,20,,3560,No
+1874,,drluispiovezani.com.br,,,Tier 3,20,,3560,No
+1875,,granadegaatacarejo.com,,,Tier 3,20,,3560,No
+1876,,lifeshield.com.br,,,Tier 3,20,,3560,No
+1877,,tahmidulmaula.com,,,Tier 3,20,,3560,No
+1878,,midi-plaquiste31.fr,,,Tier 3,20,,3560,No
+1879,Bright Path,brightpathnepal.com,Unknown,US,Tier 3,20,,3560,No
+1880,,clixonic.com,,,Tier 3,20,,3560,No
+1881,,dralbertomartinez.com,Unknown,,Tier 3,20,,3560,No
+1882,,giemcco.fr,,,Tier 3,20,,3560,No
+1883,Residencial Castel,residencialcastel.com.br,Society,,Tier 3,20,,3560,No
+1884,Simplex Locadora,simplexlocadora.com.br,Unknown,,Tier 3,20,,3560,No
+1885,,write-for-us.net,,,Tier 3,20,,3560,No
+1886,,anytimesiterentals.com,,,Tier 3,20,,3560,No
+1887,,contabilidadejms.com.br,,,Tier 3,20,,3560,No
+1888,,clinica-dentale-albania.it,Unknown,US,Tier 3,20,,3560,No
+1889,,inbet6.com,,,Tier 3,20,,3560,No
+1890,Ausforming Pty Ltd.,ausforming.com,Unknown,,Tier 3,20,,3560,No
+1891,,snitae.com,Unknown,AE,Tier 3,20,,3560,No
+1892,,pinheiropaisagismo.com.br,,,Tier 3,20,,3560,No
+1893,RANKWEB3,rankweb3.com,Unknown,,Tier 3,20,,3560,No
+1894,,premitools.com,Unknown,CN,Tier 3,20,,3560,No
+1895,,drugtestingbrooklyn.com,,,Tier 3,20,,3560,No
+1896,,kmsolar.ie,,,Tier 3,20,,3560,No
+1897,,hostpicz.com,,,Tier 3,20,,3560,No
+1898,,fdsestrategias.com.br,,,Tier 3,20,,3560,No
+1899,,psbenefit.com,,,Tier 3,20,,3560,No
+1900,Milmaq,milmaqpapelaria.com.br,Unknown,BR,Tier 3,20,,3560,No
+1901,,casasgrace.com,,,Tier 3,20,,3560,No
+1902,,carolgonzaganutri.com,Unknown,,Tier 3,20,,3560,No
+1903,,criptogov.com,,,Tier 3,20,,3560,No
+1904,Royal Suites Hotel,royalsuitesug.com,Unknown,UG,Tier 3,20,,3560,No
+1905,,euprint.com.br,,,Tier 3,20,,3560,No
+1906,,justbestow.com,,,Tier 3,20,,3560,No
+1907,Augusto Musi,augustomusi.com,Unknown,,Tier 3,20,,3560,No
+1908,,vacomfortstays.com,,,Tier 3,20,,3560,No
+1909,,desbloqueoemocional.com.ar,,,Tier 3,20,,3560,No
+1910,,seguros-ivanovych.com,Unknown,ES,Tier 3,20,,3560,No
+1911,SENSOR GEMPA,sensorgempa.com,Unknown,JP,Tier 3,20,,3560,No
+1912,,digitaldost.store,,,Tier 3,20,,3560,No
+1913,,simuladoonline.com,,,Tier 3,20,,3560,No
+1914,,a3e2s.ma,,,Tier 3,20,,3560,No
+1915,,georgetownstrength.com,,,Tier 3,20,,3560,No
+1916,,carlagerhard.com.br,,,Tier 3,20,,3560,No
+1917,,dracybellelouback.com.br,,,Tier 3,20,,3560,No
+1918,Clecasper.com,clecasper.com,Unknown,ES,Tier 3,20,,3560,No
+1919,,smartlol.ru,,,Tier 3,20,,3560,No
+1920,,clientmonk.com,,,Tier 3,20,,3560,No
+1921,Livellare Engenharia,livellare.com.br,Unknown,,Tier 3,20,,3560,No
+1922,,mandidigital.com.br,,,Tier 3,20,,3560,No
+1923,,sabrinawachter.at,Unknown,,Tier 3,20,,3560,No
+1924,FL Auto,fl-auto.hr,Unknown,,Tier 3,20,,3560,No
+1925,Nepalevs Electric vechile and Charging stations of Nepal,nepalevs.com,Unknown,US,Tier 3,20,,3560,No
+1926,,structxdigital.com,,,Tier 3,20,,3560,No
+1927,,comandocyber.com,,,Tier 3,20,,3560,No
+1928,PICKLEDBAT CO,pickledbat.com,Unknown,,Tier 3,20,,3560,No
+1929,,hummingbirdgirl.com,,,Tier 3,20,,3560,No
+1930,Camillepalu,camillepalu.com,Unknown,CA,Tier 3,20,,3560,No
+1931,,eccossolucoes.com.br,,,Tier 3,20,,3560,No
+1932,,ekfmolas.com.br,,,Tier 3,20,,3560,No
+1933,,makaraungusalingbantu.com,,,Tier 3,20,,3560,No
+1934,,thehairtransplantlondon.com,,,Tier 3,20,,3560,No
+1935,DriveReplies.com,drivereplies.com,Unknown,,Tier 3,20,,3560,No
+1936,,tallhouseconsulting.com,,,Tier 3,20,,3560,No
+1937,,rohmamoidkhan.com,,,Tier 3,20,,3560,No
+1938,,elitehireglobal.us,,,Tier 3,20,,3500,No
+1939,,primeglobalfinlimited.org,,,Tier 3,20,,3500,No
+1940,,northcoastscouts.com,,,Tier 3,20,,3500,No
+1941,EY Co,eyredesign-dev.ey.com,Unknown,,Tier 3,20,,3500,No
+1942,,allianz-partners.com.tr,,,Tier 3,20,,3500,No
+1943,,karabar-h.schools.nsw.gov.au,,,Tier 3,20,,3500,No
+1944,,allianz-partners.com.sg,,,Tier 3,20,,3500,No
+1945,,test-ams-origin.mayo.edu,,US,Tier 3,20,,3500,No
+1946,,aprendizadodivertidokids.com,,,Tier 3,20,,3500,No
+1947,,biolight.fraunhofer.de,Unknown,DE,Tier 3,20,,3500,No
+1948,,moruya-h.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,3500,No
+1949,KittyKat Cat Care LLC,kittykatcatcare.com,Unknown,,Tier 3,20,,3500,No
+1950,Providence Holdings Group,providenceholdingsgroup.com,Unknown,,Tier 3,20,,3500,No
+1951,,xingangmachinery.com,,,Tier 3,20,,3500,No
+1952,Strumyk TV,strumyktv.live,Unknown,,Tier 3,20,,3500,No
+1953,,aucklandtechalliance.com,,,Tier 3,20,,3500,No
+1954,,bayareascouts.org,,,Tier 3,20,,3500,No
+1955,,tourconphungvinhlong.com,,,Tier 3,20,,3500,No
+1956,,gameflooring.in,,,Tier 3,20,,3500,No
+1957,,frelonarret.com,Unknown,FR,Tier 3,20,,3500,No
+1958,,dev-aem.mayo.edu,,US,Tier 3,20,,3500,No
+1959,The Habitat Advocate,habitatadvocate.com.au,Unknown,US,Tier 3,20,,3500,No
+1960,,fajr.com.tr,,,Tier 3,20,,3500,No
+1961,,jyotihardwares.com,Unknown,IN,Tier 3,20,,3500,No
+1962,,revesby-p.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,3500,No
+1963,,anmaison.com.vn,,,Tier 3,20,,3500,No
+1964,,fabriziocarpi.it,,,Tier 3,20,,3500,No
+1965,Son Bn Thanh,sonbenthanh.com.vn,Unknown,,Tier 3,20,,3500,No
+1966,,hogardepatitas.space,,,Tier 3,20,,3500,No
+1967,,veiliggebruik-mavacamten-hcp.nl,,,Tier 3,20,,3500,No
+1968,,peakvistaview.com,,,Tier 3,20,,3500,No
+1969,,unificaservice.com.br,,,Tier 3,20,,3500,No
+1970,Delatrei,delatrei.com,Unknown,,Tier 3,20,,3500,No
+1971,,toyota-cacak.rs,Unknown,SI,Tier 3,20,,3500,No
+1972,DriverDealz,driverdealz.com,Unknown,,Tier 3,20,,3500,No
+1973,,dgkhnm.com,,,Tier 3,20,,3500,No
+1974,,karayuna-lc.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,3500,No
+1975,Setitours,setitours.ma,Travel,MA,Tier 3,20,,3500,No
+1976,,jsfangda.com,Unknown,US,Tier 3,20,,3500,No
+1977,,bidwill-h.schools.nsw.gov.au,,,Tier 3,20,,3500,No
+1978,,widianovo.com,,,Tier 3,20,,3500,No
+1979,,bayareascouts.net,,,Tier 3,20,,3500,No
+1980,,rhxbzyp.com,Unknown,,Tier 3,20,,3500,No
+1981,,drstenioagro.com.br,,,Tier 3,20,,3500,No
+1982,,aviployment.com,,,Tier 3,20,,3500,No
+1983,,narellan-p.schools.nsw.gov.au,,,Tier 3,20,,3500,No
+1984,,cwbmilhasedestinos.com.br,,,Tier 3,20,,3500,No
+1985,,nexaid.in,,,Tier 3,20,,3500,No
+1986,,mercedes-benz-trucks-sgdm.fr,,,Tier 3,20,,3500,No
+1987,,hotline-icu.com,Unknown,EG,Tier 3,20,,3500,No
+1988,,despertarmental.com.br,,,Tier 3,20,,3500,No
+1989,,german-chips.de,,,Tier 3,20,,3500,No
+1990,,hornsbygir-h.schools.nsw.gov.au,,,Tier 3,20,,3500,No
+1991,,kresco.fraunhofer.de,Unknown,DE,Tier 3,20,,3500,No
+1992,,oceanstateofmind.be,Unknown,IT,Tier 3,20,,3500,No
+1993,,mercedes-benz-trucks-kahnt-dippoldiswalde.de,Unknown,DE,Tier 3,20,,3500,No
+1994,,blakehurst-h.schools.nsw.gov.au,,,Tier 3,20,,3500,No
+1995,Mayuresh Group,mayureshprotenz.ae,Unknown,IN,Tier 3,20,,3500,No
+1996,rentbymotofactory.com,rentbymotofactory.com,Unknown,CH,Tier 3,20,,3500,No
+1997,,mscexplorajourney.co.uk,Unknown,IT,Tier 3,20,,3500,No
+1998,,mercedes-benz-trucks-rkg.de,Unknown,DE,Tier 3,20,,3500,No
+1999,,alicialocksmithhuntcalifornia.biz,,,Tier 3,20,,3500,No
+2000,,themagicalworldofminu.com,,,Tier 3,20,,3500,No
+2001,ETZME Business,etzme.com.br,Unknown,,Tier 3,20,,3500,No
+2002,,23lie.net,,,Tier 3,20,,3500,No
+2003,,commuteco.com,,,Tier 3,20,,3500,No
+2004,,fabuscases.com.br,,,Tier 3,20,,3500,No
+2005,,cms-dev.sydney.edu.au,,,Tier 3,20,,3500,No
+2006,,allbets.best,,,Tier 3,20,,3500,No
+2007,,narrandere-p.schools.nsw.gov.au,,,Tier 3,20,,3500,No
+2008,,vsevsite.ru,,,Tier 3,20,,3500,No
+2009,,cdlportal.com,,,Tier 3,20,,3500,No
+2010,,cnabitalia.it,,,Tier 3,20,,3500,No
+2011,,eppinghts-p.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,3500,No
+2012,,sotyk-you.com.au,Unknown,AU,Tier 3,20,,3500,No
+2013,,banksiard-p.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,3500,No
+2014,Fraport AG,fraport-usercommittee.com,Travel,,Tier 3,20,,3500,No
+2015,Gopure Travel,gopuretravel.com,Travel,US,Tier 3,20,,3500,No
+2016,,cayxanhgiarebinhduong.com,,,Tier 3,20,,3500,No
+2017,Robert Locksmith Downey California,robertlocksmithdowneycalifornia.shop,Unknown,,Tier 3,20,,3500,No
+2018,,opengroundmassage.com,,,Tier 3,20,,3500,No
+2019,The Habitat Advocate,thehabitatadvocate.com,Unknown,US,Tier 3,20,,3500,No
+2020,,clarusbot.com,,,Tier 3,20,,3500,No
+2021,Allianz Worldwide Partners SaS,allianz-worldwide-partners.fr,Unknown,FR,Tier 3,20,,3500,No
+2022,,allianzpartners.co.uk,Unknown,,Tier 3,20,,3500,No
+2023,,shellgct.com,,,Tier 3,20,,3500,No
+2024,Dumas Global,dumasglobal.com,Unknown,JP,Tier 3,20,,3500,No
+2025,AaCe Corporation,richapp1.com,Unknown,US,Tier 3,20,,3500,No
+2026,,merewether-p.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,3500,No
+2027,,mungindi-c.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,3500,No
+2028,Kyrie Locksmith Laguna Niguel California,kyrielocksmithlagunaniguelcalifornia.biz,Unknown,,Tier 3,20,,3500,No
+2029,,ramruay465.com,,,Tier 3,20,,3500,No
+2030,,hillend-p.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,3500,No
+2031,,asxzh.com,,,Tier 3,20,,3500,No
+2032,,aquariv.com,,,Tier 3,20,,3500,No
+2033,,bardia-p.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,3500,No
+2034,,worldgistnews.com,,,Tier 3,20,,3500,No
+2035,,intentivemedia.com,,,Tier 3,20,,3500,No
+2036,,mayrung-p.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,3500,No
+2037,,czhyfloor.com,Unknown,CN,Tier 3,20,,3500,No
+2038,,hairsolutionsgeorgia.com,,,Tier 3,20,,3500,No
+2039,,fishandchips.community,,,Tier 3,20,,3500,No
+2040,,mercedes-benz-trucks-normandydiesel.fr,,,Tier 3,20,,3500,No
+2041,ASTRAZENECA CO,cookienotice.astrazeneca.com,Unknown,GB,Tier 3,20,,3500,No
+2042,,stage-aemauthor.mayo.edu,,US,Tier 3,20,,3500,No
+2043,,mercedes-benz-trucks-autasa.es,,,Tier 3,20,,3500,No
+2044,,devcomptroller.tn.gov,,,Tier 3,20,,3500,No
+2045,Adventaraus,adventaraus.dk,Unknown,,Tier 3,20,,3500,No
+2046,,orama-p.schools.nsw.gov.au,,,Tier 3,20,,3500,No
+2047,Nicholas Locksmith Whittier California,nicholaslocksmithwhittierca.shop,Unknown,,Tier 3,20,,3500,No
+2048,,holmwood-p.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,3500,No
+2049,,cms-test.sydney.edu.au,,,Tier 3,20,,3500,No
+2050,,ddtshe.com,,,Tier 3,20,,3500,No
+2051,,itd.umich.edu,,,Tier 3,20,,3500,No
+2052,,oceanstateofmind.co.za,Unknown,IT,Tier 3,20,,3500,No
+2053,,allianz-worldwide-partners.pl,,,Tier 3,20,,3500,No
+2054,,mercedes-benz-trucks-halm.de,,,Tier 3,20,,3500,No
+2055,,drmaurolelis.com.br,,,Tier 3,20,,3500,No
+2056,,synchrotec.fr,,,Tier 3,20,,3500,No
+2057,Rk Digital Solutions,rkdigitalsolutions.in,Unknown,,Tier 3,20,,3500,No
+2058,,goodooga-c.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,3500,No
+2059,,gitanjaliguesthouse.com,Unknown,IN,Tier 3,20,,3500,No
+2060,,ultimate-experience.site,,,Tier 3,20,,3500,No
+2061,,thurgoona-p.schools.nsw.gov.au,,,Tier 3,20,,3500,No
+2062,,nutricionespecializada.abbott,Unknown,,Tier 3,20,,3500,No
+2063,Bayt3,bayt3.com,Unknown,,Tier 3,20,,3500,No
+2064,,gerg9er7ger54.com,,,Tier 3,20,,3500,No
+2065,,heyboss.cc,,,Tier 3,20,,3500,No
+2066,Vitus Personalberatung ,vituspersonalberatung.ch,Unknown,CH,Tier 3,20,,3500,No
+2067,zowex.in,zowex.in,Unknown,,Tier 3,20,,3500,No
+2068,,peakhurst-p.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,3500,No
+2069,,vbenmayoravocat.fr,,,Tier 3,20,,3500,No
+2070,,stage-dusadermatology.com,,,Tier 3,20,,3500,No
+2071,,attunga-p.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,3500,No
+2072,,moonsoftware.store,Unknown,MA,Tier 3,20,,3500,No
+2073,,bergamocentraliving.eu,,,Tier 3,20,,3500,No
+2074,,casasmart.org,,,Tier 3,20,,3500,No
+2075,,restaurantegres.pt,,,Tier 3,20,,3500,No
+2076,,item-redelivery.com,,,Tier 3,20,,3500,No
+2077,,mercedes-benz-trucks-zitzmann.de,Unknown,DE,Tier 3,20,,3500,No
+2078,,comboyne-p.schools.nsw.gov.au,,,Tier 3,20,,3500,No
+2079,,guiadoreborn.site,,,Tier 3,20,,3500,No
+2080,Humphrey Desing,humphreyd.com,Unknown,,Tier 3,20,,3500,No
+2081,,bennettrd-p.schools.nsw.gov.au,,,Tier 3,20,,3500,No
+2082,,lap.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,3500,No
+2083,,jxyhsj.com,,,Tier 3,20,,3500,No
+2084,,qcontent.americanexpress.com,,,Tier 3,20,,3500,No
+2085,,croydonpk-p.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,3500,No
+2086,,ladydui.cn,,,Tier 3,20,,3500,No
+2087,,penshurst-h.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,3500,No
+2088,,intranet-stage.sydney.edu.au,,,Tier 3,20,,3500,No
+2089,,bellingen-h.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,3500,No
+2090,,blackmtn-p.schools.nsw.gov.au,,,Tier 3,20,,3500,No
+2091,NLVPrint,nlvprint.com.br,Unknown,,Tier 3,20,,3500,No
+2092,John Locksmith Cerritos California,johnlocksmithcerritoscalifornia.shop,Unknown,,Tier 3,20,,3500,No
+2093,Commir,commir.it,Unknown,IT,Tier 3,20,,3500,No
+2094,,allianzpartners.co.nz,,,Tier 3,20,,3500,No
+2095,,multimedia-solutions-949d9.web.app,Unknown,IN,Tier 3,20,,3500,No
+2096,,ashcroft-h.schools.nsw.gov.au,Unknown,,Tier 3,20,,3500,No
+2097,casinoin.io,casinoin.live,Unknown,,Tier 3,20,,3500,No
+2098,,exploracruises.com.cn,Unknown,IT,Tier 3,20,,3500,No
+2099,,cws-train.sydney.edu.au,,,Tier 3,20,,3500,No
+2100,,mercedes-benz-trucks-gorrias.fr,,,Tier 3,20,,3500,No
+2101,cocomexpuebla.com,cocomexpuebla.com,Unknown,,Tier 3,20,,3500,No
+2102,NM Home Solutions Group,nmhomesolutionsgroup.com,Unknown,,Tier 3,20,,3500,No
+2103,,lmfactoring.com,Unknown,US,Tier 3,20,,3500,No
+2104,FIBERLINE TECHNOLOGY SOLUTION INC,fiberlinetech.com,Unknown,,Tier 3,20,,3500,No
+2105,,waste4future.fraunhofer.de,Unknown,DE,Tier 3,20,,3500,No
+2106,seethalwater.com,seethalwater.com,Unknown,,Tier 3,20,,3500,No
+2107,,inprivate.bradesco,,,Tier 3,20,,3500,No
+2108,,kids-perf.scholastic.com,,US,Tier 3,20,,3500,No
+2109,,mirrmuse.com,,,Tier 3,20,,3500,No
+2110,,554sy.com,,,Tier 3,20,,3500,No
+2111,,aramexslogistics.com,,,Tier 3,20,,3500,No
+2112,,novusity.com,,,Tier 3,20,,3500,No
+2113,,veiliggebruik-mavacamten-patient.nl,,,Tier 3,20,,3500,No
+2114,,msiplanning.net,,,Tier 3,20,,3500,No
+2115,,purslowechipper.com.au,,,Tier 3,20,,3500,No
+2116,,fincapbaba.com,Unknown,,Tier 3,20,,3500,No
+2117,,etagehousevent.com,Unknown,,Tier 3,20,,3500,No
+2118,Flaw Proof Privacy Policy,flawproof.com,Unknown,,Tier 3,20,,3500,No
+2119,,novemesifelici.com,,,Tier 3,20,,3500,No
+2120,AI Capital Connect,aicapitalconnect.com,Unknown,,Tier 3,20,,3500,No
+2121,,inletbilsyn.dk,,,Tier 3,20,,3500,No
+2122,,atletikakadan.cz,Unknown,,Tier 3,20,,3500,No
+2123,,marrickvil-i.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,3500,No
+2124,Junkremovalmtpleasant.com,junkremovalmtpleasant.com,Unknown,,Tier 3,20,,3500,No
+2125,,usbank.info,,,Tier 3,20,,3500,No
+2126,,serviceteslashop.by,Unknown,,Tier 3,20,,3500,No
+2127,,placexistechnology.com,,,Tier 3,20,,3500,No
+2128,,sportingpadel.co.za,,,Tier 3,20,,3500,No
+2129,,safeliveusa.com,Unknown,US,Tier 3,20,,3500,No
+2130,,inverell-h.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,3500,No
+2131,,evoxyz.tech,,,Tier 3,20,,3500,No
+2132,,ouxiper.cn,Unknown,CN,Tier 3,20,,3500,No
+2133,,nangus-p.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,3500,No
+2134,,norcascouts.net,,,Tier 3,20,,3500,No
+2135,,damogene.com,,,Tier 3,20,,3500,No
+2136,,hubway.co.il,,,Tier 3,20,,3500,No
+2137,,autozhitan.com,,,Tier 3,20,,3500,No
+2138,dhivyahousingestates.in,dhivyahousingestates.in,Unknown,,Tier 3,20,,3500,No
+2139,BestPrimeEnergy,bestprimeenergy.site,Unknown,DE,Tier 3,20,,3500,No
+2140,,workintech.dk,,,Tier 3,20,,3500,No
+2141,BonChef se,bonchef.it,Unknown,,Tier 3,20,,3500,No
+2142,,digifying.com,,,Tier 3,20,,3500,No
+2143,,leadform.it.com,,,Tier 3,20,,3500,No
+2144,Shawnee High School 40-Year Reunion,shawnee86.com,Unknown,,Tier 3,20,,3500,No
+2145,,timeforbetmaster.com,,,Tier 3,20,,3500,No
+2146,,szzzdyf.com,Unknown,CN,Tier 3,20,,3500,No
+2147,,themaisonpr.com,,,Tier 3,20,,3500,No
+2148,,eaton-power.com.cn,Unknown,CN,Tier 3,20,,3500,No
+2149,Automatish.ai,automatish.ai,Unknown,DE,Tier 3,20,,3500,No
+2150,,berkeleycreditbank.com,,,Tier 3,20,,3500,No
+2151,,teamsazuhnbfdcx.top,,,Tier 3,20,,3500,No
+2152,hotanime,hotanime.co,Unknown,,Tier 3,20,,3500,No
+2153,AhaLeva,ahaleva.pl,Unknown,,Tier 3,20,,3500,No
+2154,,nexlibrary.com,,,Tier 3,20,,3500,No
+2155,,jettmaddox.com,,,Tier 3,20,,3500,No
+2156,,stepanlabeltranslations.com,,,Tier 3,20,,3500,No
+2157,,dgfangzhouniao.com,,,Tier 3,20,,3500,No
+2158,Focus Krom,focuskrom.dk,Unknown,,Tier 3,20,,3500,No
+2159,,godspelword.com,,,Tier 3,20,,3500,No
+2160,,izdla.com,,,Tier 3,20,,3500,No
+2161,,itschartered.org,,,Tier 3,20,,3500,No
+2162,AbreFecha,abrefecha.com.br,Unknown,,Tier 3,20,,3500,No
+2163,,embedsuperflash.com,Unknown,US,Tier 3,20,,3500,No
+2164,,draiedaserafim.com.br,,,Tier 3,20,,3500,No
+2165,,parcelelite.com,,,Tier 3,20,,3500,No
+2166,,rafaelarachanito.com.br,,,Tier 3,20,,3500,No
+2167,,filmbythecoast.schools.nsw.gov.au,,,Tier 3,20,,3500,No
+2168,,ladybossbc.com,Unknown,SG,Tier 3,20,,3500,No
+2169,,cartorioreborn.life,Unknown,AU,Tier 3,20,,3500,No
+2170,,j8mc.cn,,,Tier 3,20,,3500,No
+2171,,boroughsproperty.co.uk,Unknown,GB,Tier 3,20,,3500,No
+2172,,ainavigator.space,,,Tier 3,20,,3500,No
+2173,,anmumessential.com.my,,,Tier 3,20,,3500,No
+2174,,beverlyhi-p.schools.nsw.gov.au,,,Tier 3,20,,3500,No
+2175,,it-sicherheitstraining.com,,,Tier 3,20,,3500,No
+2176,,gewerbestrom.net,Unknown,DE,Tier 3,20,,3500,No
+2177,,heitaroblog.com,,,Tier 3,20,,3500,No
+2178,,birrong-p.schools.nsw.gov.au,,,Tier 3,20,,3500,No
+2179,,coinasesores.mx,Unknown,MX,Tier 3,20,,3500,No
+2180,,guidecasinofrance.online,,,Tier 3,20,,3500,No
+2181,,sthsydney-h.schools.nsw.gov.au,,,Tier 3,20,,3500,No
+2182,,liftio.io,,,Tier 3,20,,3500,No
+2183,,wallabadah-p.schools.nsw.gov.au,,,Tier 3,20,,3500,No
+2184,,littleswan.com,Unknown,CN,Tier 3,20,,3500,No
+2185,Seth Locksmith Arcadia California,sethlocksmitharcadiaca.shop,Unknown,,Tier 3,20,,3500,No
+2186,,schoolair-p.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,3500,No
+2187,,aquakultur.fraunhofer.de,,,Tier 3,20,,3500,No
+2188,,fearless-capital.com,,,Tier 3,20,,3500,No
+2189,Toggle navigation ,azdsprivacynotice.astrazeneca.com,Unknown,GB,Tier 3,20,,3500,No
+2190,,bunker-builders.com,,,Tier 3,20,,3500,No
+2191,,ra7568.com,,,Tier 3,20,,3500,No
+2192,,fanmax.club,,,Tier 3,20,,3500,No
+2193,,sunofficeenergy.com,,,Tier 3,20,,3500,No
+2194,,peninsulacommunityofschools.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,3500,No
+2195,,emhbt.com,Unknown,CN,Tier 3,20,,3500,No
+2196,,springwood-h.schools.nsw.gov.au,,,Tier 3,20,,3500,No
+2197,,sandybeach-p.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,3500,No
+2198,,fordbariavungtau.vn,,,Tier 3,20,,3500,No
+2199,polygraphdc.com -,polygraphdc.com,Unknown,,Tier 3,20,,3500,No
+2200,,alltimegrowth.com,,,Tier 3,20,,3500,No
+2201,Fahrschuleschoch,fahrschuleschoch.ch,Unknown,CH,Tier 3,20,,3500,No
+2202,,modesti.net,,,Tier 3,20,,3500,No
+2203,,aaradhyainfotech.in,,,Tier 3,20,,3500,No
+2204,,kariong-p.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,3500,No
+2205,,tullamore-c.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,3500,No
+2206,,curran-p.schools.nsw.gov.au,,,Tier 3,20,,3500,No
+2207,David Locksmith Bellflower California,davidlocksmithbellflowercalifornia.shop,Unknown,,Tier 3,20,,3500,No
+2208,,dreamagic.ai,,,Tier 3,20,,3500,No
+2209,,aiqualify.de,Unknown,DE,Tier 3,20,,3500,No
+2210,devicepro.in,devicepro.in,Unknown,,Tier 3,20,,3500,No
+2211,,ofdlogistics.com,,,Tier 3,20,,3500,No
+2212,,avvocatoformigine.it,,,Tier 3,20,,3500,No
+2213,,tpf.admin.ch,,CH,Tier 3,20,,2386,No
+2214,,rutadelartrupestre.cat,Unknown,ES,Tier 3,20,,2040,No
+2215,Mente Tech,mentetech.com.br,Unknown,,Tier 3,20,,1957,No
+2216,,flowifypro.no,Unknown,,Tier 3,20,,1833,No
+2217,,cphce.unsw.edu.au,Unknown,,Tier 3,20,,1735,No
+2218,,sensorialsaude.com.br,Unknown,BR,Tier 3,20,,980,No
+2219,CAEM - Camara Argentina de Empresarios Mineros,caem.com.ar,Unknown,AR,Tier 3,20,,947,No
+2220,,nailit.unsw.edu.au,Unknown,AU,Tier 3,20,,827,No
+2221,,aramark-qa2.mx,,,Tier 3,20,,800,No
+2222,,peakhurst-h.schools.nsw.gov.au,,,Tier 3,20,,797,No
+2223,Sendero Nahuatl ,senderopetshop.com,Unknown,,Tier 3,20,,753,No
+2224,Melissa Batchelor Warnke,melissabatchelorwarnke.com,Unknown,US,Tier 3,20,,700,No
+2225,,play-test.flinders.edu.au,Unknown,AU,Tier 3,20,,700,No
+2226,,miloshj.dev,,,Tier 3,20,,700,No
+2227,,multisite.uc.edu,,US,Tier 3,20,,699,No
+2228,,security.vt.edu,,,Tier 3,20,,647,No
+2229,,briqslab.com,,,Tier 3,20,,647,No
+2230,Cofresco Trademark Note,toppits.se,Unknown,DE,Tier 3,20,,600,No
+2231,Head Clean,headclean.rs,Unknown,RS,Tier 3,20,,557,No
+2232,CDEJ LA RESURRECTION,cdejlaresurrection.com,Unknown,TG,Tier 3,20,,557,No
+2233,BLACK WALLSTREET,blackwallstreets.net,Unknown,US,Tier 3,20,,527,No
+2234,Stratis Web,stratisweb.com,Unknown,,Tier 3,20,,497,No
+2235,UNIVERSIDAD LG,universidadlg.com.pe,Unknown,,Tier 3,20,,490,No
+2236,,twosevenscapital.com,Real Estate,CA,Tier 3,20,,485,No
+2237,,depositodeprodutividade.site,,,Tier 3,20,,425,No
+2238,,ndlawresolution.com,,,Tier 3,20,,407,No
+2239,GrowBox,growbox.co.nz,Unknown,,Tier 3,20,,367,No
+2240,,christianqvick.dk,,,Tier 3,20,,337,No
+2241,,veltheercounseling.nl,,,Tier 3,20,,297,No
+2242,Rispoli Gioielli,rispoligioielli.it,Unknown,IT,Tier 3,20,,287,No
+2243,,quikchainlogistics.com,,,Tier 3,20,,225,No
+2244,,tefe.am.gov.br,Unknown,,Tier 3,20,,220,No
+2245,,fullstack-electronics.com,,,Tier 3,20,,180,No
+2246,,namibars.altervista.org,,,Tier 3,20,,159,No
+2247,,blissthelabel.com,,,Tier 3,20,,140,No
+2248,,bpasolutions.au,,,Tier 3,20,,80,No
+2249,,style-ksk-ratzeburg.de,Unknown,DE,Tier 3,20,,80,No
+2250,,builtwithrocket.new,,,Tier 3,20,,70,No
+2251,,familiaemfocooficial.com,,,Tier 3,20,,60,No
+2252,co-work.cz,co-work.cz,Unknown,,Tier 3,20,,60,No
+2253,,wellforgenutrition.com,,,Tier 3,20,,60,No
+2254,,trainicsi.com,,,Tier 3,20,,60,No
+2255,cursos joyle,cursosjoyle.com,Unknown,,Tier 3,20,,60,No
+2256,,domelvo.com,,,Tier 3,20,,60,No
+2257,,mistriman.in,Unknown,IN,Tier 3,20,,60,No
+2258,,lppgroupth.com,Unknown,TH,Tier 3,20,,60,No
+2259,,oasievolutivadelsud.org,,,Tier 3,20,,60,No
+2260,,linkeyegroup.com,Unknown,CN,Tier 3,20,,60,No
+2261,,withprocare.com,,,Tier 3,20,,44,No
+2262,Wahoo Diving Center,wahoodivingcenter.com,Unknown,,Tier 3,20,,44,No
+2263,,mgvasai.co.in,,,Tier 3,20,,31,No
+2264,,mghyderabad-lb-nagar.co.in,,,Tier 3,20,,31,No
+2265,,radiolabeclling.com,,,Tier 3,20,,0,No
+2266,,idahocompletehealth.com,,,Tier 3,20,,0,No
+2267,,crackmastersnb.com,,,Tier 3,20,,0,No
+2268,,sefton-h.schools.nsw.gov.au,,,Tier 3,20,,0,No
+2269,,pavpassos.com,,,Tier 3,20,,0,No
+2270,,mppmembers.co.uk,,,Tier 3,20,,0,No
+2271,,thebarlab.site,,,Tier 3,20,,0,No
+2272,,fsweb.ca,,,Tier 3,20,,0,No
+2273,,narara-p.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,0,No
+2274,OneTrust LLC,ubuntutoday.com,Unknown,CN,Tier 3,20,,0,No
+2275,,altaqdeeraccounting.com,,,Tier 3,20,,0,No
+2276,,easouthee-p.schools.nsw.gov.au,,,Tier 3,20,,0,No
+2277,,saraawatta.com,,,Tier 3,20,,0,No
+2278,,sz-purstar.com,,,Tier 3,20,,0,No
+2279,,crocheninja.com,,,Tier 3,20,,0,No
+2280,BridgePort Financial Solutions,bridgeport.financial,Unknown,US,Tier 3,20,,0,No
+2281,,laozhengjiu.cn,,,Tier 3,20,,0,No
+2282,Truist Financial Corporation,bbt-uk.net,Unknown,US,Tier 3,20,,0,No
+2283,,matthewtamconnect.com,,,Tier 3,20,,0,No
+2284,,12ahmtc-eng.sydney.edu.au,Unknown,AU,Tier 3,20,,0,No
+2285,,banzhitao.com,,,Tier 3,20,,0,No
+2286,Welch Group,welchgrouprealty.com,Travel,US,Tier 3,20,,0,No
+2287,,pneufurado.com,Unknown,,Tier 3,20,,0,No
+2288,,shou-hu.com,,,Tier 3,20,,0,No
+2289,,cljcjq.com,,,Tier 3,20,,0,No
+2290,,rawattravels.com,Travel,IN,Tier 3,20,,0,No
+2291,,translogissticsdeliveryservice.site,Unknown,US,Tier 3,20,,0,No
+2292,Novo Nordisk,novonordisk.ph,Careers,AL,Tier 3,20,,0,No
+2293,,ventara.world,,,Tier 3,20,,0,No
+2294,,ruscos.cyou,,,Tier 3,20,,0,No
+2295,,livewillardtowers.com,Unknown,US,Tier 3,20,,0,No
+2296,,wfhnx.com,,,Tier 3,20,,0,No
+2297,,powercare.fraunhofer.de,,,Tier 3,20,,0,No
+2298,,gilyap.com.tr,Unknown,,Tier 3,20,,0,No
+2299,,austinmer-p.schools.nsw.gov.au,,,Tier 3,20,,0,No
+2300,,dermadistrict.skin,,,Tier 3,20,,0,No
+2301,,edviseme.com,,,Tier 3,20,,0,No
+2302,,tyyjjs.com,,,Tier 3,20,,0,No
+2303,,je-acquisitions.com,,,Tier 3,20,,0,No
+2304,,mundodasatividades.com.br,,,Tier 3,20,,0,No
+2305,,storetimex.shop,,,Tier 3,20,,0,No
+2306,,nvnativeseed.org,,,Tier 3,20,,0,No
+2307,,fisherbrownbottrell.com,,,Tier 3,20,,0,No
+2308,,reddywear.in,,,Tier 3,20,,0,No
+2309,elmarwahospital-icu,elmarwahospital-icu.com,Unknown,EG,Tier 3,20,,0,No
+2310,,gsmtraining-ahq.com,,,Tier 3,20,,0,No
+2311,,spaghettibread.com,,,Tier 3,20,,0,No
+2312,,dsms.info,Unknown,,Tier 3,20,,0,No
+2313,,linneaiusa.com,Hobbies And Interests,,Tier 3,20,,0,No
+2314,,pivicenergy.com,Unknown,NG,Tier 3,20,,0,No
+2315,,woolgoolga-h.schools.nsw.gov.au,,,Tier 3,20,,0,No
+2316,,vivavoce.live,Unknown,,Tier 3,20,,0,No
+2317,,wannenggongshi.com,,,Tier 3,20,,0,No
+2318,,tstrandtraining.com,,,Tier 3,20,,0,No
+2319,,neutronpowered.com,,,Tier 3,20,,0,No
+2320,,pvcgazebo.com,,US,Tier 3,20,,0,No
+2321,,cnlpj.com,,,Tier 3,20,,0,No
+2322,,thrivelifthub.com,,,Tier 3,20,,0,No
+2323,,explorecelmod.com,,,Tier 3,20,,0,No
+2324,,leura-p.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,0,No
+2325,S.T. CORPORATION,nyantomo.com,Unknown,,Tier 3,20,,0,No
+2326,,rofedigital.com.br,,,Tier 3,20,,0,No
+2327,,oranpark-h.schools.nsw.gov.au,,,Tier 3,20,,0,No
+2328,,mini-grupwest.ro,,,Tier 3,20,,0,No
+2329,,cazaroprojetos.com.br,,,Tier 3,20,,0,No
+2330,,xn--czro23kprb91i.com,Unknown,CN,Tier 3,20,,0,No
+2331,,lnganalysis.com,Unknown,US,Tier 3,20,,0,No
+2332,,zoomaheadnow.com,,,Tier 3,20,,0,No
+2333,,conectachip.shop,,,Tier 3,20,,0,No
+2334,,orlen-energy.tech,,,Tier 3,20,,0,No
+2335,Bytecode,bytecode.technology,Unknown,GB,Tier 3,20,,0,No
+2336,,dispoflow.com,,,Tier 3,20,,0,No
+2337,Brownlee Global Network,brownleeglobal.com,Unknown,US,Tier 3,20,,0,No
+2338,,xeum.shop,,,Tier 3,20,,0,No
+2339,ModernUni,modernuni.bg,Unknown,,Tier 3,20,,0,No
+2340,,activisionplus.net,,,Tier 3,20,,0,No
+2341,,im-aesthetics.com,Unknown,GB,Tier 3,20,,0,No
+2342,,xuandingcy.com,,,Tier 3,20,,0,No
+2343,,echoformjournal.com,,,Tier 3,20,,0,No
+2344,,aeronexus.co,,,Tier 3,20,,0,No
+2345,,windang-p.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,0,No
+2346,,faulknerfindshomes.com,,,Tier 3,20,,0,No
+2347,,eurekascouts.org,,,Tier 3,20,,0,No
+2348,Explora Journeys,explorajourneys.com,Travel,IT,Tier 3,20,,0,No
+2349,,bssleather.com,,,Tier 3,20,,0,No
+2350,,takenaka-capitaljp.com,,,Tier 3,20,,0,No
+2351,,kwalitywallsindia.com,,,Tier 3,20,,0,No
+2352,,klmotors.de,,,Tier 3,20,,0,No
+2353,,dinglibaozhuang.com,,,Tier 3,20,,0,No
+2354,Skip to main co,storyworks1-aem64-stage.scholastic.com,Unknown,US,Tier 3,20,,0,No
+2355,,joinkraken69.com,,,Tier 3,20,,0,No
+2356,,cartoonagent.com,Unknown,US,Tier 3,20,,0,No
+2357,,ziggydesignco.com,,,Tier 3,20,,0,No
+2358,,cleanpointuk.online,,,Tier 3,20,,0,No
+2359,,ipdiamond.co.il,Unknown,,Tier 3,20,,0,No
+2360,,myserbaneka.shop,,,Tier 3,20,,0,No
+2361,,wuxizhengtong.net,,,Tier 3,20,,0,No
+2362,,trehook.com,,,Tier 3,20,,0,No
+2363,,vigiazap.com,,,Tier 3,20,,0,No
+2364,,carolchish-s.schools.nsw.gov.au,,,Tier 3,20,,0,No
+2365,,kibwezihoneymarketing.com,,,Tier 3,20,,0,No
+2366,,comexgl.com,,,Tier 3,20,,0,No
+2367,iEOA Corporation,cdfamilyarms.com,Unknown,US,Tier 3,20,,0,No
+2368,,betmasteritalia.com,,,Tier 3,20,,0,No
+2369,,publicissolutions.com.au,Unknown,AU,Tier 3,20,,0,No
+2370,,psitravel.com,,,Tier 3,20,,0,No
+2371,,buenamesa.com,,,Tier 3,20,,0,No
+2372,,uptenders.com,,,Tier 3,20,,0,No
+2373,,woodhardener.org,Unknown,US,Tier 3,20,,0,No
+2374,Activision Publishing Inc,rewardcp.shop,Unknown,,Tier 3,20,,0,No
+2375,,metolash.com,,,Tier 3,20,,0,No
+2376,,kqc-cfld.com,,,Tier 3,20,,0,No
+2377,,sunsilk.ltd,,,Tier 3,20,,0,No
+2378,,investvanguard-bond.com,,,Tier 3,20,,0,No
+2379,,whattheflush.com.au,,,Tier 3,20,,0,No
+2380,,ansasolutions.tech,,,Tier 3,20,,0,No
+2381,,gad-consult.com,,,Tier 3,20,,0,No
+2382,,homesmartbook.com,,,Tier 3,20,,0,No
+2383,Connected Destinations Limited,connecteddestinations.co.uk,Unknown,GB,Tier 3,20,,0,No
+2384,Dog-a-holics,dogaholics.com,Family And Parenting,US,Tier 3,20,,0,No
+2385,,promomean.ru,,,Tier 3,20,,0,No
+2386,,splashguard.org,Unknown,,Tier 3,20,,0,No
+2387,Nuvola,chefandchic.store,Unknown,GB,Tier 3,20,,0,No
+2388,blogging-circle.com,blogging-circle.com,Travel,,Tier 3,20,,0,No
+2389,,wallacia-p.schools.nsw.gov.au,,,Tier 3,20,,0,No
+2390,,judaedu.cn,,,Tier 3,20,,0,No
+2391,,flexxfinanz.de,,,Tier 3,20,,0,No
+2392,,voltcoin.xyz,,,Tier 3,20,,0,No
+2393,,thirlmere-p.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,0,No
+2394,,therachelmoore.herbalife.com,,,Tier 3,20,,0,No
+2395,Activision Publishing Inc,freecp.top,Unknown,,Tier 3,20,,0,No
+2396,,stmaryssen-h.schools.nsw.gov.au,,,Tier 3,20,,0,No
+2397,,sthgrafton-h.schools.nsw.gov.au,,,Tier 3,20,,0,No
+2398,,toofanmail.com,Unknown,AU,Tier 3,20,,0,No
+2399,,pusatgaya.shop,,,Tier 3,20,,0,No
+2400,,averiq.ai,,,Tier 3,20,,0,No
+2401,,yyain.top,,,Tier 3,20,,0,No
+2402,,psipriscillacoelho.com,,,Tier 3,20,,0,No
+2403,,aw2022.org,,,Tier 3,20,,0,No
+2404,,roastandsteep.com,Unknown,US,Tier 3,20,,0,No
+2405,,johnckj.com,Real Estate,US,Tier 3,20,,0,No
+2406,,dienmayhongxuyen.com,,,Tier 3,20,,0,No
+2407,,stage-ilumyapro.com,,,Tier 3,20,,0,No
+2408,,sfshoot.fr,,,Tier 3,20,,0,No
+2409,,japan-fre5.com,,,Tier 3,20,,0,No
+2410,,javision.net,,,Tier 3,20,,0,No
+2411,,shuttletobigsky.com,Travel,US,Tier 3,20,,0,No
+2412,Maghammeram,maghammeram.com,Unknown,,Tier 3,20,,0,No
+2413,,felixdueno.herbalife.com,,,Tier 3,20,,0,No
+2414,,baclayuk.com,Unknown,GB,Tier 3,20,,0,No
+2415,,metodolucrandocomresina.online,,,Tier 3,20,,0,No
+2416,,wztaigang.com,,,Tier 3,20,,0,No
+2417,,cielaro.cyou,,,Tier 3,20,,0,No
+2418,Skip to main co,art-aem64-stage.scholastic.com,Unknown,US,Tier 3,20,,0,No
+2419,,aviaaa.com,,,Tier 3,20,,0,No
+2420,,bethero.gg,,,Tier 3,20,,0,No
+2421,,jiexij.com,,,Tier 3,20,,0,No
+2422,,lengplay.com,,,Tier 3,20,,0,No
+2423,,raipurhub.com,,,Tier 3,20,,0,No
+2424,,collector-p.schools.nsw.gov.au,,,Tier 3,20,,0,No
+2425,Rock Scar Media,rockscarmedia.com,Unknown,GB,Tier 3,20,,0,No
+2426,,neusetitle.com,,,Tier 3,20,,0,No
+2427,,royalcaribbean.az,,,Tier 3,20,,0,No
+2428,Markmonitor Inc,evrenzo.no,Unknown,,Tier 3,20,,0,No
+2429,,w500-slota.net,,,Tier 3,20,,0,No
+2430,,drive-kasher.com,,,Tier 3,20,,0,No
+2431,,treeoflivingwell.com,,,Tier 3,20,,0,No
+2432,,ubamerica.com,,,Tier 3,20,,0,No
+2433,,guttenmorgen.kz,Unknown,RU,Tier 3,20,,0,No
+2434,,dreamranger.org,,,Tier 3,20,,0,No
+2435,,martiniquetoday.site,,,Tier 3,20,,0,No
+2436,,fintech.udel.edu,Unknown,,Tier 3,20,,0,No
+2437,,sole-g.com,Unknown,,Tier 3,20,,0,No
+2438,,codewarriorsgame.com,,GB,Tier 3,20,,0,No
+2439,,jatenier.com,,,Tier 3,20,,0,No
+2440,,czrzx.com,,,Tier 3,20,,0,No
+2441,,ballimore-p.schools.nsw.gov.au,,,Tier 3,20,,0,No
+2442,,videofullhd.com,,,Tier 3,20,,0,No
+2443,,whianwhian-p.schools.nsw.gov.au,,,Tier 3,20,,0,No
+2444,,move2health.it,,,Tier 3,20,,0,No
+2445,,candyicecreamshop.com,,,Tier 3,20,,0,No
+2446,,alkhuraijigroup.com,,,Tier 3,20,,0,No
+2447,,budinvesttrust.com,,,Tier 3,20,,0,No
+2448,,gfitcards.live,,,Tier 3,20,,0,No
+2449,247insuranceview,247insuranceview.com,Unknown,,Tier 3,20,,0,No
+2450,,acuilcreations.com,,,Tier 3,20,,0,No
+2451,,soyerrede.com,Hobbies And Interests,,Tier 3,20,,0,No
+2452,,bakn-nc-scecu.com,,,Tier 3,20,,0,No
+2453,,knwyj.com,,,Tier 3,20,,0,No
+2454,,yzdtw.com,,,Tier 3,20,,0,No
+2455,,ruisdael.life,,,Tier 3,20,,0,No
+2456,,comzeit.com,,,Tier 3,20,,0,No
+2457,,venturohvac.ca,,,Tier 3,20,,0,No
+2458,,m682.com,Unknown,CN,Tier 3,20,,0,No
+2459,,jieone.com,Unknown,US,Tier 3,20,,0,No
+2460,,webza1.com,Unknown,,Tier 3,20,,0,No
+2461,,paxton-p.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,0,No
+2462,,obaab.com.br,,,Tier 3,20,,0,No
+2463,,theyangist.com,,,Tier 3,20,,0,No
+2464,,vaaniverse.com,,,Tier 3,20,,0,No
+2465,,attentioneconomy.fun,,,Tier 3,20,,0,No
+2466,,alliancebrookfield.co,,,Tier 3,20,,0,No
+2467,,bistrodote.pt,Unknown,,Tier 3,20,,0,No
+2468,,wiby.com.cn,,,Tier 3,20,,0,No
+2469,,kyeemaghin-p.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,0,No
+2470,,joinwagerhub888.com,,,Tier 3,20,,0,No
+2471,,126cleaning.sg,,,Tier 3,20,,0,No
+2472,,yzsggh.com,,,Tier 3,20,,0,No
+2473,,cardstop.me,,,Tier 3,20,,0,No
+2474,,hh-gourmet.com,,,Tier 3,20,,0,No
+2475,,brasilcursos.academy,,,Tier 3,20,,0,No
+2476,,sdrzcy.com,,,Tier 3,20,,0,No
+2477,,padosiagents.com,,,Tier 3,20,,0,No
+2478,,lagastrodoc.com,,,Tier 3,20,,0,No
+2479,,amigostay.com,,,Tier 3,20,,0,No
+2480,,guardme.us,,,Tier 3,20,,0,No
+2481,,netflarelife.sbs,,,Tier 3,20,,0,No
+2482,,plateformecinema.com,,,Tier 3,20,,0,No
+2483,,gskstatic.com,,,Tier 3,20,,0,No
+2484,,masondns.idv.tw,,,Tier 3,20,,0,No
+2485,,gepardwear.com,,,Tier 3,20,,0,No
+2486,,mindcodeinnovate.sbs,,,Tier 3,20,,0,No
+2487,,maximizedistance.com,Unknown,CA,Tier 3,20,,0,No
+2488,,tifanycoco.cc,,,Tier 3,20,,0,No
+2489,,bharatolympiads.com,,,Tier 3,20,,0,No
+2490,El Chiapaneco,elchiapaneco.com.mx,Unknown,,Tier 3,20,,0,No
+2491,,xinx51.com,,,Tier 3,20,,0,No
+2492,,fundtrack.cfd,,,Tier 3,20,,0,No
+2493,,stamenmedia.com,,,Tier 3,20,,0,No
+2494,,xamandesktop.io,,,Tier 3,20,,0,No
+2495,,uiutvdome.com,Real Estate,,Tier 3,20,,0,No
+2496,,netcrewcompany.com,,,Tier 3,20,,0,No
+2497,,mulheresmagrasparasempre.com.br,,,Tier 3,20,,0,No
+2498,,gzrsdxjd.com,,,Tier 3,20,,0,No
+2499,,zero3petcare.com,Unknown,US,Tier 3,20,,0,No
+2500,,pnc.ca,,,Tier 3,20,,0,No
+2501,,styralis.org,,,Tier 3,20,,0,No
+2502,nivrutinatural.com,nivrutinatural.com,Unknown,,Tier 3,20,,0,No
+2503,,haimehen.com,,,Tier 3,20,,0,No
+2504,,scopetour.com,,,Tier 3,20,,0,No
+2505,,ring-mp.com,,,Tier 3,20,,0,No
+2506,,azgoldbuy.com,Unknown,US,Tier 3,20,,0,No
+2507,,collinsck-p.schools.nsw.gov.au,,,Tier 3,20,,0,No
+2508,,tipstrike.com,,,Tier 3,20,,0,No
+2509,,figtreehts-p.schools.nsw.gov.au,,,Tier 3,20,,0,No
+2510,,veri-hatti.info,,,Tier 3,20,,0,No
+2511,,chaudharyagros.com,,,Tier 3,20,,0,No
+2512,,sostenibilidadgrupoepm.com.co,Society,,Tier 3,20,,0,No
+2513,,turkhaberim.com,,,Tier 3,20,,0,No
+2514,,2sides2asthma.com,,,Tier 3,20,,0,No
+2515,,sensorycreatures.com,,,Tier 3,20,,0,No
+2516,,sevenhills-h.schools.nsw.gov.au,,,Tier 3,20,,0,No
+2517,Skip to main co,sciencespin2-aem64-stage.scholastic.com,Unknown,US,Tier 3,20,,0,No
+2518,,brightzonex.cyou,,,Tier 3,20,,0,No
+2519,,presale.garden,,,Tier 3,20,,0,No
+2520,,bihnet.net,,,Tier 3,20,,0,No
+2521,,discovernorthwestflorida.com,Real Estate,US,Tier 3,20,,0,No
+2522,,tcie.com.cn,,,Tier 3,20,,0,No
+2523,Wet Noses & Wagging Tails,waggingtails.dog,Family And Parenting,US,Tier 3,20,,0,No
+2524,,feidfinancial.com,,,Tier 3,20,,0,No
+2525,,profielektromeister.sk,,,Tier 3,20,,0,No
+2526,,aramark.co.kr,,,Tier 3,20,,0,No
+2527,,doumikeji.net,,,Tier 3,20,,0,No
+2528,,japan-fre10.com,,,Tier 3,20,,0,No
+2529,,ilplfinancial.com,Unknown,,Tier 3,20,,0,No
+2530,Sony Interactive Entertainment Europe Limited,store-playstation.com,Unknown,,Tier 3,20,,0,No
+2531,,nuknyr.com,,,Tier 3,20,,0,No
+2532,,kia-nagel-moers.de,,,Tier 3,20,,0,No
+2533,,sponsorcodes.com,,,Tier 3,20,,0,No
+2534,,sh599.com,,,Tier 3,20,,0,No
+2535,,walhallow-p.schools.nsw.gov.au,,,Tier 3,20,,0,No
+2536,,kellymarceau.com,,,Tier 3,20,,0,No
+2537,,cokesluts.com,,,Tier 3,20,,0,No
+2538,,escapethecrateboise.com,,,Tier 3,20,,0,No
+2539,,samsunjob.com,Unknown,,Tier 3,20,,0,No
+2540,,verdey.cfd,,,Tier 3,20,,0,No
+2541,,saleschowder.com,,,Tier 3,20,,0,No
+2542,,hbpxzz.com,,,Tier 3,20,,0,No
+2543,Drapery Tradition Inc,draperytraditioninc.com,Unknown,US,Tier 3,20,,0,No
+2544,,agenciamartello.com.br,,,Tier 3,20,,0,No
+2545,,nissancloud.com,,,Tier 3,20,,0,No
+2546,,codmevent.shop,,,Tier 3,20,,0,No
+2547,,lewiscenterdentalgroup.com,,,Tier 3,20,,0,No
+2548,,fixstagram.com,,,Tier 3,20,,0,No
+2549,defusio GmbH,defusio.com,Unknown,DE,Tier 3,20,,0,No
+2550,,atom-cars.ru,Unknown,,Tier 3,20,,0,No
+2551,,rvacamp.com,,,Tier 3,20,,0,No
+2552,,luichewooprizeforworldcivilisation.com,,,Tier 3,20,,0,No
+2553,,lsdfamen.com,,,Tier 3,20,,0,No
+2554,,13zy14.com,,,Tier 3,20,,0,No
+2555,,kefuyuanma.com,,,Tier 3,20,,0,No
+2556,,globalworkforcemanagement.com,,,Tier 3,20,,0,No
+2557,,leupoldhunting.com,,,Tier 3,20,,0,No
+2558,,casaldoamor.com,,,Tier 3,20,,0,No
+2559,,aramexslogistics.org,,,Tier 3,20,,0,No
+2560,,guiarepsolhacemoscocina.com,,,Tier 3,20,,0,No
+2561,,wattleflat-p.schools.nsw.gov.au,,,Tier 3,20,,0,No
+2562,,parkviewhealthathome.com,,,Tier 3,20,,0,No
+2563,,ecommerceautomationservices.com,,,Tier 3,20,,0,No
+2564,Jaguar Land Rover Limited,full-traction.jaguar.es,Unknown,ES,Tier 3,20,,0,No
+2565,,giftfreecp.top,,,Tier 3,20,,0,No
+2566,,newlambton-p.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,0,No
+2567,,allanreeder.com,Unknown,,Tier 3,20,,0,No
+2568,,claremontm-p.schools.nsw.gov.au,,,Tier 3,20,,0,No
+2569,,rinoshoes.shop,,,Tier 3,20,,0,No
+2570,,nutritionsworld.co.in,Unknown,IN,Tier 3,20,,0,No
+2571,,greengridgoblins.com,,,Tier 3,20,,0,No
+2572,,etilasat.com,,,Tier 3,20,,0,No
+2573,,dorroughby-e.schools.nsw.gov.au,,,Tier 3,20,,0,No
+2574,Suncrest Home Builders,suncresthomebuilder.com,Unknown,US,Tier 3,20,,0,No
+2575,,bet-vipmx.com,,,Tier 3,20,,0,No
+2576,,thriventmutualfunds.com,,,Tier 3,20,,0,No
+2577,,shyanc17.com,,,Tier 3,20,,0,No
+2578,aprendaamigurumi.net,aprendaamigurumi.net,Unknown,,Tier 3,20,,0,No
+2579,,onepassapp.com,,,Tier 3,20,,0,No
+2580,,drbregmanmd.com,Unknown,US,Tier 3,20,,0,No
+2581,,peatsridge-p.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,0,No
+2582,,planbrand.xyz,,,Tier 3,20,,0,No
+2583,,c-mn.com,,,Tier 3,20,,0,No
+2584,,shoalhaven-h.schools.nsw.gov.au,,,Tier 3,20,,0,No
+2585,,aviaav.com,,,Tier 3,20,,0,No
+2586,,heikin-ashi-crypto.trade,,,Tier 3,20,,0,No
+2587,,am-sound.com,,,Tier 3,20,,0,No
+2588,,liveslab.com,,,Tier 3,20,,0,No
+2589,,btkajx.com,,,Tier 3,20,,0,No
+2590,Coherent Corp,0571photo.com,Unknown,,Tier 3,20,,0,No
+2591,,tcfsly.com,,,Tier 3,20,,0,No
+2592,Allianz Taiwan Life Insurance Company Ltd,allianz.com.tw,Unknown,TW,Tier 3,20,,0,No
+2593,Thetygo,thetygo.com,Unknown,IN,Tier 3,20,,0,No
+2594,,growmoney360.com,,,Tier 3,20,,0,No
+2595,,qinrunhome.com,,,Tier 3,20,,0,No
+2596,,foldercanyon.xyz,,,Tier 3,20,,0,No
+2597,,experthowto.com,,,Tier 3,20,,0,No
+2598,,gzunique.com,,,Tier 3,20,,0,No
+2599,,fluxflarelife.sbs,,,Tier 3,20,,0,No
+2600,antor.store,antor.store,Unknown,,Tier 3,20,,0,No
+2601,affiliatemarketinganalyst,affiliatemarketinganalyst.com,Unknown,,Tier 3,20,,0,No
+2602,,mededuglobal.com,Unknown,IN,Tier 3,20,,0,No
+2603,,connectflarenet.sa.com,,,Tier 3,20,,0,No
+2604,,lqjiudian.com,,,Tier 3,20,,0,No
+2605,Bristol Myers Squibb S.R.L,anticoagulante.info,Unknown,,Tier 3,20,,0,No
+2606,,nyindependentassessor.com,,,Tier 3,20,,0,No
+2607,,dghcp.com.cn,,,Tier 3,20,,0,No
+2608,,blockverseseries.com,,,Tier 3,20,,0,No
+2609,,cra-yverdon.ch,Unknown,CH,Tier 3,20,,0,No
+2610,,preferredpoppy.com,Unknown,,Tier 3,20,,0,No
+2611,TrackSight Solutions,tracksightsolutions.com,Unknown,,Tier 3,20,,0,No
+2612,,macombpressurewash.com,Unknown,US,Tier 3,20,,0,No
+2613,,tifsposs.cc,,,Tier 3,20,,0,No
+2614,,argenx.de,,,Tier 3,20,,0,No
+2615,,inksandprinters.com,,,Tier 3,20,,0,No
+2616,,usmarineforce.com,,,Tier 3,20,,0,No
+2617,,dalvshi.top,,,Tier 3,20,,0,No
+2618,,hkbanker.com,,,Tier 3,20,,0,No
+2619,,tocorrect.com,Unknown,CA,Tier 3,20,,0,No
+2620,,metodocorretorpremium.com.br,,,Tier 3,20,,0,No
+2621,,bb-conyerstockbridge.com,,,Tier 3,20,,0,No
+2622,,vetket.ru,,,Tier 3,20,,0,No
+2623,,nissanford.com,,,Tier 3,20,,0,No
+2624,,kpmglaw.us,,,Tier 3,20,,0,No
+2625,,cpgiftactivision.com,,,Tier 3,20,,0,No
+2626,,mountainconstructionservices.com,,,Tier 3,20,,0,No
+2627,,anikjahid.site,Unknown,,Tier 3,20,,0,No
+2628,,armentasautodetailing.com,,,Tier 3,20,,0,No
+2629,,igreenbrasiloficial.com,,,Tier 3,20,,0,No
+2630,,royalexpresslogisticsservice.com,Unknown,GB,Tier 3,20,,0,No
+2631,,vhl24.com,,,Tier 3,20,,0,No
+2632,,brandbendpro.com,,,Tier 3,20,,0,No
+2633,,finvestor.info,Unknown,US,Tier 3,20,,0,No
+2634,o'events,sso-events.fr,Unknown,FR,Tier 3,20,,0,No
+2635,,nvidia-chips.vip,,,Tier 3,20,,0,No
+2636,,frozzasolutions.com,,,Tier 3,20,,0,No
+2637,,bingara-c.schools.nsw.gov.au,,,Tier 3,20,,0,No
+2638,,shonamuni.in,,,Tier 3,20,,0,No
+2639,,reallybigbrother.com,,,Tier 3,20,,0,No
+2640,,xiaorui123.com,,CN,Tier 3,20,,0,No
+2641,,xm-pp.com,,,Tier 3,20,,0,No
+2642,,smartflarehub.sbs,,,Tier 3,20,,0,No
+2643,Dev Creador,devcreador.com,Unknown,,Tier 3,20,,0,No
+2644,,mafapress.com,,,Tier 3,20,,0,No
+2645,,brightcrestsolutions.com,Unknown,IN,Tier 3,20,,0,No
+2646,,gymeabay-p.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,0,No
+2647,,collegepro.org,,,Tier 3,20,,0,No
+2648,,liuzhouzhuhang.com,,,Tier 3,20,,0,No
+2649,,offstreamsoft.online,,,Tier 3,20,,0,No
+2650,,frax-rewards.com,,,Tier 3,20,,0,No
+2651,,balgowlaht-p.schools.nsw.gov.au,,,Tier 3,20,,0,No
+2652,,insk.com,Unknown,,Tier 3,20,,0,No
+2653,,noguerados.sbs,,,Tier 3,20,,0,No
+2654,,vanadium-pentoxide.com,,,Tier 3,20,,0,No
+2655,,woolomin-p.schools.nsw.gov.au,,,Tier 3,20,,0,No
+2656,Giaohoitruonglao,giaohoitruonglao.com,Unknown,CA,Tier 3,20,,0,No
+2657,,yodyy.cn,,,Tier 3,20,,0,No
+2658,,moogdefense.com,,,Tier 3,20,,0,No
+2659,,inrealitystudios.com,,,Tier 3,20,,0,No
+2660,,rippledesktop.com,,,Tier 3,20,,0,No
+2661,,maraylya-p.schools.nsw.gov.au,Unknown,AU,Tier 3,20,,0,No
+2662,,betting-4u.com,,,Tier 3,20,,0,No
+2663,,visitqatar.com,Travel,QA,Tier 3,20,,0,No
+2664,,amigup.fr,,,Tier 3,20,,0,No
+2665,,narrativemarketinggroup.com,,,Tier 3,20,,0,No
+2666,,bestdiddyproperties.com,,,Tier 3,20,,0,No
+2667,,newsonfast.com,,,Tier 3,20,,0,No
+2668,,evondesk.com,,,Tier 3,20,,0,No
+2669,,carlingfow-p.schools.nsw.gov.au,,,Tier 3,20,,0,No
+2670,,waverley-p.schools.nsw.gov.au,,,Tier 3,20,,0,No
+2671,,snc.co.zw,,,Tier 3,20,,0,No
+2672,,washerfixerriyadh.com,,,Tier 3,20,,0,No
+2673,,noticiasdeminas.net,,,Tier 3,20,,0,No
+2674,,its.rmit.edu.au,,AU,Tier 3,20,,0,No
+2675,,glfnewz.com,,,Tier 3,20,,0,No
+2676,,js9927.com,,,Tier 3,20,,0,No
+2677,,browningoutlets.com,,,Tier 3,20,,0,No
+2678,,renewal-consulting.com,,,Tier 3,20,,0,No
+2679,,chatfunnel.pro,,,Tier 3,20,,0,No
+2680,,neeom.cloud,,,Tier 3,20,,0,No
+2681,,6room.net,,,Tier 3,20,,0,No
+2682,,huainingbbs.com,,,Tier 3,20,,0,No
+2683,,lyliano.com.cn,,,Tier 3,20,,0,No
+2684,,unifiedsmartsolutions.com,,,Tier 3,20,,0,No
+2685,Peachten se,peachten.com,Unknown,,Tier 3,20,,0,No
+2686,,japan-fre8.com,,,Tier 3,20,,0,No
+2687,,airmails.net,,,Tier 3,20,,0,No
+2688,,ramitar.world,,,Tier 3,20,,0,No
+2689,,tjruntong.com,,,Tier 3,20,,0,No
+2690,,stage-absoricald.com,,,Tier 3,20,,0,No
+2691,,sitiozen.com,,,Tier 3,20,,0,No
+2692,,livar1.ir,,,Tier 3,20,,0,No
+2693,,alexparkcs-c.schools.nsw.gov.au,,,Tier 3,20,,0,No
+2694,,nonenunciativenik.com,,,Tier 3,20,,0,No
+2695,,alphamidiadigital.com.br,Unknown,,Tier 3,20,,0,No
+2696,,perkumpulanspasi.com,,,Tier 3,20,,0,No
+2697,,johnsons.za.com,,,Tier 3,20,,0,No
+2698,,hcydsz.com,Unknown,CN,Tier 3,20,,0,No
+2699,,devportal.online,,,Tier 3,20,,0,No
+2700,,akjjker.cyou,,,Tier 3,20,,0,No

@@ -1,0 +1,101 @@
+Rank,Company Name,Domain,Vertical,Country,Monthly Visits,Tech Spend ($),Has Case Study
+1,HUAWEI,huawei.com,Business And Industrial,CN,"75,744,731",46820,Yes
+2,TD Bank,td.com,Finance,CA,"43,178,055",52705,No
+3,Kia Corporation,kia.com,Automotive And Vehicles,US,"25,488,904",76402,Yes
+4,National Australia Bank,nab.com.au,Finance,AU,"11,493,900",71847,No
+5,Mercedes-Benz Group AG,mercedes-benz.com,Automotive And Vehicles,DE,"6,577,475",77414,Yes
+6,Miles & More,miles-and-more.com,Technology And Computing,,"6,054,821",43622,Yes
+7,Mark's,marks.com,Style And Fashion,CA,"4,982,280",42949,Yes
+8,Morgan Stanley,morganstanley.com,Finance,US,"4,700,697",101331,No
+9,CVS Caremark,caremark.com,"Law, Govt And Politics",US,"4,498,750",56835,Yes
+10,Infinite USA Inc,infinitiusa.com,Automotive And Vehicles,US,"4,443,055",42617,Yes
+11,SP Global,spglobal.com,Business And Industrial,US,"3,486,096",81523,Yes
+12,Changi Airport Singapore,changiairport.com,Travel,SG,"2,084,724",41893,Yes
+13,Avalara Inc,avalara.com,Business And Industrial,US,"1,990,002",77700,Yes
+14,Microchip Technology Incorporated,microchip.com,Technology And Computing,US,"1,332,073",50164,Yes
+15,Volvo AB,volvo.com,Automotive And Vehicles,SE,"1,191,497",65825,Yes
+16,"F5, Inc.",f5.com,Business And Industrial,US,"994,757",68678,Yes
+17,"Juniper Networks, Inc.",juniper.net,Technology And Computing,US,"968,020",84111,Yes
+18,Flinders University of South Australia,flinders.edu.au,Science,AU,"938,479",43415,Yes
+19,Allianz Insurance Australia,allianz.com.au,Technology And Computing,AU,"903,209",49953,Yes
+20,Bristol Myers Squibb,bms.com,Business And Industrial,US,"809,790",63517,Yes
+21,Moody's Investors Service Inc,moodys.com,Business And Industrial,US,"716,310",72670,No
+22,Constellation Generation Group,constellation.com,Business And Industrial,US,"528,554",50024,No
+23,Odpbusiness LLC,odpbusiness.com,Business And Industrial,US,"505,137",46419,No
+24,Sunstar Americas Inc,sunstargum.com,Health And Fitness,CA,"395,405",51625,No
+25,Avery Dennison,averydennison.com,Business And Industrial,US,"322,225",44973,No
+26,NV Bekaert SA,bekaert.com,Business And Industrial,BE,"127,163",55482,No
+27,Identity Force,identityforce.com,"Law, Govt And Politics",US,"125,798",44547,No
+28,Software Aktiengesellschaft,softwareag.com,Business And Industrial,DE,"97,703",62190,No
+29,BlueScope Steel Ltd,bluescope.com,Business And Industrial,AU,"56,082",45920,No
+30,Ideal Industries Inc,idealindustries.com,Business And Industrial,,"10,548",44583,No
+31,Amazon.com Inc,aboutamazon.com,Business And Industrial,,Not enriched,41637,No
+32,Widia Technologies Pvt Ltd,widia.com,Business And Industrial,US,Not enriched,40746,No
+33,"Wesco International, Inc.",wesco.com,Business And Industrial,US,Not enriched,40671,No
+34,Waukesha Bearings Corporation,inpro-seal.com,Business And Industrial,US,Not enriched,40572,No
+35,FLEETCOR,fleetcor.com,Business And Industrial,US,Not enriched,39706,No
+36,,ihgresidences.com,,,Not enriched,39637,No
+37,HealthSmart,healthsmart.com,"Law, Govt And Politics",US,Not enriched,39577,No
+38,Nouryon,akzonobel.com,Business And Industrial,NL,Not enriched,39388,No
+39,MINI,mini.com.mx,Technology And Computing,MX,Not enriched,39307,No
+40,Nutanix,nutanix.cn,Technology And Computing,US,Not enriched,39284,No
+41,Armstrong World Industries,armstrongceilings.com,Business And Industrial,US,Not enriched,39040,No
+42,BT Group PLC,btwholesale.com,Business And Industrial,US,Not enriched,38888,No
+43,Robert Half International,roberthalf.com,Business And Industrial,US,Not enriched,38603,No
+44,Nissan Motors India Pvt Ltd,nissan.in,Automotive And Vehicles,IN,Not enriched,38495,No
+45,ALLIANZ INFORMATIQUE G.I.E,allianz.fr,Sports,FR,Not enriched,38122,No
+46,Bo Sommarland AS,sommarland.no,Shopping,NO,Not enriched,38105,No
+47,Unilever Food Solutions,ufs.com,Food And Drink,US,Not enriched,37909,No
+48,Corteva,corteva.com.au,Business And Industrial,AU,Not enriched,37750,No
+49,,hawaiianairlinesbohcard.com,Travel,US,Not enriched,37640,No
+50,Ad Practitioners LLC,getfrontiercard.com,Art And Entertainment,US,Not enriched,37640,No
+51,University of Sydney,sydney.edu.au,Science,AU,Not enriched,37240,No
+52,Cooper US Inc,cooperlighting.com,Business And Industrial,US,Not enriched,36875,No
+53,Chevrolet Mexico,chevrolet.com.mx,Automotive And Vehicles,MX,Not enriched,36843,No
+54,Allianz SE,allianz.pl,"Law, Govt And Politics",PL,Not enriched,36754,No
+55,"Pioneer Hi-Bred International, Inc.",pioneer.com,Science,US,Not enriched,36692,No
+56,Footlocker.com,footlocker.eu,Art And Entertainment,US,Not enriched,36510,No
+57,,medtronicdm.com,Unknown,,Not enriched,36440,No
+58,Nissan,nissan.nl,Automotive And Vehicles,NL,Not enriched,36437,No
+59,Navico,navico.com,Business And Industrial,US,Not enriched,36354,No
+60,,fsvpaymentsystems.com,Business And Industrial,US,Not enriched,36285,No
+61,Bose,bose.tw,Automotive And Vehicles,US,Not enriched,35574,No
+62,Allianz Nederland,allianz.nl,Business And Industrial,NL,Not enriched,35216,No
+63,Dubai Airshow,dubaiairshow.aero,Business And Industrial,GB,Not enriched,35059,No
+64,Bose,bose.pe,Technology And Computing,US,Not enriched,35037,No
+65,Bridgestone,bridgestone.cl,Art And Entertainment,US,Not enriched,34915,No
+66,Allianz Seguros,allianz.com.mx,Finance,MX,Not enriched,34671,No
+67,HOFER,hofer.at,Sports,US,Not enriched,34639,No
+68,Vodafone Idea Ltd,myvi.in,Business And Industrial,IN,Not enriched,34550,No
+69,Stanford University School of Medicine,med.stanford.edu,Unknown,US,Not enriched,34431,No
+70,Radley + Co. Limited,radley.co.uk,Style And Fashion,GB,Not enriched,34075,No
+71,TUSENFRYD AS,tusenfryd.no,Shopping,NO,Not enriched,34065,No
+72,Zions Bancorporation,zionsbank.com,Finance,US,Not enriched,34019,No
+73,Nissan,nissan.no,Automotive And Vehicles,FR,Not enriched,33825,No
+74,CeraWeek,ceraweek.com,Business And Industrial,US,Not enriched,33755,No
+75,John Lewis Financial Services Ltd,johnlewisfinance.com,Finance,GB,Not enriched,33552,No
+76,Allianz SE,allianz.it,Finance,DE,Not enriched,33503,No
+77,Fiat Automobiles S.p.A.,fiat.com,Automotive And Vehicles,IT,Not enriched,33429,No
+78,ChevroletEcuador,chevrolet.com.ec,Automotive And Vehicles,EC,Not enriched,33377,No
+79,Sennheiser,sennheiser-hearing.com,Technology And Computing,US,Not enriched,33358,No
+80,Heroes Vacation Club,heroesvacationclub.com,Travel,US,Not enriched,33358,No
+81,Weltvogelpark,weltvogelpark.de,Travel,DE,Not enriched,33305,No
+82,Nissan,nissan.it,Automotive And Vehicles,IT,Not enriched,33165,No
+83,Allianz Malaysia Berhad,allianz.com.my,Business And Industrial,MY,Not enriched,33010,No
+84,proinity LLC,top-db.com,Technology And Computing,,Not enriched,32929,No
+85,Boston Pizza International Inc,bostonpizza.com,Food And Drink,CA,Not enriched,32906,No
+86,,gmenvolve.com,Unknown,,Not enriched,32837,No
+87,Enel S.p.A.,enel.com,Business And Industrial,DE,Not enriched,32555,No
+88,Chevron U.S.A. Inc,chevroncontechron.com,Unknown,,Not enriched,32385,No
+89,Nissan,nissan.se,Automotive And Vehicles,FR,Not enriched,32275,No
+90,Mastercard,mastercard.fr,Business And Industrial,,Not enriched,32200,No
+91,kwiktripfleet,kwiktripfleet.com,Technology And Computing,US,Not enriched,32030,No
+92,Parker & Sons,parkerandsons.com,Technology And Computing,US,Not enriched,32000,No
+93,Immobilien Scout GmbH,immobilienscout24.de,Business And Industrial,DE,Not enriched,31860,No
+94,,gatewaytoyota.com,Automotive And Vehicles,US,Not enriched,31670,No
+95,,northlandam.com,,,Not enriched,31540,No
+96,HOFER,hofer.si,"Law, Govt And Politics",,Not enriched,31420,No
+97,TDS Telecommunications Corporation,tdstelecom.com,Technology And Computing,US,Not enriched,31410,No
+98,Szott M59 Toyota,szottm59toyota.com,Automotive And Vehicles,US,Not enriched,31350,No
+99,Allianz SE,allianz.de,Art And Entertainment,DE,Not enriched,31257,No
+100,,supplysideconnect.com,Unknown,GB,Not enriched,31238,No
