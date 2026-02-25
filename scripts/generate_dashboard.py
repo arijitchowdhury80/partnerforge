@@ -35,7 +35,7 @@ def fetch_data():
     # Build dynamic query based on available columns
     base_cols = [
         'id', 'company_name', 'domain', 'vertical', 'country',
-        'icp_tier', 'icp_tier_name', 'lead_score',
+        'icp_tier', 'icp_tier_name', 'icp_score',
         'sw_monthly_visits', 'tech_spend', 'partner_tech'
     ]
 
@@ -54,7 +54,9 @@ def fetch_data():
         ('displacement_angle', 'NULL'),
         ('financials_json', 'NULL'),
         ('hiring_signals', 'NULL'),
-        ('tech_stack_json', 'NULL')
+        ('tech_stack_json', 'NULL'),
+        ('last_enriched', 'NULL'),
+        ('enrichment_level', "'basic'")
     ]
 
     # Build SELECT clause
@@ -69,8 +71,8 @@ def fetch_data():
         SELECT {', '.join(select_parts)}
         FROM displacement_targets
         ORDER BY
-            CASE WHEN lead_score IS NULL THEN 1 ELSE 0 END,
-            lead_score DESC,
+            CASE WHEN icp_score IS NULL THEN 1 ELSE 0 END,
+            icp_score DESC,
             sw_monthly_visits DESC
     """
     cursor.execute(query)
@@ -88,13 +90,13 @@ def fetch_data():
     cursor.execute("SELECT COUNT(*) FROM displacement_targets")
     total = cursor.fetchone()[0]
 
-    cursor.execute("SELECT COUNT(*) FROM displacement_targets WHERE lead_score >= 80")
+    cursor.execute("SELECT COUNT(*) FROM displacement_targets WHERE icp_score >= 80")
     hot = cursor.fetchone()[0]
 
-    cursor.execute("SELECT COUNT(*) FROM displacement_targets WHERE lead_score >= 60 AND lead_score < 80")
+    cursor.execute("SELECT COUNT(*) FROM displacement_targets WHERE icp_score >= 60 AND icp_score < 80")
     warm = cursor.fetchone()[0]
 
-    cursor.execute("SELECT COUNT(*) FROM displacement_targets WHERE lead_score >= 40 AND lead_score < 60")
+    cursor.execute("SELECT COUNT(*) FROM displacement_targets WHERE icp_score >= 40 AND icp_score < 60")
     cool = cursor.fetchone()[0]
 
     cursor.execute("SELECT COUNT(*) FROM displacement_targets WHERE icp_tier = 1")
@@ -169,13 +171,13 @@ def generate_html(data):
         financials = {}
         tech_stack = {}
         try:
-            if t[21]:
-                financials = json.loads(t[21]) if isinstance(t[21], str) else t[21]
+            if t[22]:  # financials_json at index 22
+                financials = json.loads(t[22]) if isinstance(t[22], str) else t[22]
         except:
             pass
         try:
-            if t[23]:
-                tech_stack = json.loads(t[23]) if isinstance(t[23], str) else t[23]
+            if t[24]:  # tech_stack_json at index 24
+                tech_stack = json.loads(t[24]) if isinstance(t[24], str) else t[24]
         except:
             pass
 
@@ -216,8 +218,10 @@ def generate_html(data):
             "competitorsUsingAlgolia": t[20] or "",
             "displacementAngle": t[21] if isinstance(t[21], str) and not t[21].startswith('{') else "",
             "financials": financials,
-            "hiringSignals": t[22] or "",
-            "techStack": tech_stack
+            "hiringSignals": t[23] or "",
+            "techStack": tech_stack,
+            "lastEnriched": t[25] or None,
+            "enrichmentLevel": t[26] or "basic"
         })
 
     # Sort verticals for dropdown
@@ -776,6 +780,83 @@ def generate_html(data):
             color: var(--text-primary);
         }}
 
+        .detail-actions {{
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }}
+
+        .enrichment-status {{
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }}
+        .enrichment-status.fresh {{
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }}
+        .enrichment-status.stale {{
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }}
+        .enrichment-status.never {{
+            background: rgba(148, 163, 184, 0.2);
+            color: #94a3b8;
+        }}
+
+        .refresh-btn {{
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #003DFF, #5468FF);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }}
+        .refresh-btn:hover {{
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 61, 255, 0.4);
+        }}
+        .refresh-btn.loading {{
+            opacity: 0.7;
+            cursor: wait;
+        }}
+
+        .loading-overlay {{
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(26, 26, 46, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10001;
+        }}
+        .loading-overlay.hidden {{
+            display: none;
+        }}
+        .loading-spinner {{
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: #5468FF;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }}
+        @keyframes spin {{
+            to {{ transform: rotate(360deg); }}
+        }}
+        .loading-text {{
+            margin-top: 20px;
+            color: white;
+            font-size: 1.1em;
+        }}
+
         /* Signal Row */
         .signal-row {{
             display: flex;
@@ -1323,7 +1404,11 @@ def generate_html(data):
                         <span class="country" id="detailCountry">United States</span>
                     </div>
                 </div>
-                <button class="detail-close" onclick="closeDetail()">&times; Close</button>
+                <div class="detail-actions">
+                    <span class="enrichment-status" id="enrichmentStatus">Not enriched</span>
+                    <button class="refresh-btn" id="refreshDataBtn" onclick="refreshCompanyData()">🔄 Refresh Data</button>
+                    <button class="detail-close" onclick="closeDetail()">&times; Close</button>
+                </div>
             </div>
             <!-- Signal Row -->
             <div class="signal-row">
@@ -1534,9 +1619,171 @@ def generate_html(data):
                 </div>
             </div>
         </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay hidden" id="detailLoadingOverlay">
+            <div class="loading-spinner"></div>
+            <div class="loading-text" id="loadingText">Enriching company data...</div>
+        </div>
     </div>
 
     <script>
+        // ===== API CONFIGURATION =====
+        const API_BASE_URL = 'http://localhost:8000';
+        let currentTargetDomain = null;
+
+        // ===== API FUNCTIONS =====
+        async function fetchCompanyFromAPI(domain) {{
+            try {{
+                const response = await fetch(`${{API_BASE_URL}}/api/company/${{domain}}`);
+                if (!response.ok) return null;
+                const data = await response.json();
+                return data.company;
+            }} catch (error) {{
+                console.error('API fetch error:', error);
+                return null;
+            }}
+        }}
+
+        async function enrichCompanyFromAPI(domain, force = false) {{
+            try {{
+                const url = `${{API_BASE_URL}}/api/enrich/${{domain}}${{force ? '?force=true' : ''}}`;
+                const response = await fetch(url, {{ method: 'POST' }});
+                return await response.json();
+            }} catch (error) {{
+                console.error('API enrichment error:', error);
+                return {{ success: false, error: error.message }};
+            }}
+        }}
+
+        function showLoading(message = 'Enriching company data...') {{
+            const overlay = document.getElementById('detailLoadingOverlay');
+            const textEl = document.getElementById('loadingText');
+            if (overlay && textEl) {{
+                textEl.textContent = message;
+                overlay.classList.remove('hidden');
+            }}
+        }}
+
+        function hideLoading() {{
+            const overlay = document.getElementById('detailLoadingOverlay');
+            if (overlay) overlay.classList.add('hidden');
+        }}
+
+        function updateEnrichmentStatus(lastEnriched, enrichmentLevel) {{
+            const statusEl = document.getElementById('enrichmentStatus');
+            if (!statusEl) return;
+
+            if (enrichmentLevel === 'full' && lastEnriched) {{
+                const enrichedDate = new Date(lastEnriched);
+                const daysSince = Math.floor((new Date() - enrichedDate) / (1000 * 60 * 60 * 24));
+                if (daysSince < 7) {{
+                    statusEl.textContent = 'Data fresh';
+                    statusEl.className = 'enrichment-status fresh';
+                }} else {{
+                    statusEl.textContent = `Updated ${{daysSince}}d ago`;
+                    statusEl.className = 'enrichment-status stale';
+                }}
+            }} else {{
+                statusEl.textContent = 'Not enriched';
+                statusEl.className = 'enrichment-status never';
+            }}
+        }}
+
+        async function refreshCompanyData() {{
+            if (!currentTargetDomain) return;
+
+            const refreshBtn = document.getElementById('refreshDataBtn');
+            if (refreshBtn) {{
+                refreshBtn.classList.add('loading');
+                refreshBtn.disabled = true;
+            }}
+
+            showLoading('Fetching data from BuiltWith, SimilarWeb, Yahoo Finance...');
+
+            try {{
+                const result = await enrichCompanyFromAPI(currentTargetDomain, true);
+
+                if (result.success && result.result && result.result.company) {{
+                    updateDetailViewWithAPIData(result.result.company);
+                    hideLoading();
+                }} else if (result.cached) {{
+                    hideLoading();
+                    alert('Data is already fresh (cached). No update needed.');
+                }} else {{
+                    hideLoading();
+                    const errors = result.errors ? result.errors.join(', ') : 'Unknown error';
+                    alert('Enrichment partially completed. Errors: ' + errors);
+                    const company = await fetchCompanyFromAPI(currentTargetDomain);
+                    if (company) updateDetailViewWithAPIData(company);
+                }}
+            }} catch (error) {{
+                hideLoading();
+                console.error('Refresh error:', error);
+                alert('Failed to refresh data. Is the API server running at ' + API_BASE_URL + '?');
+            }} finally {{
+                if (refreshBtn) {{
+                    refreshBtn.classList.remove('loading');
+                    refreshBtn.disabled = false;
+                }}
+            }}
+        }}
+
+        function updateDetailViewWithAPIData(apiData) {{
+            updateEnrichmentStatus(apiData.last_enriched, apiData.enrichment_level);
+
+            // Update metrics
+            if (apiData.revenue) {{
+                const revFmt = formatCurrency(apiData.revenue);
+                const el = document.getElementById('detailRevenue');
+                if (el) el.textContent = revFmt;
+            }}
+            if (apiData.gross_margin) {{
+                const el = document.getElementById('detailMargin');
+                if (el) el.textContent = (apiData.gross_margin * 100).toFixed(1) + '%';
+            }}
+            if (apiData.sw_monthly_visits) {{
+                const el = document.getElementById('detailTraffic');
+                if (el) el.textContent = formatTraffic(apiData.sw_monthly_visits);
+            }}
+
+            // Update tech stack
+            if (apiData.tech_stack_json) {{
+                let techStack = apiData.tech_stack_json;
+                if (typeof techStack === 'string') {{
+                    try {{ techStack = JSON.parse(techStack); }} catch(e) {{}}
+                }}
+                if (Array.isArray(techStack) && techStack.length > 0) {{
+                    const techGrid = document.getElementById('techStackGrid');
+                    if (techGrid) {{
+                        techGrid.innerHTML = techStack.slice(0, 12).map(tech => `
+                            <div class="tech-item">
+                                <div class="category">${{tech.category || 'Technology'}}</div>
+                                <div class="name">${{tech.name}}</div>
+                            </div>
+                        `).join('');
+                    }}
+                }}
+            }}
+        }}
+
+        function formatCurrency(value) {{
+            if (!value) return '—';
+            if (value >= 1e12) return '$' + (value / 1e12).toFixed(1) + 'T';
+            if (value >= 1e9) return '$' + (value / 1e9).toFixed(1) + 'B';
+            if (value >= 1e6) return '$' + (value / 1e6).toFixed(1) + 'M';
+            if (value >= 1e3) return '$' + (value / 1e3).toFixed(1) + 'K';
+            return '$' + value.toFixed(0);
+        }}
+
+        function formatTraffic(value) {{
+            if (!value) return '—';
+            if (value >= 1e9) return (value / 1e9).toFixed(1) + 'B';
+            if (value >= 1e6) return (value / 1e6).toFixed(1) + 'M';
+            if (value >= 1e3) return (value / 1e3).toFixed(1) + 'K';
+            return value.toString();
+        }}
+
         // Data
         const allTargets = {json.dumps(targets_json)};
 
@@ -1914,6 +2161,12 @@ def generate_html(data):
         function openDetail(targetId) {{
             const target = allTargets.find(t => t.id === targetId);
             if (!target) return;
+
+            // Set current domain for API calls
+            currentTargetDomain = target.domain;
+
+            // Update enrichment status
+            updateEnrichmentStatus(target.lastEnriched, target.enrichmentLevel || 'basic');
 
             // Calculate score breakdown
             const tierPts = target.tier === 1 ? 40 : target.tier === 2 ? 25 : target.tier === 3 ? 15 : 0;
