@@ -1,97 +1,155 @@
 # PartnerForge - Project Memory
 
 ## Overview
-Partner Intelligence Platform for Algolia Sales. Finds companies using partner technologies (Adobe AEM, Shopify, etc.) who are NOT using Algolia for search - displacement opportunities.
+Partner Intelligence Platform for Algolia Sales. Finds companies using partner technologies (Adobe AEM, Shopify, etc.) who are NOT using Algolia for search - displacement opportunities with deep intelligence enrichment.
 
 ## Core Logic
 ```
 Displacement Targets = Companies Using Partner Tech − Existing Algolia Customers
 ```
 
-## Data Sources
-| Source | Purpose | API |
-|--------|---------|-----|
-| BuiltWith | Technology detection | Lists API, Domain Lookup |
-| SimilarWeb | Traffic + competitors | 14 endpoints |
-| Customer Evidence Excel | Algolia customers to exclude | Local import |
+## Architecture (v2.0 - Feb 2026)
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    PartnerForge 2.0                         │
+├─────────────────────────────────────────────────────────────┤
+│  LAYER 1: Discovery                                         │
+│  • BuiltWith → AEM/Shopify users                           │
+│  • SimilarWeb → Traffic + competitors                       │
+│  • ICP Scoring → Prioritization (0-100)                     │
+├─────────────────────────────────────────────────────────────┤
+│  LAYER 2: Intelligence                                      │
+│  • Yahoo Finance → 3-year financials, margin zone           │
+│  • Earnings Calls → Executive quotes, strategic priorities  │
+│  • Careers Pages → Hiring signals, buying committee         │
+│  • News/SEC → Trigger events, risk factors                  │
+│  • Case Studies → Matched proof points                      │
+├─────────────────────────────────────────────────────────────┤
+│  LAYER 3: Action                                            │
+│  • Export CSV (for Salesforce/Outreach)                     │
+│  • Generate personalized email                              │
+│  • Download dossier PDF                                     │
+└─────────────────────────────────────────────────────────────┘
+```
+
+## Prioritization Framework
+
+### The Core Principle
+A company is **HOT** when three types of signals converge:
+```
+HOT = BUDGET SIGNAL + PAIN SIGNAL + TIMING SIGNAL
+```
+
+### Signal Taxonomy
+| Category | Signal | Weight | Source |
+|----------|--------|--------|--------|
+| **BUDGET** | Hiring search/AI roles | +25 | Careers page |
+| **BUDGET** | Revenue growing >10% YoY | +15 | Yahoo Finance |
+| **BUDGET** | Margin zone = Green (>20%) | +10 | Yahoo Finance |
+| **PAIN** | Search vendor REMOVED | +30 | BuiltWith |
+| **PAIN** | Using competitor search | +15 | BuiltWith |
+| **PAIN** | Executive quote re digital | +20 | Earnings call |
+| **TIMING** | New CTO/CDO (<12mo) | +25 | LinkedIn |
+| **TIMING** | Platform migration | +20 | 10-K/News |
+| **TIMING** | Competitor uses Algolia | +20 | BuiltWith + Case |
+| **NEGATIVE** | Layoffs announced | -25 | News |
+| **NEGATIVE** | Added competitor search | -40 | BuiltWith |
+
+### Priority Score Formula
+```python
+PRIORITY_SCORE = ICP_SCORE + SIGNAL_SCORE
+
+HOT = Score >= 150 OR (has Budget AND Pain AND Timing signals)
+WARM = Score 100-149 OR (has 2 of 3 signal types)
+COOL = Score 50-99
+COLD = Score < 50 OR negative signals
+```
 
 ## Database Schema (SQLite)
-**Location:** `data/partnerforge.db` (1.6MB)
+**Location:** `data/partnerforge.db`
 
-### Tables
+### Core Tables
 | Table | Records | Purpose |
 |-------|---------|---------|
-| `companies` | 400 | Existing Algolia customers |
 | `displacement_targets` | 2,687 | AEM users NOT on Algolia |
-| `case_studies` | 161 | For matching to targets |
-| `customer_quotes` | 379 | Sales enablement |
+| `companies` | 400 | Existing Algolia customers |
 | `competitive_intel` | 25 | SimilarWeb → BuiltWith analysis |
-| `technologies` | 60+ | Partner/competitor tech definitions |
+| `case_studies` | 161 | For matching to targets |
+
+### Intelligence Tables (Added 2026-02-25)
+| Table | Purpose |
+|-------|---------|
+| `company_financials` | 3-year financial trends, margin zone |
+| `executive_quotes` | Quotes from earnings calls, 10-K filings |
+| `hiring_signals` | Job postings indicating buying signals |
+| `strategic_triggers` | Expansion, migration, competitive pressure |
+| `buying_committee` | Named stakeholders with priority signals |
+| `verified_case_studies` | Algolia case studies with verified URLs |
+| `enrichment_status` | Track what's been enriched per company |
 
 ### Key Columns (displacement_targets)
 - `domain`, `company_name`, `vertical`, `country`
-- `partner_tech` - Which partner tech they use (Adobe AEM, Shopify, etc.)
 - `icp_tier` - 1=Commerce, 2=Content, 3=Support
-- `lead_score` - 0-100 based on ICP fit
-- `sw_monthly_visits` - Traffic from SimilarWeb
-- `tech_spend` - Estimated tech spend from BuiltWith
+- `lead_score` - 0-100 ICP score
+- `ticker` - Stock ticker (if public)
+- `is_public` - 1=public company, 0=private
+- `enrichment_level` - 'basic', 'partial', 'full'
+- `last_enriched` - Timestamp
 
 ## ICP Scoring Model (0-100 points)
 
-### Component Weights
-| Component | Max Points | Logic |
-|-----------|------------|-------|
+| Component | Max | Logic |
+|-----------|-----|-------|
 | Vertical/Tier | 40 | Commerce=40, Content=25, Support=15 |
-| Traffic | 30 | 50M+=30, 10M+=25, 5M+=20, 1M+=15 |
-| Tech Spend | 20 | $100K+=20, $50K+=15, $25K+=10 |
-| Partner Tech | 10 | Adobe=10, Shopify=7, Other=3 |
-
-### ICP Tiers (from Algolia ICP PDFs)
-| Tier | Name | Primary KPI | Examples |
-|------|------|-------------|----------|
-| 1 | Commerce | Conversion rate | Retail, Fashion, E-commerce |
-| 2 | Content | Time-on-site | Media, Publishing |
-| 3 | Support | Ticket deflection | SaaS, Knowledge portals |
+| Traffic | 30 | 50M+=30, 10M+=25, 1M+=15 |
+| Tech Spend | 20 | $100K+=20, $50K+=15 |
+| Partner Tech | 10 | Adobe=10, Shopify=7 |
 
 ## Scripts
 
-### `import_customer_evidence.py`
-Imports Customer Evidence Excel → SQLite
-```bash
-python scripts/import_customer_evidence.py
-```
+| Script | Purpose |
+|--------|---------|
+| `generate_dashboard.py` | Generate interactive dashboard from SQLite |
+| `enrich_company.py` | Enrich company with financials, signals |
+| `migrate_intelligence_schema.py` | Create intelligence tables |
+| `seed_verified_case_studies.py` | Verify and seed Algolia case study URLs |
+| `icp_scoring.py` | Apply ICP scoring to targets |
+| `competitive_intelligence.py` | SimilarWeb → BuiltWith pipeline |
+| `import_customer_evidence.py` | Excel → SQLite import |
+| `fetch_partner_targets.py` | BuiltWith Lists API fetch |
 
-### `icp_scoring.py`
-Applies ICP scoring to all displacement_targets
-```bash
-python scripts/icp_scoring.py
-```
+## Dashboard Features (v2.0)
 
-### `competitive_intelligence.py`
-SimilarWeb (competitors) → BuiltWith (tech) pipeline
-```bash
-python scripts/competitive_intelligence.py --domain costco.com --save
-```
+### List View
+- Search bar with live filtering
+- Sortable columns (click headers)
+- Excel-style column filters (checkboxes per value)
+- CSV export button
+- Score breakdown tooltip on hover
+- Visual score progress bars
 
-### `fetch_partner_targets.py`
-Fetch targets from BuiltWith Lists API (requires credits)
-```bash
-python scripts/fetch_partner_targets.py --partner shopify --pages 3
-```
+### Detail View (click on company)
+- Priority status badge (HOT/WARM/COOL)
+- Signal checkmarks (Budget ✅ Pain ✅ Timing ✅)
+- Trigger events (above the fold)
+- Competitive intelligence (above the fold)
+- Executive quote (key one visible immediately)
+- Tabbed sections: Financials, All Quotes, Hiring, Tech Stack
 
-## Dashboard
-**Location:** `executive-dashboard.html`
+### UX Requirements
+- Glassmorphism for key signal cards
+- Every data point has clickable citation
+- 3-year financial charts with insights
+- Case study links verified (no 404s)
+- Mobile responsive
 
-### Tabs
-- All Targets (sorted by ICP Tier → Score)
-- 🔥 Hot (80+) - Immediate outreach
-- 🌡️ Warm (60-79) - Nurture ready
-- ❄️ Cool (40-59) - Qualify further
-- Tier 1/2/3 filters
-- By Vertical (expandable groups)
-- Competitive Intel
+## Deployment
+- **GitHub:** https://github.com/arijitchowdhury80/partnerforge
+- **Vercel:** https://partnerforge.vercel.app
+- Auto-deploys on git push
 
-## API Keys (Stored in Scripts)
+## API Keys (in scripts)
 - **BuiltWith:** `8fd992ef-88d0-4554-a20b-364e97b2d302`
 - **SimilarWeb:** `483b77d48d254810b4caf3d376b28ce7`
 
@@ -99,63 +157,59 @@ python scripts/fetch_partner_targets.py --partner shopify --pages 3
 
 ### AEM Displacement Analysis
 - **2,687 targets** (AEM users not on Algolia)
-- **5 hot leads** (score 80+)
+- **5 hot leads** (score 80+): HUAWEI, NAB, Mercedes-Benz, CVS, S&P Global
 - **149 warm leads** (score 60-79)
 - **Estimated pipeline:** $63M
 
-### Top Targets
-| Company | Score | Traffic | Search Provider |
-|---------|-------|---------|-----------------|
-| HUAWEI | 90 | 75.7M | Unknown |
-| NAB | 90 | 11.5M | Unknown |
-| Mercedes-Benz | 85 | 6.6M | Unknown |
-| CVS Caremark | 80 | 4.5M | Unknown |
-
-### Competitive Intel (Costco/Target landscape)
+### Competitive Intel
 - **Algolia users:** Walmart, eBay, Kohl's, Etsy, Mercari
-- **Displacement targets:** Sam's Club, Macy's, Kmart, Sears (all on Elasticsearch)
+- **Displacement targets:** Sam's Club, Macy's, Kmart, Sears (on Elasticsearch)
 
-## Data Freshness Issues
-Some targets have since adopted Algolia (TD Bank, Kia, Morgan Stanley).
-Run periodic cleanup:
-```python
-# In competitive_intelligence.py - checks live BuiltWith data
+## Citation Requirements (Mandatory)
+
+Every data point follows this pattern:
+```html
+<span class="value">$108.2B</span>
+<a class="citation" href="URL">[Source ↗]</a>
 ```
 
-## Cleanup Log (2026-02-25)
-Removed 13 companies that now use Algolia:
-- td.com, kia.com, morganstanley.com, avalara.com, volvo.com
-- changiairport.com, constellation.com, flinders.edu.au
-- bostonpizza.com, radley.co.uk, nissan.nl, softwareag.com, boothehvac.com
-
-## Next Steps
-1. **Skill Creation:** `/partnerforge` for on-demand analysis
-2. **Shopify Pipeline:** Need BuiltWith Lists API credits
-3. **Supabase Migration:** For web UI and team access
-4. **Weekly Refresh:** Cron job to re-verify targets
+| Data Type | Primary Source | Citation Format |
+|-----------|---------------|-----------------|
+| Revenue, Net Income | SEC 10-K | `[10-K FY20XX](sec.gov/...)` |
+| Stock price | Yahoo Finance | `[Yahoo Finance](finance.yahoo.com/...)` |
+| Traffic | SimilarWeb | `[SimilarWeb](similarweb.com/...)` |
+| Tech stack | BuiltWith | `[BuiltWith](builtwith.com/...)` |
+| Executive quotes | Earnings transcript | `[Q4 2025 Earnings](seekingalpha.com/...)` |
+| Hiring signals | Careers page | `[Careers](careers.company.com/...)` |
 
 ## File Structure
 ```
 PartnerForge/
-├── PRD.md                    # Product requirements
-├── MEMORY.md                 # This file
-├── dashboard.html            # Simple dashboard
-├── executive-dashboard.html  # Full executive dashboard (tabbed)
+├── README.md
+├── MEMORY.md                     # This file
+├── PRD.md
+├── index.html                    # Main dashboard (Vercel entry)
+├── vercel.json                   # Static site config
 ├── data/
-│   └── partnerforge.db       # SQLite database (1.6MB)
+│   └── partnerforge.db           # SQLite database
 ├── output/
-│   ├── aem_high_value_targets_20260225.csv
-│   ├── aem_displacement_targets_20260225.csv
-│   ├── aem_icp_scored_targets_20260225.csv
-│   ├── aem_top_100_leads_20260225.csv
-│   └── DISPLACEMENT_REPORT_20260225.md
+│   └── *.csv                     # Exported reports
 ├── scripts/
-│   ├── import_customer_evidence.py
+│   ├── generate_dashboard.py     # Dashboard generator
+│   ├── enrich_company.py         # Intelligence enrichment
+│   ├── migrate_intelligence_schema.py
+│   ├── seed_verified_case_studies.py
 │   ├── icp_scoring.py
-│   ├── fetch_partner_targets.py
-│   └── competitive_intelligence.py
+│   ├── competitive_intelligence.py
+│   ├── import_customer_evidence.py
+│   └── fetch_partner_targets.py
 └── supabase/
     └── migrations/
-        ├── 001_initial_schema.sql
-        └── 002_seed_technologies.sql
 ```
+
+## Next Steps
+1. Build enhanced dashboard with detail view + glassmorphism
+2. Add Excel-style column filtering
+3. Run batch enrichment on top 50 targets
+4. Create `/partnerforge` skill for on-demand analysis
+5. Add Shopify pipeline (needs BuiltWith credits)

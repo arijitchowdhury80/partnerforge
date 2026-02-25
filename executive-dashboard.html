@@ -168,6 +168,83 @@
         .section h2 { margin-bottom: 20px; }
         
         footer { text-align: center; padding: 30px; color: #64748b; }
+
+        /* Filter Bar */
+        .filter-bar {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            padding: 15px 20px;
+            border-bottom: 2px solid #e2e8f0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .filter-bar-label {
+            font-weight: 700;
+            color: #003DFF;
+            margin-right: 5px;
+            font-size: 0.9em;
+        }
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .filter-group label {
+            font-size: 0.8em;
+            color: #64748b;
+            font-weight: 600;
+        }
+        .filter-select {
+            padding: 6px 28px 6px 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.85em;
+            background: white;
+            cursor: pointer;
+            min-width: 100px;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+        }
+        .filter-select:hover { border-color: #003DFF; }
+        .filter-select:focus { outline: none; border-color: #003DFF; box-shadow: 0 0 0 3px rgba(0,61,255,0.15); }
+        .filter-btn {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85em;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .filter-btn.primary { background: #003DFF; color: white; }
+        .filter-btn.primary:hover { background: #0033cc; }
+        .filter-btn.secondary { background: #e2e8f0; color: #475569; }
+        .filter-btn.secondary:hover { background: #cbd5e1; }
+        .filter-stats {
+            margin-left: auto;
+            font-size: 0.85em;
+            color: #64748b;
+            padding: 6px 12px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+        .filter-stats strong { color: #003DFF; }
+        .search-input {
+            padding: 6px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.85em;
+            width: 200px;
+        }
+        .search-input:focus { outline: none; border-color: #003DFF; box-shadow: 0 0 0 3px rgba(0,61,255,0.15); }
+        tr.filtered-out { display: none; }
+        .th-filter { cursor: pointer; position: relative; }
+        .th-filter:hover { background: #e2e8f0; }
+        .sort-icon { font-size: 0.7em; margin-left: 4px; opacity: 0.5; }
     </style>
 </head>
 <body>
@@ -274,7 +351,74 @@
                 <button class="tab" onclick="showTab('byvertical')">By Vertical</button>
                 <button class="tab" onclick="showTab('compintel')">Competitive Intel <span class="count">25</span></button>
             </div>
-            
+
+            <!-- Filter Bar -->
+            <div class="filter-bar" id="filterBar">
+                <span class="filter-bar-label">🔍 FILTERS:</span>
+
+                <div class="filter-group">
+                    <label>Search:</label>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Company, domain..." onkeyup="applyFilters()">
+                </div>
+
+                <div class="filter-group">
+                    <label>Tier:</label>
+                    <select class="filter-select" id="filterTier" onchange="applyFilters()">
+                        <option value="">All Tiers</option>
+                        <option value="Commerce">Commerce</option>
+                        <option value="Content">Content</option>
+                        <option value="Internal Support">Support</option>
+                        <option value="Unknown">Unknown</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Score:</label>
+                    <select class="filter-select" id="filterScore" onchange="applyFilters()">
+                        <option value="">All Scores</option>
+                        <option value="80+">🔥 Hot (80+)</option>
+                        <option value="60-79">🌡️ Warm (60-79)</option>
+                        <option value="40-59">❄️ Cool (40-59)</option>
+                        <option value="0-39">🧊 Cold (&lt;40)</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Country:</label>
+                    <select class="filter-select" id="filterCountry" onchange="applyFilters()">
+                        <option value="">All Countries</option>
+                        <option value="US">🇺🇸 US</option>
+                        <option value="CA">🇨🇦 Canada</option>
+                        <option value="GB">🇬🇧 UK</option>
+                        <option value="DE">🇩🇪 Germany</option>
+                        <option value="FR">🇫🇷 France</option>
+                        <option value="AU">🇦🇺 Australia</option>
+                        <option value="JP">🇯🇵 Japan</option>
+                        <option value="IN">🇮🇳 India</option>
+                        <option value="MX">🇲🇽 Mexico</option>
+                        <option value="BR">🇧🇷 Brazil</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Traffic:</label>
+                    <select class="filter-select" id="filterTraffic" onchange="applyFilters()">
+                        <option value="">All Traffic</option>
+                        <option value="50M+">50M+ visits</option>
+                        <option value="10M+">10M+ visits</option>
+                        <option value="1M+">1M+ visits</option>
+                        <option value="100K+">100K+ visits</option>
+                        <option value="has">Has traffic data</option>
+                    </select>
+                </div>
+
+                <button class="filter-btn secondary" onclick="clearFilters()">Clear All</button>
+
+                <div class="filter-stats">
+                    Showing <strong id="visibleCount">0</strong> of <strong id="totalCount">0</strong> rows
+                </div>
+            </div>
+
             <!-- All Targets -->
             <div id="all" class="tab-content active">
                 <h3>All Displacement Targets (sorted by ICP Tier, then Score)</h3>
@@ -11118,15 +11262,201 @@
     </footer>
     
     <script>
-        function showTab(tabId) {{
+        function showTab(tabId) {
             // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-            
+
             // Show selected tab
             document.getElementById(tabId).classList.add('active');
             event.target.classList.add('active');
-        }}
+
+            // Re-apply filters to new tab
+            setTimeout(applyFilters, 50);
+        }
+
+        function parseTraffic(trafficStr) {
+            if (!trafficStr || trafficStr === '—' || trafficStr.trim() === '') return 0;
+            const cleaned = trafficStr.replace(/,/g, '').trim();
+            return parseInt(cleaned) || 0;
+        }
+
+        function parseScore(scoreStr) {
+            if (!scoreStr) return 0;
+            const match = scoreStr.match(/(\d+)/);
+            return match ? parseInt(match[1]) : 0;
+        }
+
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const tierFilter = document.getElementById('filterTier').value;
+            const scoreFilter = document.getElementById('filterScore').value;
+            const countryFilter = document.getElementById('filterCountry').value;
+            const trafficFilter = document.getElementById('filterTraffic').value;
+
+            // Get active tab content
+            const activeTab = document.querySelector('.tab-content.active');
+            if (!activeTab) return;
+
+            // Get all tables in active tab
+            const tables = activeTab.querySelectorAll('table');
+            let totalRows = 0;
+            let visibleRows = 0;
+
+            tables.forEach(table => {
+                const rows = table.querySelectorAll('tbody tr');
+
+                rows.forEach(row => {
+                    totalRows++;
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length < 5) return;
+
+                    // Extract cell data based on column structure
+                    // Typical: # | Company | Domain | Vertical | Tier | Score | Traffic | Country
+                    // or: # | Company | Domain | Tier | Score | Traffic | Country
+                    const hasTierColumn = cells.length >= 7;
+
+                    let companyText = '';
+                    let domainText = '';
+                    let verticalText = '';
+                    let tierText = '';
+                    let scoreText = '';
+                    let trafficText = '';
+                    let countryText = '';
+
+                    if (cells.length >= 8) {
+                        // Full columns: # | Company | Domain | Vertical | Tier | Score | Traffic | Country
+                        companyText = (cells[1]?.textContent || '').toLowerCase();
+                        domainText = (cells[2]?.textContent || '').toLowerCase();
+                        verticalText = (cells[3]?.textContent || '').toLowerCase();
+                        tierText = (cells[4]?.textContent || '').toLowerCase();
+                        scoreText = cells[5]?.textContent || '';
+                        trafficText = cells[6]?.textContent || '';
+                        countryText = (cells[7]?.textContent || '').trim().toUpperCase();
+                    } else if (cells.length >= 7) {
+                        // Columns: # | Company | Domain | Tier | Score | Traffic | Country
+                        companyText = (cells[1]?.textContent || '').toLowerCase();
+                        domainText = (cells[2]?.textContent || '').toLowerCase();
+                        tierText = (cells[3]?.textContent || '').toLowerCase();
+                        scoreText = cells[4]?.textContent || '';
+                        trafficText = cells[5]?.textContent || '';
+                        countryText = (cells[6]?.textContent || '').trim().toUpperCase();
+                    } else {
+                        // Shorter table - try to match what we have
+                        companyText = (cells[1]?.textContent || '').toLowerCase();
+                        domainText = (cells[2]?.textContent || '').toLowerCase();
+                        scoreText = cells[3]?.textContent || '';
+                        trafficText = cells[4]?.textContent || '';
+                    }
+
+                    let show = true;
+
+                    // Search filter
+                    if (searchTerm && !companyText.includes(searchTerm) && !domainText.includes(searchTerm)) {
+                        show = false;
+                    }
+
+                    // Tier filter
+                    if (tierFilter && !tierText.includes(tierFilter.toLowerCase())) {
+                        show = false;
+                    }
+
+                    // Score filter
+                    if (scoreFilter) {
+                        const score = parseScore(scoreText);
+                        if (scoreFilter === '80+' && score < 80) show = false;
+                        if (scoreFilter === '60-79' && (score < 60 || score >= 80)) show = false;
+                        if (scoreFilter === '40-59' && (score < 40 || score >= 60)) show = false;
+                        if (scoreFilter === '0-39' && score >= 40) show = false;
+                    }
+
+                    // Country filter
+                    if (countryFilter && countryText !== countryFilter) {
+                        show = false;
+                    }
+
+                    // Traffic filter
+                    if (trafficFilter) {
+                        const traffic = parseTraffic(trafficText);
+                        if (trafficFilter === '50M+' && traffic < 50000000) show = false;
+                        if (trafficFilter === '10M+' && traffic < 10000000) show = false;
+                        if (trafficFilter === '1M+' && traffic < 1000000) show = false;
+                        if (trafficFilter === '100K+' && traffic < 100000) show = false;
+                        if (trafficFilter === 'has' && traffic === 0) show = false;
+                    }
+
+                    // Apply filter
+                    if (show) {
+                        row.classList.remove('filtered-out');
+                        visibleRows++;
+                    } else {
+                        row.classList.add('filtered-out');
+                    }
+                });
+            });
+
+            // Update stats
+            document.getElementById('visibleCount').textContent = visibleRows.toLocaleString();
+            document.getElementById('totalCount').textContent = totalRows.toLocaleString();
+        }
+
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('filterTier').value = '';
+            document.getElementById('filterScore').value = '';
+            document.getElementById('filterCountry').value = '';
+            document.getElementById('filterTraffic').value = '';
+            applyFilters();
+        }
+
+        // Sort functionality
+        function sortTable(columnIndex, direction) {
+            const activeTab = document.querySelector('.tab-content.active');
+            if (!activeTab) return;
+
+            const table = activeTab.querySelector('table');
+            if (!table) return;
+
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+
+            rows.sort((a, b) => {
+                const aCell = a.cells[columnIndex]?.textContent || '';
+                const bCell = b.cells[columnIndex]?.textContent || '';
+
+                // Try numeric sort first
+                const aNum = parseFloat(aCell.replace(/[^0-9.-]/g, ''));
+                const bNum = parseFloat(bCell.replace(/[^0-9.-]/g, ''));
+
+                if (!isNaN(aNum) && !isNaN(bNum)) {
+                    return direction === 'asc' ? aNum - bNum : bNum - aNum;
+                }
+
+                // Fall back to string sort
+                return direction === 'asc'
+                    ? aCell.localeCompare(bCell)
+                    : bCell.localeCompare(aCell);
+            });
+
+            rows.forEach(row => tbody.appendChild(row));
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            applyFilters();
+
+            // Add click-to-sort on headers
+            document.querySelectorAll('th').forEach((th, index) => {
+                th.classList.add('th-filter');
+                th.innerHTML += '<span class="sort-icon">↕</span>';
+                th.dataset.sortDir = 'none';
+                th.addEventListener('click', function() {
+                    const newDir = this.dataset.sortDir === 'asc' ? 'desc' : 'asc';
+                    this.dataset.sortDir = newDir;
+                    sortTable(index, newDir);
+                });
+            });
+        });
     </script>
 </body>
 </html>

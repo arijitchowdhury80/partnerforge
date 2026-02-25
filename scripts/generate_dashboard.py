@@ -100,12 +100,15 @@ def generate_html(data):
 
     # Convert targets to JSON for JavaScript
     targets_json = []
+    verticals_set = set()
     for t in data["targets"]:
+        vertical = t[3] or "—"
+        verticals_set.add(vertical)
         targets_json.append({
             "id": t[0],
             "company": t[1] or "—",
             "domain": t[2],
-            "vertical": t[3] or "—",
+            "vertical": vertical,
             "country": t[4] or "—",
             "tier": t[5] or 0,
             "tierName": t[6] or "Unknown",
@@ -115,6 +118,9 @@ def generate_html(data):
             "techSpend": t[9] or 0,
             "partner": t[10] or "Adobe AEM"
         })
+
+    # Sort verticals for dropdown
+    verticals_list = sorted([v for v in verticals_set if v != "—"]) + (["—"] if "—" in verticals_set else [])
 
     stats = data["stats"]
     date_str = datetime.now().strftime("%B %d, %Y")
@@ -438,6 +444,10 @@ def generate_html(data):
                 <option value="3">Tier 3: Support</option>
                 <option value="0">Unknown</option>
             </select>
+            <select class="filter-select" id="verticalFilter">
+                <option value="">All Verticals</option>
+                {''.join(f'<option value="{v}">{v}</option>' for v in verticals_list)}
+            </select>
             <select class="filter-select" id="scoreFilter">
                 <option value="">All Scores</option>
                 <option value="hot">🔥 Hot (80+)</option>
@@ -596,6 +606,7 @@ def generate_html(data):
 
             // Filters
             document.getElementById('tierFilter').addEventListener('change', applyFilters);
+            document.getElementById('verticalFilter').addEventListener('change', applyFilters);
             document.getElementById('scoreFilter').addEventListener('change', applyFilters);
 
             // Sorting
@@ -618,6 +629,7 @@ def generate_html(data):
         function applyFilters() {{
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const tierFilter = document.getElementById('tierFilter').value;
+            const verticalFilter = document.getElementById('verticalFilter').value;
             const scoreFilter = document.getElementById('scoreFilter').value;
 
             filteredTargets = allTargets.filter(t => {{
@@ -631,6 +643,9 @@ def generate_html(data):
                 // Tier
                 const matchesTier = !tierFilter || t.tier == tierFilter;
 
+                // Vertical
+                const matchesVertical = !verticalFilter || t.vertical === verticalFilter;
+
                 // Score
                 let matchesScore = true;
                 if (scoreFilter === 'hot') matchesScore = t.score >= 80;
@@ -638,7 +653,7 @@ def generate_html(data):
                 else if (scoreFilter === 'cool') matchesScore = t.score >= 40 && t.score < 60;
                 else if (scoreFilter === 'cold') matchesScore = t.score < 40;
 
-                return matchesSearch && matchesTier && matchesScore;
+                return matchesSearch && matchesTier && matchesVertical && matchesScore;
             }});
 
             sortTargets();
@@ -750,6 +765,7 @@ def generate_html(data):
         function resetFilters() {{
             document.getElementById('searchInput').value = '';
             document.getElementById('tierFilter').value = '';
+            document.getElementById('verticalFilter').value = '';
             document.getElementById('scoreFilter').value = '';
             filteredTargets = [...allTargets];
             sortColumn = 'score';
