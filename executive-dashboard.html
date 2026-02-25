@@ -21,9 +21,10 @@
 
         .header {
             background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
-            color: white;
-            padding: 50px 40px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            color: #f8fafc;
+            padding: 40px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             position: relative;
             overflow: hidden;
         }
@@ -42,22 +43,25 @@
             font-size: 2.8em;
             margin-bottom: 8px;
             font-weight: 800;
-            letter-spacing: -0.5px;
+            letter-spacing: -0.02em;
         }
 
         .header .subtitle {
             font-size: 1.25em;
             opacity: 0.9;
             font-weight: 300;
+            letter-spacing: 0.01em;
+            color: #e2e8f0;
         }
 
         .header .date {
-            font-size: 0.95em;
+            font-size: 0.9em;
             opacity: 0.7;
             margin-top: 12px;
             font-weight: 500;
-            letter-spacing: 0.5px;
             text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #cbd5e1;
         }
 
         .container {
@@ -81,44 +85,44 @@
         }
 
         .stat {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 16px;
-            padding: 30px 20px;
+            padding: 28px;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            backdrop-filter: blur(10px);
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .stat:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
         }
 
         .stat .num {
-            font-size: 3.2em;
+            font-size: 3em;
             font-weight: 800;
+            letter-spacing: -0.03em;
             line-height: 1;
-            letter-spacing: -1px;
         }
 
         .stat .label {
-            color: #475569;
-            margin-top: 12px;
-            font-weight: 600;
+            color: #64748b;
+            margin-top: 8px;
+            font-weight: 500;
+            font-size: 0.95em;
             text-transform: uppercase;
-            font-size: 0.85em;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.05em;
         }
 
         .stat.hot {
-            background: linear-gradient(145deg, #fff1f2, #ffe4e6);
-            border-color: #fecdd3;
+            background: linear-gradient(to bottom right, #ffffff, #fef2f2);
+            border-color: #fecaca;
         }
 
         .stat.hot .num {
-            color: #e11d48;
+            color: #b91c1c;
         }
 
         .stat.hot .label {
@@ -126,12 +130,12 @@
         }
 
         .stat.warm {
-            background: linear-gradient(145deg, #fffbeb, #fef3c7);
+            background: linear-gradient(to bottom right, #ffffff, #fffbeb);
             border-color: #fde68a;
         }
 
         .stat.warm .num {
-            color: #d97706;
+            color: #b45309;
         }
 
         .stat.warm .label {
@@ -139,12 +143,12 @@
         }
 
         .stat.cool {
-            background: linear-gradient(145deg, #eff6ff, #dbeafe);
+            background: linear-gradient(to bottom right, #ffffff, #eff6ff);
             border-color: #bfdbfe;
         }
 
         .stat.cool .num {
-            color: #2563eb;
+            color: #1d4ed8;
         }
 
         .stat.cool .label {
@@ -156,7 +160,7 @@
         }
 
         .stat.green .num {
-            color: #059669;
+            color: #047857;
         }
 
         /* Logic Box */
