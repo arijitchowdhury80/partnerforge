@@ -395,6 +395,101 @@ def generate_html(data):
         }}
         .tooltip:hover .tooltip-content {{ visibility: visible; }}
 
+        /* Excel-style Column Filters */
+        .column-filter {{
+            position: relative;
+            display: inline-block;
+        }}
+        .filter-icon {{
+            cursor: pointer;
+            margin-left: 4px;
+            opacity: 0.5;
+            font-size: 0.8em;
+            vertical-align: middle;
+        }}
+        .filter-icon:hover, .filter-icon.active {{
+            opacity: 1;
+        }}
+        .filter-dropdown {{
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            z-index: 1000;
+            min-width: 200px;
+            max-height: 350px;
+            display: none;
+        }}
+        .filter-dropdown.open {{
+            display: block;
+        }}
+        .filter-dropdown-header {{
+            padding: 10px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            gap: 8px;
+        }}
+        .filter-dropdown-header button {{
+            flex: 1;
+            padding: 6px 10px;
+            font-size: 0.85em;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            background: #f8fafc;
+            cursor: pointer;
+        }}
+        .filter-dropdown-header button:hover {{
+            background: #e2e8f0;
+        }}
+        .filter-dropdown-list {{
+            max-height: 250px;
+            overflow-y: auto;
+            padding: 8px 0;
+        }}
+        .filter-dropdown-item {{
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }}
+        .filter-dropdown-item:hover {{
+            background: #f8fafc;
+        }}
+        .filter-dropdown-item input {{
+            margin: 0;
+            cursor: pointer;
+        }}
+        .filter-dropdown-item label {{
+            flex: 1;
+            cursor: pointer;
+            font-size: 0.9em;
+        }}
+        .filter-dropdown-footer {{
+            padding: 10px 12px;
+            border-top: 1px solid #e2e8f0;
+        }}
+        .filter-dropdown-footer button {{
+            width: 100%;
+            padding: 8px 12px;
+            font-size: 0.9em;
+            font-weight: 600;
+            border: none;
+            border-radius: 4px;
+            background: #003DFF;
+            color: white;
+            cursor: pointer;
+        }}
+        .filter-dropdown-footer button:hover {{
+            background: #0033cc;
+        }}
+        .filter-active {{
+            color: #003DFF;
+        }}
+
         /* Badges */
         .badge {{
             display: inline-block;
@@ -424,6 +519,250 @@ def generate_html(data):
             color: #64748b;
         }}
         .no-results h3 {{ margin-bottom: 10px; color: #1e293b; }}
+
+        /* Modal Overlay */
+        .modal-overlay {{
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }}
+        .modal-overlay.active {{
+            display: flex;
+        }}
+
+        /* Modal Container */
+        .modal {{
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.3s ease-out;
+        }}
+        @keyframes modalSlideIn {{
+            from {{
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }}
+            to {{
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }}
+        }}
+
+        /* Modal Header */
+        .modal-header {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 28px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        }}
+        .modal-title-group {{
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }}
+        .modal-header h2 {{
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+        }}
+        .modal-header .priority-badge {{
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }}
+        .modal-header .priority-badge.hot {{
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }}
+        .modal-header .priority-badge.warm {{
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }}
+        .modal-header .priority-badge.cool {{
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }}
+        .modal-close {{
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #64748b;
+            padding: 4px 8px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }}
+        .modal-close:hover {{
+            background: #f1f5f9;
+            color: #1e293b;
+        }}
+
+        /* Modal Body */
+        .modal-body {{
+            padding: 24px 28px;
+        }}
+
+        /* Signal Indicators */
+        .signal-indicators {{
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }}
+        .signal-item {{
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: #f8fafc;
+            border-radius: 10px;
+            font-weight: 500;
+        }}
+        .signal-item .icon {{
+            font-size: 1.2em;
+        }}
+        .signal-item.positive {{
+            background: #dcfce7;
+            color: #166534;
+        }}
+        .signal-item.negative {{
+            background: #fef2f2;
+            color: #991b1b;
+        }}
+
+        /* Glass Card */
+        .glass-card {{
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }}
+        .glass-card h4 {{
+            color: #003DFF;
+            margin-bottom: 16px;
+            font-size: 1em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }}
+
+        /* Metrics Grid */
+        .metrics-grid {{
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }}
+        .metric-item {{
+            text-align: center;
+        }}
+        .metric-item .value {{
+            font-size: 1.6em;
+            font-weight: 700;
+            color: #1e293b;
+        }}
+        .metric-item .label {{
+            font-size: 0.85em;
+            color: #64748b;
+            margin-top: 4px;
+        }}
+
+        /* Score Breakdown Visual */
+        .score-breakdown {{
+            margin-top: 8px;
+        }}
+        .score-breakdown-item {{
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }}
+        .score-breakdown-item .category {{
+            width: 100px;
+            font-weight: 500;
+            color: #475569;
+            font-size: 0.9em;
+        }}
+        .score-breakdown-item .bar-container {{
+            flex: 1;
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            margin: 0 12px;
+            overflow: hidden;
+        }}
+        .score-breakdown-item .bar-fill {{
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }}
+        .score-breakdown-item .bar-fill.tier {{ background: linear-gradient(90deg, #5468FF, #003DFF); }}
+        .score-breakdown-item .bar-fill.traffic {{ background: linear-gradient(90deg, #10b981, #059669); }}
+        .score-breakdown-item .bar-fill.tech {{ background: linear-gradient(90deg, #f59e0b, #d97706); }}
+        .score-breakdown-item .bar-fill.partner {{ background: linear-gradient(90deg, #8b5cf6, #7c3aed); }}
+        .score-breakdown-item .points {{
+            width: 50px;
+            text-align: right;
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 0.9em;
+        }}
+
+        /* Domain Link */
+        .modal-domain {{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-top: 8px;
+        }}
+        .modal-domain a {{
+            color: #003DFF;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }}
+        .modal-domain a:hover {{
+            text-decoration: underline;
+        }}
+        .modal-domain .country {{
+            color: #64748b;
+            font-size: 0.9em;
+        }}
+
+        /* Clickable rows */
+        #targetsTable tbody tr {{
+            cursor: pointer;
+            transition: all 0.2s;
+        }}
+        #targetsTable tbody tr:hover {{
+            background: #eff6ff;
+            transform: translateX(4px);
+        }}
     </style>
 </head>
 <body>
@@ -546,18 +885,36 @@ def generate_html(data):
         <!-- Results Table -->
         <div class="section">
             <h2>📋 Displacement Targets</h2>
-            <p style="color: #64748b; margin-bottom: 20px;">Click column headers to sort. Hover on scores to see breakdown.</p>
+            <p style="color: #64748b; margin-bottom: 20px;">Click a row to view details. Click column headers to sort. Hover on scores to see breakdown.</p>
             <div class="table-wrapper">
                 <table id="targetsTable">
                     <thead>
                         <tr>
                             <th data-sort="company">Company <span class="sort-icon">↕</span></th>
                             <th data-sort="domain">Domain <span class="sort-icon">↕</span></th>
-                            <th data-sort="vertical">Vertical <span class="sort-icon">↕</span></th>
-                            <th data-sort="tierName">Tier <span class="sort-icon">↕</span></th>
+                            <th data-sort="vertical">
+                                Vertical <span class="sort-icon">↕</span>
+                                <span class="column-filter" data-filter="vertical">
+                                    <span class="filter-icon" onclick="toggleFilterDropdown(event, 'vertical')">▼</span>
+                                    <div class="filter-dropdown" id="filter-dropdown-vertical"></div>
+                                </span>
+                            </th>
+                            <th data-sort="tierName">
+                                Tier <span class="sort-icon">↕</span>
+                                <span class="column-filter" data-filter="tierName">
+                                    <span class="filter-icon" onclick="toggleFilterDropdown(event, 'tierName')">▼</span>
+                                    <div class="filter-dropdown" id="filter-dropdown-tierName"></div>
+                                </span>
+                            </th>
                             <th data-sort="score" class="sorted">Score <span class="sort-icon">↓</span></th>
                             <th data-sort="traffic">Traffic <span class="sort-icon">↕</span></th>
-                            <th data-sort="country">Country <span class="sort-icon">↕</span></th>
+                            <th data-sort="country">
+                                Country <span class="sort-icon">↕</span>
+                                <span class="column-filter" data-filter="country">
+                                    <span class="filter-icon" onclick="toggleFilterDropdown(event, 'country')">▼</span>
+                                    <div class="filter-dropdown" id="filter-dropdown-country"></div>
+                                </span>
+                            </th>
                         </tr>
                     </thead>
                     <tbody id="targetsBody">
@@ -584,6 +941,102 @@ def generate_html(data):
     <footer>
         <p><strong>PartnerForge v2.0</strong> | Partner Intelligence Platform | Built with Claude Code</p>
     </footer>
+
+    <!-- Company Detail Modal -->
+    <div class="modal-overlay" id="companyModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <h2 id="modalCompanyName">Company Name</h2>
+                    <span class="priority-badge" id="modalPriorityBadge">HOT</span>
+                </div>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Signal Indicators -->
+                <div class="signal-indicators" id="modalSignals">
+                    <div class="signal-item" id="signalBudget">
+                        <span class="icon">💰</span>
+                        <span>Budget</span>
+                    </div>
+                    <div class="signal-item" id="signalPain">
+                        <span class="icon">🎯</span>
+                        <span>Pain</span>
+                    </div>
+                    <div class="signal-item" id="signalTiming">
+                        <span class="icon">⏱️</span>
+                        <span>Timing</span>
+                    </div>
+                </div>
+
+                <!-- Key Metrics Card -->
+                <div class="glass-card">
+                    <h4>Key Metrics</h4>
+                    <div class="metrics-grid">
+                        <div class="metric-item">
+                            <div class="value" id="modalScore">85</div>
+                            <div class="label">Lead Score</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="value" id="modalTraffic">12.5M</div>
+                            <div class="label">Monthly Traffic</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="value" id="modalTechSpend">$75K</div>
+                            <div class="label">Tech Spend</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="value" id="modalTier">Commerce</div>
+                            <div class="label">ICP Tier</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Score Breakdown -->
+                <div class="glass-card">
+                    <h4>Score Breakdown</h4>
+                    <div class="score-breakdown" id="modalScoreBreakdown">
+                        <div class="score-breakdown-item">
+                            <span class="category">ICP Tier</span>
+                            <div class="bar-container">
+                                <div class="bar-fill tier" id="barTier" style="width: 100%"></div>
+                            </div>
+                            <span class="points" id="ptsTier">40/40</span>
+                        </div>
+                        <div class="score-breakdown-item">
+                            <span class="category">Traffic</span>
+                            <div class="bar-container">
+                                <div class="bar-fill traffic" id="barTraffic" style="width: 83%"></div>
+                            </div>
+                            <span class="points" id="ptsTraffic">25/30</span>
+                        </div>
+                        <div class="score-breakdown-item">
+                            <span class="category">Tech Spend</span>
+                            <div class="bar-container">
+                                <div class="bar-fill tech" id="barTech" style="width: 75%"></div>
+                            </div>
+                            <span class="points" id="ptsTech">15/20</span>
+                        </div>
+                        <div class="score-breakdown-item">
+                            <span class="category">Partner</span>
+                            <div class="bar-container">
+                                <div class="bar-fill partner" id="barPartner" style="width: 100%"></div>
+                            </div>
+                            <span class="points" id="ptsPartner">10/10</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Domain & Country -->
+                <div class="modal-domain">
+                    <a id="modalDomainLink" href="#" target="_blank">
+                        🔗 <span id="modalDomain">example.com</span>
+                    </a>
+                    <span class="country" id="modalCountry">🌍 United States</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         // Data
@@ -640,10 +1093,10 @@ def generate_html(data):
                     t.vertical.toLowerCase().includes(searchTerm) ||
                     t.country.toLowerCase().includes(searchTerm);
 
-                // Tier
+                // Tier (from dropdown)
                 const matchesTier = !tierFilter || t.tier == tierFilter;
 
-                // Vertical
+                // Vertical (from dropdown)
                 const matchesVertical = !verticalFilter || t.vertical === verticalFilter;
 
                 // Score
@@ -653,7 +1106,16 @@ def generate_html(data):
                 else if (scoreFilter === 'cool') matchesScore = t.score >= 40 && t.score < 60;
                 else if (scoreFilter === 'cold') matchesScore = t.score < 40;
 
-                return matchesSearch && matchesTier && matchesVertical && matchesScore;
+                // Excel-style column filters
+                const matchesColumnVertical = columnFilterSelections.vertical.size === 0 ||
+                    columnFilterSelections.vertical.has(t.vertical);
+                const matchesColumnTier = columnFilterSelections.tierName.size === 0 ||
+                    columnFilterSelections.tierName.has(t.tierName);
+                const matchesColumnCountry = columnFilterSelections.country.size === 0 ||
+                    columnFilterSelections.country.has(t.country);
+
+                return matchesSearch && matchesTier && matchesVertical && matchesScore &&
+                       matchesColumnVertical && matchesColumnTier && matchesColumnCountry;
             }});
 
             sortTargets();
@@ -767,6 +1229,16 @@ def generate_html(data):
             document.getElementById('tierFilter').value = '';
             document.getElementById('verticalFilter').value = '';
             document.getElementById('scoreFilter').value = '';
+
+            // Reset column filters (select all)
+            Object.keys(columnFilters).forEach(col => {{
+                columnFilterSelections[col] = new Set(columnFilters[col]);
+                updateFilterCheckboxes(col);
+                // Reset filter icon style
+                const filterIcon = document.querySelector(`[data-filter="${{col}}"] .filter-icon`);
+                if (filterIcon) filterIcon.classList.remove('active');
+            }});
+
             filteredTargets = [...allTargets];
             sortColumn = 'score';
             sortDirection = 'desc';
@@ -808,6 +1280,232 @@ def generate_html(data):
                 timeout = setTimeout(() => func.apply(this, args), wait);
             }};
         }}
+
+        // Excel-style Column Filters
+        const columnFilters = {{
+            vertical: new Set(),
+            tierName: new Set(),
+            country: new Set()
+        }};
+        const columnFilterSelections = {{
+            vertical: new Set(),
+            tierName: new Set(),
+            country: new Set()
+        }};
+
+        function initColumnFilters() {{
+            // Build unique values for each filterable column
+            allTargets.forEach(t => {{
+                columnFilters.vertical.add(t.vertical);
+                columnFilters.tierName.add(t.tierName);
+                columnFilters.country.add(t.country);
+            }});
+
+            // Initialize selections (all selected by default)
+            Object.keys(columnFilters).forEach(col => {{
+                columnFilterSelections[col] = new Set(columnFilters[col]);
+            }});
+
+            // Build dropdown content for each filter
+            buildFilterDropdown('vertical');
+            buildFilterDropdown('tierName');
+            buildFilterDropdown('country');
+        }}
+
+        function buildFilterDropdown(column) {{
+            const dropdown = document.getElementById(`filter-dropdown-${{column}}`);
+            const values = Array.from(columnFilters[column]).sort((a, b) => {{
+                if (a === '—' || a === 'Unknown') return 1;
+                if (b === '—' || b === 'Unknown') return -1;
+                return a.localeCompare(b);
+            }});
+
+            dropdown.innerHTML = `
+                <div class="filter-dropdown-header">
+                    <button onclick="selectAllFilter(event, '${{column}}')">Select All</button>
+                    <button onclick="clearAllFilter(event, '${{column}}')">Clear All</button>
+                </div>
+                <div class="filter-dropdown-list">
+                    ${{values.map(val => `
+                        <div class="filter-dropdown-item">
+                            <input type="checkbox" id="filter-${{column}}-${{val.replace(/[^a-zA-Z0-9]/g, '_')}}"
+                                   data-column="${{column}}" data-value="${{val}}"
+                                   ${{columnFilterSelections[column].has(val) ? 'checked' : ''}}
+                                   onchange="updateFilterSelection('${{column}}', '${{val.replace(/'/g, "\\\\'")}}')" />
+                            <label for="filter-${{column}}-${{val.replace(/[^a-zA-Z0-9]/g, '_')}}">${{val}}</label>
+                        </div>
+                    `).join('')}}
+                </div>
+                <div class="filter-dropdown-footer">
+                    <button onclick="applyColumnFilter(event, '${{column}}')">Apply</button>
+                </div>
+            `;
+        }}
+
+        function toggleFilterDropdown(event, column) {{
+            event.stopPropagation();
+            event.preventDefault();
+
+            // Close all other dropdowns
+            document.querySelectorAll('.filter-dropdown').forEach(dd => {{
+                if (dd.id !== `filter-dropdown-${{column}}`) {{
+                    dd.classList.remove('open');
+                }}
+            }});
+
+            const dropdown = document.getElementById(`filter-dropdown-${{column}}`);
+            dropdown.classList.toggle('open');
+        }}
+
+        function selectAllFilter(event, column) {{
+            event.stopPropagation();
+            columnFilterSelections[column] = new Set(columnFilters[column]);
+            updateFilterCheckboxes(column);
+        }}
+
+        function clearAllFilter(event, column) {{
+            event.stopPropagation();
+            columnFilterSelections[column] = new Set();
+            updateFilterCheckboxes(column);
+        }}
+
+        function updateFilterCheckboxes(column) {{
+            const dropdown = document.getElementById(`filter-dropdown-${{column}}`);
+            dropdown.querySelectorAll('input[type="checkbox"]').forEach(cb => {{
+                cb.checked = columnFilterSelections[column].has(cb.dataset.value);
+            }});
+        }}
+
+        function updateFilterSelection(column, value) {{
+            if (columnFilterSelections[column].has(value)) {{
+                columnFilterSelections[column].delete(value);
+            }} else {{
+                columnFilterSelections[column].add(value);
+            }}
+        }}
+
+        function applyColumnFilter(event, column) {{
+            event.stopPropagation();
+            const dropdown = document.getElementById(`filter-dropdown-${{column}}`);
+            dropdown.classList.remove('open');
+
+            // Update filter icon style
+            const filterIcon = document.querySelector(`[data-filter="${{column}}"] .filter-icon`);
+            const allSelected = columnFilterSelections[column].size === columnFilters[column].size;
+            filterIcon.classList.toggle('active', !allSelected);
+
+            applyFilters();
+        }}
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (event) => {{
+            if (!event.target.closest('.column-filter')) {{
+                document.querySelectorAll('.filter-dropdown').forEach(dd => {{
+                    dd.classList.remove('open');
+                }});
+            }}
+        }});
+
+        // Initialize column filters on load
+        document.addEventListener('DOMContentLoaded', () => {{
+            initColumnFilters();
+        }});
+
+        // ===== COMPANY DETAIL MODAL =====
+        function openModal(targetId) {{
+            const target = allTargets.find(t => t.id === targetId);
+            if (!target) return;
+
+            // Calculate score breakdown
+            const tierPts = target.tier === 1 ? 40 : target.tier === 2 ? 25 : target.tier === 3 ? 15 : 0;
+            const trafficPts = target.traffic >= 50000000 ? 30 : target.traffic >= 10000000 ? 25 : target.traffic >= 5000000 ? 20 : target.traffic >= 1000000 ? 15 : target.traffic >= 500000 ? 10 : target.traffic >= 100000 ? 5 : 0;
+            const techPts = target.techSpend >= 100000 ? 20 : target.techSpend >= 50000 ? 15 : target.techSpend >= 25000 ? 10 : target.techSpend >= 10000 ? 5 : 0;
+            const partnerPts = target.partner.includes('Adobe') ? 10 : target.partner.includes('Shopify') ? 7 : 3;
+
+            // Determine priority
+            const priority = target.score >= 80 ? 'hot' : target.score >= 60 ? 'warm' : 'cool';
+            const priorityLabel = priority.toUpperCase();
+
+            // Update modal header
+            document.getElementById('modalCompanyName').textContent = target.company;
+            const badge = document.getElementById('modalPriorityBadge');
+            badge.textContent = priorityLabel;
+            badge.className = 'priority-badge ' + priority;
+
+            // Update signal indicators (based on score components)
+            const signalBudget = document.getElementById('signalBudget');
+            const signalPain = document.getElementById('signalPain');
+            const signalTiming = document.getElementById('signalTiming');
+
+            // Budget signal: based on tech spend
+            signalBudget.className = 'signal-item ' + (techPts >= 10 ? 'positive' : 'negative');
+            signalBudget.innerHTML = '<span class="icon">' + (techPts >= 10 ? '✅' : '❌') + '</span><span>Budget</span>';
+
+            // Pain signal: based on tier (commerce = most pain)
+            signalPain.className = 'signal-item ' + (target.tier === 1 ? 'positive' : 'negative');
+            signalPain.innerHTML = '<span class="icon">' + (target.tier === 1 ? '✅' : '❌') + '</span><span>Pain</span>';
+
+            // Timing signal: based on traffic (high traffic = urgent need)
+            signalTiming.className = 'signal-item ' + (trafficPts >= 15 ? 'positive' : 'negative');
+            signalTiming.innerHTML = '<span class="icon">' + (trafficPts >= 15 ? '✅' : '❌') + '</span><span>Timing</span>';
+
+            // Update key metrics
+            document.getElementById('modalScore').textContent = target.score;
+            document.getElementById('modalTraffic').textContent = target.trafficFmt;
+            document.getElementById('modalTechSpend').textContent = target.techSpend >= 1000 ? '$' + Math.round(target.techSpend/1000) + 'K' : '$' + target.techSpend;
+            document.getElementById('modalTier').textContent = target.tierName;
+
+            // Update score breakdown bars
+            document.getElementById('barTier').style.width = (tierPts / 40 * 100) + '%';
+            document.getElementById('ptsTier').textContent = tierPts + '/40';
+
+            document.getElementById('barTraffic').style.width = (trafficPts / 30 * 100) + '%';
+            document.getElementById('ptsTraffic').textContent = trafficPts + '/30';
+
+            document.getElementById('barTech').style.width = (techPts / 20 * 100) + '%';
+            document.getElementById('ptsTech').textContent = techPts + '/20';
+
+            document.getElementById('barPartner').style.width = (partnerPts / 10 * 100) + '%';
+            document.getElementById('ptsPartner').textContent = partnerPts + '/10';
+
+            // Update domain & country
+            document.getElementById('modalDomain').textContent = target.domain;
+            document.getElementById('modalDomainLink').href = 'https://' + target.domain;
+            document.getElementById('modalCountry').textContent = '🌍 ' + target.country;
+
+            // Show modal
+            document.getElementById('companyModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }}
+
+        function closeModal() {{
+            document.getElementById('companyModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }}
+
+        // Close modal on overlay click
+        document.getElementById('companyModal').addEventListener('click', (e) => {{
+            if (e.target.classList.contains('modal-overlay')) {{
+                closeModal();
+            }}
+        }});
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {{
+            if (e.key === 'Escape') {{
+                closeModal();
+            }}
+        }});
+
+        // Add click handler to table rows
+        document.getElementById('targetsBody').addEventListener('click', (e) => {{
+            const row = e.target.closest('tr');
+            if (row && row.dataset.id) {{
+                // Don't open modal if clicking a link
+                if (e.target.tagName === 'A') return;
+                openModal(parseInt(row.dataset.id));
+            }}
+        }});
     </script>
 </body>
 </html>'''
@@ -838,6 +1536,8 @@ def main():
     print(f"   - CSV export button")
     print(f"   - Score breakdown tooltips")
     print(f"   - Visual score progress bars")
+    print(f"   - Company detail modal (click any row)")
+    print(f"   - Glassmorphism UI with signal indicators")
 
 
 if __name__ == "__main__":
