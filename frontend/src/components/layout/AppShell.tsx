@@ -2,7 +2,7 @@
  * AppShell - Main Layout Component
  *
  * Provides the main application structure with header, sidebar, and content area.
- * Features dark theme with glassmorphism effects and Algolia brand colors.
+ * Uses light theme with Algolia brand colors.
  */
 
 import {
@@ -13,9 +13,7 @@ import {
   ActionIcon,
   Tooltip,
   Menu,
-  Text,
   Burger,
-  Box,
 } from '@mantine/core';
 import {
   IconRefresh,
@@ -23,21 +21,24 @@ import {
   IconUser,
   IconLogout,
   IconSettings,
-  IconMoon,
-  IconSun,
 } from '@tabler/icons-react';
 import { Outlet } from 'react-router-dom';
 import { useDisclosure } from '@mantine/hooks';
-import { useMantineColorScheme } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { Sidebar } from './Sidebar';
 import { AlgoliaLogo } from '@/components/common/AlgoliaLogo';
 
+// Light theme colors
+const GRAY_50 = '#f8fafc';
+const GRAY_100 = '#f1f5f9';
+const GRAY_200 = '#e2e8f0';
+const GRAY_700 = '#334155';
+const ALGOLIA_BLUE = '#003DFF';
+
 export function AppShell() {
   const [opened, { toggle }] = useDisclosure();
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const queryClient = useQueryClient();
 
   const handleRefresh = () => {
