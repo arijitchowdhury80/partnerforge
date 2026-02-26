@@ -1,8 +1,8 @@
 /**
  * Dashboard Page
  *
- * Main dashboard with premium KPI cards, hero section, and target overview.
- * Championship-level UI with glassmorphism and animations.
+ * Clean, focused dashboard with visual formula hero and interactive charting.
+ * Removed redundancy - single source of truth for each metric.
  */
 
 import { useState, useEffect, useRef } from 'react';
@@ -14,26 +14,22 @@ import {
   Group,
   Paper,
   Badge,
-  SimpleGrid,
   Grid,
+  SegmentedControl,
   Stack,
-  ThemeIcon,
-  RingProgress,
 } from '@mantine/core';
 import {
-  IconDatabase,
-  IconFlame,
-  IconSun,
-  IconTrendingUp,
-  IconCheck,
-  IconSparkles,
+  IconMinus,
+  IconEqual,
+  IconTarget,
 } from '@tabler/icons-react';
-import { DonutChart, AreaChart, BarList } from '@tremor/react';
-import { formatDistanceToNow } from 'date-fns';
+import { DonutChart, AreaChart, BarChart, BarList } from '@tremor/react';
 
 import { getStats, getCompanies } from '@/services/api';
 import { TargetList } from '@/components/targets/TargetList';
 import { usePartner } from '@/contexts/PartnerContext';
+import { AlgoliaLogo } from '@/components/common/AlgoliaLogo';
+import { getPartnerLogo } from '@/components/common/PartnerLogos';
 import type { FilterState, DashboardStats } from '@/types';
 
 export function Dashboard() {
@@ -45,12 +41,12 @@ export function Dashboard() {
   const [page, setPage] = useState(1);
 
   // Fetch stats
-  const { data: stats, isLoading: statsLoading, refetch: refetchStats } = useQuery({
+  const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ['stats', selectedPartner.key],
     queryFn: getStats,
   });
 
-  // Fetch companies - filter by selected partner
+  // Fetch companies
   const { data: companies, isLoading: companiesLoading } = useQuery({
     queryKey: ['companies', filters, page, selectedPartner.key],
     queryFn: () => getCompanies({
@@ -63,31 +59,18 @@ export function Dashboard() {
 
   return (
     <Container size="xl" py="md">
-      {/* Hero Section */}
-      <HeroSection stats={stats} isLoading={statsLoading} partnerName={selectedPartner.name} partnerIcon={selectedPartner.icon} />
+      {/* Hero Section - Visual Formula */}
+      <HeroSection
+        stats={stats}
+        isLoading={statsLoading}
+        partnerKey={selectedPartner.key}
+        partnerName={selectedPartner.name}
+      />
 
-      {/* KPI Cards */}
-      <KPISection stats={stats} isLoading={statsLoading} />
+      {/* Charting Module */}
+      <ChartingModule stats={stats} />
 
-      {/* Charts Row */}
-      <Grid mb="lg">
-        {/* Lead Distribution */}
-        <Grid.Col span={{ base: 12, md: 4 }}>
-          <LeadDistributionChart stats={stats} />
-        </Grid.Col>
-
-        {/* Enrichment Trend */}
-        <Grid.Col span={{ base: 12, md: 5 }}>
-          <EnrichmentTrendChart />
-        </Grid.Col>
-
-        {/* Quick Stats */}
-        <Grid.Col span={{ base: 12, md: 3 }}>
-          <QuickStatsPanel stats={stats} />
-        </Grid.Col>
-      </Grid>
-
-      {/* Top Targets */}
+      {/* Top Targets Row */}
       <Grid mb="lg">
         <Grid.Col span={{ base: 12, md: 6 }}>
           <TopScoresChart />
@@ -107,7 +90,7 @@ export function Dashboard() {
           <div>
             <Text fw={600} c="white" size="lg">Displacement Targets</Text>
             <Text size="sm" c="dimmed">
-              Companies using partner tech that should be using Algolia
+              Companies ready for Algolia outreach
             </Text>
           </div>
           <Badge variant="light" size="lg">
@@ -127,15 +110,15 @@ export function Dashboard() {
   );
 }
 
-// Hero Section Component
+// Hero Section with Visual Formula
 interface HeroSectionProps {
   stats?: DashboardStats;
   isLoading: boolean;
+  partnerKey: string;
   partnerName: string;
-  partnerIcon: string;
 }
 
-function HeroSection({ stats, isLoading, partnerName, partnerIcon }: HeroSectionProps) {
+function HeroSection({ stats, isLoading, partnerKey, partnerName }: HeroSectionProps) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true });
 
@@ -151,6 +134,8 @@ function HeroSection({ stats, isLoading, partnerName, partnerIcon }: HeroSection
       return animation.stop;
     }
   }, [isInView, stats?.total_companies]);
+
+  const PartnerLogo = getPartnerLogo(partnerKey);
 
   return (
     <motion.div
@@ -174,29 +159,11 @@ function HeroSection({ stats, isLoading, partnerName, partnerIcon }: HeroSection
           }}
         />
 
-        {/* Floating partner icon */}
-        <motion.div
-          className="absolute top-8 right-8 p-4 rounded-2xl bg-white/5 border border-white/10"
-          animate={{ y: [0, -10, 0] }}
-          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-        >
-          <Text size="xl" className="text-3xl">{partnerIcon}</Text>
-        </motion.div>
-
         <div className="relative z-10">
-          <Badge
-            variant="light"
-            color="blue"
-            size="lg"
-            leftSection={<IconSparkles size={14} />}
-            mb="md"
-          >
-            Partner Intelligence Platform
-          </Badge>
-
-          <Group align="flex-end" gap="md" mb="md">
+          {/* Main number and label */}
+          <Group align="flex-end" gap="md" mb="lg">
             <motion.span
-              className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent"
+              className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent"
             >
               {displayTotal}
             </motion.span>
@@ -205,315 +172,204 @@ function HeroSection({ stats, isLoading, partnerName, partnerIcon }: HeroSection
             </Text>
           </Group>
 
-          <Text c="dimmed" size="lg" mb="lg" maw={600}>
-            {partnerName === 'All Partners'
-              ? 'Companies using partner technologies who are NOT using Algolia. Your co-sell pipeline starts here.'
-              : `${partnerIcon} Companies using ${partnerName} who are NOT using Algolia. Your co-sell pipeline starts here.`
-            }
-          </Text>
+          {/* Visual Formula: Partner Logo − Algolia Logo = Targets */}
+          <div className="flex items-center gap-4 flex-wrap">
+            {/* Companies using partner tech */}
+            <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 border border-white/10">
+              <PartnerLogo size={32} />
+              <div>
+                <Text size="xs" c="dimmed">Companies using</Text>
+                <Text size="sm" c="white" fw={600}>{partnerName}</Text>
+              </div>
+            </div>
 
-          <Group gap="md">
-            <MetricBadge
-              icon={<IconFlame size={14} />}
-              label="Hot Leads"
-              value={stats?.hot_leads || 0}
-              color="red"
-            />
-            <MetricBadge
-              icon={<IconSun size={14} />}
-              label="Warm Leads"
-              value={stats?.warm_leads || 0}
-              color="orange"
-            />
-            <MetricBadge
-              icon={<IconCheck size={14} />}
-              label="Enriched"
-              value={stats?.enriched_companies || 0}
-              color="green"
-            />
-          </Group>
+            {/* Minus */}
+            <div className="p-2 rounded-full bg-red-500/20 border border-red-500/30">
+              <IconMinus size={20} className="text-red-400" />
+            </div>
+
+            {/* Already using Algolia */}
+            <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 border border-white/10">
+              <AlgoliaLogo size={32} />
+              <div>
+                <Text size="xs" c="dimmed">Already using</Text>
+                <Text size="sm" c="white" fw={600}>Algolia</Text>
+              </div>
+            </div>
+
+            {/* Equals */}
+            <div className="p-2 rounded-full bg-green-500/20 border border-green-500/30">
+              <IconEqual size={20} className="text-green-400" />
+            </div>
+
+            {/* Result: Displacement Targets */}
+            <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30">
+              <IconTarget size={32} className="text-blue-400" />
+              <div>
+                <Text size="xs" c="dimmed">Your pipeline</Text>
+                <Text size="sm" c="white" fw={600}>
+                  {stats?.total_companies?.toLocaleString() || '...'} targets
+                </Text>
+              </div>
+            </div>
+          </div>
         </div>
       </Paper>
     </motion.div>
   );
 }
 
-// Metric Badge Component
-interface MetricBadgeProps {
-  icon: React.ReactNode;
-  label: string;
-  value: number;
-  color: string;
-}
-
-function MetricBadge({ icon, label, value, color }: MetricBadgeProps) {
-  return (
-    <motion.div
-      whileHover={{ scale: 1.05 }}
-      className={`
-        flex items-center gap-2 px-4 py-2 rounded-full
-        bg-${color}-500/20 border border-${color}-500/30
-      `}
-    >
-      <span className={`text-${color}-400`}>{icon}</span>
-      <Text size="sm" c="white" fw={600}>{value.toLocaleString()}</Text>
-      <Text size="sm" c="dimmed">{label}</Text>
-    </motion.div>
-  );
-}
-
-// KPI Section Component
-interface KPISectionProps {
+// Charting Module with Selection
+interface ChartingModuleProps {
   stats?: DashboardStats;
-  isLoading: boolean;
 }
 
-function KPISection({ stats, isLoading }: KPISectionProps) {
-  const kpis = [
-    {
-      title: 'Total Companies',
-      value: stats?.total_companies || 0,
-      icon: IconDatabase,
-      gradient: 'from-blue-500/20 to-cyan-500/20',
-      iconColor: 'text-blue-400',
-      trend: 12,
-    },
-    {
-      title: 'Enriched',
-      value: stats?.enriched_companies || 0,
-      icon: IconCheck,
-      gradient: 'from-green-500/20 to-emerald-500/20',
-      iconColor: 'text-green-400',
-      trend: 8,
-    },
-    {
-      title: 'Hot Leads',
-      value: stats?.hot_leads || 0,
-      icon: IconFlame,
-      gradient: 'from-red-500/20 to-orange-500/20',
-      iconColor: 'text-red-400',
-      trend: 15,
-    },
-    {
-      title: 'Warm Leads',
-      value: stats?.warm_leads || 0,
-      icon: IconSun,
-      gradient: 'from-orange-500/20 to-yellow-500/20',
-      iconColor: 'text-orange-400',
-      trend: -3,
-    },
+function ChartingModule({ stats }: ChartingModuleProps) {
+  const [chartType, setChartType] = useState<string>('status');
+
+  // Prepare data for each chart type
+  const statusData = [
+    { name: 'Hot', value: stats?.hot_leads || 9, color: 'red' },
+    { name: 'Warm', value: stats?.warm_leads || 49, color: 'orange' },
+    { name: 'Cool', value: 150, color: 'blue' },
+    { name: 'Cold', value: 200, color: 'gray' },
+  ];
+
+  const partnerData = [
+    { name: 'Adobe AEM', value: 2687 },
+    { name: 'Shopify', value: 1500 },
+    { name: 'Salesforce Commerce', value: 890 },
+    { name: 'BigCommerce', value: 450 },
+    { name: 'Magento', value: 320 },
+  ];
+
+  const verticalData = [
+    { name: 'Commerce', value: 1850 },
+    { name: 'Media', value: 620 },
+    { name: 'Financial Services', value: 480 },
+    { name: 'Healthcare', value: 320 },
+    { name: 'Other', value: 417 },
+  ];
+
+  const timeData = [
+    { month: 'Jan', Targets: 1500, Enriched: 200 },
+    { month: 'Feb', Targets: 1800, Enriched: 400 },
+    { month: 'Mar', Targets: 2100, Enriched: 600 },
+    { month: 'Apr', Targets: 2300, Enriched: 850 },
+    { month: 'May', Targets: 2500, Enriched: 1100 },
+    { month: 'Jun', Targets: 2687, Enriched: 1400 },
   ];
 
   return (
-    <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} mb="lg">
-      {kpis.map((kpi, index) => (
-        <KPICard key={kpi.title} kpi={kpi} index={index} isLoading={isLoading} />
-      ))}
-    </SimpleGrid>
-  );
-}
-
-// KPI Card Component
-interface KPICardProps {
-  kpi: {
-    title: string;
-    value: number;
-    icon: React.ElementType;
-    gradient: string;
-    iconColor: string;
-    trend: number;
-  };
-  index: number;
-  isLoading: boolean;
-}
-
-function KPICard({ kpi, index, isLoading }: KPICardProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: '-50px' });
-
-  const count = useMotionValue(0);
-  const rounded = useTransform(count, Math.round);
-
-  useEffect(() => {
-    if (isInView && !isLoading) {
-      const animation = animate(count, kpi.value, {
-        duration: 1.5,
-        ease: 'easeOut',
-      });
-      return animation.stop;
-    }
-  }, [isInView, kpi.value, isLoading]);
-
-  const Icon = kpi.icon;
-
-  return (
     <motion.div
-      ref={ref}
       initial={{ opacity: 0, y: 20 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      whileHover={{ scale: 1.02, y: -4 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.1 }}
+      className="mb-8"
     >
       <Paper
         p="lg"
-        radius="lg"
-        className={`
-          relative overflow-hidden backdrop-blur-xl
-          bg-gradient-to-br ${kpi.gradient}
-          border border-white/10 hover:border-white/20
-          transition-all duration-300
-        `}
+        radius="xl"
+        className="bg-white/5 border border-white/10"
       >
-        {/* Glow effect */}
-        <motion.div
-          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
-          style={{
-            background: `radial-gradient(circle at 50% 50%, rgba(84, 104, 255, 0.15), transparent 70%)`,
-          }}
-        />
+        {/* Chart Type Selector */}
+        <Group justify="space-between" mb="lg">
+          <Text fw={600} c="white" size="lg">Target Analysis</Text>
+          <SegmentedControl
+            value={chartType}
+            onChange={setChartType}
+            data={[
+              { label: 'By Status', value: 'status' },
+              { label: 'By Partner', value: 'partner' },
+              { label: 'By Vertical', value: 'vertical' },
+              { label: 'Over Time', value: 'time' },
+            ]}
+            size="sm"
+            classNames={{
+              root: 'bg-white/5',
+            }}
+          />
+        </Group>
 
-        <div className="relative z-10">
-          <Group justify="space-between" mb="md">
-            <Text size="xs" tt="uppercase" fw={600} c="dimmed" className="tracking-wider">
-              {kpi.title}
-            </Text>
-            <div className={`p-2 rounded-lg bg-white/10 ${kpi.iconColor}`}>
-              <Icon size={18} />
-            </div>
-          </Group>
-
-          {isLoading ? (
-            <div className="h-10 w-24 bg-white/10 rounded animate-pulse" />
-          ) : (
-            <motion.span className="text-3xl font-bold text-white">
-              {rounded}
-            </motion.span>
+        {/* Chart Display */}
+        <div className="h-72">
+          {chartType === 'status' && (
+            <Grid>
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <DonutChart
+                  data={statusData}
+                  category="value"
+                  index="name"
+                  colors={['red', 'orange', 'blue', 'slate']}
+                  showAnimation
+                  showTooltip
+                  label={`${stats?.hot_leads || 9} Hot`}
+                />
+              </Grid.Col>
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <Stack gap="md" justify="center" h="100%">
+                  {statusData.map((item) => (
+                    <Group key={item.name} justify="space-between">
+                      <Group gap="sm">
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{
+                            backgroundColor:
+                              item.color === 'red' ? '#ef4444' :
+                              item.color === 'orange' ? '#f97316' :
+                              item.color === 'blue' ? '#3b82f6' : '#6b7280'
+                          }}
+                        />
+                        <Text size="sm" c="white">{item.name}</Text>
+                      </Group>
+                      <Text size="sm" c="white" fw={600}>
+                        {item.value.toLocaleString()}
+                      </Text>
+                    </Group>
+                  ))}
+                </Stack>
+              </Grid.Col>
+            </Grid>
           )}
 
-          <Group gap="xs" mt="sm">
-            <Badge
-              size="sm"
-              variant="light"
-              color={kpi.trend >= 0 ? 'green' : 'red'}
-              leftSection={
-                kpi.trend >= 0
-                  ? <IconTrendingUp size={12} />
-                  : <IconTrendingUp size={12} style={{ transform: 'rotate(180deg)' }} />
-              }
-            >
-              {kpi.trend >= 0 ? '+' : ''}{kpi.trend}%
-            </Badge>
-            <Text size="xs" c="dimmed">vs last month</Text>
-          </Group>
+          {chartType === 'partner' && (
+            <BarChart
+              data={partnerData}
+              index="name"
+              categories={['value']}
+              colors={['violet']}
+              showAnimation
+              showLegend={false}
+              layout="vertical"
+            />
+          )}
+
+          {chartType === 'vertical' && (
+            <BarChart
+              data={verticalData}
+              index="name"
+              categories={['value']}
+              colors={['cyan']}
+              showAnimation
+              showLegend={false}
+              layout="vertical"
+            />
+          )}
+
+          {chartType === 'time' && (
+            <AreaChart
+              data={timeData}
+              index="month"
+              categories={['Targets', 'Enriched']}
+              colors={['blue', 'emerald']}
+              showAnimation
+              showLegend
+              curveType="monotone"
+            />
+          )}
         </div>
       </Paper>
     </motion.div>
-  );
-}
-
-// Lead Distribution Chart
-function LeadDistributionChart({ stats }: { stats?: DashboardStats }) {
-  const data = [
-    { name: 'Hot', value: stats?.hot_leads || 0 },
-    { name: 'Warm', value: stats?.warm_leads || 0 },
-    { name: 'Cool', value: 50 },
-    { name: 'Cold', value: 100 },
-  ];
-
-  return (
-    <Paper p="md" radius="lg" className="bg-white/5 border border-white/10 h-full">
-      <Group justify="space-between" mb="md">
-        <Text fw={600} c="white">Lead Distribution</Text>
-        <Badge variant="light" size="sm" color="blue">Live</Badge>
-      </Group>
-      <DonutChart
-        data={data}
-        category="value"
-        index="name"
-        colors={['red', 'orange', 'blue', 'gray']}
-        showAnimation
-      />
-    </Paper>
-  );
-}
-
-// Enrichment Trend Chart
-function EnrichmentTrendChart() {
-  const data = [
-    { date: 'Jan', Enriched: 500, New: 200 },
-    { date: 'Feb', Enriched: 800, New: 350 },
-    { date: 'Mar', Enriched: 1200, New: 400 },
-    { date: 'Apr', Enriched: 1800, New: 300 },
-    { date: 'May', Enriched: 2200, New: 450 },
-    { date: 'Jun', Enriched: 2687, New: 500 },
-  ];
-
-  return (
-    <Paper p="md" radius="lg" className="bg-white/5 border border-white/10 h-full">
-      <Group justify="space-between" mb="md">
-        <Text fw={600} c="white">Enrichment Trend</Text>
-        <Badge variant="light" color="green" size="sm" leftSection={<IconTrendingUp size={12} />}>
-          +23%
-        </Badge>
-      </Group>
-      <AreaChart
-        data={data}
-        index="date"
-        categories={['Enriched', 'New']}
-        colors={['blue', 'cyan']}
-        showAnimation
-        showLegend={false}
-        curveType="monotone"
-      />
-    </Paper>
-  );
-}
-
-// Quick Stats Panel
-function QuickStatsPanel({ stats }: { stats?: DashboardStats }) {
-  const enrichmentProgress = stats?.enriched_companies && stats?.total_companies
-    ? Math.round((stats.enriched_companies / stats.total_companies) * 100)
-    : 0;
-
-  return (
-    <Paper p="md" radius="lg" className="bg-white/5 border border-white/10 h-full">
-      <Text fw={600} c="white" mb="md">Overall Progress</Text>
-      <div className="flex justify-center mb-4">
-        <RingProgress
-          size={120}
-          thickness={12}
-          roundCaps
-          sections={[{ value: enrichmentProgress, color: 'blue' }]}
-          label={
-            <Text ta="center" fw={700} size="lg" c="white">
-              {enrichmentProgress}%
-            </Text>
-          }
-        />
-      </div>
-      <Text size="sm" c="dimmed" ta="center" mb="md">
-        {stats?.enriched_companies || 0} of {stats?.total_companies || 0} enriched
-      </Text>
-
-      <Text fw={600} size="sm" c="white" mb="xs">Recent Activity</Text>
-      <Stack gap="xs">
-        {[
-          { company: 'Mercedes-Benz', time: '5 min ago' },
-          { company: 'Adobe AEM Targets', time: '30 min ago' },
-          { company: 'Infiniti', time: '1 hour ago' },
-        ].map((item) => (
-          <Group key={item.company} gap="xs" wrap="nowrap">
-            <ThemeIcon size="xs" variant="light" color="blue">
-              <IconCheck size={10} />
-            </ThemeIcon>
-            <div className="flex-1 min-w-0">
-              <Text size="xs" c="white" truncate>{item.company}</Text>
-              <Text size="xs" c="dimmed">{item.time}</Text>
-            </div>
-          </Group>
-        ))}
-      </Stack>
-    </Paper>
   );
 }
 
@@ -528,8 +384,11 @@ function TopScoresChart() {
   ];
 
   return (
-    <Paper p="md" radius="lg" className="bg-white/5 border border-white/10">
-      <Text fw={600} c="white" mb="md">Top ICP Scores</Text>
+    <Paper p="lg" radius="xl" className="bg-white/5 border border-white/10">
+      <Group justify="space-between" mb="md">
+        <Text fw={600} c="white">Top ICP Scores</Text>
+        <Badge variant="light" size="sm" color="blue">Top 5</Badge>
+      </Group>
       <BarList data={data} color="blue" />
     </Paper>
   );
@@ -546,8 +405,11 @@ function PartnerTechBreakdown() {
   ];
 
   return (
-    <Paper p="md" radius="lg" className="bg-white/5 border border-white/10">
-      <Text fw={600} c="white" mb="md">Partner Technology Breakdown</Text>
+    <Paper p="lg" radius="xl" className="bg-white/5 border border-white/10">
+      <Group justify="space-between" mb="md">
+        <Text fw={600} c="white">Partner Technology</Text>
+        <Badge variant="light" size="sm" color="violet">All Partners</Badge>
+      </Group>
       <BarList data={data} color="violet" />
     </Paper>
   );

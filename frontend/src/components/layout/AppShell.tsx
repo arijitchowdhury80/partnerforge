@@ -33,7 +33,7 @@ import { notifications } from '@mantine/notifications';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { Sidebar } from './Sidebar';
-import { PartnerSelector } from './PartnerSelector';
+import { AlgoliaLogo } from '@/components/common/AlgoliaLogo';
 
 export function AppShell() {
   const [opened, { toggle }] = useDisclosure();
@@ -78,44 +78,17 @@ export function AppShell() {
       {/* Header - Single Row */}
       <MantineAppShell.Header>
         <Group h="100%" px="lg" justify="space-between">
-          {/* Left: Logo + Partner Selector */}
-          <Group gap="lg">
+          {/* Left: Logo */}
+          <Group gap="md">
             <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" color="white" />
 
-            <Group gap="xs">
-              {/* Logo Icon */}
-              <Box
-                style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: 8,
-                  background: 'linear-gradient(135deg, #003DFF, #5468FF)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontWeight: 700,
-                  fontSize: 14,
-                  color: 'white',
-                }}
-              >
-                PF
-              </Box>
+            <Group gap="sm">
+              {/* Algolia Logo */}
+              <AlgoliaLogo size={28} />
               <Title order={4} c="white" fw={600}>
                 PartnerForge
               </Title>
             </Group>
-
-            {/* Divider */}
-            <Box
-              style={{
-                width: 1,
-                height: 24,
-                background: 'rgba(255, 255, 255, 0.15)',
-              }}
-            />
-
-            {/* Partner Selector */}
-            <PartnerSelector />
           </Group>
 
           {/* Right: Actions */}
