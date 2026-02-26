@@ -35,9 +35,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { getCompanies } from '@/services/api';
 import { TargetList, type ColumnFilter } from '@/components/targets/TargetList';
 
-// Version for deployment tracking
-const VERSION = 'v3.0-ALGOLIA-BRAND';
-
 // Algolia Brand Colors (Official)
 const ALGOLIA_NEBULA_BLUE = '#003DFF';
 const ALGOLIA_SPACE_GRAY = '#21243D';
@@ -215,14 +212,7 @@ export function CompaniesPage() {
       >
         <Group justify="space-between" mb="lg">
           <div>
-            <Group gap="sm" align="center">
-              <Title order={2}>
-                Companies
-              </Title>
-              <Badge size="md" variant="filled" color="blue" style={{ fontWeight: 600 }}>
-                {VERSION}
-              </Badge>
-            </Group>
+            <Title order={2}>Companies</Title>
             <Text c="#64748b" size="md" mt={4}>
               Click column header dropdowns (Status, Vertical, Partner Tech) to filter like Excel
             </Text>
