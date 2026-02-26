@@ -145,7 +145,6 @@ export const PartnerLogoMap: Record<string, React.FC<LogoProps>> = {
   adobe: AdobeLogo,
   salesforce: SalesforceLogo,
   shopify: ShopifyLogo,
-  sap: SAPLogo,
   commercetools: CommercetoolsLogo,
   bigcommerce: BigCommerceLogo,
   magento: MagentoLogo,

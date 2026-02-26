@@ -71,16 +71,6 @@ export const PARTNERS: Partner[] = [
     ],
   },
   {
-    key: 'sap',
-    name: 'SAP',
-    shortName: 'SAP',
-    products: [
-      { key: 'commerce-cloud', name: 'Commerce Cloud', shortName: 'Commerce' },
-      { key: 'hybris', name: 'Hybris', shortName: 'Hybris' },
-      { key: 'cx', name: 'Customer Experience', shortName: 'CX' },
-    ],
-  },
-  {
     key: 'commercetools',
     name: 'commercetools',
     shortName: 'CT',
@@ -150,8 +140,6 @@ export function getSelectionTechName(selection: PartnerSelection): string | unde
       'salesforce-commerce-cloud': 'Salesforce Commerce Cloud',
       'shopify-shopify-plus': 'Shopify Plus',
       'shopify-shopify': 'Shopify',
-      'sap-commerce-cloud': 'SAP Commerce Cloud',
-      'sap-hybris': 'SAP Hybris',
       'commercetools-commercetools': 'commercetools',
       'bigcommerce-enterprise': 'BigCommerce',
       'vtex-vtex': 'VTEX',
@@ -166,7 +154,6 @@ export function getSelectionTechName(selection: PartnerSelection): string | unde
     adobe: 'Adobe',                // Matches AEM, Commerce, Campaign, Analytics
     salesforce: 'Salesforce',      // Matches all Salesforce products
     shopify: 'Shopify',
-    sap: 'SAP',                    // Matches SAP Commerce Cloud, Hybris
     commercetools: 'commercetools',
     bigcommerce: 'BigCommerce',
     vtex: 'VTEX',
@@ -199,7 +186,6 @@ const iconMap: Record<string, string> = {
   adobe: '🔴',
   salesforce: '☁️',
   shopify: '🛒',
-  sap: '🔷',
   commercetools: '⚙️',
   bigcommerce: '🏪',
   vtex: '💜',
