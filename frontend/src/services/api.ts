@@ -14,6 +14,8 @@ import type {
   ModuleStatus,
   PaginatedResponse,
   FilterState,
+  TechStackData,
+  Technology,
 } from '@/types';
 
 // =============================================================================
@@ -316,11 +318,85 @@ function getStatusFromScore(score: number): 'hot' | 'warm' | 'cold' {
   return 'cold';
 }
 
+// Parse tech_stack_json into TechStackData format
+interface RawTechStack {
+  cms?: string[];
+  ecommerce?: string[];
+  analytics?: string[];
+  search?: string[];
+  cdn?: string[];
+  payment?: string[];
+  marketing?: string[];
+  frameworks?: string[];
+}
+
+function parseTechStackJson(json: string | null, domain: string): TechStackData | undefined {
+  if (!json) return undefined;
+
+  try {
+    const raw: RawTechStack = typeof json === 'string' ? JSON.parse(json) : json;
+
+    // Convert arrays to Technology objects
+    const technologies: Technology[] = [];
+    const categories: Record<string, string[]> = {
+      'CMS': raw.cms || [],
+      'E-commerce': raw.ecommerce || [],
+      'Analytics': raw.analytics || [],
+      'Search': raw.search || [],
+      'CDN': raw.cdn || [],
+      'Payment': raw.payment || [],
+      'Marketing': raw.marketing || [],
+      'Frameworks': raw.frameworks || [],
+    };
+
+    for (const [category, techs] of Object.entries(categories)) {
+      for (const name of techs) {
+        technologies.push({ name, category });
+      }
+    }
+
+    // Determine search provider
+    let searchProvider: string | undefined;
+    for (const s of raw.search || []) {
+      const sl = s.toLowerCase();
+      if (sl.includes('algolia')) { searchProvider = 'Algolia'; break; }
+      if (sl.includes('elastic')) searchProvider = 'Elasticsearch';
+      else if (sl.includes('constructor')) searchProvider = 'Constructor IO';
+      else if (sl.includes('coveo')) searchProvider = 'Coveo';
+      else if (sl.includes('lucidworks') || sl.includes('solr')) searchProvider = 'Lucidworks/Solr';
+    }
+
+    return {
+      domain,
+      technologies,
+      partner_tech_detected: raw.cms?.filter(c =>
+        ['amplience', 'adobe', 'spryker', 'bloomreach'].some(p => c.toLowerCase().includes(p))
+      ) || [],
+      search_provider: searchProvider,
+      cms: raw.cms?.[0],
+      ecommerce_platform: raw.ecommerce?.[0],
+      analytics: raw.analytics?.slice(0, 5),
+      cdn: raw.cdn?.[0],
+    };
+  } catch (e) {
+    console.warn('[API] Failed to parse tech_stack_json:', e);
+    return undefined;
+  }
+}
+
 function transformTarget(target: Record<string, unknown>): Company {
   const icpScore = (target.icp_score as number) || 0;
+  const domain = target.domain as string;
+
+  // Parse tech stack JSON if available
+  const techStackData = parseTechStackJson(
+    target.tech_stack_json as string | null,
+    domain
+  );
+
   return {
-    domain: target.domain as string,
-    company_name: (target.company_name as string) || (target.domain as string),
+    domain,
+    company_name: (target.company_name as string) || domain,
     ticker: target.ticker as string | undefined,
     exchange: undefined,
     is_public: Boolean(target.is_public),
@@ -342,6 +418,8 @@ function transformTarget(target: Record<string, unknown>): Company {
     revenue: target.revenue as number | undefined,
     current_search: target.current_search as string | undefined,
     enrichment_level: target.enrichment_level as string | undefined,
+    // Tech stack data (parsed from tech_stack_json)
+    tech_stack_data: techStackData,
   };
 }
 

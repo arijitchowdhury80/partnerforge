@@ -34,6 +34,8 @@ export interface Company {
   revenue?: number;
   current_search?: string;
   enrichment_level?: string;
+  // Tech stack data (from tech_stack_json)
+  tech_stack_data?: TechStackData;
 }
 
 // =============================================================================

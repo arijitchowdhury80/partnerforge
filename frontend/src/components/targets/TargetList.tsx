@@ -334,15 +334,19 @@ export function TargetList({
         accessorKey: 'partner_tech',
         header: () => (
           <FilterHeader
-            label="Partner Tech"
+            label="Tech Stack"
             options={partnerTechOptions}
             selectedValues={getFilterValues('partner_tech')}
             onFilterChange={(values) => handleFilterChange('partner_tech', values)}
           />
         ),
         cell: ({ getValue, row }) => {
-          const techs = getValue<string[]>() || [];
-          if (techs.length === 0) return <Text size="md" c={GRAY_400}>—</Text>;
+          const partnerTechs = getValue<string[]>() || [];
+          const company = row.original;
+          const techStackData = company.tech_stack_data;
+
+          // Build a list of techs to display with their logos
+          const displayTechs: { name: string; logo: typeof AdobeLogo; color?: string }[] = [];
 
           // Map tech names to logo components
           const getTechLogo = (tech: string) => {
@@ -360,29 +364,66 @@ export function TargetList({
             return AllPartnersLogo;
           };
 
+          // Add partner tech
+          for (const tech of partnerTechs) {
+            displayTechs.push({ name: tech, logo: getTechLogo(tech) });
+          }
+
+          // Add search provider from tech_stack_data (if competitive)
+          if (techStackData?.search_provider && !techStackData.search_provider.toLowerCase().includes('algolia')) {
+            const searchName = techStackData.search_provider;
+            if (!displayTechs.some(t => t.name.toLowerCase().includes(searchName.toLowerCase()))) {
+              displayTechs.push({
+                name: `Search: ${searchName}`,
+                logo: getTechLogo(searchName),
+                color: 'red', // Highlight competitive search
+              });
+            }
+          }
+
+          // Add e-commerce platform from tech_stack_data
+          if (techStackData?.ecommerce_platform) {
+            const ecomName = techStackData.ecommerce_platform;
+            if (!displayTechs.some(t => t.name.toLowerCase().includes(ecomName.toLowerCase()))) {
+              displayTechs.push({
+                name: ecomName,
+                logo: getTechLogo(ecomName),
+              });
+            }
+          }
+
+          if (displayTechs.length === 0) return <Text size="md" c={GRAY_400}>—</Text>;
+
           return (
             <Group gap={6} wrap="nowrap">
-              {techs.slice(0, 4).map((tech) => {
-                const LogoComponent = getTechLogo(tech);
+              {displayTechs.slice(0, 4).map((tech, idx) => {
+                const LogoComponent = tech.logo;
                 return (
-                  <Tooltip key={tech} label={tech} withArrow position="top">
-                    <div style={{ cursor: 'pointer' }}>
+                  <Tooltip key={`${tech.name}-${idx}`} label={tech.name} withArrow position="top">
+                    <div
+                      style={{
+                        cursor: 'pointer',
+                        border: tech.color === 'red' ? '2px solid #dc2626' : undefined,
+                        borderRadius: tech.color === 'red' ? 4 : undefined,
+                        padding: tech.color === 'red' ? 2 : undefined,
+                      }}
+                    >
                       <LogoComponent size={28} />
                     </div>
                   </Tooltip>
                 );
               })}
-              {techs.length > 4 && (
-                <Tooltip label={techs.slice(4).join(', ')} withArrow>
+              {displayTechs.length > 4 && (
+                <Tooltip label={displayTechs.slice(4).map(t => t.name).join(', ')} withArrow>
                   <Badge size="sm" variant="light" color="gray" styles={{ root: { fontWeight: 600, fontSize: 11 } }}>
-                    +{techs.length - 4}
+                    +{displayTechs.length - 4}
                   </Badge>
                 </Tooltip>
               )}
             </Group>
           );
         },
-        size: 180,
+        size: 200,
       },
       {
         accessorKey: 'sw_monthly_visits',
