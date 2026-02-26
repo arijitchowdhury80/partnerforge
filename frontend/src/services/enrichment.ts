@@ -6,7 +6,7 @@
  */
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_SERVICE_KEY = import.meta.env.VITE_SUPABASE_SERVICE_KEY;
+const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY; // anon key - requires RLS policy for updates
 const SIMILARWEB_API_KEY = import.meta.env.VITE_SIMILARWEB_API_KEY;
 
 // =============================================================================
@@ -85,15 +85,15 @@ async function fetchSimilarWebData(domain: string): Promise<SimilarWebResponse |
 }
 
 // =============================================================================
-// Supabase Update (using service role key for writes)
+// Supabase Update (using anon key - requires RLS policy allowing updates)
 // =============================================================================
 
 async function updateSupabase(
   domain: string,
   data: Record<string, unknown>
 ): Promise<boolean> {
-  if (!SUPABASE_SERVICE_KEY) {
-    console.error('[Enrichment] No Supabase service key configured');
+  if (!SUPABASE_KEY) {
+    console.error('[Enrichment] No Supabase key configured');
     return false;
   }
 
@@ -104,8 +104,8 @@ async function updateSupabase(
     const response = await fetch(url, {
       method: 'PATCH',
       headers: {
-        'apikey': SUPABASE_SERVICE_KEY,
-        'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
         'Content-Type': 'application/json',
         'Prefer': 'return=minimal',
       },
