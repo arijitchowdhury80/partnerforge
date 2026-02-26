@@ -51,6 +51,24 @@ def get_async_database_url() -> str:
     return url
 
 
+def ensure_data_directory():
+    """Ensure the data directory exists for SQLite database."""
+    if settings.is_sqlite:
+        url = settings.DATABASE_URL
+        if ":///" in url:
+            path = url.split(":///")[1]
+            if not os.path.isabs(path):
+                path = os.path.join(os.getcwd(), path)
+            directory = os.path.dirname(path)
+            if directory and not os.path.exists(directory):
+                os.makedirs(directory, exist_ok=True)
+                logger.info(f"Created data directory: {directory}")
+
+
+# Ensure data directory exists before engine creation
+ensure_data_directory()
+
+
 def get_engine_kwargs() -> dict:
     """Get engine configuration based on database type."""
     if settings.is_sqlite:
