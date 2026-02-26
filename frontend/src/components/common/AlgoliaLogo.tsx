@@ -1,7 +1,7 @@
 /**
  * Algolia Logo Component
  *
- * Official Algolia brand mark.
+ * Official Algolia brand mark from brand pack.
  * Brand colors: Nebula Blue #003DFF, Accent Purple #5468FF
  */
 
@@ -10,64 +10,31 @@ interface AlgoliaLogoProps {
   className?: string;
 }
 
-// Official Algolia logo mark - the "A" with magnifying glass
+// Official Algolia logo mark - from brand pack SVG
 export function AlgoliaLogo({ size = 32, className = '' }: AlgoliaLogoProps) {
   return (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 2500 2500"
+      viewBox="0 0 500 500"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      <defs>
-        <linearGradient id="algolia-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#003DFF" />
-          <stop offset="100%" stopColor="#5468FF" />
-        </linearGradient>
-      </defs>
-      {/* Rounded square background */}
-      <rect width="2500" height="2500" rx="500" fill="url(#algolia-gradient)" />
-      {/* Algolia "A" mark */}
+      {/* Rounded rectangle background - Algolia Blue */}
+      <rect width="500" height="500" rx="56.44" ry="56.44" fill="#003DFF" />
+      {/* Official Algolia mark - white */}
       <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M1250 500C665.48 500 192 973.48 192 1558C192 2142.52 665.48 2616 1250 2616C1834.52 2616 2308 2142.52 2308 1558C2308 973.48 1834.52 500 1250 500ZM1250 708C777.16 708 400 1085.16 400 1558C400 2030.84 777.16 2408 1250 2408C1722.84 2408 2100 2030.84 2100 1558C2100 1085.16 1722.84 708 1250 708Z"
-        fill="white"
-      />
-      <circle cx="1250" cy="1558" r="250" fill="white" />
-      {/* Search handle */}
-      <rect
-        x="1580"
-        y="1750"
-        width="120"
-        height="500"
-        rx="60"
-        transform="rotate(45 1580 1750)"
-        fill="white"
+        fill="#fff"
+        d="M245.99,113.21c-74.7,0-135.6,60.23-136.68,134.69-1.1,75.61,60.25,138.27,135.87,138.71,23.36,.14,45.85-5.57,65.82-16.43,1.95-1.06,2.25-3.74,.59-5.21l-12.79-11.34c-2.6-2.3-6.3-2.96-9.5-1.6-13.94,5.93-29.09,8.96-44.71,8.77-61.11-.75-110.48-51.59-109.5-112.69,.96-60.33,50.34-109.11,110.89-109.11h110.91v197.12l-62.92-55.91c-2.04-1.81-5.16-1.46-6.8,.72-10.1,13.37-26.55,21.69-44.83,20.43-25.35-1.75-45.89-22.16-47.79-47.5-2.27-30.22,21.68-55.55,51.44-55.55,26.91,0,49.07,20.71,51.38,47.03,.21,2.34,1.26,4.53,3.02,6.08l16.39,14.53c1.86,1.65,4.81,.64,5.27-1.8,1.18-6.32,1.6-12.9,1.13-19.66-2.64-38.49-33.81-69.45-72.32-71.82-44.14-2.72-81.05,31.81-82.22,75.1-1.14,42.18,33.42,78.55,75.61,79.48,17.61,.39,33.94-5.15,47.13-14.74l82.22,72.88c3.52,3.12,9.09,.62,9.09-4.09V118.4c0-2.87-2.32-5.19-5.19-5.19H245.99Z"
       />
     </svg>
   );
 }
 
-// Compact version for tight spaces
+// Compact version for tight spaces - same official mark
 export function AlgoliaIcon({ size = 20, className = '' }: AlgoliaLogoProps) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-    >
-      <rect width="24" height="24" rx="4" fill="#5468FF" />
-      <circle cx="10" cy="10" r="5" stroke="white" strokeWidth="2" fill="none" />
-      <circle cx="10" cy="10" r="1.5" fill="white" />
-      <line x1="14" y1="14" x2="18" y2="18" stroke="white" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  );
+  return <AlgoliaLogo size={size} className={className} />;
 }
 
 export default AlgoliaLogo;
