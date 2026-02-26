@@ -33,6 +33,7 @@ from .api.routes import changes as changes_router
 from .api.routes import intelligence as intelligence_router
 from .api.routes import jobs as jobs_router
 from .api.routes import seed as seed_router
+from .api.routes import functional_test as test_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -122,6 +123,9 @@ app.include_router(jobs_router.router, prefix="/api/v1")
 
 # Seed endpoints (for initial data loading)
 app.include_router(seed_router.router, prefix="/api/v1")
+
+# Functional test endpoints (real API integration)
+app.include_router(test_router.router, prefix="/api/v1")
 
 
 # =============================================================================
