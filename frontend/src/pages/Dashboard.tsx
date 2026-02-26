@@ -39,7 +39,9 @@ import {
 } from '@tabler/icons-react';
 
 import { getStats, getCompanies, getDistribution, type DistributionData } from '@/services/api';
+import { getTargets, type DisplacementTarget } from '@/services/supabase';
 import { TargetList } from '@/components/targets/TargetList';
+import { ViewModeToggle, DistributionGrid, AccountDrillDown, type ViewMode } from '@/components/dashboard';
 import { usePartner, getSelectionTechName } from '@/contexts/PartnerContext';
 import { AlgoliaLogo } from '@/components/common/AlgoliaLogo';
 import { getPartnerLogo } from '@/components/common/PartnerLogos';
@@ -76,6 +78,29 @@ export function Dashboard() {
   });
   const [page, setPage] = useState(1);
   const [columnFilters, setColumnFilters] = useState<ColumnFilter[]>([]);
+
+  // View mode for distribution grid (Partner/Product/Vertical/Account)
+  const [viewMode, setViewMode] = useState<ViewMode>('product');
+
+  // Drill-down state for when a cell is clicked
+  const [drillDown, setDrillDown] = useState<{
+    opened: boolean;
+    title: string;
+    targets: DisplacementTarget[];
+  }>({
+    opened: false,
+    title: '',
+    targets: [],
+  });
+
+  // All targets for the distribution grid
+  const { data: allTargetsData } = useQuery({
+    queryKey: ['allTargets', selectedPartner.key],
+    queryFn: async () => {
+      const result = await getTargets({ limit: 5000 });
+      return result.targets;
+    },
+  });
 
   // Handle column filter changes from TargetList
   const handleColumnFilterChange = (column: string, values: string[]) => {
@@ -157,6 +182,29 @@ export function Dashboard() {
     });
   }, [companies?.data, columnFilters]);
 
+  // Handle grid cell click - opens drill-down drawer
+  const handleGridCellClick = (rowKey: string, colKey: string, targets: DisplacementTarget[]) => {
+    const title = viewMode === 'vertical'
+      ? `${rowKey} - ${colKey}`
+      : `${rowKey} in ${colKey}`;
+    setDrillDown({
+      opened: true,
+      title,
+      targets,
+    });
+  };
+
+  // Handle target selection from drill-down
+  const handleSelectTarget = (domain: string) => {
+    // Navigate to target detail page
+    window.location.href = `/company/${domain}`;
+  };
+
+  // Close drill-down drawer
+  const closeDrillDown = () => {
+    setDrillDown(prev => ({ ...prev, opened: false }));
+  };
+
   return (
     <div style={{ background: GRAY_50, minHeight: '100vh' }}>
       {/* DEBUG BANNER - Remove after testing */}
@@ -225,7 +273,7 @@ export function Dashboard() {
           </SimpleGrid>
         </motion.div>
 
-        {/* Distribution Section */}
+        {/* Distribution Section - Multi-Dimensional Grid */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -244,12 +292,22 @@ export function Dashboard() {
             <Group justify="space-between" mb="lg">
               <div>
                 <Text fw={600} c={GRAY_900} size="lg">Target Distribution</Text>
-                <Text size="sm" c={GRAY_500}>By vertical and ICP tier</Text>
+                <Text size="sm" c={GRAY_500}>
+                  {viewMode === 'partner' && 'By partner and vertical'}
+                  {viewMode === 'product' && 'By product and vertical'}
+                  {viewMode === 'vertical' && 'By vertical and ICP tier'}
+                  {viewMode === 'account' && 'All accounts'}
+                </Text>
               </div>
+              <ViewModeToggle value={viewMode} onChange={setViewMode} />
             </Group>
 
-            {distribution ? (
-              <DistributionTable distribution={distribution} />
+            {allTargetsData ? (
+              <DistributionGrid
+                viewMode={viewMode}
+                targets={allTargetsData}
+                onCellClick={handleGridCellClick}
+              />
             ) : (
               <div className="flex justify-center py-8">
                 <Loader color={ALGOLIA_BLUE} size="sm" />
@@ -257,6 +315,15 @@ export function Dashboard() {
             )}
           </Paper>
         </motion.div>
+
+        {/* Account Drill-Down Drawer */}
+        <AccountDrillDown
+          opened={drillDown.opened}
+          onClose={closeDrillDown}
+          title={drillDown.title}
+          targets={drillDown.targets}
+          onSelectTarget={handleSelectTarget}
+        />
 
         {/* Targets Table */}
         <motion.div

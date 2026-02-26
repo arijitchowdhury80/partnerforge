@@ -43,10 +43,10 @@ export const PARTNERS: Partner[] = [
     shortName: 'Adobe',
     products: [
       { key: 'aem', name: 'Experience Manager (AEM)', shortName: 'AEM', count: 2687 },
+      { key: 'commerce', name: 'Commerce (Magento)', shortName: 'Commerce', count: 0 },
       { key: 'campaign', name: 'Campaign', shortName: 'Campaign' },
       { key: 'analytics', name: 'Analytics', shortName: 'Analytics' },
       { key: 'target', name: 'Target', shortName: 'Target' },
-      { key: 'commerce', name: 'Commerce (Magento)', shortName: 'Commerce' },
     ],
   },
   {
@@ -106,6 +106,22 @@ export const PARTNERS: Partner[] = [
     ],
   },
   {
+    key: 'amplience',
+    name: 'Amplience',
+    shortName: 'Amplience',
+    products: [
+      { key: 'amplience', name: 'Amplience DXP', shortName: 'DXP', count: 15 },
+    ],
+  },
+  {
+    key: 'spryker',
+    name: 'Spryker',
+    shortName: 'Spryker',
+    products: [
+      { key: 'spryker', name: 'Spryker Commerce OS', shortName: 'Commerce OS', count: 20 },
+    ],
+  },
+  {
     key: 'elastic',
     name: 'Elasticsearch',
     shortName: 'Elastic',
@@ -136,6 +152,7 @@ export function getSelectionTechName(selection: PartnerSelection): string | unde
     // Map to BuiltWith tech names
     const techNameMap: Record<string, string> = {
       'adobe-aem': 'Adobe Experience Manager',
+      'adobe-commerce': 'Adobe Commerce',
       'adobe-campaign': 'Adobe Campaign',
       'adobe-analytics': 'Adobe Analytics',
       'salesforce-commerce-cloud': 'Salesforce Commerce Cloud',
@@ -146,6 +163,8 @@ export function getSelectionTechName(selection: PartnerSelection): string | unde
       'commercetools-commercetools': 'commercetools',
       'bigcommerce-enterprise': 'BigCommerce',
       'vtex-vtex': 'VTEX',
+      'amplience-amplience': 'Amplience',
+      'spryker-spryker': 'Spryker',
       'elastic-elasticsearch': 'Elasticsearch',
     };
     return techNameMap[`${selection.partner.key}-${selection.product.key}`] || selection.product.name;
@@ -159,6 +178,8 @@ export function getSelectionTechName(selection: PartnerSelection): string | unde
     commercetools: 'commercetools',
     bigcommerce: 'BigCommerce',
     vtex: 'VTEX',
+    amplience: 'Amplience',
+    spryker: 'Spryker',
     elastic: 'Elasticsearch',
   };
   return defaultTechMap[selection.partner.key];
@@ -191,6 +212,8 @@ const iconMap: Record<string, string> = {
   commercetools: '⚙️',
   bigcommerce: '🏪',
   vtex: '💜',
+  amplience: '🟣',
+  spryker: '🔶',
   elastic: '🔍',
 };
 

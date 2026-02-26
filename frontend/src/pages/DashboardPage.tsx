@@ -61,7 +61,7 @@ interface StatCardProps {
 function StatCard({ title, value, icon: Icon, color, trend, loading }: StatCardProps) {
   return (
     <Paper
-      p="lg"
+      p="xl"
       withBorder
       style={{
         background: `linear-gradient(135deg, rgba(var(--mantine-color-${color}-5-rgb), 0.1), rgba(var(--mantine-color-${color}-5-rgb), 0.02))`,
@@ -70,31 +70,31 @@ function StatCard({ title, value, icon: Icon, color, trend, loading }: StatCardP
     >
       <Group justify="space-between" align="flex-start">
         <div>
-          <Text size="xs" tt="uppercase" fw={500} c="dimmed">
+          <Text size="sm" tt="uppercase" fw={600} c="dimmed" style={{ letterSpacing: '0.5px' }}>
             {title}
           </Text>
           {loading ? (
-            <Skeleton height={36} width={80} mt="xs" />
+            <Skeleton height={44} width={100} mt="sm" />
           ) : (
-            <Text size="xl" fw={700} mt="xs">
+            <Text size="28px" fw={700} mt="sm" c="dark">
               {typeof value === 'number' ? value.toLocaleString() : value}
             </Text>
           )}
           {trend !== undefined && !loading && (
-            <Group gap="xs" mt="xs">
+            <Group gap="xs" mt="sm">
               {trend >= 0 ? (
-                <IconArrowUpRight size={14} color="var(--mantine-color-green-6)" />
+                <IconArrowUpRight size={16} color="var(--mantine-color-green-6)" />
               ) : (
-                <IconArrowDownRight size={14} color="var(--mantine-color-red-6)" />
+                <IconArrowDownRight size={16} color="var(--mantine-color-red-6)" />
               )}
-              <Text size="xs" c={trend >= 0 ? 'green' : 'red'}>
+              <Text size="sm" fw={500} c={trend >= 0 ? 'green' : 'red'}>
                 {trend >= 0 ? '+' : ''}{trend}% from last week
               </Text>
             </Group>
           )}
         </div>
-        <ThemeIcon size="xl" radius="md" variant="light" color={color}>
-          <Icon size={24} />
+        <ThemeIcon size={52} radius="md" variant="light" color={color}>
+          <Icon size={28} />
         </ThemeIcon>
       </Group>
     </Paper>
@@ -157,25 +157,61 @@ export function DashboardPage() {
         <div>
           <Group gap="md" align="baseline">
             <Title order={2}>Partner Intelligence Dashboard</Title>
-            <Group gap="xs">
+            <Group gap="sm">
               <Tooltip label="ICP Score 80-100: High-value displacement targets" withArrow>
-                <Badge color="red" variant="filled" size="sm" style={{ cursor: 'help' }}>
-                  Hot ({stats?.hot_leads || 0})
+                <Badge
+                  size="xl"
+                  radius="md"
+                  style={{
+                    cursor: 'help',
+                    background: '#dc2626',
+                    color: 'white',
+                    fontWeight: 700,
+                    fontSize: 14,
+                    padding: '10px 16px',
+                    boxShadow: '0 2px 8px rgba(220, 38, 38, 0.3)',
+                  }}
+                >
+                  {stats?.hot_leads || 0} HOT
                 </Badge>
               </Tooltip>
-              <Tooltip label="ICP Score 60-79: Medium-priority targets" withArrow>
-                <Badge color="orange" variant="filled" size="sm" style={{ cursor: 'help' }}>
-                  Warm ({stats?.warm_leads || 0})
+              <Tooltip label="ICP Score 40-79: Medium-priority targets" withArrow>
+                <Badge
+                  size="xl"
+                  radius="md"
+                  style={{
+                    cursor: 'help',
+                    background: '#ea580c',
+                    color: 'white',
+                    fontWeight: 700,
+                    fontSize: 14,
+                    padding: '10px 16px',
+                    boxShadow: '0 2px 8px rgba(234, 88, 12, 0.3)',
+                  }}
+                >
+                  {stats?.warm_leads || 0} WARM
                 </Badge>
               </Tooltip>
-              <Tooltip label="ICP Score 0-59: Lower-priority targets" withArrow>
-                <Badge color="gray" variant="filled" size="sm" style={{ cursor: 'help' }}>
-                  Cold ({(stats?.total_companies || 0) - (stats?.hot_leads || 0) - (stats?.warm_leads || 0)})
+              <Tooltip label="ICP Score 0-39: Lower-priority targets" withArrow>
+                <Badge
+                  size="xl"
+                  radius="md"
+                  style={{
+                    cursor: 'help',
+                    background: '#64748b',
+                    color: 'white',
+                    fontWeight: 700,
+                    fontSize: 14,
+                    padding: '10px 16px',
+                    boxShadow: '0 2px 8px rgba(100, 116, 139, 0.3)',
+                  }}
+                >
+                  {(stats?.total_companies || 0) - (stats?.hot_leads || 0) - (stats?.warm_leads || 0)} COLD
                 </Badge>
               </Tooltip>
             </Group>
           </Group>
-          <Text c="dimmed" size="sm">
+          <Text c="dimmed" size="md">
             Track displacement targets and enrichment progress
           </Text>
         </div>
@@ -238,10 +274,10 @@ export function DashboardPage() {
           <Paper p="md" withBorder h="100%">
             <Group justify="space-between" mb="md">
               <Tooltip label="Breakdown of targets by ICP score tier" withArrow>
-                <Text fw={500} style={{ cursor: 'help' }}>Lead Distribution</Text>
+                <Text fw={600} size="lg" style={{ cursor: 'help' }}>Lead Distribution</Text>
               </Tooltip>
               <Tooltip label="Data updates in real-time" withArrow>
-                <Badge variant="light" size="sm" style={{ cursor: 'help' }}>Live</Badge>
+                <Badge variant="filled" color="green" size="md" style={{ cursor: 'help' }}>Live</Badge>
               </Tooltip>
             </Group>
             <DonutChart
@@ -259,12 +295,12 @@ export function DashboardPage() {
           <Paper p="md" withBorder h="100%">
             <Group justify="space-between" mb="md">
               <Tooltip label="Monthly enrichment progress over time" withArrow>
-                <Text fw={500} style={{ cursor: 'help' }}>Enrichment Trend</Text>
+                <Text fw={600} size="lg" style={{ cursor: 'help' }}>Enrichment Trend</Text>
               </Tooltip>
               <Tooltip label="Growth from previous month" withArrow>
-                <Badge variant="light" color="green" size="sm" style={{ cursor: 'help' }}>
+                <Badge variant="filled" color="green" size="md" style={{ cursor: 'help' }}>
                   <Group gap={4}>
-                    <IconTrendingUp size={12} />
+                    <IconTrendingUp size={14} />
                     +23%
                   </Group>
                 </Badge>
@@ -285,7 +321,7 @@ export function DashboardPage() {
         {/* Enrichment Progress & Activity */}
         <Grid.Col span={{ base: 12, md: 3 }}>
           <Paper p="md" withBorder h="100%">
-            <Text fw={500} mb="md">Overall Progress</Text>
+            <Text fw={600} size="lg" mb="md">Overall Progress</Text>
             <Box ta="center" mb="md">
               <RingProgress
                 size={120}
@@ -303,7 +339,7 @@ export function DashboardPage() {
               </Text>
             </Box>
 
-            <Text fw={500} size="sm" mb="xs">Recent Activity</Text>
+            <Text fw={600} size="md" mb="sm">Recent Activity</Text>
             <Stack gap="xs">
               {recentActivity.slice(0, 3).map((activity) => (
                 <Group key={activity.id} gap="xs" wrap="nowrap">
@@ -328,7 +364,7 @@ export function DashboardPage() {
         <Grid.Col span={{ base: 12, md: 6 }}>
           <Paper p="md" withBorder>
             <Tooltip label="Companies with highest Ideal Customer Profile scores" withArrow>
-              <Text fw={500} mb="md" style={{ cursor: 'help' }}>Top ICP Scores</Text>
+              <Text fw={600} size="lg" mb="md" style={{ cursor: 'help' }}>Top ICP Scores</Text>
             </Tooltip>
             <BarList
               data={[

@@ -103,6 +103,26 @@ export function ElasticsearchLogo({ size = 24, className }: LogoProps) {
   );
 }
 
+// Amplience Logo - Purple A in circle
+export function AmplienceLogo({ size = 24, className }: LogoProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
+      <rect width="24" height="24" rx="4" fill="#7B2D8E" />
+      <path d="M12 5L6 19H9L10 16H14L15 19H18L12 5ZM11 13L12 9L13 13H11Z" fill="white" />
+    </svg>
+  );
+}
+
+// Spryker Logo - Orange S shape
+export function SprykerLogo({ size = 24, className }: LogoProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
+      <rect width="24" height="24" rx="4" fill="#EC6921" />
+      <path d="M16 8C16 6.9 15.1 6 14 6H10C8.9 6 8 6.9 8 8V9H14V10H10C8.9 10 8 10.9 8 12V16C8 17.1 8.9 18 10 18H14C15.1 18 16 17.1 16 16V15H10V14H14C15.1 14 16 13.1 16 12V8Z" fill="white" />
+    </svg>
+  );
+}
+
 // Generic "All" icon
 export function AllPartnersLogo({ size = 24, className }: LogoProps) {
   return (
@@ -128,6 +148,8 @@ export const PartnerLogoMap: Record<string, React.FC<LogoProps>> = {
   magento: MagentoLogo,
   vtex: VTEXLogo,
   elastic: ElasticsearchLogo,
+  amplience: AmplienceLogo,
+  spryker: SprykerLogo,
 };
 
 export function getPartnerLogo(partnerKey: string): React.FC<LogoProps> {
