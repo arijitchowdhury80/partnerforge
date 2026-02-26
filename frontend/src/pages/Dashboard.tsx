@@ -441,7 +441,7 @@ export function Dashboard() {
                       <Group gap={8}>
                         <Chip
                           value="all"
-                          variant="filled"
+                          variant="outline"
                           size="sm"
                           styles={{
                             label: {
@@ -449,40 +449,62 @@ export function Dashboard() {
                               fontWeight: 500,
                               paddingLeft: 12,
                               paddingRight: 12,
+                              backgroundColor: (selection.product?.key || 'all') === 'all' ? COLORS.ALGOLIA_NEBULA_BLUE : COLORS.ALGOLIA_WHITE,
+                              color: (selection.product?.key || 'all') === 'all' ? COLORS.ALGOLIA_WHITE : COLORS.GRAY_700,
+                              borderColor: (selection.product?.key || 'all') === 'all' ? COLORS.ALGOLIA_NEBULA_BLUE : COLORS.GRAY_300,
+                            },
+                            iconWrapper: {
+                              display: 'none',
                             },
                           }}
                         >
                           All Products
                         </Chip>
-                        {selection.partner.products.map(product => (
-                          <Chip
-                            key={product.key}
-                            value={product.key}
-                            variant="filled"
-                            size="sm"
-                            styles={{
-                              label: {
-                                fontSize: '13px',
-                                fontWeight: 500,
-                                paddingLeft: 12,
-                                paddingRight: 12,
-                              },
-                            }}
-                          >
-                            {product.shortName}
-                            {product.count !== undefined && product.count > 0 && (
-                              <Badge
-                                size="xs"
-                                variant="light"
-                                color="gray"
-                                ml={6}
-                                styles={{ root: { fontSize: '10px', padding: '0 6px' } }}
-                              >
-                                {product.count.toLocaleString()}
-                              </Badge>
-                            )}
-                          </Chip>
-                        ))}
+                        {selection.partner.products.map(product => {
+                          const isSelected = selection.product?.key === product.key;
+                          return (
+                            <Chip
+                              key={product.key}
+                              value={product.key}
+                              variant="outline"
+                              size="sm"
+                              styles={{
+                                label: {
+                                  fontSize: '13px',
+                                  fontWeight: 500,
+                                  paddingLeft: 12,
+                                  paddingRight: 12,
+                                  backgroundColor: isSelected ? COLORS.ALGOLIA_NEBULA_BLUE : COLORS.ALGOLIA_WHITE,
+                                  color: isSelected ? COLORS.ALGOLIA_WHITE : COLORS.GRAY_700,
+                                  borderColor: isSelected ? COLORS.ALGOLIA_NEBULA_BLUE : COLORS.GRAY_300,
+                                },
+                                iconWrapper: {
+                                  display: 'none',
+                                },
+                              }}
+                            >
+                              {product.shortName}
+                              {product.count !== undefined && product.count > 0 && (
+                                <Badge
+                                  size="xs"
+                                  variant="light"
+                                  color={isSelected ? 'gray' : 'blue'}
+                                  ml={6}
+                                  styles={{
+                                    root: {
+                                      fontSize: '10px',
+                                      padding: '0 6px',
+                                      backgroundColor: isSelected ? 'rgba(255,255,255,0.2)' : COLORS.GRAY_100,
+                                      color: isSelected ? COLORS.ALGOLIA_WHITE : COLORS.GRAY_600,
+                                    },
+                                  }}
+                                >
+                                  {product.count.toLocaleString()}
+                                </Badge>
+                              )}
+                            </Chip>
+                          );
+                        })}
                       </Group>
                     </Chip.Group>
                   </div>
