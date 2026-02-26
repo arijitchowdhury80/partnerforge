@@ -72,12 +72,8 @@ class Settings(BaseSettings):
     MAX_RETRY_ATTEMPTS: int = 3
     RETRY_DELAY_SECONDS: int = 30
 
-    # CORS
-    CORS_ORIGINS: list[str] = [
-        "http://localhost:3000",
-        "http://localhost:5173",
-        "https://partnerforge.vercel.app"
-    ]
+    # CORS - Allow all origins for now (can restrict later)
+    CORS_ORIGINS: list[str] = ["*"]
 
     class Config:
         env_file = ".env"
