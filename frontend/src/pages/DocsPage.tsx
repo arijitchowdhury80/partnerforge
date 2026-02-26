@@ -41,6 +41,14 @@ import {
   IconCopy,
   IconCheck,
   IconRefresh,
+  IconChartDots,
+  IconBolt,
+  IconTestPipe,
+  IconUsers,
+  IconCpu,
+  IconBrain,
+  IconFileCode,
+  IconList,
 } from '@tabler/icons-react';
 import { useSearchParams } from 'react-router-dom';
 
@@ -90,9 +98,44 @@ const docSections: DocSection[] = [
     id: 'architecture',
     label: 'Architecture',
     icon: IconBuildingSkyscraper,
-    path: 'docs/architecture/overview.md',
+    path: 'docs/ARCHITECTURE_INDEX.md',
     children: [
-      { id: 'database', label: 'Database', icon: IconDatabase, path: 'docs/architecture/database.md' },
+      { id: 'diagrams', label: 'Diagrams (Mermaid)', icon: IconChartDots, path: 'docs/architecture/diagrams.md' },
+      { id: 'system-overview', label: 'System Overview', icon: IconCpu, path: 'docs/architecture/overview.md' },
+      { id: 'database', label: 'Database Schema', icon: IconDatabase, path: 'docs/architecture/database.md' },
+      { id: 'parallel-execution', label: 'Parallel Execution', icon: IconBolt, path: 'docs/PARALLEL_EXECUTION_ARCHITECTURE.md' },
+      { id: 'enterprise-arch', label: 'Enterprise Architecture', icon: IconBuildingSkyscraper, path: 'docs/ENTERPRISE-ARCHITECTURE.md' },
+    ],
+  },
+  {
+    id: 'modules',
+    label: 'Intelligence Modules',
+    icon: IconBrain,
+    path: 'docs/INTELLIGENCE_MODULES_SPEC.md',
+    children: [
+      { id: 'module-taxonomy', label: 'Module Taxonomy', icon: IconList, path: 'docs/INTELLIGENCE-MODULE-TAXONOMY.md' },
+      { id: 'data-model', label: 'Data Model', icon: IconDatabase, path: 'docs/INTELLIGENCE_DATA_MODEL.md' },
+      { id: 'orchestrator', label: 'Orchestrator Design', icon: IconCpu, path: 'docs/ORCHESTRATOR_DESIGN.md' },
+    ],
+  },
+  {
+    id: 'testing',
+    label: 'Testing & Quality',
+    icon: IconTestPipe,
+    path: 'docs/TESTING_ARCHITECTURE.md',
+    children: [
+      { id: 'testing-methodology', label: 'Methodology', icon: IconFileCode, path: 'docs/TESTING_METHODOLOGY.md' },
+    ],
+  },
+  {
+    id: 'operations',
+    label: 'Operations',
+    icon: IconUsers,
+    path: 'docs/OBSERVABILITY_METRICS.md',
+    children: [
+      { id: 'multi-tenancy', label: 'Multi-Tenancy & RBAC', icon: IconUsers, path: 'docs/MULTI_TENANCY_RBAC.md' },
+      { id: 'api-cost-tracking', label: 'API Cost Tracking', icon: IconChartDots, path: 'docs/API_COST_TRACKING.md' },
+      { id: 'change-detection', label: 'Change Detection', icon: IconBolt, path: 'docs/CHANGE_DETECTION_ARCHITECTURE.md' },
     ],
   },
 ];
