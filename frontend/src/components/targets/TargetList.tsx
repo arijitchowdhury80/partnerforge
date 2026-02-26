@@ -28,6 +28,9 @@ import {
   Anchor,
   Loader,
   UnstyledButton,
+  Button,
+  Stack,
+  ThemeIcon,
 } from '@mantine/core';
 import { Fragment } from 'react';
 import {
@@ -35,9 +38,11 @@ import {
   IconArrowDown,
   IconSelector,
   IconFilter,
+  IconFilterOff,
   IconFlame,
   IconTrendingUp,
   IconSnowflake,
+  IconSearch,
 } from '@tabler/icons-react';
 import type { Company } from '@/types';
 import { CompanyDrawer } from '@/components/company/CompanyDrawer';
@@ -67,7 +72,8 @@ import {
   type FilterOption,
   type NumericRange,
 } from '@/components/common/TableFilters';
-import { COLORS } from '@/lib/constants';
+import { COLORS, STATUS_MAP } from '@/lib/constants';
+import { calculateCompositeScore, getStatusFromCompositeScore } from '@/services/scoring';
 
 // Use shared color constants - no more inline duplicates
 const ALGOLIA_NEBULA_BLUE = COLORS.ALGOLIA_NEBULA_BLUE;
@@ -98,7 +104,7 @@ interface TargetListProps {
     total_pages: number;
   };
   onPageChange?: (page: number) => void;
-  onEnrichCompany?: (domain: string) => void;
+  onEnrichCompany?: (domain: string) => void | Promise<void>;
   columnFilters?: ColumnFilter[];
   onColumnFilterChange?: (column: string, values: string[]) => void;
   /** Traffic range filter */
@@ -171,8 +177,16 @@ function StatusBadge({ status }: { status: 'hot' | 'warm' | 'cold' }) {
   );
 }
 
+// Factor colors matching ScoreBreakdown
+const FACTOR_COLORS = {
+  fit: '#8b5cf6',      // Purple
+  intent: '#f59e0b',   // Amber
+  value: '#10b981',    // Emerald
+  displacement: '#3b82f6', // Blue
+};
+
 function ScoreDisplay({ score }: { score: number }) {
-  const color = score >= 80 ? '#dc2626' : score >= 40 ? '#ea580c' : GRAY_500;
+  const color = score >= 80 ? STATUS_MAP.hot.bgColor : score >= 40 ? STATUS_MAP.warm.bgColor : GRAY_500;
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
       <div style={{ width: 50, height: 8, borderRadius: 4, background: GRAY_200, overflow: 'hidden' }}>
@@ -180,6 +194,66 @@ function ScoreDisplay({ score }: { score: number }) {
       </div>
       <Text size="md" fw={700} style={{ color, minWidth: 28 }}>{score}</Text>
     </div>
+  );
+}
+
+// Composite score display with mini factor bars
+function CompositeScoreCell({ company }: { company: Company }) {
+  const compositeScore = calculateCompositeScore(company);
+  const status = getStatusFromCompositeScore(compositeScore.total);
+  const statusColor = STATUS_MAP[status].bgColor;
+
+  return (
+    <Tooltip
+      label={
+        <div style={{ fontSize: 11 }}>
+          <div style={{ fontWeight: 600, marginBottom: 4 }}>Composite Score: {compositeScore.total}</div>
+          <div>Fit: {compositeScore.factors.fit} | Intent: {compositeScore.factors.intent}</div>
+          <div>Value: {compositeScore.factors.value} | Displace: {compositeScore.factors.displacement}</div>
+          <div style={{ marginTop: 4, opacity: 0.8 }}>
+            {compositeScore.confidence} confidence ({compositeScore.dataCompleteness}% data)
+          </div>
+        </div>
+      }
+      withArrow
+      multiline
+      w={180}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'help' }}>
+        {/* Total score number */}
+        <Text size="lg" fw={800} style={{ color: statusColor, minWidth: 32 }}>
+          {compositeScore.total}
+        </Text>
+        {/* Mini factor bars */}
+        <div style={{ display: 'flex', gap: 2 }}>
+          {(['fit', 'intent', 'value', 'displacement'] as const).map((key) => (
+            <div
+              key={key}
+              style={{
+                width: 4,
+                height: 20,
+                borderRadius: 2,
+                background: GRAY_200,
+                position: 'relative',
+                overflow: 'hidden',
+              }}
+            >
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  height: `${compositeScore.factors[key]}%`,
+                  background: FACTOR_COLORS[key],
+                  borderRadius: 2,
+                }}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    </Tooltip>
   );
 }
 
@@ -366,7 +440,7 @@ export function TargetList({
         accessorKey: 'icp_score',
         header: () => (
           <NumericFilterHeader
-            label="ICP Score"
+            label="Score"
             ranges={ICP_SCORE_RANGES}
             selectedRange={icpScoreRange}
             onFilterChange={setIcpScoreRange}
@@ -377,8 +451,8 @@ export function TargetList({
             }}
           />
         ),
-        cell: ({ getValue }) => <ScoreDisplay score={getValue<number>() || 0} />,
-        size: 140,
+        cell: ({ row }) => <CompositeScoreCell company={row.original} />,
+        size: 120,
       },
       {
         accessorKey: 'status',
@@ -565,6 +639,20 @@ export function TargetList({
   // Count active filters
   const activeFilterCount = columnFilters.filter((f) => f.values.length > 0).length;
 
+  // Clear all filters handler (must be before early returns for hooks rules)
+  const handleClearAllFilters = useCallback(() => {
+    // Clear all column filters
+    columnFilters.forEach((filter) => {
+      onColumnFilterChange?.(filter.column, []);
+    });
+    // Clear numeric filters
+    onTrafficRangeChange?.(null);
+    setIcpScoreRange(null); // Internal state
+  }, [columnFilters, onColumnFilterChange, onTrafficRangeChange]);
+
+  // Check if any filters are active
+  const hasActiveFilters = activeFilterCount > 0 || trafficRange || icpScoreRange;
+
   if (isLoading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}>
@@ -575,8 +663,32 @@ export function TargetList({
 
   if (companies.length === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: 48 }}>
-        <Text c={GRAY_500}>No companies found</Text>
+      <div style={{ textAlign: 'center', padding: 64 }}>
+        <Stack align="center" gap="md">
+          <ThemeIcon size={64} radius="xl" variant="light" color="gray">
+            {hasActiveFilters ? <IconFilterOff size={32} /> : <IconSearch size={32} />}
+          </ThemeIcon>
+          <div>
+            <Text fw={600} size="lg" c={GRAY_700} mb={4}>
+              {hasActiveFilters ? 'No matching companies' : 'No companies found'}
+            </Text>
+            <Text c={GRAY_500} size="sm" maw={400} style={{ margin: '0 auto' }}>
+              {hasActiveFilters
+                ? 'Try adjusting your filters or search criteria to find more results.'
+                : 'There are no companies in this view. Upload a list or adjust your partner selection.'}
+            </Text>
+          </div>
+          {hasActiveFilters && (
+            <Button
+              variant="light"
+              color="blue"
+              leftSection={<IconFilterOff size={16} />}
+              onClick={handleClearAllFilters}
+            >
+              Clear All Filters
+            </Button>
+          )}
+        </Stack>
       </div>
     );
   }

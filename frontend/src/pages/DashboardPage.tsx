@@ -4,7 +4,8 @@
  * Overview of partner intelligence with stats, charts, and recent activity.
  */
 
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   Container,
   Title,
@@ -47,12 +48,13 @@ import { getStats, getCompanies } from '@/services/api';
 import { TargetTable } from '@/components/dashboard/TargetTable';
 import { ICPVerticalHeatmap } from '@/components/dashboard/ICPVerticalHeatmap';
 import type { FilterState } from '@/types';
+import { COLORS, STATUS_MAP } from '@/lib/constants';
 
-// Algolia Brand Colors (Official)
-const ALGOLIA_NEBULA_BLUE = '#003DFF';
-const ALGOLIA_SPACE_GRAY = '#21243D';
-const ALGOLIA_PURPLE = '#5468FF';
-const ALGOLIA_LIGHT_GRAY = '#F5F5F7';
+// Use shared color constants (imported from @/lib/constants)
+const ALGOLIA_NEBULA_BLUE = COLORS.ALGOLIA_NEBULA_BLUE;
+const ALGOLIA_SPACE_GRAY = COLORS.ALGOLIA_SPACE_GRAY;
+const ALGOLIA_PURPLE = COLORS.ALGOLIA_PURPLE;
+const ALGOLIA_LIGHT_GRAY = COLORS.ALGOLIA_LIGHT_GRAY;
 
 // Stat card component with trend indicator
 interface StatCardProps {
@@ -117,11 +119,39 @@ const recentActivity = [
 
 export function DashboardPage() {
   const queryClient = useQueryClient();
-  const [filters, setFilters] = useState<FilterState>({
-    sort_by: 'icp_score',
-    sort_order: 'desc',
-  });
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Parse initial state from URL
+  const initialFilters = useMemo(() => {
+    const status = searchParams.get('status');
+    return {
+      sort_by: 'icp_score' as const,
+      sort_order: 'desc' as const,
+      status: status && ['hot', 'warm', 'cold'].includes(status)
+        ? (status as 'hot' | 'warm' | 'cold')
+        : undefined,
+    };
+  }, []);
+
+  const [filters, setFilters] = useState<FilterState>(initialFilters);
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
+
+  // Sync state changes back to URL
+  useEffect(() => {
+    const params = new URLSearchParams();
+
+    if (filters.status) {
+      params.set('status', filters.status);
+    }
+    if (searchQuery.trim()) {
+      params.set('search', searchQuery.trim());
+    }
+
+    // Only update URL if params actually changed
+    if (searchParams.toString() !== params.toString()) {
+      setSearchParams(params, { replace: true });
+    }
+  }, [filters.status, searchQuery, searchParams, setSearchParams]);
 
   const { data: stats, isLoading: statsLoading, refetch: refetchStats } = useQuery({
     queryKey: ['stats'],
@@ -164,52 +194,52 @@ export function DashboardPage() {
           <Group gap="md" align="baseline">
             <Title order={2}>Partner Intelligence Dashboard</Title>
             <Group gap="sm">
-              <Tooltip label="ICP Score 80-100: High-value displacement targets" withArrow>
+              <Tooltip label={STATUS_MAP.hot.description} withArrow>
                 <Badge
                   size="xl"
                   radius="md"
                   style={{
                     cursor: 'help',
-                    background: '#dc2626',
-                    color: 'white',
+                    background: STATUS_MAP.hot.bgColor,
+                    color: STATUS_MAP.hot.textColor,
                     fontWeight: 700,
                     fontSize: 14,
                     padding: '10px 16px',
-                    boxShadow: '0 2px 8px rgba(220, 38, 38, 0.3)',
+                    boxShadow: `0 2px 8px ${STATUS_MAP.hot.bgColor}4D`, // 4D = 30% opacity
                   }}
                 >
                   {stats?.hot_leads || 0} HOT
                 </Badge>
               </Tooltip>
-              <Tooltip label="ICP Score 40-79: Medium-priority targets" withArrow>
+              <Tooltip label={STATUS_MAP.warm.description} withArrow>
                 <Badge
                   size="xl"
                   radius="md"
                   style={{
                     cursor: 'help',
-                    background: '#ea580c',
-                    color: 'white',
+                    background: STATUS_MAP.warm.bgColor,
+                    color: STATUS_MAP.warm.textColor,
                     fontWeight: 700,
                     fontSize: 14,
                     padding: '10px 16px',
-                    boxShadow: '0 2px 8px rgba(234, 88, 12, 0.3)',
+                    boxShadow: `0 2px 8px ${STATUS_MAP.warm.bgColor}4D`,
                   }}
                 >
                   {stats?.warm_leads || 0} WARM
                 </Badge>
               </Tooltip>
-              <Tooltip label="ICP Score 0-39: Lower-priority targets" withArrow>
+              <Tooltip label={STATUS_MAP.cold.description} withArrow>
                 <Badge
                   size="xl"
                   radius="md"
                   style={{
                     cursor: 'help',
-                    background: '#64748b',
-                    color: 'white',
+                    background: STATUS_MAP.cold.bgColor,
+                    color: STATUS_MAP.cold.textColor,
                     fontWeight: 700,
                     fontSize: 14,
                     padding: '10px 16px',
-                    boxShadow: '0 2px 8px rgba(100, 116, 139, 0.3)',
+                    boxShadow: `0 2px 8px ${STATUS_MAP.cold.bgColor}4D`,
                   }}
                 >
                   {(stats?.total_companies || 0) - (stats?.hot_leads || 0) - (stats?.warm_leads || 0)} COLD

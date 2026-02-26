@@ -7,8 +7,8 @@
  * Updated: White theme to match Dashboard
  */
 
-import { useState, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Container,
   Title,
@@ -40,13 +40,117 @@ import { COLORS } from '@/lib/constants';
 // Companies Page Component
 // =============================================================================
 
+// =============================================================================
+// URL Filter Helpers
+// =============================================================================
+
+/**
+ * Parse URL search params into ColumnFilter array
+ * URL format: ?status=hot,warm&vertical=Retail&partner=Adobe&search=walmart&page=2
+ */
+function parseUrlFilters(searchParams: URLSearchParams): {
+  columnFilters: ColumnFilter[];
+  searchQuery: string;
+  currentPage: number;
+} {
+  const columnFilters: ColumnFilter[] = [];
+
+  // Parse status filter (comma-separated)
+  const status = searchParams.get('status');
+  if (status) {
+    columnFilters.push({ column: 'status', values: status.split(',').filter(Boolean) });
+  }
+
+  // Parse vertical filter (comma-separated)
+  const vertical = searchParams.get('vertical');
+  if (vertical) {
+    columnFilters.push({ column: 'vertical', values: vertical.split(',').filter(Boolean) });
+  }
+
+  // Parse partner filter (comma-separated)
+  const partner = searchParams.get('partner');
+  if (partner) {
+    columnFilters.push({ column: 'partner_tech', values: partner.split(',').filter(Boolean) });
+  }
+
+  // Parse search query
+  const searchQuery = searchParams.get('search') || '';
+
+  // Parse page number
+  const page = parseInt(searchParams.get('page') || '1', 10);
+  const currentPage = isNaN(page) || page < 1 ? 1 : page;
+
+  return { columnFilters, searchQuery, currentPage };
+}
+
+/**
+ * Serialize filter state to URL search params
+ */
+function serializeFiltersToUrl(
+  columnFilters: ColumnFilter[],
+  searchQuery: string,
+  currentPage: number
+): URLSearchParams {
+  const params = new URLSearchParams();
+
+  // Serialize status filter
+  const statusFilter = columnFilters.find((f) => f.column === 'status');
+  if (statusFilter?.values.length) {
+    params.set('status', statusFilter.values.join(','));
+  }
+
+  // Serialize vertical filter
+  const verticalFilter = columnFilters.find((f) => f.column === 'vertical');
+  if (verticalFilter?.values.length) {
+    params.set('vertical', verticalFilter.values.join(','));
+  }
+
+  // Serialize partner filter
+  const partnerFilter = columnFilters.find((f) => f.column === 'partner_tech');
+  if (partnerFilter?.values.length) {
+    params.set('partner', partnerFilter.values.join(','));
+  }
+
+  // Serialize search query
+  if (searchQuery.trim()) {
+    params.set('search', searchQuery.trim());
+  }
+
+  // Serialize page (only if not page 1)
+  if (currentPage > 1) {
+    params.set('page', String(currentPage));
+  }
+
+  return params;
+}
+
+// =============================================================================
+// Companies Page Component
+// =============================================================================
+
 export function CompaniesPage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  // Filter state
-  const [searchQuery, setSearchQuery] = useState('');
-  const [columnFilters, setColumnFilters] = useState<ColumnFilter[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  // Parse initial state from URL
+  const initialState = useMemo(() => parseUrlFilters(searchParams), []);
+
+  // Filter state (initialized from URL)
+  const [searchQuery, setSearchQuery] = useState(initialState.searchQuery);
+  const [columnFilters, setColumnFilters] = useState<ColumnFilter[]>(initialState.columnFilters);
+  const [currentPage, setCurrentPage] = useState(initialState.currentPage);
+
+  // Sync state changes back to URL
+  useEffect(() => {
+    const newParams = serializeFiltersToUrl(columnFilters, searchQuery, currentPage);
+    const currentParamsString = searchParams.toString();
+    const newParamsString = newParams.toString();
+
+    // Only update URL if params actually changed (avoid infinite loops)
+    if (currentParamsString !== newParamsString) {
+      setSearchParams(newParams, { replace: true });
+    }
+  }, [columnFilters, searchQuery, currentPage, searchParams, setSearchParams]);
 
   // Build API filters from column filters
   const apiFilters = useMemo(() => {

@@ -35,13 +35,15 @@ import {
   ElasticsearchLogo,
   AllPartnersLogo,
 } from '@/components/common/PartnerLogos';
-import { COLORS } from '@/lib/constants';
+import { COLORS, STATUS_MAP, type StatusKey } from '@/lib/constants';
+import { ScoreBreakdown } from '@/components/company/ScoreBreakdown';
+import { calculateCompositeScore, getStatusFromCompositeScore } from '@/services/scoring';
 
 interface QuickLookCardProps {
   company: Company;
   onViewDetails: () => void;
   onClose: () => void;
-  onEnrich?: (domain: string) => void;
+  onEnrich?: (domain: string) => void | Promise<void>;
 }
 
 function formatNumber(num: number | undefined | null): string {
@@ -74,6 +76,10 @@ export function QuickLookCard({ company, onViewDetails, onClose, onEnrich }: Qui
   const [height, setHeight] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
 
+  // Calculate composite score
+  const compositeScore = calculateCompositeScore(company);
+  const derivedStatus = getStatusFromCompositeScore(compositeScore.total);
+
   // Measure content height and animate in
   useEffect(() => {
     if (contentRef.current) {
@@ -86,12 +92,19 @@ export function QuickLookCard({ company, onViewDetails, onClose, onEnrich }: Qui
     }
   }, []);
 
-  const statusConfig = {
-    hot: { color: '#dc2626', bg: '#fef2f2', icon: IconFlame, label: 'Hot' },
-    warm: { color: '#ea580c', bg: '#fff7ed', icon: IconTrendingUp, label: 'Warm' },
-    cold: { color: '#64748b', bg: '#f8fafc', icon: IconSnowflake, label: 'Cold' },
+  // Use shared STATUS_MAP from constants with icon lookup
+  const statusIcons = {
+    hot: IconFlame,
+    warm: IconTrendingUp,
+    cold: IconSnowflake,
   };
-  const status = statusConfig[company.status] || statusConfig.cold;
+  const statusDef = STATUS_MAP[derivedStatus as StatusKey] || STATUS_MAP.cold;
+  const status = {
+    color: statusDef.bgColor,
+    bg: derivedStatus === 'hot' ? '#fef2f2' : derivedStatus === 'warm' ? '#fff7ed' : '#f8fafc',
+    icon: statusIcons[derivedStatus as StatusKey] || IconSnowflake,
+    label: statusDef.label,
+  };
   const StatusIcon = status.icon;
 
   // Check if data is missing (needs enrichment)
@@ -143,28 +156,25 @@ export function QuickLookCard({ company, onViewDetails, onClose, onEnrich }: Qui
               </div>
             </Group>
 
-            {/* ICP Score + Close */}
-            <Group gap="md">
-              <div style={{ textAlign: 'right' }}>
-                <Text size="xs" c={COLORS.GRAY_500} tt="uppercase" fw={600}>ICP Score</Text>
-                <Text size="xl" fw={800} c={status.color}>{company.icp_score || 0}/100</Text>
-              </div>
-              <Tooltip label="Collapse preview">
-                <Button
-                  variant="subtle"
-                  size="sm"
-                  color="gray"
-                  onClick={onClose}
-                  style={{ padding: 8 }}
-                >
-                  <IconChevronUp size={18} />
-                </Button>
-              </Tooltip>
-            </Group>
+            {/* Close button */}
+            <Tooltip label="Collapse preview">
+              <Button
+                variant="subtle"
+                size="sm"
+                color="gray"
+                onClick={onClose}
+                style={{ padding: 8 }}
+              >
+                <IconChevronUp size={18} />
+              </Button>
+            </Tooltip>
           </Group>
 
+          {/* Composite Score Breakdown (replaces simple ICP score) */}
+          <ScoreBreakdown company={company} variant="compact" />
+
           {/* Key Stats Grid */}
-          <SimpleGrid cols={4} spacing="md" mb="md">
+          <SimpleGrid cols={4} spacing="md" mt="md" mb="md">
             <Paper p="sm" withBorder style={{ borderColor: COLORS.GRAY_200 }}>
               <Group gap="xs" mb={4}>
                 <IconChartBar size={14} color={COLORS.GRAY_500} />

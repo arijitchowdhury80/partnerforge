@@ -44,8 +44,12 @@ import {
   IconCalendar,
   IconBuilding,
   IconBuildingSkyscraper,
+  IconLoader2,
+  IconLayoutRows,
+  IconLayoutList,
 } from '@tabler/icons-react';
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { useMediaQuery } from '@mantine/hooks';
 import type { Company, TrafficData, FinancialData, TechStackData, HiringData, ExecutiveData, InvestorData, CompetitorData, CaseStudyMatch } from '@/types';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
 import {
@@ -56,7 +60,9 @@ import {
   StrategicAccordion,
 } from './IntelligenceAccordions';
 import { CompetitorAccordion } from './CompetitorAccordion';
+import { ScoreBreakdown } from './ScoreBreakdown';
 import { COLORS } from '@/lib/constants';
+import { calculateCompositeScore, getStatusFromCompositeScore } from '@/services/scoring';
 
 // =============================================================================
 // Status Config - uses shared COLORS
@@ -97,22 +103,81 @@ interface CompanyDrawerProps {
   company: CompanyWithIntelligence | null;
   opened: boolean;
   onClose: () => void;
-  onEnrich?: (domain: string) => void;
+  onEnrich?: (domain: string) => void | Promise<void>;
   onAddToCampaign?: (domain: string, companyName: string) => void;
+  isEnriching?: boolean;  // External loading state (optional)
 }
 
 // =============================================================================
 // Main Component
 // =============================================================================
 
-export function CompanyDrawer({ company, opened, onClose, onEnrich, onAddToCampaign }: CompanyDrawerProps) {
+// All accordion section keys
+const ALL_ACCORDION_SECTIONS = ['traffic', 'financials', 'techstack', 'competitors', 'signals', 'strategic'];
+
+export function CompanyDrawer({ company, opened, onClose, onEnrich, onAddToCampaign, isEnriching: externalIsEnriching }: CompanyDrawerProps) {
   const [isPinned, setIsPinned] = useState(false);
+  const [showPinHint, setShowPinHint] = useState(true); // Show hint on first visit
   // Default to first accordion open, more open when pinned
   const [openAccordions, setOpenAccordions] = useState<string[]>(['traffic']);
+  // Loading state for enrichment
+  const [internalIsEnriching, setInternalIsEnriching] = useState(false);
+  const [enrichProgress, setEnrichProgress] = useState<string>('');
+
+  // Responsive: use smaller size on tablet/mobile
+  const isMobile = useMediaQuery('(max-width: 768px)');
+  const isTablet = useMediaQuery('(max-width: 1024px)');
+  const drawerSize = isMobile ? '100%' : isTablet ? '90%' : 'xl';
+
+  // Check if all accordions are expanded
+  const allExpanded = ALL_ACCORDION_SECTIONS.every(s => openAccordions.includes(s));
+
+  // Toggle all accordions
+  const handleToggleAll = useCallback(() => {
+    if (allExpanded) {
+      setOpenAccordions(['traffic']); // Collapse to just traffic
+    } else {
+      setOpenAccordions([...ALL_ACCORDION_SECTIONS]); // Expand all
+    }
+  }, [allExpanded]);
+
+  // Hide pin hint after first pin
+  useEffect(() => {
+    if (isPinned) {
+      setShowPinHint(false);
+    }
+  }, [isPinned]);
+
+  // Use external state if provided, otherwise use internal
+  const isEnriching = externalIsEnriching ?? internalIsEnriching;
+
+  // Handle enrich click with loading state
+  const handleEnrich = useCallback(async (domain: string) => {
+    if (!onEnrich || isEnriching) return;
+
+    setInternalIsEnriching(true);
+    setEnrichProgress('Starting enrichment...');
+
+    try {
+      const result = onEnrich(domain);
+      // If onEnrich returns a promise, wait for it
+      if (result instanceof Promise) {
+        await result;
+      }
+    } catch (error) {
+      console.error('Enrichment failed:', error);
+    } finally {
+      setInternalIsEnriching(false);
+      setEnrichProgress('');
+    }
+  }, [onEnrich, isEnriching]);
 
   if (!company) return null;
 
-  const status = STATUS_CONFIG[company.status] || STATUS_CONFIG.cold;
+  // Calculate composite score and derive status
+  const compositeScore = calculateCompositeScore(company);
+  const derivedStatus = getStatusFromCompositeScore(compositeScore.total);
+  const status = STATUS_CONFIG[derivedStatus] || STATUS_CONFIG.cold;
   const StatusIcon = status.icon;
 
   const handlePinToggle = () => {
@@ -129,7 +194,7 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich, onAddToCampa
       opened={opened}
       onClose={onClose}
       position="right"
-      size="xl"
+      size={drawerSize}
       title={null}
       padding={0}
       closeOnClickOutside={!isPinned}
@@ -220,7 +285,23 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich, onAddToCampa
             >
               {status.label}
             </Badge>
-            <Tooltip label={isPinned ? 'Unpin drawer' : 'Pin for deep research'}>
+            {/* Expand All / Collapse All toggle */}
+            <Tooltip label={allExpanded ? 'Collapse all sections' : 'Expand all sections'}>
+              <ActionIcon
+                variant="light"
+                color="gray"
+                size="lg"
+                onClick={handleToggleAll}
+              >
+                {allExpanded ? <IconLayoutList size={18} /> : <IconLayoutRows size={18} />}
+              </ActionIcon>
+            </Tooltip>
+            {/* Pin for research mode - with discovery hint */}
+            <Tooltip
+              label={isPinned ? 'Unpin drawer' : 'Pin to keep open while browsing the list'}
+              opened={showPinHint && !isPinned ? undefined : undefined}
+              withArrow
+            >
               <ActionIcon
                 variant={isPinned ? 'filled' : 'light'}
                 color="blue"
@@ -236,31 +317,8 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich, onAddToCampa
           </Group>
         </Group>
 
-        {/* ICP Score */}
-        <Paper p="md" radius="md" style={{ background: status.bg }}>
-          <Group justify="space-between" mb="xs">
-            <Text size="sm" fw={600} c={COLORS.GRAY_900}>ICP Score</Text>
-            <Text size="xl" fw={700} c={company.icp_score >= 80 ? '#dc2626' : company.icp_score >= 40 ? '#ea580c' : COLORS.GRAY_700}>
-              {company.icp_score}/100
-            </Text>
-          </Group>
-          <Progress
-            value={company.icp_score}
-            size="lg"
-            radius="xl"
-            color={company.icp_score >= 80 ? 'red' : company.icp_score >= 40 ? 'orange' : 'gray'}
-          />
-          <Group mt="sm" gap="lg">
-            <Group gap={4}>
-              <Text size="xs" c={COLORS.GRAY_500}>Signal:</Text>
-              <Text size="xs" fw={600} c={COLORS.GRAY_900}>{company.signal_score || 0}</Text>
-            </Group>
-            <Group gap={4}>
-              <Text size="xs" c={COLORS.GRAY_500}>Priority:</Text>
-              <Text size="xs" fw={600} c={COLORS.GRAY_900}>{company.priority_score || 0}</Text>
-            </Group>
-          </Group>
-        </Paper>
+        {/* Composite Score Breakdown (replaces simple ICP Score) */}
+        <ScoreBreakdown company={company} variant="detailed" />
 
         {/* Quick Info Row */}
         <SimpleGrid cols={4} mt="md" spacing="xs">
@@ -278,21 +336,34 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich, onAddToCampa
             size="md"
             variant="gradient"
             gradient={{ from: COLORS.ALGOLIA_NEBULA_BLUE, to: '#5468ff', deg: 135 }}
-            leftSection={<IconRefresh size={18} />}
-            onClick={() => onEnrich(company.domain)}
+            leftSection={
+              isEnriching ? (
+                <IconLoader2
+                  size={18}
+                  style={{ animation: 'spin 1s linear infinite' }}
+                />
+              ) : (
+                <IconRefresh size={18} />
+              )
+            }
+            onClick={() => handleEnrich(company.domain)}
+            disabled={isEnriching}
+            loading={isEnriching}
             styles={{
               root: {
                 fontWeight: 600,
-                boxShadow: '0 4px 12px rgba(0, 61, 255, 0.25)',
+                boxShadow: isEnriching ? 'none' : '0 4px 12px rgba(0, 61, 255, 0.25)',
                 transition: 'all 0.2s ease',
                 '&:hover': {
-                  transform: 'translateY(-1px)',
-                  boxShadow: '0 6px 16px rgba(0, 61, 255, 0.35)',
+                  transform: isEnriching ? 'none' : 'translateY(-1px)',
+                  boxShadow: isEnriching ? 'none' : '0 6px 16px rgba(0, 61, 255, 0.35)',
                 },
               },
             }}
           >
-            {company.enrichment_level === 'full' ? 'Re-Enrich Data' : 'Enrich Now'}
+            {isEnriching
+              ? (enrichProgress || 'Enriching...')
+              : (company.enrichment_level === 'full' ? 'Re-Enrich Data' : 'Enrich Now')}
           </Button>
         )}
       </div>
@@ -382,10 +453,18 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich, onAddToCampa
               <Button
                 variant="filled"
                 color="blue"
-                leftSection={<IconRefresh size={16} />}
-                onClick={() => onEnrich?.(company.domain)}
+                leftSection={
+                  isEnriching ? (
+                    <IconLoader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />
+                  ) : (
+                    <IconRefresh size={16} />
+                  )
+                }
+                onClick={() => handleEnrich(company.domain)}
+                disabled={isEnriching}
+                loading={isEnriching}
               >
-                Enrich Now
+                {isEnriching ? 'Enriching...' : 'Enrich Now'}
               </Button>
             </Group>
           </Paper>
@@ -423,13 +502,7 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich, onAddToCampa
             >
               Visit Website
             </Button>
-            <Button
-              variant="light"
-              leftSection={<IconRefresh size={14} />}
-              onClick={() => onEnrich?.(company.domain)}
-            >
-              Refresh
-            </Button>
+            {/* Removed redundant Refresh button - Enrich Now is in header */}
             <Button
               variant="filled"
               color="blue"
