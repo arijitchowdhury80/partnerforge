@@ -174,14 +174,15 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
             </Badge>
             <Tooltip label={isPinned ? 'Unpin drawer' : 'Pin drawer for side-by-side view'}>
               <ActionIcon
-                variant={isPinned ? 'filled' : 'subtle'}
-                color={isPinned ? 'blue' : 'gray'}
+                variant={isPinned ? 'filled' : 'light'}
+                color="blue"
+                size="lg"
                 onClick={() => setIsPinned(!isPinned)}
               >
                 {isPinned ? <IconPinnedOff size={18} /> : <IconPin size={18} />}
               </ActionIcon>
             </Tooltip>
-            <ActionIcon variant="subtle" color="gray" onClick={onClose}>
+            <ActionIcon variant="light" color="gray" size="lg" onClick={onClose}>
               ✕
             </ActionIcon>
           </Group>
@@ -190,8 +191,8 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
         {/* Score Bar */}
         <Paper p="md" radius="md" style={{ background: status.bg }}>
           <Group justify="space-between" mb="xs">
-            <Text size="sm" fw={500}>ICP Score</Text>
-            <Text size="xl" fw={700} c={company.icp_score >= 80 ? '#dc2626' : company.icp_score >= 40 ? '#ea580c' : GRAY_500}>
+            <Text size="sm" fw={600} c={GRAY_900}>ICP Score</Text>
+            <Text size="xl" fw={700} c={company.icp_score >= 80 ? '#dc2626' : company.icp_score >= 40 ? '#ea580c' : GRAY_700}>
               {company.icp_score}/100
             </Text>
           </Group>
@@ -250,14 +251,14 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
 
               {/* Location */}
               {company.headquarters && (
-                <Paper p="md" radius="md" withBorder>
+                <Paper p="md" radius="md" withBorder style={{ background: 'white' }}>
                   <Group gap="sm">
                     <ThemeIcon size="lg" variant="light" color="blue">
                       <IconMapPin size={18} />
                     </ThemeIcon>
                     <div>
-                      <Text size="xs" c={GRAY_500}>Headquarters</Text>
-                      <Text size="sm" fw={500}>
+                      <Text size="xs" c={GRAY_700} fw={500}>Headquarters</Text>
+                      <Text size="sm" fw={500} c={GRAY_900}>
                         {[company.headquarters.city, company.headquarters.state, company.headquarters.country]
                           .filter(Boolean)
                           .join(', ')}
@@ -268,8 +269,8 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
               )}
 
               {/* Industry */}
-              <Paper p="md" radius="md" withBorder>
-                <Text size="xs" c={GRAY_500} mb="xs">Industry & Vertical</Text>
+              <Paper p="md" radius="md" withBorder style={{ background: 'white' }}>
+                <Text size="xs" c={GRAY_700} fw={500} mb="xs">Industry & Vertical</Text>
                 <Group gap="xs">
                   <Badge variant="light" color="blue">{company.industry || 'Unknown'}</Badge>
                   <Badge variant="light" color="violet">{company.vertical || 'Unknown'}</Badge>
@@ -284,8 +285,8 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
           <Tabs.Panel value="tech">
             <Stack gap="md">
               {/* Partner Technologies */}
-              <Paper p="md" radius="md" withBorder>
-                <Text size="sm" fw={600} mb="sm">Partner Technologies</Text>
+              <Paper p="md" radius="md" withBorder style={{ background: 'white' }}>
+                <Text size="sm" fw={600} mb="sm" c={GRAY_900}>Partner Technologies</Text>
                 {company.partner_tech && company.partner_tech.length > 0 ? (
                   <Group gap="xs">
                     {company.partner_tech.map((tech) => (
@@ -295,14 +296,14 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
                     ))}
                   </Group>
                 ) : (
-                  <Text size="sm" c={GRAY_500}>No partner technologies detected</Text>
+                  <Text size="sm" c={GRAY_700}>No partner technologies detected</Text>
                 )}
                 <Divider my="sm" />
                 <Anchor
                   href={`https://builtwith.com/${company.domain}`}
                   target="_blank"
                   size="xs"
-                  c={GRAY_500}
+                  c={ALGOLIA_BLUE}
                 >
                   View full tech stack on BuiltWith →
                 </Anchor>
@@ -310,12 +311,12 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
 
               {/* Current Search */}
               {company.current_search && (
-                <Paper p="md" radius="md" withBorder>
-                  <Text size="sm" fw={600} mb="xs">Current Search Provider</Text>
+                <Paper p="md" radius="md" withBorder style={{ background: 'white' }}>
+                  <Text size="sm" fw={600} mb="xs" c={GRAY_900}>Current Search Provider</Text>
                   <Badge size="lg" variant="filled" color="red">
                     {company.current_search}
                   </Badge>
-                  <Text size="xs" c={GRAY_500} mt="xs">
+                  <Text size="xs" c={GRAY_700} mt="xs">
                     Displacement opportunity for Algolia
                   </Text>
                 </Paper>
@@ -326,8 +327,8 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
           <Tabs.Panel value="signals">
             <Stack gap="md">
               {/* Scores Breakdown */}
-              <Paper p="md" radius="md" withBorder>
-                <Text size="sm" fw={600} mb="md">Score Breakdown</Text>
+              <Paper p="md" radius="md" withBorder style={{ background: 'white' }}>
+                <Text size="sm" fw={600} mb="md" c={GRAY_900}>Score Breakdown</Text>
                 <Stack gap="sm">
                   <ScoreRow label="ICP Score" value={company.icp_score} max={100} />
                   <ScoreRow label="Signal Score" value={company.signal_score} max={100} />
@@ -336,9 +337,9 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
               </Paper>
 
               {/* Enrichment Status */}
-              <Paper p="md" radius="md" withBorder>
+              <Paper p="md" radius="md" withBorder style={{ background: 'white' }}>
                 <Group justify="space-between" mb="xs">
-                  <Text size="sm" fw={600}>Enrichment Status</Text>
+                  <Text size="sm" fw={600} c={GRAY_900}>Enrichment Status</Text>
                   <Badge
                     variant="light"
                     color={company.enrichment_level === 'full' ? 'green' : 'yellow'}
@@ -347,7 +348,7 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
                   </Badge>
                 </Group>
                 {company.last_enriched && (
-                  <Text size="xs" c={GRAY_500}>
+                  <Text size="xs" c={GRAY_700}>
                     Last enriched: {new Date(company.last_enriched).toLocaleDateString()}
                   </Text>
                 )}
@@ -423,17 +424,17 @@ function StatCard({
   sourceUrl?: string;
 }) {
   return (
-    <Paper p="md" radius="md" withBorder>
+    <Paper p="md" radius="md" withBorder style={{ background: 'white' }}>
       <Group gap="sm">
         <ThemeIcon size="lg" variant="light" color="blue">
           <Icon size={18} />
         </ThemeIcon>
         <div style={{ flex: 1 }}>
-          <Text size="xs" c={GRAY_500}>{label}</Text>
-          <Text size="lg" fw={600}>{value}</Text>
+          <Text size="xs" c={GRAY_700} fw={500}>{label}</Text>
+          <Text size="lg" fw={600} c={GRAY_900}>{value}</Text>
           {source && (
             sourceUrl ? (
-              <Anchor href={sourceUrl} target="_blank" size="xs" c={GRAY_500}>
+              <Anchor href={sourceUrl} target="_blank" size="xs" c={ALGOLIA_BLUE}>
                 {source} →
               </Anchor>
             ) : (
@@ -453,8 +454,8 @@ function ScoreRow({ label, value, max }: { label: string; value: number; max: nu
   return (
     <div>
       <Group justify="space-between" mb={4}>
-        <Text size="sm" c={GRAY_700}>{label}</Text>
-        <Text size="sm" fw={600}>{value}/{max}</Text>
+        <Text size="sm" c={GRAY_900}>{label}</Text>
+        <Text size="sm" fw={600} c={GRAY_900}>{value}/{max}</Text>
       </Group>
       <Progress value={percentage} size="sm" radius="xl" color={color} />
     </div>

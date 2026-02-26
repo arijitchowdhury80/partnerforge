@@ -212,11 +212,11 @@ export function CompaniesPage() {
               <Title order={2}>
                 Companies
               </Title>
-              <Badge size="xs" variant="light" color="blue">
+              <Badge size="md" variant="filled" color="blue" style={{ fontWeight: 600 }}>
                 {VERSION}
               </Badge>
             </Group>
-            <Text c="#64748b" size="sm" mt={4}>
+            <Text c="#64748b" size="md" mt={4}>
               Click column header dropdowns (Status, Vertical, Partner Tech) to filter like Excel
             </Text>
           </div>
@@ -330,14 +330,14 @@ export function CompaniesPage() {
         transition={{ duration: 0.3, delay: 0.2 }}
       >
         <Group justify="space-between" mb="md" wrap="wrap">
-          <Group gap="xs">
-            <Text size="sm" c="#64748b">
+          <Group gap="sm">
+            <Text size="md" c="#64748b" fw={500}>
               Showing
             </Text>
-            <Badge variant="light" color="blue" size="lg">
+            <Badge variant="filled" color="blue" size="xl" style={{ fontWeight: 700, fontSize: 14, padding: '8px 14px' }}>
               {filteredCompanies.length}
             </Badge>
-            <Text size="sm" c="#64748b">
+            <Text size="md" c="#64748b" fw={500}>
               of {companiesData?.pagination?.total || 0} companies
             </Text>
           </Group>

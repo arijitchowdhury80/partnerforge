@@ -310,8 +310,8 @@ function GridCellComponent({ cell, rowKey, colKey, onClick, isTotal = false, tie
     >
       <Text
         size="sm"
-        fw={isTotal ? 700 : cell.count > 0 ? 500 : 400}
-        c={cell.count > 0 ? 'dark' : 'dimmed'}
+        fw={isTotal ? 700 : cell.count > 0 ? 600 : 400}
+        c={cell.count > 0 ? '#1e293b' : '#94a3b8'}
       >
         {cell.count.toLocaleString()}
       </Text>
@@ -362,7 +362,7 @@ function AccountList({ targets, onRowClick }: AccountListProps) {
                 <Text fw={500}>{target.company_name || target.domain}</Text>
               </Table.Td>
               <Table.Td>
-                <Text size="sm" c="dimmed">{target.domain}</Text>
+                <Text size="sm" c="#64748b">{target.domain}</Text>
               </Table.Td>
               <Table.Td style={{ textAlign: 'center' }}>
                 <Badge size="sm" variant="light">
@@ -490,7 +490,7 @@ export function DistributionGrid({ viewMode, targets, onCellClick }: Distributio
           <Group gap="xs">
             <Text fw={500}>{title}</Text>
             <Tooltip label={description} position="right" withArrow>
-              <IconInfoCircle size={16} style={{ cursor: 'help', color: 'var(--mantine-color-dimmed)' }} />
+              <IconInfoCircle size={16} style={{ cursor: 'help', color: '#64748b' }} />
             </Tooltip>
           </Group>
           <Badge variant="light" size="lg">
@@ -515,7 +515,7 @@ export function DistributionGrid({ viewMode, targets, onCellClick }: Distributio
           </Tooltip>
         </Group>
         <Group gap="xs">
-          <Text size="sm" c="dimmed">Total:</Text>
+          <Text size="sm" c="#64748b" fw={500}>Total:</Text>
           <Badge variant="filled" size="lg">
             {grandTotal.toLocaleString()}
           </Badge>
@@ -543,10 +543,9 @@ export function DistributionGrid({ viewMode, targets, onCellClick }: Distributio
                 >
                   <Text
                     size="xs"
-                    fw={600}
-                    c={viewMode === 'vertical' ? undefined : 'dimmed'}
+                    fw={700}
                     style={{
-                      color: viewMode === 'vertical' ? getIcpTierColor(columns[idx]) : undefined,
+                      color: viewMode === 'vertical' ? getIcpTierColor(columns[idx]) : '#334155',
                     }}
                   >
                     {label}
@@ -568,7 +567,7 @@ export function DistributionGrid({ viewMode, targets, onCellClick }: Distributio
             {rows.map((row) => (
               <Table.Tr key={row.key}>
                 <Table.Td>
-                  <Text fw={500} size="sm">{row.label}</Text>
+                  <Text fw={600} size="sm" c="#1e293b">{row.label}</Text>
                 </Table.Td>
                 {columns.map((col) => (
                   <GridCellComponent
@@ -641,7 +640,7 @@ export function DistributionGrid({ viewMode, targets, onCellClick }: Distributio
                   h={12}
                   style={{ backgroundColor: tier.color, borderRadius: 2 }}
                 />
-                <Text size="xs" c="dimmed">{tier.label.split(' ')[0]}</Text>
+                <Text size="xs" c="#64748b" fw={500}>{tier.label.split(' ')[0]}</Text>
               </Group>
             </Tooltip>
           ))}

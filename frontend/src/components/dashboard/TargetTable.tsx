@@ -1,6 +1,6 @@
 import { DataTable, type DataTableColumn, type DataTableSortStatus } from 'mantine-datatable';
 import { Badge, Group, Text, ActionIcon, Tooltip, Progress } from '@mantine/core';
-import { IconEye, IconRefresh, IconExternalLink } from '@tabler/icons-react';
+import { IconEye, IconRefresh, IconExternalLink, IconFlame, IconTrendingUp, IconSnowflake } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
@@ -17,10 +17,11 @@ interface TargetTableProps {
   };
 }
 
-const statusColors: Record<string, string> = {
-  hot: 'red',
-  warm: 'orange',
-  cold: 'gray',
+// Status badge config - BOLD, VISIBLE
+const statusConfig: Record<string, { bg: string; icon: typeof IconFlame; label: string }> = {
+  hot: { bg: '#dc2626', icon: IconFlame, label: 'HOT' },
+  warm: { bg: '#ea580c', icon: IconTrendingUp, label: 'WARM' },
+  cold: { bg: '#64748b', icon: IconSnowflake, label: 'COLD' },
 };
 
 const marginZoneColors: Record<string, string> = {
@@ -42,10 +43,10 @@ export function TargetTable({ companies, loading = false, pagination }: TargetTa
       title: 'Company',
       sortable: true,
       render: (company) => (
-        <Group gap="xs">
-          <Text fw={500}>{company.company_name || company.domain}</Text>
+        <Group gap="sm">
+          <Text fw={600} size="md">{company.company_name || company.domain}</Text>
           {company.ticker && (
-            <Badge size="xs" variant="outline">
+            <Badge size="sm" variant="outline" style={{ fontWeight: 600 }}>
               {company.exchange}:{company.ticker}
             </Badge>
           )}
@@ -56,45 +57,73 @@ export function TargetTable({ companies, loading = false, pagination }: TargetTa
       accessor: 'icp_score',
       title: 'ICP Score',
       sortable: true,
-      width: 120,
-      render: (company) => (
-        <Group gap="xs">
-          <Progress value={company.icp_score} size="sm" w={60} color="blue" />
-          <Text size="sm" fw={500}>
-            {company.icp_score}
-          </Text>
-        </Group>
-      ),
+      width: 130,
+      render: (company) => {
+        const color = company.icp_score >= 80 ? '#dc2626' : company.icp_score >= 40 ? '#ea580c' : '#64748b';
+        return (
+          <Group gap="sm">
+            <Progress value={company.icp_score} size="md" w={50} color={company.icp_score >= 80 ? 'red' : company.icp_score >= 40 ? 'orange' : 'gray'} />
+            <Text size="md" fw={700} style={{ color, minWidth: 28 }}>
+              {company.icp_score}
+            </Text>
+          </Group>
+        );
+      },
     },
     {
       accessor: 'status',
       title: 'Status',
       sortable: true,
-      width: 100,
-      render: (company) => (
-        <Badge color={statusColors[company.status] || 'gray'} variant="light">
-          {company.status?.toUpperCase()}
-        </Badge>
-      ),
+      width: 120,
+      render: (company) => {
+        const config = statusConfig[company.status] || statusConfig.cold;
+        const Icon = config.icon;
+        return (
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '8px 14px',
+              borderRadius: 6,
+              background: config.bg,
+              color: 'white',
+              fontWeight: 700,
+              fontSize: 13,
+              letterSpacing: '0.5px',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+            }}
+          >
+            <Icon size={16} stroke={2.5} />
+            {config.label}
+          </div>
+        );
+      },
     },
     {
       accessor: 'vertical',
       title: 'Vertical',
       sortable: true,
-      width: 120,
+      width: 160,
+      render: (company) => (
+        <Text size="md" c="#334155">
+          {company.vertical || '—'}
+        </Text>
+      ),
     },
     {
       accessor: 'partner_tech',
       title: 'Partner Tech',
+      width: 180,
       render: (company) => (
-        <Group gap={4}>
+        <Group gap={6}>
           {company.partner_tech?.slice(0, 2).map((tech) => (
-            <Badge key={tech} size="xs" variant="light">
+            <Badge key={tech} size="md" variant="filled" color="green" style={{ fontWeight: 600 }}>
               {tech}
             </Badge>
           ))}
           {(company.partner_tech?.length || 0) > 2 && (
-            <Badge size="xs" variant="light" color="gray">
+            <Badge size="md" variant="filled" color="gray" style={{ fontWeight: 600 }}>
               +{(company.partner_tech?.length || 0) - 2}
             </Badge>
           )}
@@ -107,7 +136,7 @@ export function TargetTable({ companies, loading = false, pagination }: TargetTa
       sortable: true,
       width: 100,
       render: (company) => (
-        <Text size="sm" c={company.signal_score > 50 ? 'green' : 'dimmed'}>
+        <Text size="md" fw={600} c={company.signal_score > 50 ? 'green' : '#64748b'}>
           {company.signal_score || '—'}
         </Text>
       ),
@@ -115,9 +144,9 @@ export function TargetTable({ companies, loading = false, pagination }: TargetTa
     {
       accessor: 'last_enriched',
       title: 'Last Enriched',
-      width: 130,
+      width: 140,
       render: (company) => (
-        <Text size="xs" c="dimmed">
+        <Text size="sm" c="#64748b">
           {company.last_enriched
             ? new Date(company.last_enriched).toLocaleDateString()
             : 'Never'}
@@ -127,30 +156,32 @@ export function TargetTable({ companies, loading = false, pagination }: TargetTa
     {
       accessor: 'actions',
       title: '',
-      width: 100,
+      width: 120,
       render: (company) => (
-        <Group gap="xs" justify="flex-end">
+        <Group gap="sm" justify="flex-end">
           <Tooltip label="View Details">
             <ActionIcon
               variant="subtle"
+              size="lg"
               onClick={() => navigate(`/company/${company.domain}`)}
             >
-              <IconEye size={16} />
+              <IconEye size={20} />
             </ActionIcon>
           </Tooltip>
           <Tooltip label="Refresh Data">
-            <ActionIcon variant="subtle">
-              <IconRefresh size={16} />
+            <ActionIcon variant="subtle" size="lg">
+              <IconRefresh size={20} />
             </ActionIcon>
           </Tooltip>
           <Tooltip label="Open Website">
             <ActionIcon
               variant="subtle"
+              size="lg"
               component="a"
               href={`https://${company.domain}`}
               target="_blank"
             >
-              <IconExternalLink size={16} />
+              <IconExternalLink size={20} />
             </ActionIcon>
           </Tooltip>
         </Group>
@@ -172,7 +203,7 @@ export function TargetTable({ companies, loading = false, pagination }: TargetTa
       highlightOnHover
       idAccessor="domain"
       emptyState={
-        <Text c="dimmed" ta="center" py="xl">
+        <Text c="dimmed" ta="center" py="xl" size="lg">
           No companies found
         </Text>
       }
