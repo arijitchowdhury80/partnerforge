@@ -23,6 +23,8 @@ import { ListsPage } from './pages/ListsPage';
 import { UploadPage } from './pages/UploadPage';
 import { CompanyPage } from './pages/CompanyPage';
 import { AlertsPage } from './pages/AlertsPage';
+import { CompaniesPage } from './pages/CompaniesPage';
+import { AnalyticsPage } from './pages/AnalyticsPage';
 
 // Styles
 import '@mantine/core/styles.css';
@@ -119,8 +121,8 @@ function App() {
               {/* Dashboard - Use new premium Dashboard */}
               <Route path="/dashboard" element={<Dashboard />} />
 
-              {/* Companies */}
-              <Route path="/companies" element={<Dashboard />} />
+              {/* Companies - List view with advanced filtering */}
+              <Route path="/companies" element={<CompaniesPage />} />
               <Route path="/company/:domain" element={<TargetDetail />} />
 
               {/* Lists */}
@@ -129,15 +131,8 @@ function App() {
               {/* Upload */}
               <Route path="/upload" element={<UploadPage />} />
 
-              {/* Analytics (placeholder) */}
-              <Route
-                path="/analytics"
-                element={
-                  <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--mantine-color-dimmed)' }}>
-                    Analytics coming soon...
-                  </div>
-                }
-              />
+              {/* Analytics - Traffic & Performance */}
+              <Route path="/analytics" element={<AnalyticsPage />} />
 
               {/* Alerts */}
               <Route path="/alerts" element={<AlertsPage />} />

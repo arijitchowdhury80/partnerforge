@@ -58,6 +58,8 @@ import { TechStackCard } from '@/components/intelligence/TechStackCard';
 import { TrafficCard } from '@/components/intelligence/TrafficCard';
 import { FinancialCard } from '@/components/intelligence/FinancialCard';
 import { CompetitorCard } from '@/components/intelligence/CompetitorCard';
+import { HiringCard, type HiringCardData } from '@/components/intelligence/HiringCard';
+import { ExecutiveCard, type ExecutiveData as ExecutiveCardData } from '@/components/intelligence/ExecutiveCard';
 import type { Company, TechStackData, TrafficData, FinancialData, CompetitorData } from '@/types';
 
 export function TargetDetail() {
@@ -110,6 +112,18 @@ export function TargetDetail() {
     queryKey: ['intel', domain, 'm05'],
     queryFn: () => modules.competitors(domain!),
     enabled: !!domain && activeTab === 'competitors',
+  });
+
+  const { data: hiringData, isLoading: hiringLoading } = useQuery({
+    queryKey: ['intel', domain, 'm06'],
+    queryFn: () => modules.hiring(domain!),
+    enabled: !!domain && activeTab === 'hiring',
+  });
+
+  const { data: executiveData, isLoading: executiveLoading } = useQuery({
+    queryKey: ['intel', domain, 'm09'],
+    queryFn: () => modules.executive(domain!),
+    enabled: !!domain && activeTab === 'executives',
   });
 
   // Enrichment mutation
@@ -217,6 +231,9 @@ export function TargetDetail() {
               <Tabs.Tab value="competitors" leftSection={<IconUsers size={16} />}>
                 Competitors
               </Tabs.Tab>
+              <Tabs.Tab value="hiring" leftSection={<IconBriefcase size={16} />}>
+                Hiring
+              </Tabs.Tab>
               <Tabs.Tab value="executives" leftSection={<IconQuote size={16} />}>
                 Executives
               </Tabs.Tab>
@@ -270,9 +287,22 @@ export function TargetDetail() {
               />
             </Tabs.Panel>
 
+            {/* Hiring Tab */}
+            <Tabs.Panel value="hiring" p="lg">
+              <HiringCard
+                data={hiringData?.data as HiringCardData}
+                source={hiringData?.source}
+                isLoading={hiringLoading}
+              />
+            </Tabs.Panel>
+
             {/* Executives Tab */}
             <Tabs.Panel value="executives" p="lg">
-              <ExecutivesTab domain={domain!} />
+              <ExecutiveCard
+                data={executiveData?.data as ExecutiveCardData}
+                source={executiveData?.source}
+                isLoading={executiveLoading}
+              />
             </Tabs.Panel>
 
             {/* Signals Tab */}
