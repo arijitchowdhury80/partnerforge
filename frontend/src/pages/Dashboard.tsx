@@ -20,6 +20,8 @@ import {
   Select,
   Box,
   Notification,
+  Chip,
+  Stack,
 } from '@mantine/core';
 import {
   IconMinus,
@@ -364,65 +366,138 @@ export function Dashboard() {
                 </Text>
               </div>
 
-              {/* Partner Selection Only - Products shown in Distribution Grid below */}
-              <Select
-                label="Partner"
-                placeholder="Select partner..."
-                value={selection.partner.key === 'all' ? null : selection.partner.key}
-                onChange={(value) => {
-                  if (value) {
-                    const partner = partners.find(p => p.key === value);
-                    if (partner) selectPartner(partner);
-                  } else {
-                    // Clear selection
-                    selectPartner(partners[0]); // All Partners
-                  }
-                }}
-                data={partners.filter(p => p.key !== 'all').map(p => ({
-                  value: p.key,
-                  label: p.name,
-                }))}
-                w={220}
-                size="md"
-                clearable
-                styles={{
-                  input: {
-                    backgroundColor: '#ffffff',
-                    borderColor: COLORS.GRAY_200,
-                    color: COLORS.GRAY_900,
-                    fontSize: '14px',
-                  },
-                  label: {
-                    color: COLORS.GRAY_700,
-                    fontWeight: 600,
-                    marginBottom: 4,
-                  },
-                  dropdown: {
-                    backgroundColor: '#ffffff',
-                    borderColor: COLORS.GRAY_200,
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                  },
-                  option: {
-                    color: COLORS.GRAY_900,
-                    fontSize: '14px',
-                    padding: '10px 14px',
-                    '&[data-selected]': {
-                      backgroundColor: COLORS.ALGOLIA_NEBULA_BLUE,
-                      color: '#ffffff',
-                    },
-                    '&[data-hovered]': {
-                      backgroundColor: COLORS.GRAY_100,
+              {/* Partner and Product Selection */}
+              <Stack gap="sm" align="flex-end">
+                <Select
+                  label="Partner"
+                  placeholder="Select partner..."
+                  value={selection.partner.key === 'all' ? null : selection.partner.key}
+                  onChange={(value) => {
+                    if (value) {
+                      const partner = partners.find(p => p.key === value);
+                      if (partner) selectPartner(partner);
+                    } else {
+                      // Clear selection
+                      selectPartner(partners[0]); // All Partners
+                    }
+                  }}
+                  data={partners.filter(p => p.key !== 'all').map(p => ({
+                    value: p.key,
+                    label: p.name,
+                  }))}
+                  w={220}
+                  size="md"
+                  clearable
+                  styles={{
+                    input: {
+                      backgroundColor: '#ffffff',
+                      borderColor: COLORS.GRAY_200,
                       color: COLORS.GRAY_900,
+                      fontSize: '14px',
                     },
-                  },
-                }}
-              />
+                    label: {
+                      color: COLORS.GRAY_700,
+                      fontWeight: 600,
+                      marginBottom: 4,
+                    },
+                    dropdown: {
+                      backgroundColor: '#ffffff',
+                      borderColor: COLORS.GRAY_200,
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                    },
+                    option: {
+                      color: COLORS.GRAY_900,
+                      fontSize: '14px',
+                      padding: '10px 14px',
+                      '&[data-selected]': {
+                        backgroundColor: COLORS.ALGOLIA_NEBULA_BLUE,
+                        color: '#ffffff',
+                      },
+                      '&[data-hovered]': {
+                        backgroundColor: COLORS.GRAY_100,
+                        color: COLORS.GRAY_900,
+                      },
+                    },
+                  }}
+                />
+
+                {/* Product Selector - shows when partner has multiple products */}
+                {hasPartnerSelected && selection.partner.products.length > 1 && (
+                  <div>
+                    <Text size="xs" c={COLORS.GRAY_500} fw={500} mb={6}>
+                      Filter by Product
+                    </Text>
+                    <Chip.Group
+                      value={selection.product?.key || 'all'}
+                      onChange={(value) => {
+                        if (value === 'all') {
+                          selectProduct(null); // All products
+                        } else {
+                          const product = selection.partner.products.find(p => p.key === value);
+                          selectProduct(product || null);
+                        }
+                      }}
+                    >
+                      <Group gap={8}>
+                        <Chip
+                          value="all"
+                          variant="filled"
+                          size="sm"
+                          styles={{
+                            label: {
+                              fontSize: '13px',
+                              fontWeight: 500,
+                              paddingLeft: 12,
+                              paddingRight: 12,
+                            },
+                          }}
+                        >
+                          All Products
+                        </Chip>
+                        {selection.partner.products.map(product => (
+                          <Chip
+                            key={product.key}
+                            value={product.key}
+                            variant="filled"
+                            size="sm"
+                            styles={{
+                              label: {
+                                fontSize: '13px',
+                                fontWeight: 500,
+                                paddingLeft: 12,
+                                paddingRight: 12,
+                              },
+                            }}
+                          >
+                            {product.shortName}
+                            {product.count !== undefined && product.count > 0 && (
+                              <Badge
+                                size="xs"
+                                variant="light"
+                                color="gray"
+                                ml={6}
+                                styles={{ root: { fontSize: '10px', padding: '0 6px' } }}
+                              >
+                                {product.count.toLocaleString()}
+                              </Badge>
+                            )}
+                          </Chip>
+                        ))}
+                      </Group>
+                    </Chip.Group>
+                  </div>
+                )}
+              </Stack>
             </Group>
 
             {/* Formula Display - only show when partner selected */}
             {hasPartnerSelected && (
               <Box mt="lg" pt="lg" style={{ borderTop: `1px solid ${COLORS.GRAY_200}` }}>
-                <FormulaDisplay partnerName={selectedPartner.name} partnerKey={selectedPartner.key} />
+                <FormulaDisplay
+                  partnerName={selectedPartner.name}
+                  partnerKey={selectedPartner.key}
+                  productName={selection.product?.name}
+                />
               </Box>
             )}
           </Paper>
@@ -602,16 +677,18 @@ export function Dashboard() {
 interface FormulaDisplayProps {
   partnerName: string;
   partnerKey: string;
+  productName?: string;
 }
 
-function FormulaDisplay({ partnerName, partnerKey }: FormulaDisplayProps) {
+function FormulaDisplay({ partnerName, partnerKey, productName }: FormulaDisplayProps) {
   const PartnerLogo = getPartnerLogo(partnerKey);
+  const displayName = productName ? `${partnerName} ${productName}` : partnerName;
 
   return (
     <Group gap="sm" style={{ background: COLORS.GRAY_100, padding: '8px 16px', borderRadius: 8 }}>
       <Group gap={6}>
         <PartnerLogo size={20} />
-        <Text size="sm" fw={500} c={COLORS.GRAY_700}>{partnerName}</Text>
+        <Text size="sm" fw={500} c={COLORS.GRAY_700}>{displayName}</Text>
       </Group>
       <IconMinus size={14} style={{ color: COLORS.GRAY_500 }} />
       <Group gap={6}>
