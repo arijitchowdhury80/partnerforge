@@ -970,22 +970,37 @@ a:hover, .algolia-link:hover {
 
 /* =============================================================================
  * MANTINE PAGINATION OVERRIDES
- * Consistent pagination styling
+ * Consistent pagination styling with proper contrast
  * ============================================================================= */
 
 .mantine-Pagination-control {
-  color: #334155 !important;
-  border-color: #e2e8f0 !important;
+  color: #1e293b !important;
+  border: 1px solid #cbd5e1 !important;
+  background-color: #ffffff !important;
+  font-weight: 500 !important;
 }
 
 .mantine-Pagination-control:hover:not([data-active]):not([data-disabled]) {
   background-color: #f1f5f9 !important;
+  border-color: #94a3b8 !important;
 }
 
 .mantine-Pagination-control[data-active] {
   background-color: #003DFF !important;
   border-color: #003DFF !important;
   color: #ffffff !important;
+}
+
+.mantine-Pagination-control[data-disabled] {
+  color: #94a3b8 !important;
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  opacity: 1 !important;
+}
+
+/* Dots separator */
+.mantine-Pagination-dots {
+  color: #64748b !important;
 }
 
 /* =============================================================================
