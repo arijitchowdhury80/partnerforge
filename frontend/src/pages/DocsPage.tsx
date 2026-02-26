@@ -147,22 +147,76 @@ const docSections: DocSection[] = [
 // Mermaid Diagram Renderer using mermaid.ink
 // =============================================================================
 
+// Algolia-branded Mermaid theme configuration
+// Uses Nebula Blue (#003DFF), Accent Purple (#5468FF), Space Gray (#21243D)
+const ALGOLIA_MERMAID_THEME = `%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#003DFF',
+    'primaryTextColor': '#ffffff',
+    'primaryBorderColor': '#5468FF',
+    'secondaryColor': '#5468FF',
+    'secondaryTextColor': '#ffffff',
+    'secondaryBorderColor': '#003DFF',
+    'tertiaryColor': '#21243D',
+    'tertiaryTextColor': '#ffffff',
+    'tertiaryBorderColor': '#5468FF',
+    'lineColor': '#5468FF',
+    'textColor': '#21243D',
+    'mainBkg': '#f8fafc',
+    'nodeBorder': '#003DFF',
+    'clusterBkg': '#f1f5f9',
+    'clusterBorder': '#5468FF',
+    'titleColor': '#003DFF',
+    'edgeLabelBackground': '#ffffff',
+    'nodeTextColor': '#21243D',
+    'actorBkg': '#003DFF',
+    'actorTextColor': '#ffffff',
+    'actorBorder': '#5468FF',
+    'signalColor': '#5468FF',
+    'labelBoxBkgColor': '#f8fafc',
+    'labelBoxBorderColor': '#5468FF',
+    'noteBkgColor': '#fffbeb',
+    'noteTextColor': '#21243D',
+    'noteBorderColor': '#f59e0b',
+    'activationBkgColor': '#e0e7ff',
+    'activationBorderColor': '#003DFF',
+    'sequenceNumberColor': '#ffffff',
+    'sectionBkgColor': '#f1f5f9',
+    'altSectionBkgColor': '#e2e8f0',
+    'sectionBkgColor2': '#f8fafc',
+    'taskBkgColor': '#003DFF',
+    'taskTextColor': '#ffffff',
+    'taskBorderColor': '#5468FF',
+    'gridColor': '#cbd5e1',
+    'doneTaskBkgColor': '#10b981',
+    'doneTaskBorderColor': '#059669',
+    'critBkgColor': '#ef4444',
+    'critBorderColor': '#dc2626',
+    'todayLineColor': '#f97316',
+    'fontFamily': 'Source Sans Pro, system-ui, sans-serif',
+    'fontSize': '14px'
+  }
+}}%%
+`;
+
 /**
  * Renders Mermaid diagrams using the mermaid.ink service
- * Simple format: https://mermaid.ink/img/{base64-encoded-diagram}
+ * Injects Algolia branding theme for professional appearance
  */
 function MermaidDiagram({ code, index }: { code: string; index: number }) {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Clean up the mermaid code
+  // Clean up the mermaid code and inject Algolia theme
   const cleanCode = code.trim();
+  const themedCode = ALGOLIA_MERMAID_THEME + cleanCode;
 
   // Base64 encoding with UTF-8 support (handles emojis and special characters)
   // btoa() alone fails on non-ASCII, so we use encodeURIComponent + unescape trick
   let base64: string;
   try {
-    base64 = btoa(unescape(encodeURIComponent(cleanCode)));
+    base64 = btoa(unescape(encodeURIComponent(themedCode)));
   } catch {
     // If encoding fails, show fallback
     return (
@@ -337,9 +391,6 @@ function DiagramGallery({ markdown }: { markdown: string }) {
       </Box>
     );
   }
-
-  // Debug: Show what we found
-  console.log('[DiagramGallery] Found diagrams:', diagrams.length, diagrams.map(d => d.title));
 
   // If no diagrams found, show helpful message
   if (diagrams.length === 0) {
@@ -748,18 +799,8 @@ export function DocsPage() {
     ));
   };
 
-  // DEBUG: Log what section we're on
-  console.log('[DocsPage] activeSection:', activeSection, 'isDiagrams:', activeSection === 'diagrams');
-
   return (
     <Container size="xl" py="xl">
-      {/* VERSION INDICATOR - Remove after confirming deployment */}
-      <Paper p="xs" mb="md" bg="blue.9" style={{ textAlign: 'center' }}>
-        <Text size="xs" c="white" fw={700}>
-          📚 Docs v2.1 | Section: {activeSection} | Gallery: {activeSection === 'diagrams' ? 'YES' : 'NO'}
-        </Text>
-      </Paper>
-
       <Group align="flex-start" gap="xl">
         {/* Sidebar Navigation */}
         <Paper
