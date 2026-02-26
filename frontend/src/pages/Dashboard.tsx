@@ -5,7 +5,7 @@
  * Light theme with Algolia Blue (#003DFF) accents.
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, useMotionValue, useTransform, animate, useInView } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -62,6 +62,12 @@ const TIER_COLORS = {
   cold: { bg: '#f8fafc', border: '#e2e8f0', text: '#64748b', badge: 'gray' },
 };
 
+// Column filter type for TargetList
+interface ColumnFilter {
+  column: string;
+  values: string[];
+}
+
 export function Dashboard() {
   const { selectedPartner, selection } = usePartner();
   const [filters, setFilters] = useState<FilterState>({
@@ -69,6 +75,20 @@ export function Dashboard() {
     sort_order: 'desc',
   });
   const [page, setPage] = useState(1);
+  const [columnFilters, setColumnFilters] = useState<ColumnFilter[]>([]);
+
+  // Handle column filter changes from TargetList
+  const handleColumnFilterChange = (column: string, values: string[]) => {
+    setColumnFilters(prev => {
+      const existing = prev.filter(f => f.column !== column);
+      if (values.length > 0) {
+        return [...existing, { column, values }];
+      }
+      return existing;
+    });
+    // Reset to page 1 when filters change
+    setPage(1);
+  };
 
   // Fetch stats
   const { data: stats } = useQuery({
@@ -111,6 +131,31 @@ export function Dashboard() {
   const warmCount = stats?.warm_leads || 0;
   const coldCount = stats?.cold_leads || 0;
   const total = stats?.total_companies || 0;
+
+  // Apply client-side filtering based on column filters
+  const filteredCompanies = useMemo(() => {
+    if (!companies?.data || columnFilters.length === 0) {
+      return companies?.data || [];
+    }
+
+    return companies.data.filter(company => {
+      return columnFilters.every(filter => {
+        if (filter.values.length === 0) return true;
+
+        if (filter.column === 'status') {
+          return filter.values.includes(company.status);
+        }
+        if (filter.column === 'vertical') {
+          return filter.values.includes(company.vertical || '');
+        }
+        if (filter.column === 'partner_tech') {
+          // Match if any of the company's techs are in the filter
+          return company.partner_tech?.some(tech => filter.values.includes(tech)) || false;
+        }
+        return true;
+      });
+    });
+  }, [companies?.data, columnFilters]);
 
   return (
     <div style={{ background: GRAY_50, minHeight: '100vh' }}>
@@ -241,10 +286,12 @@ export function Dashboard() {
             </Group>
 
             <TargetList
-              companies={companies?.data || []}
+              companies={filteredCompanies}
               isLoading={companiesLoading}
               pagination={companies?.pagination}
               onPageChange={setPage}
+              columnFilters={columnFilters}
+              onColumnFilterChange={handleColumnFilterChange}
             />
           </Paper>
         </motion.div>

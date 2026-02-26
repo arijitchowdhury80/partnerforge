@@ -109,7 +109,7 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <MantineProvider theme={theme} defaultColorScheme="dark">
+      <MantineProvider theme={theme} defaultColorScheme="light">
         <PartnerProvider>
           <Notifications position="top-right" limit={5} />
           <BrowserRouter>
