@@ -76,6 +76,12 @@ from .orchestrator import (
     get_modules_by_wave,
 )
 
+# Domain Enrichment (Real API Calls)
+from .enrichment import (
+    EnrichmentService,
+    get_enrichment_service,
+)
+
 __all__ = [
     # Source Validation
     "SourceCitation",
@@ -136,4 +142,7 @@ __all__ = [
     "get_module_info",
     "get_all_modules",
     "get_modules_by_wave",
+    # Domain Enrichment
+    "EnrichmentService",
+    "get_enrichment_service",
 ]

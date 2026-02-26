@@ -22,6 +22,7 @@ import uuid
 import logging
 
 from ..deps import get_db, get_current_user, CurrentUser
+from ...services.enrichment import get_enrichment_service
 from ..schemas.enrich import (
     # Request schemas
     EnrichRequest,
@@ -117,7 +118,6 @@ def _estimate_duration(modules: List[str], force: bool) -> int:
 async def start_enrichment(
     domain: str,
     request: EnrichRequest = None,
-    background_tasks: BackgroundTasks = None,
     db: AsyncSession = Depends(get_db),
     current_user: CurrentUser = Depends(get_current_user),
 ):
@@ -182,13 +182,48 @@ async def start_enrichment(
         f"({len(modules)} modules, priority={request.priority.value})"
     )
 
-    # TODO: Queue actual enrichment task via Celery
-    # background_tasks.add_task(run_enrichment, job_id)
+    # Run enrichment synchronously for immediate results
+    try:
+        job["status"] = EnrichmentStatus.RUNNING
+        job["started_at"] = datetime.utcnow()
+        job["current_wave"] = 1
+
+        # Call the real enrichment service
+        enrichment_service = get_enrichment_service()
+        result = await enrichment_service.enrich_domain(domain, db, force=request.force)
+
+        # Update job with results
+        if result.get("success"):
+            job["status"] = EnrichmentStatus.COMPLETED
+            for module in result.get("modules_completed", []):
+                job["module_results"][module] = {
+                    "status": "completed",
+                    "data_points": 1,
+                    "source_url": result.get(module, {}).get("source_url") if isinstance(result.get(module), dict) else None,
+                }
+        else:
+            job["status"] = EnrichmentStatus.FAILED
+            job["errors"] = result.get("errors", [])
+
+        for module in result.get("modules_failed", []):
+            job["module_results"][module] = {
+                "status": "failed",
+                "error_message": "API call failed",
+            }
+
+        job["completed_at"] = datetime.utcnow()
+        logger.info(f"Enrichment completed for {domain}: {job['status'].value}")
+
+    except Exception as e:
+        logger.error(f"Enrichment failed for {domain}: {e}")
+        job["status"] = EnrichmentStatus.FAILED
+        job["errors"].append(str(e))
+        job["completed_at"] = datetime.utcnow()
 
     return EnrichResponse(
         job_id=job_id,
         domain=domain,
-        status=EnrichmentStatus.QUEUED,
+        status=job["status"],
         modules=modules,
         waves=waves,
         priority=request.priority,
