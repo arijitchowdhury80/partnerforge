@@ -184,14 +184,14 @@ def run_competitive_analysis(
     """Run full competitive intelligence analysis."""
 
     print(f"\n{'='*60}")
-    print(f"🔍 COMPETITIVE INTELLIGENCE ANALYSIS")
+    print("🔍 COMPETITIVE INTELLIGENCE ANALYSIS")
     print(f"{'='*60}")
     print(f"   Target: {target_domain}")
     print(f"   Partner Filter: {partner_filter or 'All'}")
     print(f"   Max Competitors: {max_competitors}")
 
     # Step 1: Get target company tech stack
-    print(f"\n📡 Step 1: Analyzing target company...")
+    print("\n📡 Step 1: Analyzing target company...")
     target_tech = fetch_builtwith_technologies(target_domain)
     target_search, target_has_algolia = detect_search_provider(target_tech["tech_names"])
     target_partners = detect_partner_tech(target_tech["tech_names"])
@@ -201,7 +201,7 @@ def run_competitive_analysis(
     print(f"   Partner Techs: {', '.join(target_partners) or 'None'}")
 
     # Step 2: Get competitors from SimilarWeb
-    print(f"\n📡 Step 2: Fetching competitors from SimilarWeb...")
+    print("\n📡 Step 2: Fetching competitors from SimilarWeb...")
     competitors_raw = fetch_similarweb_competitors(target_domain)
 
     if not competitors_raw:
@@ -273,21 +273,21 @@ def run_competitive_analysis(
 
     # Summary
     print(f"\n{'='*60}")
-    print(f"📊 ANALYSIS SUMMARY")
+    print("📊 ANALYSIS SUMMARY")
     print(f"{'='*60}")
     print(f"   Competitors Analyzed: {len(results['competitors'])}")
     print(f"   Already on Algolia: {len(results['algolia_users'])}")
     print(f"   Displacement Opportunities: {len(results['displacement_opportunities'])}")
 
     if results["displacement_opportunities"]:
-        print(f"\n🎯 DISPLACEMENT TARGETS:")
+        print("\n🎯 DISPLACEMENT TARGETS:")
         for opp in results["displacement_opportunities"]:
             print(f"   • {opp['domain']}")
             print(f"     Partners: {', '.join(opp['partner_techs'])}")
             print(f"     Current Search: {opp['search_provider']}")
 
     if results["algolia_users"]:
-        print(f"\n✅ ALREADY ON ALGOLIA:")
+        print("\n✅ ALREADY ON ALGOLIA:")
         for user in results["algolia_users"]:
             print(f"   • {user['domain']}")
 

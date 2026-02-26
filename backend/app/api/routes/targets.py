@@ -20,13 +20,10 @@ from typing import Optional, List
 import logging
 import json
 
-from ..deps import get_db, get_current_user, get_pagination, CurrentUser, PaginationParams
+from ..deps import get_db, get_current_user, CurrentUser
 from ..schemas.targets import (
     # Enums
     TargetStatus,
-    SortField,
-    SortOrder,
-    EnrichmentLevel,
     # Response schemas
     TargetSummary,
     TargetResponse,
@@ -44,7 +41,7 @@ from ..schemas.targets import (
     VerticalBreakdown,
     PartnerTechBreakdown,
 )
-from ...models import DisplacementTarget, CompetitiveIntel
+from ...models import DisplacementTarget
 from ...config import get_settings
 
 logger = logging.getLogger(__name__)
@@ -115,51 +112,59 @@ def target_to_summary(target: DisplacementTarget) -> TargetSummary:
 
 
 def target_to_response(target: DisplacementTarget) -> TargetResponse:
-    """Convert DisplacementTarget model to TargetResponse schema."""
-    return TargetResponse(
-        id=target.id,
-        domain=target.domain,
-        company_name=target.company_name,
-        partner_tech=target.partner_tech,
-        vertical=target.vertical,
-        country=target.country,
-        city=target.city,
-        state=target.state,
-        tech_spend=target.tech_spend,
-        emails=parse_json_field(target.emails),
-        phones=parse_json_field(target.phones),
-        socials=parse_json_field(target.socials),
-        exec_titles=parse_json_field(target.exec_titles),
-        sw_monthly_visits=target.sw_monthly_visits,
-        sw_bounce_rate=target.sw_bounce_rate,
-        sw_pages_per_visit=target.sw_pages_per_visit,
-        sw_avg_duration=target.sw_avg_duration,
-        sw_search_traffic_pct=target.sw_search_traffic_pct,
-        sw_rank_global=target.sw_rank_global,
-        icp_tier=target.icp_tier,
-        icp_score=target.icp_score,
-        icp_tier_name=target.icp_tier_name,
-        score_reasons=parse_json_field(target.score_reasons),
-        score_breakdown=parse_json_dict(target.score_breakdown),
-        ticker=target.ticker,
-        is_public=target.is_public if target.is_public is not None else False,
-        revenue=target.revenue,
-        gross_margin=target.gross_margin,
-        traffic_growth=target.traffic_growth,
-        current_search=target.current_search,
-        matched_case_studies=parse_json_field(target.matched_case_studies),
-        lead_score=target.lead_score,
-        trigger_events=parse_json_field(target.trigger_events),
-        exec_quote=target.exec_quote,
-        exec_name=target.exec_name,
-        exec_title=target.exec_title,
-        quote_source=target.quote_source,
-        competitors_using_algolia=parse_json_field(target.competitors_using_algolia),
-        displacement_angle=target.displacement_angle,
-        enrichment_level=target.enrichment_level,
-        last_enriched=target.last_enriched,
-        created_at=target.created_at,
-    )
+    """
+    Convert DisplacementTarget model to TargetResponse schema.
+
+    Note: JSON string fields are passed as-is to let Pydantic's model validator
+    handle parsing. This avoids double-parsing issues.
+    """
+    # Build dict first, let Pydantic handle JSON parsing
+    data = {
+        "id": target.id,
+        "domain": target.domain,
+        "company_name": target.company_name,
+        "partner_tech": target.partner_tech,
+        "vertical": target.vertical,
+        "country": target.country,
+        "city": target.city,
+        "state": target.state,
+        "tech_spend": target.tech_spend,
+        # JSON fields - pass raw strings for Pydantic validator to parse
+        "emails": target.emails,
+        "phones": target.phones,
+        "socials": target.socials,
+        "exec_titles": target.exec_titles,
+        "sw_monthly_visits": target.sw_monthly_visits,
+        "sw_bounce_rate": target.sw_bounce_rate,
+        "sw_pages_per_visit": target.sw_pages_per_visit,
+        "sw_avg_duration": target.sw_avg_duration,
+        "sw_search_traffic_pct": target.sw_search_traffic_pct,
+        "sw_rank_global": target.sw_rank_global,
+        "icp_tier": target.icp_tier,
+        "icp_score": target.icp_score,
+        "icp_tier_name": target.icp_tier_name,
+        "score_reasons": target.score_reasons,
+        "score_breakdown": target.score_breakdown,
+        "ticker": target.ticker,
+        "is_public": target.is_public if target.is_public is not None else False,
+        "revenue": target.revenue,
+        "gross_margin": target.gross_margin,
+        "traffic_growth": target.traffic_growth,
+        "current_search": target.current_search,
+        "matched_case_studies": target.matched_case_studies,
+        "lead_score": target.lead_score,
+        "trigger_events": target.trigger_events,
+        "exec_quote": target.exec_quote,
+        "exec_name": target.exec_name,
+        "exec_title": target.exec_title,
+        "quote_source": target.quote_source,
+        "competitors_using_algolia": target.competitors_using_algolia,
+        "displacement_angle": target.displacement_angle,
+        "enrichment_level": target.enrichment_level,
+        "last_enriched": target.last_enriched,
+        "created_at": target.created_at,
+    }
+    return TargetResponse(**data)
 
 
 # =============================================================================

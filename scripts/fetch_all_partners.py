@@ -20,7 +20,6 @@ import asyncio
 import httpx
 import json
 import os
-import sys
 from datetime import datetime
 from pathlib import Path
 
@@ -103,7 +102,7 @@ async def fetch_builtwith_list(tech_name: str, builtwith_tech: str) -> list:
     print(f"  Fetching companies using {tech_name}...")
 
     # BuiltWith Free API endpoint
-    url = f"https://api.builtwith.com/free1/api.json"
+    url = "https://api.builtwith.com/free1/api.json"
     params = {
         "KEY": BUILTWITH_API_KEY,
         "LOOKUP": builtwith_tech,

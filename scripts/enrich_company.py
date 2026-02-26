@@ -21,7 +21,6 @@ import sqlite3
 import subprocess
 import json
 import argparse
-import re
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 
@@ -262,7 +261,7 @@ def enrich_company(domain: str, ticker: str = None, conn: sqlite3.Connection = N
         cursor.execute("UPDATE displacement_targets SET ticker = ?, is_public = 1 WHERE id = ?", (ticker, target_id))
 
         # Fetch financial data
-        print(f"   💰 Fetching financials...")
+        print("   💰 Fetching financials...")
         fin_data = fetch_yahoo_finance_data(ticker)
         if "error" not in fin_data:
             result["financials"] = fin_data
@@ -274,7 +273,7 @@ def enrich_company(domain: str, ticker: str = None, conn: sqlite3.Connection = N
                 VALUES (?, ?, ?, ?, 'yahoo_finance', ?)
             """, (domain, ticker, company_name, fin_data.get("current_price"), datetime.now().isoformat()))
     else:
-        print(f"   📊 Private company (no ticker)")
+        print("   📊 Private company (no ticker)")
         cursor.execute("UPDATE displacement_targets SET is_public = 0 WHERE id = ?", (target_id,))
 
     # 2. Detect signals based on existing data
@@ -319,7 +318,7 @@ def enrich_company(domain: str, ticker: str = None, conn: sqlite3.Connection = N
     conn.commit()
 
     # Summary
-    print(f"\n   📊 Results:")
+    print("\n   📊 Results:")
     print(f"      ICP Score: {icp_score}")
     print(f"      Signal Score: {priority_score - icp_score:+d}")
     print(f"      Priority Score: {priority_score}")
@@ -361,7 +360,7 @@ def enrich_top_n(n: int = 10):
 
     # Summary
     print(f"\n{'='*60}")
-    print(f"✅ Enrichment Complete!")
+    print("✅ Enrichment Complete!")
     print(f"   Total: {len(results)}")
     print(f"   With financials: {sum(1 for r in results if r.get('financials'))}")
 

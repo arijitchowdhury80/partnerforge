@@ -10,7 +10,6 @@ This script:
 
 import sqlite3
 import json
-from datetime import datetime
 
 DB_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/PartnerForge/data/partnerforge.db"
 

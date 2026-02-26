@@ -609,7 +609,7 @@ async def init_database(database_url: str, drop_existing: bool = False, dry_run:
     """Initialize the database with the schema."""
     import asyncpg
 
-    logger.info(f"Connecting to database...")
+    logger.info("Connecting to database...")
 
     # Convert SQLAlchemy URL to asyncpg format if needed
     if database_url.startswith("postgresql+asyncpg://"):

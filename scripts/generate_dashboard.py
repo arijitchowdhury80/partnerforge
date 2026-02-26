@@ -173,12 +173,12 @@ def generate_html(data):
         try:
             if t[22]:  # financials_json at index 22
                 financials = json.loads(t[22]) if isinstance(t[22], str) else t[22]
-        except:
+        except (json.JSONDecodeError, TypeError, IndexError):
             pass
         try:
             if t[24]:  # tech_stack_json at index 24
                 tech_stack = json.loads(t[24]) if isinstance(t[24], str) else t[24]
-        except:
+        except (json.JSONDecodeError, TypeError, IndexError):
             pass
 
         # Parse trigger events (newline-separated or JSON array)
@@ -186,7 +186,7 @@ def generate_html(data):
         if t[15]:
             try:
                 trigger_events = json.loads(t[15]) if t[15].startswith('[') else t[15].split('\n')
-            except:
+            except (json.JSONDecodeError, TypeError, AttributeError):
                 trigger_events = [t[15]] if t[15] else []
 
         targets_json.append({
@@ -2373,19 +2373,19 @@ def main():
         f.write(html)
 
     print(f"   💾 Saved to {OUTPUT_PATH}")
-    print(f"\n✅ Dashboard generated successfully!")
-    print(f"   - Search bar with live filtering")
-    print(f"   - Column sorting (click headers)")
-    print(f"   - CSV export button")
-    print(f"   - Score breakdown tooltips")
-    print(f"   - Visual score progress bars")
-    print(f"   - FULL-PAGE detail view (click any row):")
-    print(f"     • Dark theme (#1a1a2e background)")
-    print(f"     • Signal row (Budget/Pain/Timing)")
-    print(f"     • Two-column layout (Metrics + Trigger Events)")
-    print(f"     • Competitive Advantage card (glassmorphism)")
-    print(f"     • Executive Quote section")
-    print(f"     • Tabbed sections: Financials | Quotes | Hiring | Tech Stack | Full Intel")
+    print("\n✅ Dashboard generated successfully!")
+    print("   - Search bar with live filtering")
+    print("   - Column sorting (click headers)")
+    print("   - CSV export button")
+    print("   - Score breakdown tooltips")
+    print("   - Visual score progress bars")
+    print("   - FULL-PAGE detail view (click any row):")
+    print("     • Dark theme (#1a1a2e background)")
+    print("     • Signal row (Budget/Pain/Timing)")
+    print("     • Two-column layout (Metrics + Trigger Events)")
+    print("     • Competitive Advantage card (glassmorphism)")
+    print("     • Executive Quote section")
+    print("     • Tabbed sections: Financials | Quotes | Hiring | Tech Stack | Full Intel")
 
 
 if __name__ == "__main__":

@@ -19,12 +19,12 @@ import sqlite3
 import argparse
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List
 from pathlib import Path
 
 try:
     import psycopg2
-    from psycopg2.extras import execute_values, Json
+    from psycopg2.extras import Json
 except ImportError:
     print("ERROR: psycopg2 not installed. Run: pip install psycopg2-binary")
     sys.exit(1)

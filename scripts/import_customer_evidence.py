@@ -24,7 +24,7 @@ import json
 import re
 import os
 from datetime import datetime
-from typing import Optional, Dict, List, Any
+from typing import Optional, List, Any
 import argparse
 
 # Path to Excel file
@@ -68,7 +68,7 @@ def parse_date(val: Any) -> Optional[str]:
         if isinstance(val, datetime):
             return val.strftime('%Y-%m-%d')
         return pd.to_datetime(val).strftime('%Y-%m-%d')
-    except:
+    except (ValueError, TypeError):
         return None
 
 
@@ -667,7 +667,7 @@ class PartnerForgeImporter:
                 algolia_arr=arr_value,
                 algolia_cs_coverage=clean_string(row.get('cs_coverage')),
                 has_logo_rights=1 if row.get('consent_logo__c') == 1 else 0,
-                has_case_study_consent=1 if row.get('consent_casestudy__c') == True else 0,
+                has_case_study_consent=1 if row.get('consent_casestudy__c') else 0,
                 has_reference_consent=1 if row.get('consent_referencecall__c') == 1 else 0,
                 partner_populations=json.dumps([partner_pop]) if partner_pop else None
             )

@@ -13,7 +13,6 @@ import sqlite3
 import json
 import subprocess
 import argparse
-from datetime import datetime
 
 import os
 DB_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/PartnerForge/data/partnerforge.db"

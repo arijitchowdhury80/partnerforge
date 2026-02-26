@@ -414,9 +414,6 @@ def create_estimate_citation(
 ) -> SourceCitation:
     """Create citation for estimated/calculated values."""
 
-    # Combine source URLs
-    combined_sources = ", ".join([c.url for c in based_on[:3]])
-
     return SourceCitation(
         url=based_on[0].url if based_on else "calculation",
         source_type=SourceType.ESTIMATE,

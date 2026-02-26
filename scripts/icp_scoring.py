@@ -24,7 +24,7 @@ Based on Algolia's ICP Tier definitions:
 
 import sqlite3
 import json
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple
 
 DB_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/PartnerForge/data/partnerforge.db"
 

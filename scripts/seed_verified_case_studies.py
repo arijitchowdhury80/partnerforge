@@ -8,7 +8,6 @@ Only stores URLs that return HTTP 200.
 
 import sqlite3
 import subprocess
-import json
 from datetime import datetime
 
 DB_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/PartnerForge/data/partnerforge.db"

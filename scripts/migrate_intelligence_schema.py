@@ -11,7 +11,6 @@ Creates new tables for the Search Audit Intelligence merger:
 """
 
 import sqlite3
-from datetime import datetime
 
 DB_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/PartnerForge/data/partnerforge.db"
 
