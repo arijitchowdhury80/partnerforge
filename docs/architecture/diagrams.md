@@ -154,22 +154,22 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    subgraph Inputs["📊 SCORING INPUTS"]
-        V[Vertical<br/>40%]
-        T[Traffic<br/>30%]
-        TS[Tech Spend<br/>20%]
-        PT[Partner Tech<br/>10%]
+    subgraph Inputs[SCORING INPUTS]
+        V[Vertical 40%]
+        T[Traffic 30%]
+        TS[Tech Spend 20%]
+        PT[Partner Tech 10%]
     end
 
-    subgraph Calculation["🧮 CALCULATION"]
-        Calc[Score = V×0.4 + T×0.3 + TS×0.2 + PT×0.1]
+    subgraph Calculation[CALCULATION]
+        Calc[Score = V*0.4 + T*0.3 + TS*0.2 + PT*0.1]
     end
 
-    subgraph Tiers["🎯 ICP TIERS"]
-        Hot[🔴 Hot<br/>80-100]
-        Warm[🟠 Warm<br/>60-79]
-        Cool[🟣 Cool<br/>40-59]
-        Cold[⚫ Cold<br/>0-39]
+    subgraph Tiers[ICP TIERS]
+        Hot[Hot 80-100]
+        Warm[Warm 60-79]
+        Cool[Cool 40-59]
+        Cold[Cold 0-39]
     end
 
     Inputs --> Calculation
@@ -435,7 +435,7 @@ flowchart TB
     end
 
     subgraph Vercel["🔺 Vercel"]
-        FE[Frontend<br/>React + Vite]
+        FE[Frontend - React + Vite]
     end
 
     subgraph Supabase["⚡ Supabase"]
@@ -528,7 +528,7 @@ flowchart TB
     T3 --> Integration
     T4 --> Integration
 
-    Integration[🔄 INTEGRATION PHASE<br/>All threads merge & verify]
+    Integration[INTEGRATION PHASE - All threads merge and verify]
 
     style T1 fill:#003dff,color:#fff
     style T2 fill:#5468ff,color:#fff
