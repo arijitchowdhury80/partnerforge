@@ -145,6 +145,31 @@ async def sample_intel_record(intel_repo, sample_company_context, db_session):
     return record
 
 
+@pytest.fixture
+async def multi_module_data(intel_repo, valid_source_data, db_session):
+    """Create multiple module records for a domain (module-level fixture)."""
+    modules = {
+        "m01_company_context": {
+            **valid_source_data,
+            "company_name": "Multi Module Corp",
+        },
+        "m02_tech_stack": {
+            **valid_source_data,
+            "tech_spend_estimate": 50000,
+        },
+        "m03_traffic": {
+            **valid_source_data,
+            "monthly_visits": 1000000,
+        },
+    }
+
+    for module_id, data in modules.items():
+        await intel_repo.save_module_data("multi.com", module_id, data)
+
+    await db_session.commit()
+    return modules
+
+
 # =============================================================================
 # MODULE REGISTRY TESTS
 # =============================================================================
@@ -290,10 +315,11 @@ class TestSourceCitationValidation:
         WHEN: validate_source_citation() is called
         THEN: Raises SourceCitationError
         """
-        # Arrange
+        # Arrange - use ISO string format for consistency with validation code
+        stale_date = (datetime.utcnow() - timedelta(days=400)).isoformat()  # > 365 days
         data = {
             "source_url": "https://example.com",
-            "source_date": datetime.utcnow() - timedelta(days=400),  # > 365 days
+            "source_date": stale_date,
         }
 
         # Act & Assert
@@ -404,14 +430,20 @@ class TestCRUDOperations:
         self, intel_repo, db_session
     ):
         """
-        GIVEN: Data without source citation
+        GIVEN: Data with source citation but skipping freshness validation
         WHEN: save_module_data() is called with validate_source=False
-        THEN: Creates record without validation
+        THEN: Creates record without freshness validation
+
+        Note: source_url and source_date are still required by database NOT NULL
+        constraints. The validate_source=False only skips freshness validation,
+        not the database-level requirement.
         """
-        # Arrange
+        # Arrange - Must include source_url and source_date due to DB constraints
         data = {
             "company_name": "No Source Corp",
             "vertical": "Tech",
+            "source_url": "https://example.com/no-validation",
+            "source_date": datetime.utcnow(),
         }
 
         # Act
@@ -957,14 +989,16 @@ class TestSpecificModuleQueries:
             {
                 **valid_source_data,
                 "domain": "brief1.com",
-                "brief_content": "Brief content 1",
+                "sixty_second_story": "Brief content 1",
+                "full_brief_markdown": "# Brief 1\n\nFull content here.",
                 "is_approved": True,
                 "generated_at": datetime.utcnow(),
             },
             {
                 **valid_source_data,
                 "domain": "brief2.com",
-                "brief_content": "Brief content 2",
+                "sixty_second_story": "Brief content 2",
+                "full_brief_markdown": "# Brief 2\n\nFull content here.",
                 "is_approved": False,
                 "generated_at": datetime.utcnow() - timedelta(days=1),
             },

@@ -849,9 +849,7 @@ class CompetitiveIntelRepository(BaseRepository[CompetitiveIntel]):
         Returns:
             Created or updated record
         """
-        existing = await self.get_by_field("target_domain", target_domain)
-
-        # Find if this specific competitor already exists
+        # Find if this specific competitor record already exists (composite key lookup)
         query = select(CompetitiveIntel).where(
             and_(
                 CompetitiveIntel.target_domain == target_domain.lower().strip(),

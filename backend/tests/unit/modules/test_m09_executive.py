@@ -666,12 +666,17 @@ class TestM09ExecutiveIntelligenceModule:
         ) as mock_quotes:
             now = datetime.now()
 
+            # Use recent dates so tenure calculation works properly
+            # CIO is 6 months in role (new), CEO is 24 months (established)
+            cio_start = (now - timedelta(days=180)).strftime("%Y-%m")
+            ceo_start = (now - timedelta(days=730)).strftime("%Y-%m")
+
             mock_linkedin.return_value = {
                 "executives": [
                     {
                         "name": "Denise Paulonis",
                         "title": "President & CEO",
-                        "tenure_start": "2022-01",
+                        "tenure_start": ceo_start,
                         "is_active_on_linkedin": True,
                         "source_url": "https://linkedin.com/in/denisepaulonis/",
                         "source_date": now.isoformat(),
@@ -679,7 +684,7 @@ class TestM09ExecutiveIntelligenceModule:
                     {
                         "name": "Scott Lindblom",
                         "title": "SVP & CIO",
-                        "tenure_start": "2023-10",
+                        "tenure_start": cio_start,  # 6 months ago - new in role
                         "is_active_on_linkedin": False,
                         "source_url": "https://linkedin.com/in/scottlindblom/",
                         "source_date": now.isoformat(),

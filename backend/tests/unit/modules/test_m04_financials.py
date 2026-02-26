@@ -267,7 +267,7 @@ class TestM04FinancialProfileModule:
         result = module._calculate_margin_zone(0.08)  # 8%
 
         assert result["classification"] == "RED"
-        assert "hard ROI" in result["implication"].lower()
+        assert "hard roi" in result["implication"].lower()
 
     def test_margin_zone_red_at_threshold(self, module):
         """Test RED zone at exactly 10%."""

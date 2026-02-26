@@ -578,6 +578,11 @@ class TestTrafficAndFinancialFiltering:
         WHEN: list_by_traffic() is called with max
         THEN: Returns targets in traffic range
         """
+        # Fixture traffic values:
+        # - high.com: 50M (excluded - above max)
+        # - medium.com: 5M (included)
+        # - low.com: 500K (included)
+        # - tiny.com: 50K (excluded - below min)
         # Act
         targets = await target_repo.list_by_traffic(
             min_monthly_visits=100000,
@@ -585,7 +590,7 @@ class TestTrafficAndFinancialFiltering:
         )
 
         # Assert
-        assert len(targets) == 3  # medium, low, tiny (but not high)
+        assert len(targets) == 2  # medium and low only
         for target in targets:
             assert 100000 <= target.sw_monthly_visits <= 10000000
 
