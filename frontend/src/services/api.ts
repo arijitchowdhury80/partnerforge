@@ -65,11 +65,12 @@ export async function getStats(): Promise<DashboardStats> {
 // =============================================================================
 
 // Helper to derive status from ICP score
-// Hot: 80+, Warm: 60+, Cool: below 60
-function getStatusFromScore(score: number): 'hot' | 'warm' | 'cool' {
+// Hot: 80+, Warm: 60-79, Cool: 40-59, Cold: <40
+function getStatusFromScore(score: number): 'hot' | 'warm' | 'cool' | 'cold' {
   if (score >= 80) return 'hot';
   if (score >= 60) return 'warm';
-  return 'cool';
+  if (score >= 40) return 'cool';
+  return 'cold';
 }
 
 // Transform API target to frontend Company format
@@ -124,7 +125,8 @@ export async function getCompanies(
 
 export async function getCompany(domain: string): Promise<Company> {
   const { data } = await apiClient.get(`/v1/targets/${domain}`);
-  return data;
+  // Transform API response to frontend Company format
+  return transformTarget(data);
 }
 
 export async function createCompany(domain: string): Promise<Company> {
