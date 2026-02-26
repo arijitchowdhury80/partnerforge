@@ -51,138 +51,157 @@ export function AppShell() {
 
   return (
     <MantineAppShell
-      header={{ height: 110 }}
+      header={{ height: 64 }}
       navbar={{
-        width: 280,
+        width: 260,
         breakpoint: 'sm',
         collapsed: { mobile: !opened },
       }}
       padding="md"
       styles={{
         main: {
-          background: 'var(--mantine-color-dark-8)',
+          background: 'linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%)',
+          minHeight: '100vh',
         },
         navbar: {
-          background: 'linear-gradient(180deg, var(--mantine-color-dark-7), var(--mantine-color-dark-8))',
-          borderRight: '1px solid var(--mantine-color-dark-5)',
+          background: 'rgba(10, 10, 15, 0.95)',
+          backdropFilter: 'blur(20px)',
+          borderRight: '1px solid rgba(255, 255, 255, 0.08)',
         },
         header: {
-          background: 'linear-gradient(90deg, rgba(0, 61, 255, 0.1), rgba(84, 104, 255, 0.05))',
-          backdropFilter: 'blur(10px)',
-          borderBottom: '1px solid rgba(0, 61, 255, 0.2)',
+          background: 'rgba(10, 10, 15, 0.95)',
+          backdropFilter: 'blur(20px)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
         },
       }}
     >
-      {/* Header */}
+      {/* Header - Single Row */}
       <MantineAppShell.Header>
-        <Box style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-          {/* Top Row: Logo & Actions */}
-          <Group h={60} px="md" justify="space-between" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-            {/* Left: Logo & Brand */}
-            <Group>
-              <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
+        <Group h="100%" px="lg" justify="space-between">
+          {/* Left: Logo + Partner Selector */}
+          <Group gap="lg">
+            <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" color="white" />
+
+            <Group gap="xs">
+              {/* Logo Icon */}
               <Box
                 style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 8,
+                  background: 'linear-gradient(135deg, #003DFF, #5468FF)',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '12px',
+                  justifyContent: 'center',
+                  fontWeight: 700,
+                  fontSize: 14,
+                  color: 'white',
                 }}
               >
-                {/* Logo Icon */}
-                <Box
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: 8,
-                    background: 'linear-gradient(135deg, #003DFF, #5468FF)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontWeight: 700,
-                    fontSize: 16,
-                    color: 'white',
-                  }}
-                >
-                  PF
-                </Box>
-                <div>
-                  <Title order={4} c="blue.4" style={{ lineHeight: 1.2 }}>
-                    PartnerForge
-                  </Title>
-                  <Text size="xs" c="dimmed">
-                    Partner Intelligence Platform
-                  </Text>
-                </div>
+                PF
               </Box>
-              <Badge
-                variant="gradient"
-                gradient={{ from: 'blue', to: 'cyan' }}
-                size="sm"
-                ml="sm"
-              >
-                v3.0
-              </Badge>
+              <Title order={4} c="white" fw={600}>
+                PartnerForge
+              </Title>
             </Group>
 
-            {/* Right: Actions */}
-            <Group gap="xs">
-              {/* Refresh Button */}
-              <Tooltip label="Refresh all data">
-                <ActionIcon
-                  variant="subtle"
-                  size="lg"
-                  onClick={handleRefresh}
-                  color="blue"
-                >
-                  <IconRefresh size={20} />
-                </ActionIcon>
-              </Tooltip>
+            {/* Divider */}
+            <Box
+              style={{
+                width: 1,
+                height: 24,
+                background: 'rgba(255, 255, 255, 0.15)',
+              }}
+            />
 
-              {/* Notifications */}
-              <Tooltip label="Notifications">
-                <ActionIcon variant="subtle" size="lg" color="gray">
-                  <IconBell size={20} />
-                </ActionIcon>
-              </Tooltip>
-
-              {/* Theme Toggle */}
-              <Tooltip label={`Switch to ${colorScheme === 'dark' ? 'light' : 'dark'} mode`}>
-                <ActionIcon
-                  variant="subtle"
-                  size="lg"
-                  onClick={() => toggleColorScheme()}
-                  color="gray"
-                >
-                  {colorScheme === 'dark' ? <IconSun size={20} /> : <IconMoon size={20} />}
-                </ActionIcon>
-              </Tooltip>
-
-              {/* User Menu */}
-              <Menu shadow="md" width={200}>
-                <Menu.Target>
-                  <ActionIcon variant="subtle" size="lg" color="gray">
-                    <IconUser size={20} />
-                  </ActionIcon>
-                </Menu.Target>
-                <Menu.Dropdown>
-                  <Menu.Label>Account</Menu.Label>
-                  <Menu.Item leftSection={<IconSettings size={14} />}>
-                    Settings
-                  </Menu.Item>
-                  <Menu.Divider />
-                  <Menu.Item leftSection={<IconLogout size={14} />} color="red">
-                    Logout
-                  </Menu.Item>
-                </Menu.Dropdown>
-              </Menu>
-            </Group>
-          </Group>
-
-          {/* Bottom Row: Partner Selector */}
-          <Group h={50} px="md" justify="center" style={{ background: 'rgba(0,0,0,0.2)' }}>
+            {/* Partner Selector */}
             <PartnerSelector />
           </Group>
-        </Box>
+
+          {/* Right: Actions */}
+          <Group gap="sm">
+            {/* Refresh Button */}
+            <Tooltip label="Refresh data">
+              <ActionIcon
+                variant="subtle"
+                size="lg"
+                radius="md"
+                onClick={handleRefresh}
+                style={{ color: 'rgba(255,255,255,0.6)' }}
+                className="hover:text-white hover:bg-white/10"
+              >
+                <IconRefresh size={20} />
+              </ActionIcon>
+            </Tooltip>
+
+            {/* Notifications */}
+            <Tooltip label="Notifications">
+              <ActionIcon
+                variant="subtle"
+                size="lg"
+                radius="md"
+                style={{ color: 'rgba(255,255,255,0.6)' }}
+                className="hover:text-white hover:bg-white/10"
+              >
+                <IconBell size={20} />
+              </ActionIcon>
+            </Tooltip>
+
+            {/* Theme Toggle */}
+            <Tooltip label={`Switch to ${colorScheme === 'dark' ? 'light' : 'dark'} mode`}>
+              <ActionIcon
+                variant="subtle"
+                size="lg"
+                radius="md"
+                onClick={() => toggleColorScheme()}
+                style={{ color: 'rgba(255,255,255,0.6)' }}
+                className="hover:text-white hover:bg-white/10"
+              >
+                {colorScheme === 'dark' ? <IconSun size={20} /> : <IconMoon size={20} />}
+              </ActionIcon>
+            </Tooltip>
+
+            {/* User Menu */}
+            <Menu shadow="xl" width={200}>
+              <Menu.Target>
+                <ActionIcon
+                  variant="subtle"
+                  size="lg"
+                  radius="md"
+                  style={{ color: 'rgba(255,255,255,0.6)' }}
+                  className="hover:text-white hover:bg-white/10"
+                >
+                  <IconUser size={20} />
+                </ActionIcon>
+              </Menu.Target>
+              <Menu.Dropdown
+                style={{
+                  background: 'rgba(26, 27, 30, 0.98)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                }}
+              >
+                <Menu.Label>Account</Menu.Label>
+                <Menu.Item leftSection={<IconSettings size={14} />}>
+                  Settings
+                </Menu.Item>
+                <Menu.Divider />
+                <Menu.Item leftSection={<IconLogout size={14} />} color="red">
+                  Logout
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+
+            {/* Version Badge */}
+            <Badge
+              variant="gradient"
+              gradient={{ from: '#5468FF', to: '#8B5CF6' }}
+              size="sm"
+            >
+              v3.0
+            </Badge>
+          </Group>
+        </Group>
       </MantineAppShell.Header>
 
       {/* Sidebar Navigation */}
