@@ -1,13 +1,8 @@
 /**
- * TargetList Component
+ * TargetList Component - Algolia Brand + Excel-Style Filters
  *
- * Premium data table for displacement targets using TanStack Table.
- * Features Excel-style column filters with counts, sorting, and DATA SOURCE TRANSPARENCY.
- *
- * All data is clickable to verify at source:
- * - Partner Tech → BuiltWith
- * - Traffic → SimilarWeb
- * - Domain → Company website
+ * Click column headers (Status, Vertical, Partner Tech) to open filter popups.
+ * Filter options sorted by count (most common first), with checkboxes.
  */
 
 import { useState, useMemo, useCallback } from 'react';
@@ -23,55 +18,59 @@ import {
   type VisibilityState,
 } from '@tanstack/react-table';
 import {
-  Paper,
   Group,
   Text,
   Badge,
   ActionIcon,
   Tooltip,
-  Menu,
-  Checkbox,
   Pagination,
   Avatar,
+  Anchor,
+  Loader,
+  UnstyledButton,
   Popover,
-  Stack,
-  Button,
+  Checkbox,
   ScrollArea,
   Divider,
-  UnstyledButton,
-  Anchor,
-  ThemeIcon,
+  Button,
+  Stack,
 } from '@mantine/core';
 import {
   IconEye,
-  IconRefresh,
   IconExternalLink,
-  IconDownload,
-  IconColumns,
   IconArrowUp,
   IconArrowDown,
   IconSelector,
-  IconX,
   IconChevronDown,
-  IconDatabase,
-  IconWorld,
-  IconBrandGoogle,
+  IconX,
+  IconFilter,
 } from '@tabler/icons-react';
 import type { Company } from '@/types';
-import { StatusBadge } from '@/components/common/StatusBadge';
-import { ScoreGauge } from '@/components/common/ScoreGauge';
-import { TableRowSkeleton } from '@/components/common/LoadingSpinner';
 
-// =============================================================================
+// Colors
+const ALGOLIA_BLUE = '#003DFF';
+const GRAY_50 = '#f8fafc';
+const GRAY_100 = '#f1f5f9';
+const GRAY_200 = '#e2e8f0';
+const GRAY_400 = '#94a3b8';
+const GRAY_500 = '#64748b';
+const GRAY_700 = '#334155';
+const GRAY_900 = '#0f172a';
+
+// Status colors
+const STATUS_COLORS: Record<string, { bg: string; text: string; badge: string }> = {
+  hot: { bg: '#fef2f2', text: '#dc2626', badge: 'red' },
+  warm: { bg: '#fff7ed', text: '#ea580c', badge: 'orange' },
+  cold: { bg: '#f8fafc', text: '#64748b', badge: 'gray' },
+};
+
 // Types
-// =============================================================================
-
 export interface ColumnFilter {
   column: string;
   values: string[];
 }
 
-export interface FilterOption {
+interface FilterOption {
   value: string;
   count: number;
 }
@@ -92,32 +91,10 @@ interface TargetListProps {
 }
 
 // =============================================================================
-// Source Link Helpers - For Data Transparency
+// Excel-Style Filter Header Component
 // =============================================================================
 
-/** Get BuiltWith URL for a domain */
-function getBuiltWithUrl(domain: string): string {
-  return `https://builtwith.com/${domain}`;
-}
-
-/** Get SimilarWeb URL for a domain */
-function getSimilarWebUrl(domain: string): string {
-  return `https://www.similarweb.com/website/${domain}/`;
-}
-
-/** Format traffic number */
-function formatTraffic(visits: number | undefined): string {
-  if (!visits) return '---';
-  if (visits >= 1000000) return `${(visits / 1000000).toFixed(1)}M`;
-  if (visits >= 1000) return `${(visits / 1000).toFixed(0)}K`;
-  return visits.toString();
-}
-
-// =============================================================================
-// Excel-Style Column Filter Header Component
-// =============================================================================
-
-interface FilterableHeaderProps {
+interface FilterHeaderProps {
   column: any;
   label: string;
   options: FilterOption[];
@@ -126,16 +103,23 @@ interface FilterableHeaderProps {
   colorMap?: Record<string, string>;
 }
 
-function FilterableHeader({
+function FilterHeader({
   column,
   label,
   options,
   selectedValues,
   onFilterChange,
   colorMap,
-}: FilterableHeaderProps) {
+}: FilterHeaderProps) {
   const [opened, setOpened] = useState(false);
+
+  // Check if filter is active (some but not all selected)
   const hasFilter = selectedValues.length > 0 && selectedValues.length < options.length;
+
+  // Sort options by count (highest first) - THIS IS THE KEY SORTING
+  const sortedOptions = useMemo(() => {
+    return [...options].sort((a, b) => b.count - a.count);
+  }, [options]);
 
   const toggleValue = (value: string) => {
     if (selectedValues.includes(value)) {
@@ -145,35 +129,37 @@ function FilterableHeader({
     }
   };
 
-  const clearFilter = () => {
-    onFilterChange([]);
-    setOpened(false);
-  };
-
   const selectAll = () => {
     onFilterChange(options.map((o) => o.value));
   };
 
-  const sortedOptions = useMemo(() => {
-    return [...options].sort((a, b) => b.count - a.count);
-  }, [options]);
+  const clearAll = () => {
+    onFilterChange([]);
+    setOpened(false);
+  };
 
   return (
     <Group gap={4} wrap="nowrap">
+      {/* Sort button */}
       <UnstyledButton
         onClick={() => column.toggleSorting()}
-        className="flex items-center gap-1 hover:text-white transition-colors"
+        style={{ display: 'flex', alignItems: 'center', gap: 4 }}
       >
-        <span>{label}</span>
+        <Text size="xs" fw={600} c={GRAY_500} tt="uppercase">{label}</Text>
         {{
-          asc: <IconArrowUp size={12} />,
-          desc: <IconArrowDown size={12} />,
-        }[column.getIsSorted() as string] ?? (
-          <IconSelector size={12} className="opacity-30" />
-        )}
+          asc: <IconArrowUp size={12} color={ALGOLIA_BLUE} />,
+          desc: <IconArrowDown size={12} color={ALGOLIA_BLUE} />,
+        }[column.getIsSorted() as string] ?? <IconSelector size={12} color={GRAY_400} />}
       </UnstyledButton>
 
-      <Popover opened={opened} onChange={setOpened} position="bottom-start" shadow="lg" width={260}>
+      {/* Filter dropdown */}
+      <Popover
+        opened={opened}
+        onChange={setOpened}
+        position="bottom-start"
+        shadow="lg"
+        width={280}
+      >
         <Popover.Target>
           <ActionIcon
             variant={hasFilter ? 'filled' : 'subtle'}
@@ -193,39 +179,45 @@ function FilterableHeader({
 
         <Popover.Dropdown
           style={{
-            background: 'rgba(20, 20, 30, 0.98)',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-            backdropFilter: 'blur(12px)',
+            background: 'white',
+            border: `1px solid ${GRAY_200}`,
+            boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
           }}
         >
           <Stack gap="xs">
+            {/* Header */}
             <Group justify="space-between">
-              <Text size="sm" fw={600} c="white">
-                Filter by {label}
-              </Text>
+              <Group gap="xs">
+                <IconFilter size={14} color={ALGOLIA_BLUE} />
+                <Text size="sm" fw={600} c={GRAY_900}>
+                  Filter by {label}
+                </Text>
+              </Group>
               {hasFilter && (
-                <ActionIcon variant="subtle" size="xs" onClick={clearFilter} c="dimmed">
+                <ActionIcon variant="subtle" size="xs" onClick={clearAll} c="gray">
                   <IconX size={14} />
                 </ActionIcon>
               )}
             </Group>
 
-            <Divider color="white/10" />
+            <Divider />
 
+            {/* Quick actions */}
             <Group gap="xs">
-              <Button size="compact-xs" variant="subtle" color="gray" onClick={selectAll}>
+              <Button size="compact-xs" variant="light" color="blue" onClick={selectAll}>
                 Select All
               </Button>
-              <Button size="compact-xs" variant="subtle" color="gray" onClick={clearFilter}>
+              <Button size="compact-xs" variant="light" color="gray" onClick={clearAll}>
                 Clear
               </Button>
             </Group>
 
-            <ScrollArea.Autosize mah={280}>
-              <Stack gap={2}>
+            {/* Filter options - SORTED BY COUNT */}
+            <ScrollArea.Autosize mah={300}>
+              <Stack gap={4}>
                 {sortedOptions.map((option) => {
                   const isSelected = selectedValues.length === 0 || selectedValues.includes(option.value);
-                  const color = colorMap?.[option.value];
+                  const badgeColor = colorMap?.[option.value];
 
                   return (
                     <UnstyledButton
@@ -235,28 +227,33 @@ function FilterableHeader({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        gap: 8,
-                        padding: '8px 10px',
+                        padding: '10px 12px',
                         borderRadius: 6,
-                        background: isSelected ? 'rgba(59, 130, 246, 0.15)' : 'transparent',
-                        border: isSelected ? '1px solid rgba(59, 130, 246, 0.3)' : '1px solid transparent',
+                        background: isSelected ? '#eff6ff' : 'transparent',
+                        border: isSelected ? '1px solid #bfdbfe' : '1px solid transparent',
                         transition: 'all 0.15s ease',
                       }}
-                      className="hover:bg-white/5"
                     >
-                      <Group gap="xs">
-                        <Checkbox checked={isSelected} onChange={() => {}} size="xs" styles={{ input: { cursor: 'pointer' } }} />
-                        {color ? (
-                          <Badge size="sm" color={color} variant="light">
+                      <Group gap="sm">
+                        <Checkbox
+                          checked={isSelected}
+                          onChange={() => {}}
+                          size="xs"
+                          color="blue"
+                          styles={{ input: { cursor: 'pointer' } }}
+                        />
+                        {badgeColor ? (
+                          <Badge size="sm" color={badgeColor} variant="light" tt="capitalize">
                             {option.value}
                           </Badge>
                         ) : (
-                          <Text size="sm" c="white/90">
+                          <Text size="sm" c={GRAY_700}>
                             {option.value}
                           </Text>
                         )}
                       </Group>
-                      <Badge size="xs" variant="light" color="gray">
+                      {/* COUNT BADGE - shows how many companies */}
+                      <Badge size="sm" variant="light" color="gray">
                         {option.count}
                       </Badge>
                     </UnstyledButton>
@@ -265,10 +262,11 @@ function FilterableHeader({
               </Stack>
             </ScrollArea.Autosize>
 
+            {/* Footer showing selection count */}
             {hasFilter && (
               <>
-                <Divider color="white/10" />
-                <Text size="xs" c="dimmed" ta="center">
+                <Divider />
+                <Text size="xs" c={GRAY_500} ta="center">
                   {selectedValues.length} of {options.length} selected
                 </Text>
               </>
@@ -281,171 +279,58 @@ function FilterableHeader({
 }
 
 // =============================================================================
-// Simple Sort Header (no filter)
+// Simple Sort Header (for columns without filtering)
 // =============================================================================
 
 function SortHeader({ column, label }: { column: any; label: string }) {
   return (
     <UnstyledButton
       onClick={() => column.toggleSorting()}
-      className="flex items-center gap-1 hover:text-white transition-colors"
+      style={{ display: 'flex', alignItems: 'center', gap: 4 }}
     >
-      <span>{label}</span>
+      <Text size="xs" fw={600} c={GRAY_500} tt="uppercase">{label}</Text>
       {{
-        asc: <IconArrowUp size={12} />,
-        desc: <IconArrowDown size={12} />,
-      }[column.getIsSorted() as string] ?? <IconSelector size={12} className="opacity-30" />}
+        asc: <IconArrowUp size={12} color={ALGOLIA_BLUE} />,
+        desc: <IconArrowDown size={12} color={ALGOLIA_BLUE} />,
+      }[column.getIsSorted() as string] ?? <IconSelector size={12} color={GRAY_400} />}
     </UnstyledButton>
   );
 }
 
 // =============================================================================
-// Partner Tech Cell - CLICKABLE to BuiltWith for verification
+// Helper Components
 // =============================================================================
 
-function PartnerTechCell({ techs, domain }: { techs: string[]; domain: string }) {
-  if (techs.length === 0) {
-    return (
-      <Tooltip label="No partner tech detected. Click to verify on BuiltWith." withArrow>
-        <Anchor
-          href={getBuiltWithUrl(domain)}
-          target="_blank"
-          size="xs"
-          c="dimmed"
-          onClick={(e) => e.stopPropagation()}
-        >
-          ---
-        </Anchor>
-      </Tooltip>
-    );
-  }
-
+function StatusBadge({ status }: { status: 'hot' | 'warm' | 'cold' }) {
+  const colors = STATUS_COLORS[status] || STATUS_COLORS.cold;
   return (
-    <Tooltip
-      label={
-        <Stack gap={4}>
-          <Text size="xs" fw={600}>Source: BuiltWith</Text>
-          <Divider size="xs" />
-          {techs.map((tech) => (
-            <Text key={tech} size="xs">{tech}</Text>
-          ))}
-          <Divider size="xs" />
-          <Text size="xs" c="dimmed">Click to verify →</Text>
-        </Stack>
-      }
-      withArrow
-      multiline
-    >
-      <Anchor
-        href={getBuiltWithUrl(domain)}
-        target="_blank"
-        onClick={(e) => e.stopPropagation()}
-        style={{ textDecoration: 'none' }}
-      >
-        <Group gap={4}>
-          <Badge size="xs" variant="light" color="green" style={{ cursor: 'pointer' }}>
-            {techs[0]}
-          </Badge>
-          {techs.length > 1 && (
-            <Badge size="xs" variant="light" color="gray" style={{ cursor: 'pointer' }}>
-              +{techs.length - 1}
-            </Badge>
-          )}
-          <IconExternalLink size={10} style={{ opacity: 0.5 }} />
-        </Group>
-      </Anchor>
-    </Tooltip>
+    <Badge size="sm" variant="light" color={colors.badge} tt="capitalize">
+      {status}
+    </Badge>
   );
 }
 
-// =============================================================================
-// Traffic Cell - CLICKABLE to SimilarWeb for verification
-// =============================================================================
-
-function TrafficCell({ visits, domain }: { visits: number | undefined; domain: string }) {
-  const formatted = formatTraffic(visits);
-
+function ScoreDisplay({ score }: { score: number }) {
+  const color = score >= 80 ? '#dc2626' : score >= 40 ? '#ea580c' : GRAY_500;
   return (
-    <Tooltip
-      label={
-        <Stack gap={4}>
-          <Text size="xs" fw={600}>Source: SimilarWeb</Text>
-          <Divider size="xs" />
-          <Text size="xs">Monthly visits: {visits?.toLocaleString() || 'N/A'}</Text>
-          <Text size="xs" c="dimmed">Click to verify →</Text>
-        </Stack>
-      }
-      withArrow
-    >
-      <Anchor
-        href={getSimilarWebUrl(domain)}
-        target="_blank"
-        onClick={(e) => e.stopPropagation()}
-        size="sm"
-        c={visits && visits > 1000000 ? 'green.4' : 'white/70'}
-        fw={500}
-      >
-        {formatted}
-        <IconExternalLink size={10} style={{ marginLeft: 4, opacity: 0.5 }} />
-      </Anchor>
-    </Tooltip>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div style={{ width: 40, height: 6, borderRadius: 3, background: GRAY_200, overflow: 'hidden' }}>
+        <div style={{ width: `${score}%`, height: '100%', background: color, borderRadius: 3 }} />
+      </div>
+      <Text size="sm" fw={600} style={{ color }}>{score}</Text>
+    </div>
   );
 }
 
-// =============================================================================
-// Source Badge - Shows data freshness
-// =============================================================================
-
-function SourceBadge({ lastEnriched }: { lastEnriched: string | undefined }) {
-  if (!lastEnriched) {
-    return (
-      <Tooltip label="Data has not been enriched yet. Click 'Refresh' to fetch fresh data." withArrow>
-        <Badge size="xs" variant="light" color="yellow" style={{ cursor: 'help' }}>
-          Not verified
-        </Badge>
-      </Tooltip>
-    );
-  }
-
-  const d = new Date(lastEnriched);
-  const daysSince = Math.floor((Date.now() - d.getTime()) / (1000 * 60 * 60 * 24));
-  const isFresh = daysSince <= 7;
-  const isStale = daysSince > 30;
-
-  return (
-    <Tooltip
-      label={
-        <Stack gap={4}>
-          <Text size="xs" fw={600}>Data Sources:</Text>
-          <Group gap={4}>
-            <ThemeIcon size="xs" variant="light" color="blue"><IconDatabase size={10} /></ThemeIcon>
-            <Text size="xs">BuiltWith (Tech)</Text>
-          </Group>
-          <Group gap={4}>
-            <ThemeIcon size="xs" variant="light" color="orange"><IconWorld size={10} /></ThemeIcon>
-            <Text size="xs">SimilarWeb (Traffic)</Text>
-          </Group>
-          <Divider size="xs" />
-          <Text size="xs" c="dimmed">Last updated: {d.toLocaleDateString()}</Text>
-        </Stack>
-      }
-      withArrow
-      multiline
-    >
-      <Badge
-        size="xs"
-        variant="light"
-        color={isFresh ? 'green' : isStale ? 'red' : 'yellow'}
-        style={{ cursor: 'help' }}
-      >
-        {isFresh ? 'Fresh' : isStale ? 'Stale' : `${daysSince}d ago`}
-      </Badge>
-    </Tooltip>
-  );
+function formatTraffic(visits: number | undefined): string {
+  if (!visits) return '—';
+  if (visits >= 1000000) return `${(visits / 1000000).toFixed(1)}M`;
+  if (visits >= 1000) return `${(visits / 1000).toFixed(0)}K`;
+  return visits.toString();
 }
 
 // =============================================================================
-// Main TargetList Component
+// Main Component
 // =============================================================================
 
 export function TargetList({
@@ -453,15 +338,14 @@ export function TargetList({
   isLoading = false,
   pagination,
   onPageChange,
-  onEnrichCompany,
   columnFilters = [],
   onColumnFilterChange,
 }: TargetListProps) {
   const navigate = useNavigate();
-
   const [sorting, setSorting] = useState<SortingState>([{ id: 'icp_score', desc: true }]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
+  // Get current filter values for a column
   const getFilterValues = useCallback(
     (column: string) => {
       const filter = columnFilters.find((f) => f.column === column);
@@ -470,6 +354,7 @@ export function TargetList({
     [columnFilters]
   );
 
+  // Handle filter changes
   const handleFilterChange = useCallback(
     (column: string, values: string[]) => {
       onColumnFilterChange?.(column, values);
@@ -477,17 +362,15 @@ export function TargetList({
     [onColumnFilterChange]
   );
 
-  // Build filter options with counts
+  // Build filter options with counts - SORTED BY COUNT (highest first)
   const statusOptions = useMemo<FilterOption[]>(() => {
-    const counts: Record<string, number> = { hot: 0, warm: 0, cold: 0 };
+    const counts: Record<string, number> = {};
     companies.forEach((c) => {
       if (c.status) counts[c.status] = (counts[c.status] || 0) + 1;
     });
-    return [
-      { value: 'hot', count: counts.hot },
-      { value: 'warm', count: counts.warm },
-      { value: 'cold', count: counts.cold },
-    ].filter((o) => o.count > 0);
+    return Object.entries(counts)
+      .map(([value, count]) => ({ value, count }))
+      .sort((a, b) => b.count - a.count);
   }, [companies]);
 
   const verticalOptions = useMemo<FilterOption[]>(() => {
@@ -522,32 +405,25 @@ export function TargetList({
         cell: ({ row }) => {
           const company = row.original;
           return (
-            <div className="flex items-center gap-3">
-              <Avatar size="sm" radius="md" color="blue" className="flex-shrink-0">
+            <Group gap="sm" wrap="nowrap">
+              <Avatar size="sm" radius="md" color="blue">
                 {(company.company_name || company.domain).charAt(0).toUpperCase()}
               </Avatar>
-              <div className="min-w-0">
-                <Text size="sm" fw={500} c="white" truncate>
+              <div>
+                <Text size="sm" fw={500} c={GRAY_900} lineClamp={1}>
                   {company.company_name || company.domain}
                 </Text>
-                <Group gap={4} wrap="nowrap">
-                  <Anchor
-                    href={`https://${company.domain}`}
-                    target="_blank"
-                    size="xs"
-                    c="dimmed"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {company.domain}
-                  </Anchor>
-                  {company.ticker && (
-                    <Badge size="xs" variant="outline" color="gray">
-                      {company.exchange}:{company.ticker}
-                    </Badge>
-                  )}
-                </Group>
+                <Anchor
+                  href={`https://${company.domain}`}
+                  target="_blank"
+                  size="xs"
+                  c={GRAY_500}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {company.domain}
+                </Anchor>
               </div>
-            </div>
+            </Group>
           );
         },
         size: 220,
@@ -555,20 +431,13 @@ export function TargetList({
       {
         accessorKey: 'icp_score',
         header: ({ column }) => <SortHeader column={column} label="ICP Score" />,
-        cell: ({ getValue }) => {
-          const score = getValue<number>() || 0;
-          return (
-            <div className="flex items-center justify-center">
-              <ScoreGauge value={score} size="sm" />
-            </div>
-          );
-        },
-        size: 90,
+        cell: ({ getValue }) => <ScoreDisplay score={getValue<number>() || 0} />,
+        size: 120,
       },
       {
         accessorKey: 'status',
         header: ({ column }) => (
-          <FilterableHeader
+          <FilterHeader
             column={column}
             label="Status"
             options={statusOptions}
@@ -577,13 +446,13 @@ export function TargetList({
             colorMap={statusColors}
           />
         ),
-        cell: ({ getValue }) => <StatusBadge status={getValue<Company['status']>()} size="sm" />,
-        size: 110,
+        cell: ({ getValue }) => <StatusBadge status={getValue<Company['status']>()} />,
+        size: 120,
       },
       {
         accessorKey: 'vertical',
         header: ({ column }) => (
-          <FilterableHeader
+          <FilterHeader
             column={column}
             label="Vertical"
             options={verticalOptions}
@@ -592,16 +461,16 @@ export function TargetList({
           />
         ),
         cell: ({ getValue }) => (
-          <Text size="sm" c="white/70" truncate style={{ maxWidth: 120 }}>
-            {getValue<string>() || '---'}
+          <Text size="sm" c={GRAY_700} lineClamp={1}>
+            {getValue<string>() || '—'}
           </Text>
         ),
-        size: 130,
+        size: 160,
       },
       {
         accessorKey: 'partner_tech',
         header: ({ column }) => (
-          <FilterableHeader
+          <FilterHeader
             column={column}
             label="Partner Tech"
             options={partnerTechOptions}
@@ -609,75 +478,86 @@ export function TargetList({
             onFilterChange={(values) => handleFilterChange('partner_tech', values)}
           />
         ),
-        cell: ({ row }) => (
-          <PartnerTechCell techs={row.original.partner_tech || []} domain={row.original.domain} />
-        ),
-        size: 140,
+        cell: ({ getValue, row }) => {
+          const techs = getValue<string[]>() || [];
+          if (techs.length === 0) return <Text size="sm" c={GRAY_400}>—</Text>;
+          return (
+            <Tooltip label={`Source: BuiltWith • ${techs.join(', ')}`} withArrow>
+              <Anchor
+                href={`https://builtwith.com/${row.original.domain}`}
+                target="_blank"
+                onClick={(e) => e.stopPropagation()}
+                size="sm"
+              >
+                <Badge size="sm" variant="light" color="green">
+                  {techs[0]}
+                  {techs.length > 1 && ` +${techs.length - 1}`}
+                </Badge>
+              </Anchor>
+            </Tooltip>
+          );
+        },
+        size: 160,
       },
       {
         accessorKey: 'sw_monthly_visits',
         header: ({ column }) => <SortHeader column={column} label="Traffic" />,
-        cell: ({ row }) => (
-          <TrafficCell visits={row.original.sw_monthly_visits} domain={row.original.domain} />
-        ),
-        size: 90,
-      },
-      {
-        accessorKey: 'last_enriched',
-        header: 'Data Source',
-        cell: ({ getValue }) => <SourceBadge lastEnriched={getValue<string>()} />,
+        cell: ({ getValue, row }) => {
+          const visits = getValue<number>();
+          return (
+            <Tooltip label={`Source: SimilarWeb • ${visits?.toLocaleString() || 'N/A'} monthly visits`} withArrow>
+              <Anchor
+                href={`https://www.similarweb.com/website/${row.original.domain}/`}
+                target="_blank"
+                onClick={(e) => e.stopPropagation()}
+                size="sm"
+                c={visits && visits > 1000000 ? 'green' : GRAY_700}
+                fw={500}
+              >
+                {formatTraffic(visits)}
+              </Anchor>
+            </Tooltip>
+          );
+        },
         size: 100,
       },
       {
         id: 'actions',
         header: '',
-        cell: ({ row }) => {
-          const company = row.original;
-          return (
-            <Group gap="xs" justify="flex-end" wrap="nowrap">
-              <Tooltip label="View Full Intelligence Report">
-                <ActionIcon
-                  variant="subtle"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate(`/company/${company.domain}`);
-                  }}
-                >
-                  <IconEye size={14} />
-                </ActionIcon>
-              </Tooltip>
-              <Tooltip label="Refresh Data from BuiltWith & SimilarWeb">
-                <ActionIcon
-                  variant="subtle"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEnrichCompany?.(company.domain);
-                  }}
-                >
-                  <IconRefresh size={14} />
-                </ActionIcon>
-              </Tooltip>
-              <Tooltip label="Visit Company Website">
-                <ActionIcon
-                  variant="subtle"
-                  size="sm"
-                  component="a"
-                  href={`https://${company.domain}`}
-                  target="_blank"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <IconExternalLink size={14} />
-                </ActionIcon>
-              </Tooltip>
-            </Group>
-          );
-        },
-        size: 100,
+        cell: ({ row }) => (
+          <Group gap="xs" justify="flex-end">
+            <Tooltip label="View Intelligence">
+              <ActionIcon
+                variant="subtle"
+                color="gray"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/company/${row.original.domain}`);
+                }}
+              >
+                <IconEye size={16} />
+              </ActionIcon>
+            </Tooltip>
+            <Tooltip label="Visit Website">
+              <ActionIcon
+                variant="subtle"
+                color="gray"
+                size="sm"
+                component="a"
+                href={`https://${row.original.domain}`}
+                target="_blank"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <IconExternalLink size={16} />
+              </ActionIcon>
+            </Tooltip>
+          </Group>
+        ),
+        size: 80,
       },
     ],
-    [navigate, onEnrichCompany, getFilterValues, handleFilterChange, statusOptions, verticalOptions, partnerTechOptions]
+    [navigate, statusOptions, verticalOptions, partnerTechOptions, getFilterValues, handleFilterChange]
   );
 
   const table = useReactTable({
@@ -694,150 +574,122 @@ export function TargetList({
 
   const handleRowClick = useCallback((domain: string) => navigate(`/company/${domain}`), [navigate]);
 
-  const activeFilterCount = columnFilters.reduce((acc, f) => acc + (f.values.length > 0 ? 1 : 0), 0);
+  // Count active filters
+  const activeFilterCount = columnFilters.filter((f) => f.values.length > 0).length;
+
+  if (isLoading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}>
+        <Loader color={ALGOLIA_BLUE} size="md" />
+      </div>
+    );
+  }
+
+  if (companies.length === 0) {
+    return (
+      <div style={{ textAlign: 'center', padding: 48 }}>
+        <Text c={GRAY_500}>No companies found</Text>
+      </div>
+    );
+  }
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-      <Paper radius="lg" className="bg-white/5 border border-white/10 overflow-hidden">
-        {/* Toolbar */}
-        <div className="p-3 border-b border-white/10">
-          <Group justify="space-between">
-            <Group gap="xs">
-              {activeFilterCount > 0 && (
-                <Badge variant="light" color="blue" size="sm">
-                  {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''} active
-                </Badge>
-              )}
-              <Text size="xs" c="dimmed">
-                💡 Click column headers to filter • Click badges to verify at source
-              </Text>
-            </Group>
-
-            <Group gap="xs">
-              <Menu shadow="md" width={200}>
-                <Menu.Target>
-                  <Tooltip label="Toggle columns">
-                    <ActionIcon variant="subtle">
-                      <IconColumns size={18} />
-                    </ActionIcon>
-                  </Tooltip>
-                </Menu.Target>
-                <Menu.Dropdown>
-                  <Menu.Label>Visible Columns</Menu.Label>
-                  {table.getAllLeafColumns().map((column) => {
-                    if (column.id === 'actions') return null;
-                    return (
-                      <Menu.Item key={column.id} onClick={() => column.toggleVisibility()}>
-                        <Checkbox label={column.id} checked={column.getIsVisible()} onChange={() => {}} size="xs" />
-                      </Menu.Item>
-                    );
-                  })}
-                </Menu.Dropdown>
-              </Menu>
-
-              <Tooltip label="Export CSV">
-                <ActionIcon variant="subtle">
-                  <IconDownload size={18} />
-                </ActionIcon>
-              </Tooltip>
-            </Group>
+    <div>
+      {/* Filter indicator */}
+      {activeFilterCount > 0 && (
+        <div style={{ padding: '8px 16px', borderBottom: `1px solid ${GRAY_200}`, background: GRAY_50 }}>
+          <Group gap="xs">
+            <IconFilter size={14} color={ALGOLIA_BLUE} />
+            <Text size="sm" c={GRAY_700}>
+              {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''} active
+            </Text>
+            <Text size="xs" c={GRAY_500}>
+              — Click column header dropdowns to modify
+            </Text>
           </Group>
         </div>
+      )}
 
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id} className="border-b border-white/10 bg-white/5">
-                  {headerGroup.headers.map((header) => (
-                    <th
-                      key={header.id}
-                      className="px-4 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider"
-                      style={{ width: header.getSize() }}
+      {/* Table */}
+      <div style={{ overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id} style={{ borderBottom: `2px solid ${GRAY_200}` }}>
+                {headerGroup.headers.map((header) => (
+                  <th
+                    key={header.id}
+                    style={{
+                      padding: '12px 16px',
+                      textAlign: 'left',
+                      width: header.getSize(),
+                    }}
+                  >
+                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            <AnimatePresence>
+              {table.getRowModel().rows.map((row, index) => (
+                <motion.tr
+                  key={row.id}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: index * 0.02 }}
+                  onClick={() => handleRowClick(row.original.domain)}
+                  style={{
+                    borderBottom: `1px solid ${GRAY_100}`,
+                    cursor: 'pointer',
+                    transition: 'background 0.15s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = GRAY_50;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'white';
+                  }}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <td
+                      key={cell.id}
+                      style={{
+                        padding: '16px',
+                        width: cell.column.getSize(),
+                      }}
                     >
-                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-
-            <tbody>
-              {isLoading ? (
-                Array.from({ length: 10 }).map((_, i) => (
-                  <tr key={i}>
-                    <td colSpan={columns.length} className="p-0">
-                      <TableRowSkeleton columns={columns.length} />
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
-                  </tr>
-                ))
-              ) : table.getRowModel().rows.length === 0 ? (
-                <tr>
-                  <td colSpan={columns.length} className="px-4 py-12 text-center">
-                    <Text c="dimmed">No companies found</Text>
-                  </td>
-                </tr>
-              ) : (
-                <AnimatePresence>
-                  {table.getRowModel().rows.map((row, index) => (
-                    <motion.tr
-                      key={row.id}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 10 }}
-                      transition={{ delay: index * 0.02 }}
-                      onClick={() => handleRowClick(row.original.domain)}
-                      className="border-b border-white/5 cursor-pointer hover:bg-white/5 transition-colors"
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <td key={cell.id} className="px-4 py-3" style={{ width: cell.column.getSize() }}>
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </td>
-                      ))}
-                    </motion.tr>
                   ))}
-                </AnimatePresence>
-              )}
-            </tbody>
-          </table>
-        </div>
+                </motion.tr>
+              ))}
+            </AnimatePresence>
+          </tbody>
+        </table>
+      </div>
 
-        {/* Pagination */}
-        {pagination && pagination.total_pages > 1 && (
-          <div className="p-4 border-t border-white/10">
-            <Group justify="space-between">
-              <Text size="sm" c="dimmed">
-                Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
-                {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} results
-              </Text>
-              <Pagination
-                value={pagination.page}
-                onChange={onPageChange || (() => {})}
-                total={pagination.total_pages}
-                size="sm"
-                withEdges
-                classNames={{ control: 'border-white/10 text-white/70 hover:bg-white/10' }}
-              />
-            </Group>
-          </div>
-        )}
-
-        {/* Data Source Attribution Footer */}
-        <div className="px-4 py-2 border-t border-white/10 bg-white/2">
-          <Group gap="lg" justify="center">
-            <Group gap={4}>
-              <ThemeIcon size="xs" variant="light" color="blue"><IconDatabase size={10} /></ThemeIcon>
-              <Text size="xs" c="dimmed">Tech: BuiltWith</Text>
-            </Group>
-            <Group gap={4}>
-              <ThemeIcon size="xs" variant="light" color="orange"><IconWorld size={10} /></ThemeIcon>
-              <Text size="xs" c="dimmed">Traffic: SimilarWeb</Text>
-            </Group>
-            <Text size="xs" c="dimmed">• Click any data to verify at source</Text>
+      {/* Pagination */}
+      {pagination && pagination.total_pages > 1 && (
+        <div style={{ padding: '16px 0', borderTop: `1px solid ${GRAY_200}`, marginTop: 16 }}>
+          <Group justify="space-between">
+            <Text size="sm" c={GRAY_500}>
+              Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
+              {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total}
+            </Text>
+            <Pagination
+              value={pagination.page}
+              onChange={onPageChange || (() => {})}
+              total={pagination.total_pages}
+              size="sm"
+              withEdges
+            />
           </Group>
         </div>
-      </Paper>
-    </motion.div>
+      )}
+    </div>
   );
 }
+
+export default TargetList;
