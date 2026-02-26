@@ -8,7 +8,7 @@
  * - Click column headers: Opens filter popups
  */
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 // Note: Removed framer-motion for performance - 5000 rows with staggered animations caused slowness
 import {
   useReactTable,
@@ -29,6 +29,7 @@ import {
   Loader,
   UnstyledButton,
 } from '@mantine/core';
+import { Fragment } from 'react';
 import {
   IconArrowUp,
   IconArrowDown,
@@ -40,6 +41,7 @@ import {
 } from '@tabler/icons-react';
 import type { Company } from '@/types';
 import { CompanyDrawer } from '@/components/company/CompanyDrawer';
+import { QuickLookCard } from '@/components/targets/QuickLookCard';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
 import {
   AdobeLogo,
@@ -235,13 +237,50 @@ export function TargetList({
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [drawerOpened, setDrawerOpened] = useState(false);
 
+  // Hover preview state
+  const [hoveredCompany, setHoveredCompany] = useState<Company | null>(null);
+  const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
+  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const openDrawer = useCallback((company: Company) => {
+    // Clear any hover state when opening drawer
+    setHoveredCompany(null);
+    setHoveredRowId(null);
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current);
+    }
     setSelectedCompany(company);
     setDrawerOpened(true);
   }, []);
 
   const closeDrawer = useCallback(() => {
     setDrawerOpened(false);
+  }, []);
+
+  // Hover handlers with 300ms delay
+  const handleRowMouseEnter = useCallback((company: Company, rowId: string) => {
+    // Clear any existing timer
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current);
+    }
+    // Set timer to show preview after 300ms
+    hoverTimerRef.current = setTimeout(() => {
+      setHoveredCompany(company);
+      setHoveredRowId(rowId);
+    }, 300);
+  }, []);
+
+  const handleRowMouseLeave = useCallback(() => {
+    // Clear the timer
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current);
+    }
+    // Don't immediately hide - allow moving to the preview card
+  }, []);
+
+  const handleQuickLookClose = useCallback(() => {
+    setHoveredCompany(null);
+    setHoveredRowId(null);
   }, []);
 
   // Get current filter values for a column
@@ -583,34 +622,63 @@ export function TargetList({
           </thead>
           <tbody>
             {table.getRowModel().rows.map((row) => (
-              <tr
-                key={row.id}
-                onClick={() => handleRowClick(row.original)}
-                style={{
-                  borderBottom: `1px solid ${GRAY_100}`,
-                  cursor: 'pointer',
-                  transition: 'background 0.15s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = GRAY_50;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'white';
-                }}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <td
-                    key={cell.id}
-                    style={{
-                      padding: '16px',
-                      width: cell.column.getSize(),
-                      background: 'inherit',
-                    }}
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
+              <Fragment key={row.id}>
+                <tr
+                  onClick={() => handleRowClick(row.original)}
+                  style={{
+                    borderBottom: hoveredRowId === row.id ? 'none' : `1px solid ${GRAY_100}`,
+                    cursor: 'pointer',
+                    transition: 'background 0.15s ease',
+                    background: hoveredRowId === row.id ? '#f0f4ff' : 'white',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = hoveredRowId === row.id ? '#f0f4ff' : GRAY_50;
+                    handleRowMouseEnter(row.original, row.id);
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = hoveredRowId === row.id ? '#f0f4ff' : 'white';
+                    handleRowMouseLeave();
+                  }}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <td
+                      key={cell.id}
+                      style={{
+                        padding: '16px',
+                        width: cell.column.getSize(),
+                        background: 'inherit',
+                      }}
+                    >
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </td>
+                  ))}
+                </tr>
+                {/* Quick Look Preview Card - shown below hovered row */}
+                {hoveredRowId === row.id && hoveredCompany && (
+                  <tr key={`${row.id}-preview`}>
+                    <td
+                      colSpan={columns.length}
+                      style={{ padding: 0, border: 'none' }}
+                      onMouseEnter={() => {
+                        // Keep preview open when mouse is over it
+                        if (hoverTimerRef.current) {
+                          clearTimeout(hoverTimerRef.current);
+                        }
+                      }}
+                      onMouseLeave={() => {
+                        // Close preview when mouse leaves
+                        handleQuickLookClose();
+                      }}
+                    >
+                      <QuickLookCard
+                        company={hoveredCompany}
+                        onViewDetails={() => openDrawer(hoveredCompany)}
+                        onClose={handleQuickLookClose}
+                      />
+                    </td>
+                  </tr>
+                )}
+              </Fragment>
             ))}
           </tbody>
         </table>

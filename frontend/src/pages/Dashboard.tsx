@@ -129,6 +129,47 @@ export function Dashboard() {
     if (!allTargetsData) return [];
     return allTargetsData.map(t => {
       const icpScore = t.icp_score || 0;
+
+      // Parse JSON fields for full enrichment data
+      let competitorData = undefined;
+      let caseStudies = undefined;
+      let techStackData = undefined;
+
+      try {
+        if (t.competitors_json) {
+          const competitors = JSON.parse(t.competitors_json);
+          competitorData = {
+            domain: t.domain,
+            competitors: competitors,
+          };
+        }
+      } catch { /* ignore parse errors */ }
+
+      try {
+        if (t.case_studies_json) {
+          caseStudies = JSON.parse(t.case_studies_json);
+        }
+      } catch { /* ignore parse errors */ }
+
+      try {
+        if (t.tech_stack_json) {
+          const techStack = JSON.parse(t.tech_stack_json);
+          techStackData = {
+            domain: t.domain,
+            technologies: Object.entries(techStack).flatMap(([category, techs]) =>
+              Array.isArray(techs) ? techs.map((name: string) => ({ name, category })) : []
+            ),
+            partner_tech_detected: techStack.cms?.filter((c: string) =>
+              ['amplience', 'adobe', 'spryker', 'bloomreach'].some(p => c.toLowerCase().includes(p))
+            ) || [],
+            search_provider: t.current_search || undefined,
+            cms: t.cms || techStack.cms?.[0],
+            ecommerce_platform: t.ecommerce_platform || techStack.ecommerce?.[0],
+            cdn: t.cdn || techStack.cdn?.[0],
+          };
+        }
+      } catch { /* ignore parse errors */ }
+
       return {
         domain: t.domain,
         company_name: t.company_name || t.domain,
@@ -151,6 +192,14 @@ export function Dashboard() {
         revenue: t.revenue || undefined,
         current_search: t.current_search || undefined,
         enrichment_level: t.enrichment_level || undefined,
+        // Full enrichment data for drawer
+        competitor_data: competitorData,
+        case_studies: caseStudies,
+        tech_stack_data: techStackData,
+        exec_quote: t.exec_quote || undefined,
+        exec_name: t.exec_name || undefined,
+        exec_title: t.exec_title || undefined,
+        displacement_angle: t.displacement_angle || undefined,
       };
     });
   }, [allTargetsData]);

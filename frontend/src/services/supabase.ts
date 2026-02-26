@@ -85,6 +85,21 @@ export interface DisplacementTarget {
   exec_name: string | null;
   exec_title: string | null;
   displacement_angle: string | null;
+  // Full enrichment fields (v2.0)
+  tech_stack_json: string | null;
+  competitors_json: string | null;
+  case_studies_json: string | null;
+  competitor_count: number | null;
+  competitors_using_algolia: number | null;
+  reference_implementation: string | null;
+  sw_bounce_rate: number | null;
+  sw_pages_per_visit: number | null;
+  sw_time_on_site: number | null;
+  sw_global_rank: number | null;
+  sw_category_rank: number | null;
+  cms: string | null;
+  ecommerce_platform: string | null;
+  cdn: string | null;
 }
 
 export interface TargetFilters {

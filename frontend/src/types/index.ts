@@ -36,6 +36,13 @@ export interface Company {
   enrichment_level?: string;
   // Tech stack data (from tech_stack_json)
   tech_stack_data?: TechStackData;
+  // Full enrichment data (v2.0)
+  competitor_data?: CompetitorData;
+  case_studies?: CaseStudyMatch[];
+  exec_quote?: string;
+  exec_name?: string;
+  exec_title?: string;
+  displacement_angle?: string;
 }
 
 // =============================================================================
