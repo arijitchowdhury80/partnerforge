@@ -59,6 +59,40 @@ from .targets import (
     PartnerTechBreakdown,
 )
 
+from .enrich import (
+    # Enums
+    EnrichmentStatus,
+    EnrichmentPriority,
+    WaveStatus,
+
+    # Request schemas
+    EnrichRequest,
+    BatchEnrichRequest,
+    EnrichRetryRequest,
+
+    # Response schemas
+    EnrichResponse,
+    BatchEnrichResponse,
+    EnrichStatusResponse,
+    EnrichmentResultsResponse,
+    EnrichCancelResponse,
+    EnrichJobSummary,
+    EnrichJobListResponse,
+
+    # Module schemas
+    ModuleResult,
+    WaveResult,
+    ModuleStatusDetail,
+
+    # Cache schemas
+    ModuleCacheStatus,
+    DomainCacheStatus,
+
+    # Constants
+    VALID_MODULES,
+    WAVE_MODULES,
+)
+
 __all__ = [
     # Upload
     "ListUploadResponse",
@@ -110,4 +144,36 @@ __all__ = [
     "StatusBreakdown",
     "VerticalBreakdown",
     "PartnerTechBreakdown",
+
+    # Enrichment Enums
+    "EnrichmentStatus",
+    "EnrichmentPriority",
+    "WaveStatus",
+
+    # Enrichment Request
+    "EnrichRequest",
+    "BatchEnrichRequest",
+    "EnrichRetryRequest",
+
+    # Enrichment Response
+    "EnrichResponse",
+    "BatchEnrichResponse",
+    "EnrichStatusResponse",
+    "EnrichmentResultsResponse",
+    "EnrichCancelResponse",
+    "EnrichJobSummary",
+    "EnrichJobListResponse",
+
+    # Enrichment Module
+    "ModuleResult",
+    "WaveResult",
+    "ModuleStatusDetail",
+
+    # Enrichment Cache
+    "ModuleCacheStatus",
+    "DomainCacheStatus",
+
+    # Enrichment Constants
+    "VALID_MODULES",
+    "WAVE_MODULES",
 ]

@@ -612,12 +612,14 @@ class M02TechStackModule(BaseIntelligenceModule):
                 break
 
         # Determine displacement priority
+        # Native platform search (Einstein, etc.) is MEDIUM priority - easier to replace
+        # Dedicated competitor search (Elasticsearch, Coveo) is HIGH priority
         if is_algolia:
             displacement_priority = "NONE"
-        elif is_competitor:
-            displacement_priority = "HIGH"
         elif native_platform_search:
             displacement_priority = "MEDIUM"
+        elif is_competitor:
+            displacement_priority = "HIGH"
         else:
             displacement_priority = "LOW"
 

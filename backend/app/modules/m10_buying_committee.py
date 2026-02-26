@@ -493,7 +493,11 @@ class M10BuyingCommitteeModule(BaseIntelligenceModule):
             )
 
             # Categorize based on title
-            if "cto" in title or "chief technology" in title:
+            # Note: Use word boundary checks to avoid false matches
+            # (e.g., "Director" contains "cto" substring)
+            title_words = set(title.replace("-", " ").split())
+
+            if "cto" in title_words or "chief technology" in title:
                 if not decision_maker:
                     member.role_in_decision = "Technical Decision Maker"
                     member.engagement_strategy = "Executive briefing focused on strategic tech vision and competitive advantage"
@@ -506,7 +510,7 @@ class M10BuyingCommitteeModule(BaseIntelligenceModule):
                     decision_maker = member
                 else:
                     influencers.append(member)
-            elif "cfo" in title or "chief financial" in title:
+            elif "cfo" in title_words or "chief financial" in title:
                 member.role_in_decision = "Budget Authority"
                 member.engagement_strategy = "ROI-focused discussion with clear cost-benefit analysis"
                 member.talking_points = [
@@ -519,7 +523,7 @@ class M10BuyingCommitteeModule(BaseIntelligenceModule):
                     decision_maker = member
                 else:
                     influencers.append(member)
-            elif "vp" in title and ("engineering" in title or "technology" in title):
+            elif ("vp" in title_words or "vice president" in title) and ("engineering" in title or "technology" in title):
                 member.role_in_decision = "Technical Influencer"
                 member.engagement_strategy = "Technical deep-dive with architecture discussion"
                 member.talking_points = [

@@ -10,7 +10,7 @@ Modules:
 """
 
 from .deps import get_db, get_current_user
-from .routes import health, lists, targets
+from .routes import health, lists, targets, enrich
 
 __all__ = [
     "get_db",
@@ -18,4 +18,5 @@ __all__ = [
     "health",
     "lists",
     "targets",
+    "enrich",
 ]

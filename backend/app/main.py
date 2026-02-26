@@ -27,6 +27,9 @@ from .database import get_session, init_db, close_db
 from .api.routes import health as health_router
 from .api.routes import lists as lists_router
 from .api.routes import targets as targets_router
+from .api.routes import enrich as enrich_router
+from .api.routes import alerts as alerts_router
+from .api.routes import changes as changes_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -98,6 +101,15 @@ app.include_router(lists_router.router, prefix="/api/v1")
 
 # Targets endpoints (API v1)
 app.include_router(targets_router.router, prefix="/api/v1")
+
+# Enrichment endpoints (API v1)
+app.include_router(enrich_router.router, prefix="/api/v1")
+
+# Alerts endpoints (API v1)
+app.include_router(alerts_router.router, prefix="/api/v1")
+
+# Changes endpoints (API v1)
+app.include_router(changes_router.router, prefix="/api/v1")
 
 
 # =============================================================================

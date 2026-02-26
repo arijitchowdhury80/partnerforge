@@ -23,10 +23,9 @@ from pydantic import BaseModel, Field
 from .base import (
     BaseIntelligenceModule,
     ModuleResult,
-    SourceInfo,
     register_module,
 )
-from ..services.validation import MissingSourceError, SourceFreshnessError
+from ..services.validation import MissingSourceError
 
 logger = logging.getLogger(__name__)
 
@@ -419,7 +418,7 @@ class M11DisplacementModule(BaseIntelligenceModule):
     MODULE_ID = "m11_displacement"
     MODULE_NAME = "Displacement Analysis"
     WAVE = 3
-    DEPENDS_ON = ["m02_technology_stack"]
+    DEPENDS_ON = ["m02_tech_stack"]
     SOURCE_TYPE = "synthesis"
     CACHE_TTL = 604800  # 7 days
 
@@ -463,7 +462,7 @@ class M11DisplacementModule(BaseIntelligenceModule):
             raw_data = await self.fetch_data(domain)
         else:
             # Extract tech stack data from dependencies
-            m02_result = dependencies.get("m02_technology_stack")
+            m02_result = dependencies.get("m02_tech_stack")
             raw_data = await self._extract_from_dependencies(domain, m02_result)
 
         # Ensure domain is set
@@ -559,10 +558,10 @@ class M11DisplacementModule(BaseIntelligenceModule):
         m02_data = m02_result.data
 
         # Handle both Pydantic model and dict
-        if hasattr(m02_data, "model_dump"):
-            data = m02_data.model_dump()
-        elif isinstance(m02_data, dict):
+        if isinstance(m02_data, dict):
             data = m02_data
+        elif hasattr(m02_data, "model_dump") and callable(getattr(m02_data, "model_dump", None)):
+            data = m02_data.model_dump()
         else:
             data = {}
 

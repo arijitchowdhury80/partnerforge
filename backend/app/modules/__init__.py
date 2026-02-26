@@ -75,6 +75,21 @@ from .m03_traffic import (
     WebsiteRank,
     SearchRevenueEstimate,
 )
+from .m04_financials import (
+    M04FinancialProfileModule,
+    FinancialProfileData,
+    FinancialsData,
+    MarginZoneData,
+    EcommerceData,
+    StockInfo,
+    ROIScenarios,
+    ROIScenario,
+    FiscalYearRevenue,
+    FiscalYearNetIncome,
+    MarginZone,
+    RevenueTrend,
+    AnalystConsensus,
+)
 
 # Wave 2: Competitive Modules
 from .m05_competitors import (
@@ -91,12 +106,81 @@ from .m06_hiring import (
     ENGINEERING_KEYWORDS,
     PRODUCT_KEYWORDS,
 )
+from .m07_strategic import (
+    M07StrategicContextModule,
+    StrategicContextData,
+    TriggerEvent,
+    ExpansionSignal,
+    DigitalInitiative,
+    TRIGGER_WEIGHTS,
+    RECENCY_WEIGHTS,
+    RELEVANCE_MULTIPLIERS,
+)
 
-# Wave 3: Buying Signals Modules (TODO)
-# from .m08_investor import M08InvestorModule
+# Wave 3: Buying Signals Modules
+from .m08_investor import (
+    M08InvestorModule,
+    InvestorIntelligenceData,
+    SECFiling,
+    EarningsTranscript,
+    InvestorPresentation,
+    ExecutiveQuote,
+    ForwardGuidance,
+    RiskFactor,
+    DigitalCommitment,
+)
+from .m09_executive import (
+    M09ExecutiveIntelligenceModule,
+    ExecutiveIntelligenceData,
+    Executive,
+    DigitalLeadershipQuote,
+    QuoteToProductMapping,
+    SpeakingLanguage,
+)
+from .m10_buying_committee import (
+    M10BuyingCommitteeModule,
+    BuyingCommitteeData,
+    CommitteeMember,
+)
+from .m11_displacement import (
+    M11DisplacementModule,
+    DisplacementAnalysisData,
+)
 
-# Wave 4: Synthesis Modules (TODO)
-# from .m15_strategic_brief import M15StrategicBriefModule
+# Wave 4: Synthesis Modules
+from .m12_case_study import (
+    M12CaseStudyModule,
+    CaseStudyMatchData,
+    CaseStudyMatch,
+    ProofPointMatch,
+    QuoteMatch,
+)
+from .m13_icp_priority import (
+    M13ICPPriorityModule,
+    ICPPriorityData,
+    ScoreBreakdown,
+    ICPTier,
+)
+from .m14_signal_scoring import (
+    M14SignalScoringModule,
+    SignalScoringData,
+    SignalType,
+    SignalUrgency,
+    SignalCategory,
+    Signal,
+    SignalCategorySummary,
+    RecommendedTiming,
+)
+from .m15_strategic_brief import (
+    M15StrategicBriefModule,
+    StrategicSignalBriefData,
+    TalkingPoint,
+    DiscoveryQuestion,
+    ObjectionHandler,
+    RecommendedCaseStudy,
+    PilotStrategy,
+    NextStep,
+)
 
 
 __all__ = [
@@ -128,6 +212,20 @@ __all__ = [
     "Keywords",
     "WebsiteRank",
     "SearchRevenueEstimate",
+    # M04 Financial Profile
+    "M04FinancialProfileModule",
+    "FinancialProfileData",
+    "FinancialsData",
+    "MarginZoneData",
+    "EcommerceData",
+    "StockInfo",
+    "ROIScenarios",
+    "ROIScenario",
+    "FiscalYearRevenue",
+    "FiscalYearNetIncome",
+    "MarginZone",
+    "RevenueTrend",
+    "AnalystConsensus",
     # Wave 2 Modules
     "M05CompetitorIntelligenceModule",
     "CompetitorIntelligenceData",
@@ -139,4 +237,66 @@ __all__ = [
     "SEARCH_KEYWORDS",
     "ENGINEERING_KEYWORDS",
     "PRODUCT_KEYWORDS",
+    # M07 Strategic Context
+    "M07StrategicContextModule",
+    "StrategicContextData",
+    "TriggerEvent",
+    "ExpansionSignal",
+    "DigitalInitiative",
+    "TRIGGER_WEIGHTS",
+    "RECENCY_WEIGHTS",
+    "RELEVANCE_MULTIPLIERS",
+    # M08 Investor Intelligence
+    "M08InvestorModule",
+    "InvestorIntelligenceData",
+    "SECFiling",
+    "EarningsTranscript",
+    "InvestorPresentation",
+    "ExecutiveQuote",
+    "ForwardGuidance",
+    "RiskFactor",
+    "DigitalCommitment",
+    # M09 Executive Intelligence
+    "M09ExecutiveIntelligenceModule",
+    "ExecutiveIntelligenceData",
+    "Executive",
+    "DigitalLeadershipQuote",
+    "QuoteToProductMapping",
+    "SpeakingLanguage",
+    # M10 Buying Committee
+    "M10BuyingCommitteeModule",
+    "BuyingCommitteeData",
+    "CommitteeMember",
+    # M11 Displacement Analysis
+    "M11DisplacementModule",
+    "DisplacementAnalysisData",
+    # M12 Case Study Matching
+    "M12CaseStudyModule",
+    "CaseStudyMatchData",
+    "CaseStudyMatch",
+    "ProofPointMatch",
+    "QuoteMatch",
+    # M13 ICP Priority Mapping
+    "M13ICPPriorityModule",
+    "ICPPriorityData",
+    "ScoreBreakdown",
+    "ICPTier",
+    # M14 Signal Scoring
+    "M14SignalScoringModule",
+    "SignalScoringData",
+    "Signal",
+    "SignalCategorySummary",
+    "RecommendedTiming",
+    "SignalType",
+    "SignalUrgency",
+    "SignalCategory",
+    # M15 Strategic Signal Brief
+    "M15StrategicBriefModule",
+    "StrategicSignalBriefData",
+    "TalkingPoint",
+    "DiscoveryQuestion",
+    "ObjectionHandler",
+    "RecommendedCaseStudy",
+    "PilotStrategy",
+    "NextStep",
 ]

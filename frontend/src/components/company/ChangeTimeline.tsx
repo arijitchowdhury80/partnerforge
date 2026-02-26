@@ -640,4 +640,4 @@ export function ChangeTimeline({
   );
 }
 
-export type { ChangeEntry, ChangeTimelineProps };
+export type { ChangeTimelineProps };

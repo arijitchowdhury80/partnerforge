@@ -13,6 +13,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppShell } from './components/layout/AppShell';
 
 // Pages
+import { Dashboard } from './pages/Dashboard';
+import { TargetDetail } from './pages/TargetDetail';
 import { DashboardPage } from './pages/DashboardPage';
 import { ListsPage } from './pages/ListsPage';
 import { UploadPage } from './pages/UploadPage';
@@ -109,12 +111,12 @@ function App() {
               {/* Redirect root to dashboard */}
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-              {/* Dashboard */}
-              <Route path="/dashboard" element={<DashboardPage />} />
+              {/* Dashboard - Use new premium Dashboard */}
+              <Route path="/dashboard" element={<Dashboard />} />
 
               {/* Companies */}
-              <Route path="/companies" element={<DashboardPage />} />
-              <Route path="/company/:domain" element={<CompanyView />} />
+              <Route path="/companies" element={<Dashboard />} />
+              <Route path="/company/:domain" element={<TargetDetail />} />
 
               {/* Lists */}
               <Route path="/lists" element={<ListsPage />} />
