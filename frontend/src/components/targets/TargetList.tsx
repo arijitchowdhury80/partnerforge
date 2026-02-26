@@ -1,5 +1,6 @@
 /**
  * TargetList Component - Algolia Brand + Excel-Style Filters
+ * Version: 2.4.1 - FORCE REBUILD
  *
  * Click column headers (Status, Vertical, Partner Tech) to open filter popups.
  * Filter options sorted by count (most common first), with checkboxes.
