@@ -22,7 +22,7 @@ import {
   IconLogout,
   IconSettings,
 } from '@tabler/icons-react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { useQueryClient } from '@tanstack/react-query';
@@ -41,6 +41,7 @@ const ALGOLIA_BORDER = '#E8E8ED';        // Borders
 export function AppShell() {
   const [opened, { toggle }] = useDisclosure();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const handleRefresh = () => {
     queryClient.invalidateQueries();
@@ -49,6 +50,14 @@ export function AppShell() {
       message: 'All data has been reloaded from the server',
       color: 'blue',
     });
+  };
+
+  const handleAlerts = () => {
+    navigate('/alerts');
+  };
+
+  const handleSettings = () => {
+    navigate('/settings');
   };
 
   return (
@@ -93,29 +102,32 @@ export function AppShell() {
           </Group>
 
           {/* Right: Actions */}
-          <Group gap="sm">
-            {/* Refresh Button */}
-            <Tooltip label="Refresh data">
+          <Group gap="xs">
+            {/* Refresh Button - Reloads all data from Supabase */}
+            <Tooltip label="Refresh all data from API">
               <ActionIcon
-                variant="subtle"
+                variant="light"
                 size="lg"
                 radius="md"
-                color="gray"
+                color="blue"
                 onClick={handleRefresh}
+                style={{ border: `1px solid ${ALGOLIA_BORDER}` }}
               >
-                <IconRefresh size={20} />
+                <IconRefresh size={20} stroke={1.5} />
               </ActionIcon>
             </Tooltip>
 
-            {/* Notifications */}
-            <Tooltip label="Notifications">
+            {/* Notifications - Goes to Alerts page */}
+            <Tooltip label="View alerts & notifications">
               <ActionIcon
-                variant="subtle"
+                variant="light"
                 size="lg"
                 radius="md"
-                color="gray"
+                color="blue"
+                onClick={handleAlerts}
+                style={{ border: `1px solid ${ALGOLIA_BORDER}` }}
               >
-                <IconBell size={20} />
+                <IconBell size={20} stroke={1.5} />
               </ActionIcon>
             </Tooltip>
 
@@ -123,17 +135,18 @@ export function AppShell() {
             <Menu shadow="xl" width={200}>
               <Menu.Target>
                 <ActionIcon
-                  variant="subtle"
+                  variant="light"
                   size="lg"
                   radius="md"
-                  color="gray"
+                  color="blue"
+                  style={{ border: `1px solid ${ALGOLIA_BORDER}` }}
                 >
-                  <IconUser size={20} />
+                  <IconUser size={20} stroke={1.5} />
                 </ActionIcon>
               </Menu.Target>
               <Menu.Dropdown>
                 <Menu.Label>Account</Menu.Label>
-                <Menu.Item leftSection={<IconSettings size={14} />}>
+                <Menu.Item leftSection={<IconSettings size={14} />} onClick={handleSettings}>
                   Settings
                 </Menu.Item>
                 <Menu.Divider />
