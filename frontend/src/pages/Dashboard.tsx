@@ -153,9 +153,6 @@ export function Dashboard() {
     queryFn: getDistribution,
   });
 
-  // Get proper tech name for filtering
-  const partnerTechName = getSelectionTechName(selection);
-
   // Fetch companies
   const { data: companies, isLoading: companiesLoading, error: companiesError } = useQuery({
     queryKey: ['companies', filters, page, selectedPartner.key, partnerTechName],
@@ -383,21 +380,61 @@ export function Dashboard() {
                 Choose a partner from the dropdown above to see displacement targets.
                 We'll show you companies using their tech stack who aren't using Algolia yet.
               </Text>
-              <Group justify="center" gap="md">
-                {partners.filter(p => p.key !== 'all').slice(0, 4).map(partner => {
-                  const Logo = getPartnerLogo(partner.key);
-                  return (
-                    <Button
-                      key={partner.key}
-                      variant="light"
-                      leftSection={<Logo size={18} />}
-                      onClick={() => selectPartner(partner)}
-                      size="md"
-                    >
-                      {partner.name}
-                    </Button>
-                  );
-                })}
+              <Group justify="center" gap="md" wrap="wrap">
+                {/* Show all partners that have data in the database */}
+                {allPartnersData && allPartnersData.length > 0 ? (
+                  // Dynamic buttons from actual data
+                  allPartnersData.map(partnerTech => {
+                    // Find matching partner from PARTNERS array for logo
+                    const matchingPartner = partners.find(p =>
+                      p.key !== 'all' && (
+                        p.name.toLowerCase().includes(partnerTech.toLowerCase().split(' ')[0]) ||
+                        partnerTech.toLowerCase().includes(p.key)
+                      )
+                    );
+                    const Logo = matchingPartner ? getPartnerLogo(matchingPartner.key) : getPartnerLogo('all');
+                    return (
+                      <Button
+                        key={partnerTech}
+                        variant="light"
+                        leftSection={<Logo size={18} />}
+                        onClick={() => {
+                          // If we found a matching partner, use it; otherwise create ad-hoc selection
+                          if (matchingPartner) {
+                            selectPartner(matchingPartner);
+                          } else {
+                            // Create a dynamic partner entry
+                            selectPartner({
+                              key: partnerTech.toLowerCase().replace(/\s+/g, '-'),
+                              name: partnerTech,
+                              shortName: partnerTech.split(' ')[0],
+                              products: [{ key: 'default', name: partnerTech, shortName: partnerTech.split(' ')[0] }],
+                            });
+                          }
+                        }}
+                        size="md"
+                      >
+                        {partnerTech}
+                      </Button>
+                    );
+                  })
+                ) : (
+                  // Fallback to static list while loading
+                  partners.filter(p => p.key !== 'all').map(partner => {
+                    const Logo = getPartnerLogo(partner.key);
+                    return (
+                      <Button
+                        key={partner.key}
+                        variant="light"
+                        leftSection={<Logo size={18} />}
+                        onClick={() => selectPartner(partner)}
+                        size="md"
+                      >
+                        {partner.name}
+                      </Button>
+                    );
+                  })
+                )}
               </Group>
             </Paper>
           </motion.div>

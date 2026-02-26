@@ -120,7 +120,8 @@ export async function getTargets(filters: TargetFilters = {}): Promise<{
 
   // Filters
   if (partner) {
-    params.push(`partner_tech=eq.${encodeURIComponent(partner)}`);
+    // Use ilike for partial matching (e.g., "Adobe" matches "Adobe Experience Manager")
+    params.push(`partner_tech=ilike.*${encodeURIComponent(partner)}*`);
   }
   if (vertical) {
     params.push(`vertical=eq.${encodeURIComponent(vertical)}`);
