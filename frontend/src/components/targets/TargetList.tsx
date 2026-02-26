@@ -118,7 +118,7 @@ interface TargetListProps {
 }
 
 // =============================================================================
-// Excel-Style Filter Header Component - REDESIGNED FOR VISIBILITY
+// Excel-Style Filter Header Component - WITH APPLY BUTTON
 // =============================================================================
 
 interface FilterHeaderProps {
@@ -140,61 +140,93 @@ function FilterHeader({
 }: FilterHeaderProps) {
   const [opened, setOpened] = useState(false);
 
-  // Check if filter is active
-  const hasFilter = selectedValues.length > 0;
+  // LOCAL pending state - only applied when user clicks "Apply"
+  const [pendingValues, setPendingValues] = useState<string[]>([]);
+
+  // When popover opens, sync pending with current applied values
+  const handleOpen = () => {
+    setPendingValues([...selectedValues]);
+    setOpened(true);
+  };
+
+  // Check if filter is currently applied (not pending)
+  const hasAppliedFilter = selectedValues.length > 0;
   const filterCount = selectedValues.length;
+
+  // Check if pending differs from applied
+  const hasPendingChanges = JSON.stringify(pendingValues.sort()) !== JSON.stringify([...selectedValues].sort());
 
   // Sort options by count (highest first)
   const sortedOptions = useMemo(() => {
     return [...options].sort((a, b) => b.count - a.count);
   }, [options]);
 
-  const toggleValue = (value: string) => {
-    if (selectedValues.includes(value)) {
-      onFilterChange(selectedValues.filter((v) => v !== value));
+  // Toggle a value in PENDING state (doesn't apply yet)
+  const togglePendingValue = (value: string) => {
+    if (pendingValues.includes(value)) {
+      setPendingValues(pendingValues.filter((v) => v !== value));
     } else {
-      onFilterChange([...selectedValues, value]);
+      setPendingValues([...pendingValues, value]);
     }
   };
 
-  const selectAll = () => {
-    onFilterChange([]);  // Empty = show all (no filter)
+  // Select all in pending (clears filter)
+  const selectAllPending = () => {
+    setPendingValues([]);
   };
 
-  const clearAll = () => {
-    onFilterChange([]);
+  // Clear all pending selections
+  const clearAllPending = () => {
+    setPendingValues([]);
+  };
+
+  // APPLY the pending selections
+  const applyFilter = () => {
+    onFilterChange(pendingValues);
+    setOpened(false);
+  };
+
+  // Cancel and discard pending changes
+  const cancelFilter = () => {
+    setPendingValues([...selectedValues]);
     setOpened(false);
   };
 
   return (
     <Popover
       opened={opened}
-      onChange={setOpened}
+      onChange={(isOpen) => {
+        if (!isOpen) {
+          // Closing without apply - discard pending changes
+          setPendingValues([...selectedValues]);
+        }
+        setOpened(isOpen);
+      }}
       position="bottom-start"
       shadow="xl"
-      width={300}
+      width={320}
     >
       <Popover.Target>
         {/* ENTIRE HEADER IS CLICKABLE - Excel style */}
         <UnstyledButton
-          onClick={() => setOpened(!opened)}
+          onClick={handleOpen}
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: 8,
             padding: '6px 10px',
             borderRadius: 6,
-            background: hasFilter ? 'rgba(0, 61, 255, 0.1)' : 'transparent',
-            border: hasFilter ? '1px solid rgba(0, 61, 255, 0.3)' : '1px solid transparent',
+            background: hasAppliedFilter ? 'rgba(0, 61, 255, 0.1)' : 'transparent',
+            border: hasAppliedFilter ? '1px solid rgba(0, 61, 255, 0.3)' : '1px solid transparent',
             transition: 'all 0.15s ease',
           }}
         >
-          <Text size="sm" fw={700} c={hasFilter ? ALGOLIA_NEBULA_BLUE : GRAY_700} tt="uppercase">
+          <Text size="sm" fw={700} c={hasAppliedFilter ? ALGOLIA_NEBULA_BLUE : GRAY_700} tt="uppercase">
             {label}
           </Text>
 
           {/* Filter indicator */}
-          {hasFilter ? (
+          {hasAppliedFilter ? (
             <Badge size="sm" variant="filled" color="blue" style={{ minWidth: 22 }}>
               {filterCount}
             </Badge>
@@ -221,42 +253,35 @@ function FilterHeader({
                 Filter by {label}
               </Text>
             </Group>
-            {hasFilter && (
-              <ActionIcon variant="subtle" size="sm" onClick={clearAll} color="red">
-                <IconX size={16} />
-              </ActionIcon>
-            )}
+            <Text size="xs" c={GRAY_500}>
+              {pendingValues.length > 0
+                ? `${pendingValues.length} of ${options.length} selected`
+                : `${options.length} values`}
+            </Text>
           </Group>
 
           <Divider />
 
-          {/* Quick actions */}
+          {/* Quick actions row */}
           <Group gap="xs">
-            <Button size="compact-sm" variant="light" color="blue" onClick={selectAll}>
-              Show All
+            <Button size="compact-xs" variant="subtle" color="blue" onClick={selectAllPending}>
+              Select All
             </Button>
-            {hasFilter && (
-              <Button size="compact-sm" variant="light" color="red" onClick={clearAll}>
-                Clear Filter
-              </Button>
-            )}
+            <Button size="compact-xs" variant="subtle" color="gray" onClick={clearAllPending}>
+              Clear All
+            </Button>
           </Group>
 
           {/* Filter options - SORTED BY COUNT */}
-          <Text size="xs" c={GRAY_500} fw={500}>
-            Click to filter by specific values:
-          </Text>
           <ScrollArea.Autosize mah={280}>
             <Stack gap={6}>
               {sortedOptions.map((option) => {
-                // When no filter active, nothing is "selected" - all are shown
-                // When filter active, only selected values are checked
-                const isChecked = hasFilter && selectedValues.includes(option.value);
+                const isChecked = pendingValues.includes(option.value);
 
                 return (
                   <UnstyledButton
                     key={option.value}
-                    onClick={() => toggleValue(option.value)}
+                    onClick={() => togglePendingValue(option.value)}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -301,13 +326,21 @@ function FilterHeader({
             </Stack>
           </ScrollArea.Autosize>
 
-          {/* Footer */}
+          {/* Footer with Apply/Cancel buttons */}
           <Divider />
-          <Text size="xs" c={GRAY_500} ta="center">
-            {hasFilter
-              ? `Showing ${selectedValues.length} of ${options.length} values`
-              : `${options.length} unique values`}
-          </Text>
+          <Group justify="flex-end" gap="sm">
+            <Button size="sm" variant="subtle" color="gray" onClick={cancelFilter}>
+              Cancel
+            </Button>
+            <Button
+              size="sm"
+              variant="filled"
+              color="blue"
+              onClick={applyFilter}
+            >
+              Apply Filter
+            </Button>
+          </Group>
         </Stack>
       </Popover.Dropdown>
     </Popover>
