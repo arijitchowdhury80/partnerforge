@@ -283,12 +283,30 @@ export function CompaniesPage() {
               }}
               w={180}
               size="md"
-              rightSection={<IconChevronDown size={14} />}
+              rightSection={<IconChevronDown size={14} color="#64748b" />}
               styles={{
                 input: {
-                  backgroundColor: 'white',
+                  backgroundColor: '#ffffff',
                   borderColor: '#e2e8f0',
-                  color: '#334155',
+                  color: '#1e293b',
+                },
+                dropdown: {
+                  backgroundColor: '#ffffff',
+                  borderColor: '#e2e8f0',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                },
+                option: {
+                  color: '#1e293b',
+                  fontSize: '14px',
+                  padding: '10px 14px',
+                  '&[data-selected]': {
+                    backgroundColor: ALGOLIA_NEBULA_BLUE,
+                    color: '#ffffff',
+                  },
+                  '&[data-hovered]': {
+                    backgroundColor: '#f1f5f9',
+                    color: '#1e293b',
+                  },
                 },
               }}
             />
