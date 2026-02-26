@@ -393,6 +393,13 @@ export interface ApiError {
 // Dashboard Types
 // =============================================================================
 
+export interface EnrichmentDepth {
+  basic: number;      // Has ICP score > 0
+  standard: number;   // Has traffic data (sw_monthly_visits > 0)
+  deep: number;       // Has financials OR tech stack OR competitors
+  unenriched: number; // No enrichment
+}
+
 export interface DashboardStats {
   total_companies: number;
   enriched_companies: number;
@@ -405,6 +412,8 @@ export interface DashboardStats {
   by_partner?: Record<string, number>;
   by_vertical?: Record<string, number>;
   avg_icp_score?: number;
+  // Enrichment depth breakdown
+  enrichment_depth?: EnrichmentDepth;
 }
 
 export interface FilterState {

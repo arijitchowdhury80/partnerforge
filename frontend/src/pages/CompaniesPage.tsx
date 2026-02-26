@@ -197,30 +197,33 @@ export function CompaniesPage() {
   };
 
   return (
-    <Container size="xl" py="md">
-      {/* Header Section */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-      >
-        <Group justify="space-between" mb="lg">
-          <div>
-            <Title order={2}>Companies</Title>
-            <Text c="#64748b" size="md" mt={4}>
-              Click column header dropdowns (Status, Vertical, Partner Tech) to filter like Excel
-            </Text>
-          </div>
-          <Button
-            leftSection={<IconUpload size={16} />}
-            variant="gradient"
-            gradient={{ from: 'blue', to: 'cyan', deg: 135 }}
-            onClick={() => navigate('/upload')}
+    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: '#f8fafc' }}>
+      {/* Fixed Header Section */}
+      <div style={{ flexShrink: 0, padding: '16px 24px', background: '#f8fafc' }}>
+        <Container size="xl" p={0}>
+          {/* Title Row */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
           >
-            Upload New List
-          </Button>
-        </Group>
-      </motion.div>
+            <Group justify="space-between" mb="md">
+              <div>
+                <Title order={2}>Companies</Title>
+                <Text c="#64748b" size="md" mt={4}>
+                  Click column header dropdowns (Status, Vertical, Partner Tech) to filter like Excel
+                </Text>
+              </div>
+              <Button
+                leftSection={<IconUpload size={16} />}
+                variant="gradient"
+                gradient={{ from: 'blue', to: 'cyan', deg: 135 }}
+                onClick={() => navigate('/upload')}
+              >
+                Upload New List
+              </Button>
+            </Group>
+          </motion.div>
 
       {/* Search Bar */}
       <motion.div
@@ -338,7 +341,7 @@ export function CompaniesPage() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3, delay: 0.2 }}
       >
-        <Group justify="space-between" mb="md" wrap="wrap">
+        <Group justify="space-between" mb="sm" wrap="wrap">
           <Group gap="sm">
             <Text size="md" c="#64748b" fw={500}>
               Showing
@@ -388,26 +391,33 @@ export function CompaniesPage() {
           </AnimatePresence>
         </Group>
       </motion.div>
+        </Container>
+      </div>
 
-      {/* Company Table */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.3 }}
-      >
-        <Paper withBorder>
-          <TargetList
-            companies={filteredCompanies}
-            allCompanies={companiesData?.data || []}
-            isLoading={isLoading}
-            pagination={companiesData?.pagination}
-            onPageChange={handlePageChange}
-            onEnrichCompany={handleEnrichCompany}
-            columnFilters={columnFilters}
-            onColumnFilterChange={handleColumnFilterChange}
-          />
-        </Paper>
-      </motion.div>
-    </Container>
+      {/* Scrollable Table Area - Takes remaining height */}
+      <div style={{ flex: 1, overflow: 'hidden', padding: '0 24px 16px 24px' }}>
+        <Container size="xl" p={0} style={{ height: '100%' }}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.3 }}
+            style={{ height: '100%' }}
+          >
+            <Paper withBorder style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+              <TargetList
+                companies={filteredCompanies}
+                allCompanies={companiesData?.data || []}
+                isLoading={isLoading}
+                pagination={companiesData?.pagination}
+                onPageChange={handlePageChange}
+                onEnrichCompany={handleEnrichCompany}
+                columnFilters={columnFilters}
+                onColumnFilterChange={handleColumnFilterChange}
+              />
+            </Paper>
+          </motion.div>
+        </Container>
+      </div>
+    </div>
   );
 }

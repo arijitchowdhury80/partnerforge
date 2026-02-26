@@ -582,10 +582,10 @@ export function TargetList({
   }
 
   return (
-    <div>
-      {/* Filter indicator */}
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      {/* Filter indicator - Sticky at top */}
       {activeFilterCount > 0 && (
-        <div style={{ padding: '8px 16px', borderBottom: `1px solid ${GRAY_200}`, background: GRAY_50 }}>
+        <div style={{ padding: '8px 16px', borderBottom: `1px solid ${GRAY_200}`, background: GRAY_50, flexShrink: 0 }}>
           <Group gap="xs">
             <IconFilter size={14} color={ALGOLIA_BLUE} />
             <Text size="sm" c={GRAY_700}>
@@ -598,10 +598,10 @@ export function TargetList({
         </div>
       )}
 
-      {/* Table */}
-      <div style={{ overflowX: 'auto', background: 'white' }}>
+      {/* Scrollable Table Container */}
+      <div style={{ flex: 1, overflow: 'auto', background: 'white' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', background: 'white' }}>
-          <thead>
+          <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id} style={{ borderBottom: `2px solid ${GRAY_200}`, background: 'white' }}>
                 {headerGroup.headers.map((header) => (
@@ -612,6 +612,7 @@ export function TargetList({
                       textAlign: 'left',
                       width: header.getSize(),
                       background: 'white',
+                      boxShadow: '0 1px 0 0 #e2e8f0',
                     }}
                   >
                     {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
@@ -684,9 +685,9 @@ export function TargetList({
         </table>
       </div>
 
-      {/* Pagination */}
+      {/* Pagination - Fixed at bottom */}
       {pagination && pagination.total_pages > 1 && (
-        <div style={{ padding: '16px 0', borderTop: `1px solid ${GRAY_200}`, marginTop: 16 }}>
+        <div style={{ padding: '12px 16px', borderTop: `1px solid ${GRAY_200}`, background: 'white', flexShrink: 0 }}>
           <Group justify="space-between">
             <Text size="sm" c={GRAY_500}>
               Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
