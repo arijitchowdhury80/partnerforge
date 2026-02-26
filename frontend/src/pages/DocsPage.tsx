@@ -429,15 +429,7 @@ function DiagramGallery({ markdown }: { markdown: string }) {
 // Markdown Renderer (Simple)
 // =============================================================================
 
-function renderMarkdown(markdown: string, isDiagramsPage: boolean = false): JSX.Element[] {
-  // DEBUG: Log to verify gallery is being triggered
-  console.log('[renderMarkdown] isDiagramsPage:', isDiagramsPage, 'markdown length:', markdown.length);
-
-  // Special handling for diagrams page - use gallery view
-  if (isDiagramsPage) {
-    console.log('[renderMarkdown] Rendering DiagramGallery');
-    return [<DiagramGallery key="diagram-gallery" markdown={markdown} />];
-  }
+function renderMarkdown(markdown: string): JSX.Element[] {
   const lines = markdown.split('\n');
   const elements: JSX.Element[] = [];
   let inCodeBlock = false;
@@ -851,9 +843,12 @@ export function DocsPage() {
               <Alert icon={<IconAlertCircle size={16} />} title="Error" color="red">
                 {error}
               </Alert>
+            ) : activeSection === 'diagrams' ? (
+              /* Direct gallery render for diagrams page */
+              <DiagramGallery markdown={content} />
             ) : (
               <Box className="markdown-content">
-                {renderMarkdown(content, activeSection === 'diagrams')}
+                {renderMarkdown(content)}
               </Box>
             )}
           </Paper>
