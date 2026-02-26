@@ -88,7 +88,7 @@ export function Dashboard() {
   const { data: cellCompanies, isLoading: cellLoading } = useQuery({
     queryKey: ['cell-companies', selectedCell?.tier, selectedCell?.vertical],
     queryFn: () => getCompanies({
-      status: selectedCell?.tier as 'hot' | 'warm' | 'cool' | 'cold',
+      status: selectedCell?.tier as 'hot' | 'warm' | 'cold',
       vertical: selectedCell?.vertical,
       sort_by: 'icp_score',
       sort_order: 'desc',
@@ -100,7 +100,6 @@ export function Dashboard() {
 
   const hotCount = stats?.hot_leads || 0;
   const warmCount = stats?.warm_leads || 0;
-  const coolCount = stats?.cool_leads || 0;
   const coldCount = stats?.cold_leads || 0;
   const total = stats?.total_companies || 0;
 
@@ -114,7 +113,7 @@ export function Dashboard() {
     if (selectedCell) {
       setFilters({
         ...filters,
-        status: selectedCell.tier as 'hot' | 'warm' | 'cool' | 'cold',
+        status: selectedCell.tier as 'hot' | 'warm' | 'cold',
         vertical: selectedCell.vertical,
       });
       setSelectedCell(null);
@@ -296,12 +295,7 @@ export function Dashboard() {
                   {warmCount} Warm
                 </Badge>
               </Tooltip>
-              <Tooltip label="ICP 40-59: Monitor for signals" withArrow>
-                <Badge size="sm" variant="gradient" gradient={{ from: '#3b82f6', to: '#2563eb' }} style={{ cursor: 'help' }}>
-                  {coolCount} Cool
-                </Badge>
-              </Tooltip>
-              <Tooltip label="ICP 0-39: Low priority" withArrow>
+              <Tooltip label="ICP 0-59: Lower priority targets" withArrow>
                 <Badge size="sm" variant="light" color="gray" leftSection={<IconSnowflake size={12} />} style={{ cursor: 'help' }}>
                   {coldCount} Cold
                 </Badge>

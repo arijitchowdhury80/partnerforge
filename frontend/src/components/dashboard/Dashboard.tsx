@@ -120,13 +120,13 @@ export function Dashboard() {
               { label: 'All', value: 'all' },
               { label: 'Hot', value: 'hot' },
               { label: 'Warm', value: 'warm' },
-              { label: 'Cool', value: 'cool' },
+              { label: 'Cold', value: 'cold' },
             ]}
             value={filters.status || 'all'}
             onChange={(value) =>
               setFilters((prev) => ({
                 ...prev,
-                status: value === 'all' ? undefined : (value as 'hot' | 'warm' | 'cool'),
+                status: value === 'all' ? undefined : (value as 'hot' | 'warm' | 'cold'),
               }))
             }
           />

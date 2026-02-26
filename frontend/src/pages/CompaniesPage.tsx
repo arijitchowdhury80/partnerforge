@@ -145,7 +145,7 @@ export function CompaniesPage() {
 
     // Add status filter (only first selected for now - API limitation)
     if (selectedStatuses.length === 1) {
-      base.status = selectedStatuses[0] as 'hot' | 'warm' | 'cool' | 'cold';
+      base.status = selectedStatuses[0] as 'hot' | 'warm' | 'cold';
     }
 
     // Add partner filter

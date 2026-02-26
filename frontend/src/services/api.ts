@@ -92,22 +92,21 @@ export async function getStats(): Promise<DashboardStats> {
       enriched_companies: 0,
       hot_leads: 0,
       warm_leads: 0,
-      cool_leads: 0,
       cold_leads: 0,
       modules_active: 2,
       waves_configured: 1,
     };
   }
 
-  let hot = 0, warm = 0, cool = 0, cold = 0, enriched = 0;
+  // 3 tiers: Hot (80-100), Warm (40-79), Cold (0-39)
+  let hot = 0, warm = 0, cold = 0, enriched = 0;
   const byVertical: Record<string, number> = {};
 
   for (const target of data) {
     const score = target.icp_score || 0;
     if (score > 0) enriched++;
     if (score >= 80) hot++;
-    else if (score >= 60) warm++;
-    else if (score >= 40) cool++;
+    else if (score >= 40) warm++;
     else cold++;
 
     const v = target.vertical || 'Unknown';
@@ -119,7 +118,6 @@ export async function getStats(): Promise<DashboardStats> {
     enriched_companies: enriched,
     hot_leads: hot,
     warm_leads: warm,
-    cool_leads: cool,
     cold_leads: cold,
     modules_active: 2,
     waves_configured: 1,
@@ -127,11 +125,11 @@ export async function getStats(): Promise<DashboardStats> {
   };
 }
 
-// Distribution data for the grid
+// Distribution data for the grid - 3 tiers only
 export interface DistributionData {
   verticals: string[];
   tiers: {
-    key: 'hot' | 'warm' | 'cool' | 'cold';
+    key: 'hot' | 'warm' | 'cold';
     label: string;
     score: string;
     color: string;
@@ -151,9 +149,9 @@ export async function getDistribution(): Promise<DistributionData> {
     return { verticals: [], tiers: [], grandTotal: 0 };
   }
 
-  // Count by vertical and tier
+  // Count by vertical and tier - 3 tiers: Hot (80+), Warm (40-79), Cold (0-39)
   const counts: Record<string, Record<string, number>> = {};
-  const tierTotals = { hot: 0, warm: 0, cool: 0, cold: 0 };
+  const tierTotals = { hot: 0, warm: 0, cold: 0 };
   const verticalSet = new Set<string>();
 
   for (const target of data) {
@@ -162,18 +160,15 @@ export async function getDistribution(): Promise<DistributionData> {
     verticalSet.add(vertical);
 
     if (!counts[vertical]) {
-      counts[vertical] = { hot: 0, warm: 0, cool: 0, cold: 0 };
+      counts[vertical] = { hot: 0, warm: 0, cold: 0 };
     }
 
     if (score >= 80) {
       counts[vertical].hot++;
       tierTotals.hot++;
-    } else if (score >= 60) {
+    } else if (score >= 40) {
       counts[vertical].warm++;
       tierTotals.warm++;
-    } else if (score >= 40) {
-      counts[vertical].cool++;
-      tierTotals.cool++;
     } else {
       counts[vertical].cold++;
       tierTotals.cold++;
@@ -192,17 +187,16 @@ export async function getDistribution(): Promise<DistributionData> {
 
   // Combine "Other" verticals
   if (otherVerticals.length > 0) {
-    counts['Other'] = { hot: 0, warm: 0, cool: 0, cold: 0 };
+    counts['Other'] = { hot: 0, warm: 0, cold: 0 };
     for (const v of otherVerticals) {
       counts['Other'].hot += counts[v]?.hot || 0;
       counts['Other'].warm += counts[v]?.warm || 0;
-      counts['Other'].cool += counts[v]?.cool || 0;
       counts['Other'].cold += counts[v]?.cold || 0;
     }
     topVerticals.push('Other');
   }
 
-  // Build tier data
+  // Build tier data - 3 tiers only
   const tiers: DistributionData['tiers'] = [
     {
       key: 'hot',
@@ -215,18 +209,10 @@ export async function getDistribution(): Promise<DistributionData> {
     {
       key: 'warm',
       label: 'WARM',
-      score: '60-79',
+      score: '40-79',
       color: '#f97316',
       values: Object.fromEntries(topVerticals.map(v => [v, counts[v]?.warm || 0])),
       total: tierTotals.warm,
-    },
-    {
-      key: 'cool',
-      label: 'COOL',
-      score: '40-59',
-      color: '#3b82f6',
-      values: Object.fromEntries(topVerticals.map(v => [v, counts[v]?.cool || 0])),
-      total: tierTotals.cool,
     },
     {
       key: 'cold',
@@ -249,10 +235,9 @@ export async function getDistribution(): Promise<DistributionData> {
 // Companies / Targets
 // =============================================================================
 
-function getStatusFromScore(score: number): 'hot' | 'warm' | 'cool' | 'cold' {
+function getStatusFromScore(score: number): 'hot' | 'warm' | 'cold' {
   if (score >= 80) return 'hot';
-  if (score >= 60) return 'warm';
-  if (score >= 40) return 'cool';
+  if (score >= 40) return 'warm';
   return 'cold';
 }
 
@@ -320,10 +305,10 @@ export async function getCompanies(
     params.push(`icp_score=gte.${min_score}`);
   }
   if (status) {
+    // 3 tiers: Hot (80-100), Warm (40-79), Cold (0-39)
     const ranges: Record<string, [number, number]> = {
       hot: [80, 100],
-      warm: [60, 79],
-      cool: [40, 59],
+      warm: [40, 79],
       cold: [0, 39],
     };
     const [min, max] = ranges[status] || [0, 100];

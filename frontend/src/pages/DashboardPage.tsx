@@ -23,6 +23,7 @@ import {
   RingProgress,
   Timeline,
   Skeleton,
+  Tooltip,
 } from '@mantine/core';
 import {
   IconSearch,
@@ -44,6 +45,7 @@ import { formatDistanceToNow } from 'date-fns';
 
 import { getStats, getCompanies } from '@/services/api';
 import { TargetTable } from '@/components/dashboard/TargetTable';
+import { ICPVerticalHeatmap } from '@/components/dashboard/ICPVerticalHeatmap';
 import type { FilterState } from '@/types';
 
 // Stat card component with trend indicator
@@ -132,8 +134,7 @@ export function DashboardPage() {
   const statusData = [
     { name: 'Hot', value: stats?.hot_leads || 0 },
     { name: 'Warm', value: stats?.warm_leads || 0 },
-    { name: 'Cool', value: 50 },
-    { name: 'Cold', value: 100 },
+    { name: 'Cold', value: stats?.cold_leads || 0 },
   ];
 
   const trendData = [
@@ -154,18 +155,39 @@ export function DashboardPage() {
       {/* Header */}
       <Group justify="space-between" mb="lg">
         <div>
-          <Title order={2}>Partner Intelligence Dashboard</Title>
+          <Group gap="md" align="baseline">
+            <Title order={2}>Partner Intelligence Dashboard</Title>
+            <Group gap="xs">
+              <Tooltip label="ICP Score 80-100: High-value displacement targets" withArrow>
+                <Badge color="red" variant="filled" size="sm" style={{ cursor: 'help' }}>
+                  Hot ({stats?.hot_leads || 0})
+                </Badge>
+              </Tooltip>
+              <Tooltip label="ICP Score 60-79: Medium-priority targets" withArrow>
+                <Badge color="orange" variant="filled" size="sm" style={{ cursor: 'help' }}>
+                  Warm ({stats?.warm_leads || 0})
+                </Badge>
+              </Tooltip>
+              <Tooltip label="ICP Score 0-59: Lower-priority targets" withArrow>
+                <Badge color="gray" variant="filled" size="sm" style={{ cursor: 'help' }}>
+                  Cold ({(stats?.total_companies || 0) - (stats?.hot_leads || 0) - (stats?.warm_leads || 0)})
+                </Badge>
+              </Tooltip>
+            </Group>
+          </Group>
           <Text c="dimmed" size="sm">
             Track displacement targets and enrichment progress
           </Text>
         </div>
-        <Button
-          leftSection={<IconRefresh size={16} />}
-          variant="light"
-          onClick={handleRefresh}
-        >
-          Refresh
-        </Button>
+        <Tooltip label="Refresh all data from API" withArrow>
+          <Button
+            leftSection={<IconRefresh size={16} />}
+            variant="light"
+            onClick={handleRefresh}
+          >
+            Refresh
+          </Button>
+        </Tooltip>
       </Group>
 
       {/* Stats Cards */}
@@ -204,14 +226,23 @@ export function DashboardPage() {
         />
       </SimpleGrid>
 
+      {/* ICP vs Vertical Heatmap */}
+      <Box mb="lg">
+        <ICPVerticalHeatmap loading={statsLoading} />
+      </Box>
+
       {/* Charts Row */}
       <Grid mb="lg">
         {/* Lead Distribution */}
         <Grid.Col span={{ base: 12, md: 4 }}>
           <Paper p="md" withBorder h="100%">
             <Group justify="space-between" mb="md">
-              <Text fw={500}>Lead Distribution</Text>
-              <Badge variant="light" size="sm">Live</Badge>
+              <Tooltip label="Breakdown of targets by ICP score tier" withArrow>
+                <Text fw={500} style={{ cursor: 'help' }}>Lead Distribution</Text>
+              </Tooltip>
+              <Tooltip label="Data updates in real-time" withArrow>
+                <Badge variant="light" size="sm" style={{ cursor: 'help' }}>Live</Badge>
+              </Tooltip>
             </Group>
             <DonutChart
               data={statusData}
@@ -227,13 +258,17 @@ export function DashboardPage() {
         <Grid.Col span={{ base: 12, md: 5 }}>
           <Paper p="md" withBorder h="100%">
             <Group justify="space-between" mb="md">
-              <Text fw={500}>Enrichment Trend</Text>
-              <Badge variant="light" color="green" size="sm">
-                <Group gap={4}>
-                  <IconTrendingUp size={12} />
-                  +23%
-                </Group>
-              </Badge>
+              <Tooltip label="Monthly enrichment progress over time" withArrow>
+                <Text fw={500} style={{ cursor: 'help' }}>Enrichment Trend</Text>
+              </Tooltip>
+              <Tooltip label="Growth from previous month" withArrow>
+                <Badge variant="light" color="green" size="sm" style={{ cursor: 'help' }}>
+                  <Group gap={4}>
+                    <IconTrendingUp size={12} />
+                    +23%
+                  </Group>
+                </Badge>
+              </Tooltip>
             </Group>
             <AreaChart
               data={trendData}
@@ -292,7 +327,9 @@ export function DashboardPage() {
       <Grid mb="lg">
         <Grid.Col span={{ base: 12, md: 6 }}>
           <Paper p="md" withBorder>
-            <Text fw={500} mb="md">Top ICP Scores</Text>
+            <Tooltip label="Companies with highest Ideal Customer Profile scores" withArrow>
+              <Text fw={500} mb="md" style={{ cursor: 'help' }}>Top ICP Scores</Text>
+            </Tooltip>
             <BarList
               data={[
                 { name: 'Mercedes-Benz', value: 95, icon: () => <IconBuilding size={16} /> },
@@ -307,7 +344,9 @@ export function DashboardPage() {
         </Grid.Col>
         <Grid.Col span={{ base: 12, md: 6 }}>
           <Paper p="md" withBorder>
-            <Text fw={500} mb="md">Partner Technology Breakdown</Text>
+            <Tooltip label="Distribution of targets by partner technology stack" withArrow>
+              <Text fw={500} mb="md" style={{ cursor: 'help' }}>Partner Technology Breakdown</Text>
+            </Tooltip>
             <BarList
               data={[
                 { name: 'Adobe AEM', value: 2687 },
@@ -337,13 +376,13 @@ export function DashboardPage() {
               { label: 'All', value: 'all' },
               { label: 'Hot', value: 'hot' },
               { label: 'Warm', value: 'warm' },
-              { label: 'Cool', value: 'cool' },
+              { label: 'Cold', value: 'cold' },
             ]}
             value={filters.status || 'all'}
             onChange={(value) =>
               setFilters((prev) => ({
                 ...prev,
-                status: value === 'all' ? undefined : (value as 'hot' | 'warm' | 'cool'),
+                status: value === 'all' ? undefined : (value as 'hot' | 'warm' | 'cold'),
               }))
             }
           />
