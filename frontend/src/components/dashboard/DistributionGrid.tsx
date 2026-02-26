@@ -5,17 +5,21 @@
  * This is a thin wrapper that:
  * 1. Converts DisplacementTarget → Company type
  * 2. Applies default sorting based on view mode
+ * 3. Handles client-side pagination for performance (limits DOM nodes)
  *
  * The actual table functionality comes from TargetList (single source of truth).
  * No duplicate UI code - just data transformation.
  */
 
-import { useMemo } from 'react';
+import { useMemo, useState, useCallback, useEffect } from 'react';
 import type { DisplacementTarget } from '@/services/supabase';
 import type { ViewMode } from './ViewModeToggle';
 import { TargetList } from '@/components/targets/TargetList';
 import type { Company } from '@/types';
 import type { Partner } from '@/contexts/PartnerContext';
+
+// Client-side pagination settings for performance
+const PAGE_SIZE = 50;
 
 // =============================================================================
 // Type Conversion: DisplacementTarget -> Company
@@ -97,12 +101,21 @@ function normalizeVertical(vertical: string | null | undefined): string {
 // =============================================================================
 
 export function DistributionGrid({ viewMode, targets }: DistributionGridProps) {
-  // Convert all targets to Company type
+  // Client-side pagination state
+  const [page, setPage] = useState(1);
+
+  // Reset to page 1 when viewMode changes for instant feedback
+  useEffect(() => {
+    setPage(1);
+  }, [viewMode]);
+
+  // Convert all targets to Company type (memoized - only recalculates when targets change)
   const allCompanies = useMemo(() => {
     return targets.map(convertTargetToCompany);
   }, [targets]);
 
   // Sort companies based on view mode (controls default sort order)
+  // Reset page when view mode changes
   const sortedCompanies = useMemo(() => {
     const sorted = [...allCompanies];
 
@@ -137,13 +150,34 @@ export function DistributionGrid({ viewMode, targets }: DistributionGridProps) {
     }
   }, [allCompanies, viewMode]);
 
+  // Paginate for performance - only render PAGE_SIZE rows at a time
+  const paginatedCompanies = useMemo(() => {
+    const start = (page - 1) * PAGE_SIZE;
+    return sortedCompanies.slice(start, start + PAGE_SIZE);
+  }, [sortedCompanies, page]);
+
+  // Pagination info for TargetList
+  const pagination = useMemo(() => ({
+    page,
+    limit: PAGE_SIZE,
+    total: sortedCompanies.length,
+    total_pages: Math.ceil(sortedCompanies.length / PAGE_SIZE),
+  }), [page, sortedCompanies.length]);
+
+  // Handle page change
+  const handlePageChange = useCallback((newPage: number) => {
+    setPage(newPage);
+  }, []);
+
   // Use THE SAME TargetList component for ALL views
   // Single source of truth for table UI
   return (
     <TargetList
-      companies={sortedCompanies}
+      companies={paginatedCompanies}
       allCompanies={sortedCompanies}
       isLoading={false}
+      pagination={pagination}
+      onPageChange={handlePageChange}
     />
   );
 }

@@ -9,7 +9,7 @@
  */
 
 import { useState, useMemo, useCallback } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+// Note: Removed framer-motion for performance - 5000 rows with staggered animations caused slowness
 import {
   useReactTable,
   getCoreRowModel,
@@ -485,41 +485,36 @@ export function TargetList({
             ))}
           </thead>
           <tbody>
-            <AnimatePresence>
-              {table.getRowModel().rows.map((row, index) => (
-                <motion.tr
-                  key={row.id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: index * 0.02 }}
-                  onClick={() => handleRowClick(row.original)}
-                  style={{
-                    borderBottom: `1px solid ${GRAY_100}`,
-                    cursor: 'pointer',
-                    transition: 'background 0.15s ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = GRAY_50;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'white';
-                  }}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <td
-                      key={cell.id}
-                      style={{
-                        padding: '16px',
-                        width: cell.column.getSize(),
-                        background: 'inherit',
-                      }}
-                    >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
-                </motion.tr>
-              ))}
-            </AnimatePresence>
+            {table.getRowModel().rows.map((row) => (
+              <tr
+                key={row.id}
+                onClick={() => handleRowClick(row.original)}
+                style={{
+                  borderBottom: `1px solid ${GRAY_100}`,
+                  cursor: 'pointer',
+                  transition: 'background 0.15s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = GRAY_50;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'white';
+                }}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <td
+                    key={cell.id}
+                    style={{
+                      padding: '16px',
+                      width: cell.column.getSize(),
+                      background: 'inherit',
+                    }}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
