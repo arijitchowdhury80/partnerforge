@@ -5,8 +5,10 @@ Centralized configuration management with environment variable support.
 """
 
 from pydantic_settings import BaseSettings
+from pydantic import field_validator
 from functools import lru_cache
-from typing import Optional
+from typing import Optional, Union
+import json
 
 
 class Settings(BaseSettings):
@@ -73,7 +75,46 @@ class Settings(BaseSettings):
     RETRY_DELAY_SECONDS: int = 30
 
     # CORS - Allow all origins for now (can restrict later)
-    CORS_ORIGINS: list[str] = ["*"]
+    # Use str type to avoid pydantic-settings JSON parsing issues
+    CORS_ORIGINS: str = "*"
+
+    @field_validator("CORS_ORIGINS", mode="before")
+    @classmethod
+    def parse_cors_origins(cls, v: Union[str, list]) -> str:
+        """Parse CORS_ORIGINS from various formats to comma-separated string.
+
+        Accepts:
+        - JSON array: '["https://example.com", "https://app.example.com"]'
+        - Comma-separated: "https://example.com,https://app.example.com"
+        - Single URL: "https://example.com"
+        - Wildcard: "*"
+        - Empty/None: defaults to "*"
+        """
+        if v is None or v == "":
+            return "*"
+
+        # Already a list (from default or parsed JSON)
+        if isinstance(v, list):
+            return ",".join(v) if v else "*"
+
+        # Try JSON parsing first
+        v_str = str(v).strip()
+        if v_str.startswith("["):
+            try:
+                parsed = json.loads(v_str)
+                if isinstance(parsed, list):
+                    return ",".join(parsed) if parsed else "*"
+            except json.JSONDecodeError:
+                pass
+
+        # Return as-is (single URL, comma-separated, or wildcard)
+        return v_str if v_str else "*"
+
+    def get_cors_origins_list(self) -> list[str]:
+        """Get CORS origins as a list for FastAPI middleware."""
+        if self.CORS_ORIGINS == "*":
+            return ["*"]
+        return [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()]
 
     class Config:
         env_file = ".env"

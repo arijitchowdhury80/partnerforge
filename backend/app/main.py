@@ -134,10 +134,10 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS middleware - permissive for production
+# CORS middleware - uses settings-based origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.get_cors_origins_list(),
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
