@@ -15,6 +15,7 @@ import {
   Table,
   Text,
   Group,
+  Badge,
   Tooltip,
   Box,
   Stack,
@@ -593,9 +594,14 @@ export function DistributionGrid({ viewMode, targets, onCellClick, selectedPartn
                       padding: '14px 12px',
                     }}
                   >
-                    <Text style={{ fontSize: '14px', fontWeight: 700, color: TEXT_DARK }}>
-                      {row.total.toLocaleString()}
-                    </Text>
+                    <Group gap={6} justify="center">
+                      <Text style={{ fontSize: '14px', fontWeight: 700, color: TEXT_DARK }}>
+                        {row.total.toLocaleString()}
+                      </Text>
+                      <Badge size="xs" variant="light" color="gray" style={{ fontWeight: 600 }}>
+                        {row.totalPercentage.toFixed(1)}%
+                      </Badge>
+                    </Group>
                   </Table.Td>
                 </Table.Tr>
               );
@@ -608,9 +614,14 @@ export function DistributionGrid({ viewMode, targets, onCellClick, selectedPartn
               </Table.Td>
               {columns.map((col) => (
                 <Table.Td key={col} style={{ textAlign: 'center', backgroundColor: TOTALS_BG, padding: '14px 12px' }}>
-                  <Text style={{ fontSize: '14px', fontWeight: 700, color: TEXT_DARK }}>
-                    {columnTotals[col]?.count.toLocaleString() || 0}
-                  </Text>
+                  <Group gap={6} justify="center">
+                    <Text style={{ fontSize: '14px', fontWeight: 700, color: TEXT_DARK }}>
+                      {columnTotals[col]?.count.toLocaleString() || 0}
+                    </Text>
+                    <Badge size="xs" variant="light" color="gray" style={{ fontWeight: 600 }}>
+                      {(columnTotals[col]?.percentage ?? 0).toFixed(1)}%
+                    </Badge>
+                  </Group>
                 </Table.Td>
               ))}
               <Table.Td

@@ -1,7 +1,8 @@
 /**
  * TargetList Component - Algolia Brand + Excel-Style Filters
- * Version: 2.5.0 - Hover Preview + Slide-over Drawer
+ * Version: 3.0.0 - Modular Table Filters Library
  *
+ * - Uses shared TableFilters library for consistent Excel-style filtering
  * - Hover on row: Shows preview card with quick info
  * - Click on row: Opens slide-over drawer with full details
  * - Click column headers: Opens filter popups
@@ -22,26 +23,16 @@ import {
   Group,
   Text,
   Badge,
-  ActionIcon,
   Tooltip,
   Pagination,
-  Avatar,
   Anchor,
   Loader,
   UnstyledButton,
-  Popover,
-  Checkbox,
-  ScrollArea,
-  Divider,
-  Button,
-  Stack,
 } from '@mantine/core';
 import {
   IconArrowUp,
   IconArrowDown,
   IconSelector,
-  IconChevronDown,
-  IconX,
   IconFilter,
   IconFlame,
   IconTrendingUp,
@@ -64,30 +55,22 @@ import {
   AllPartnersLogo,
 } from '@/components/common/PartnerLogos';
 
-// Algolia Brand Colors (Official)
-const ALGOLIA_NEBULA_BLUE = '#003DFF';   // Primary - CTAs, headers
-const ALGOLIA_SPACE_GRAY = '#21243D';    // Body text, headings
-const ALGOLIA_PURPLE = '#5468FF';        // Accents, highlights
-const ALGOLIA_WHITE = '#FFFFFF';         // Backgrounds
-const ALGOLIA_LIGHT_GRAY = '#F5F5F7';    // Alternating sections
-const ALGOLIA_BORDER = '#E8E8ED';        // Borders
+// Import shared TableFilters library - single source of truth for filtering
+import {
+  FilterHeader,
+  TABLE_COLORS,
+  STATUS_COLOR_MAP,
+  type FilterOption,
+} from '@/components/common/TableFilters';
 
-// Legacy aliases for compatibility
+// Use shared color constants from TableFilters library
+const { ALGOLIA_NEBULA_BLUE, ALGOLIA_SPACE_GRAY, GRAY_200, GRAY_500, GRAY_700 } = TABLE_COLORS;
+
+// Local aliases for backward compatibility
 const ALGOLIA_BLUE = ALGOLIA_NEBULA_BLUE;
 const GRAY_50 = '#f8fafc';
 const GRAY_100 = '#f1f5f9';
-const GRAY_200 = ALGOLIA_BORDER;
 const GRAY_400 = '#94a3b8';
-const GRAY_500 = '#64748b';
-const GRAY_700 = ALGOLIA_SPACE_GRAY;
-const GRAY_900 = ALGOLIA_SPACE_GRAY;
-
-// Status colors - Enterprise grade visibility
-const STATUS_COLORS: Record<string, { bg: string; text: string; badge: string }> = {
-  hot: { bg: '#dc2626', text: '#ffffff', badge: 'red' },
-  warm: { bg: '#ea580c', text: '#ffffff', badge: 'orange' },
-  cold: { bg: '#64748b', text: '#ffffff', badge: 'gray' },
-};
 
 // Types
 export interface ColumnFilter {
