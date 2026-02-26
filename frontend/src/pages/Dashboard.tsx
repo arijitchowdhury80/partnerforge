@@ -164,10 +164,20 @@ export function Dashboard() {
     }),
   });
 
-  const hotCount = stats?.hot_leads || 0;
-  const warmCount = stats?.warm_leads || 0;
-  const coldCount = stats?.cold_leads || 0;
-  const total = stats?.total_companies || 0;
+  // Calculate stats from filtered allTargetsData (not global stats)
+  const filteredStats = useMemo(() => {
+    if (!allTargetsData) return { total: 0, hot: 0, warm: 0, cold: 0 };
+    let hot = 0, warm = 0, cold = 0;
+    allTargetsData.forEach(t => {
+      const score = t.icp_score || 0;
+      if (score >= 80) hot++;
+      else if (score >= 40) warm++;
+      else cold++;
+    });
+    return { total: allTargetsData.length, hot, warm, cold };
+  }, [allTargetsData]);
+
+  const { total, hot: hotCount, warm: warmCount, cold: coldCount } = filteredStats;
 
   // Apply client-side filtering based on column filters
   const filteredCompanies = useMemo(() => {
@@ -313,45 +323,6 @@ export function Dashboard() {
           </Paper>
         </motion.div>
 
-        {/* KPI Cards - only show when partner selected */}
-        {hasPartnerSelected && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
-          >
-            <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="lg" mb="xl">
-              <KPICard
-                label="Total Targets"
-                value={total}
-                icon={<IconTarget size={20} />}
-                color={ALGOLIA_BLUE}
-              />
-              <KPICard
-                label="Hot Leads"
-                value={hotCount}
-                sublabel="Ready for outreach"
-                icon={<IconFlame size={20} />}
-                color="#dc2626"
-              />
-              <KPICard
-                label="Warm Leads"
-                value={warmCount}
-                sublabel="Nurture pipeline"
-                icon={<IconTrendingUp size={20} />}
-                color="#ea580c"
-              />
-              <KPICard
-                label="Cold Leads"
-                value={coldCount}
-                sublabel="Low priority"
-                icon={<IconSnowflake size={20} />}
-                color={GRAY_500}
-              />
-            </SimpleGrid>
-          </motion.div>
-        )}
-
         {/* Empty State - when no partner selected */}
         {!hasPartnerSelected && (
           <motion.div
@@ -458,15 +429,32 @@ export function Dashboard() {
               }}
             >
               <Group justify="space-between" mb="lg">
-                <div>
-                  <Text fw={600} c={GRAY_900} size="lg">Target Distribution</Text>
-                  <Text size="sm" c={GRAY_500}>
-                    {viewMode === 'partner' && 'By partner and vertical'}
-                    {viewMode === 'product' && 'By product and vertical'}
-                    {viewMode === 'vertical' && 'By vertical and ICP tier'}
-                    {viewMode === 'account' && 'All accounts'}
-                  </Text>
-                </div>
+                <Group gap="lg">
+                  <div>
+                    <Text fw={600} c={GRAY_900} size="lg">Target Distribution</Text>
+                    <Text size="sm" c={GRAY_500}>
+                      {viewMode === 'partner' && 'By partner and vertical'}
+                      {viewMode === 'product' && 'By product and vertical'}
+                      {viewMode === 'vertical' && 'By vertical and ICP tier'}
+                      {viewMode === 'account' && 'All accounts'}
+                    </Text>
+                  </div>
+                  {/* Compact stats badges */}
+                  <Group gap="xs">
+                    <Badge size="lg" variant="filled" color="blue" styles={{ root: { fontWeight: 700 } }}>
+                      {total.toLocaleString()} Total
+                    </Badge>
+                    <Badge size="md" variant="light" color="red" leftSection={<IconFlame size={12} />}>
+                      {hotCount} Hot
+                    </Badge>
+                    <Badge size="md" variant="light" color="orange" leftSection={<IconTrendingUp size={12} />}>
+                      {warmCount} Warm
+                    </Badge>
+                    <Badge size="md" variant="light" color="gray" leftSection={<IconSnowflake size={12} />}>
+                      {coldCount} Cold
+                    </Badge>
+                  </Group>
+                </Group>
                 <ViewModeToggle value={viewMode} onChange={setViewMode} />
               </Group>
 
