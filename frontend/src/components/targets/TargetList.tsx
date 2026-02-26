@@ -209,10 +209,10 @@ function FilterHeader({
 
             {/* Quick actions */}
             <Group gap="xs">
-              <Button size="compact-xs" variant="light" color="blue" onClick={selectAll}>
+              <Button size="compact-xs" variant="filled" color="blue" onClick={selectAll}>
                 Select All
               </Button>
-              <Button size="compact-xs" variant="light" color="gray" onClick={clearAll}>
+              <Button size="compact-xs" variant="outline" color="gray" onClick={clearAll}>
                 Clear
               </Button>
             </Group>
@@ -248,19 +248,19 @@ function FilterHeader({
                           styles={{ input: { cursor: 'pointer' } }}
                         />
                         {badgeColor ? (
-                          <Badge size="sm" color={badgeColor} variant="light" tt="capitalize">
+                          <Badge size="sm" color={badgeColor} variant="filled" tt="capitalize">
                             {option.value}
                           </Badge>
                         ) : (
-                          <Text size="sm" c={GRAY_700}>
+                          <Text size="sm" fw={500} c={GRAY_900}>
                             {option.value}
                           </Text>
                         )}
                       </Group>
                       {/* COUNT BADGE - shows how many companies */}
-                      <Badge size="sm" variant="light" color="gray">
+                      <Text size="sm" fw={600} c={GRAY_700}>
                         {option.count}
-                      </Badge>
+                      </Text>
                     </UnstyledButton>
                   );
                 })}
