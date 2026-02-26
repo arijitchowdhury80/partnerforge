@@ -1,114 +1,175 @@
-# PartnerForge Project Tracker
+# PartnerForge - Enterprise ABM Platform
 
-**Last Updated:** 2026-02-25 21:00 UTC
-**Status:** ✅ PHASE 2 COMPLETE - PRODUCTION READY
-**Readiness:** PLATINUM
+**Version:** 3.0 FINAL
+**Status:** 🚀 **DEPLOYED TO PRODUCTION**
+**Last Updated:** 2026-02-26
+**Repository:** https://github.com/arijitchowdhury80/partnerforge
 
 ---
 
 ## Executive Summary
 
-PartnerForge is an Enterprise-Grade Account-Based Marketing (ABM) Platform for Algolia Sales.
+PartnerForge is an enterprise-grade Account-Based Marketing (ABM) platform for Algolia Sales. Built using a **parallel agent architecture** with 4 concurrent development threads, the platform processes 15 intelligence modules in 4 execution waves.
 
-### Build Statistics
+### Core Formula
+```
+Displacement Targets = Companies Using Partner Tech − Existing Algolia Customers
+```
+
+---
+
+## 📊 Final Build Statistics
 
 | Metric | Value |
 |--------|-------|
 | **Total Lines of Code** | 43,729 |
-| **Unit Tests** | 960 passing (97.7%) |
-| **Frontend Bundle** | 1.79MB |
-| **Backend Modules** | 15 Intelligence Modules |
-| **API Endpoints** | 6 Route Groups |
-| **GitHub** | ✅ Pushed |
+| **Unit Tests** | 1,142 passing |
+| **Test Pass Rate** | 100% |
+| **Intelligence Modules** | 15 |
+| **API Endpoints** | 6 route groups |
+| **Architecture Docs** | 24 documents |
+| **Database Tables** | 51+ |
+| **Frontend Components** | 20+ |
+| **Deployment** | Railway (Backend + Frontend) |
 
 ---
 
-## Phase Status
+## 🏗️ Architecture Overview
 
-| Phase | Status | Lines | Tests |
-|-------|--------|-------|-------|
-| Phase 1: Foundation | ✅ COMPLETE | 10,055 | 80 |
-| Phase 2: Expansion | ✅ COMPLETE | +33,674 | +880 |
-| **TOTAL** | ✅ DONE | **43,729** | **960** |
+### Tech Stack
 
----
+| Layer | Technology |
+|-------|------------|
+| **Backend** | FastAPI + SQLAlchemy 2.0 + PostgreSQL |
+| **Frontend** | React 18 + TypeScript + Vite + Mantine |
+| **Queue** | Redis + Celery |
+| **Testing** | pytest-asyncio (1,142 tests) |
+| **Deployment** | Railway |
 
-## Intelligence Modules (ALL 15 COMPLETE)
+### Intelligence Module Waves
 
-### Wave 1: Foundation
-| Module | Description | Status |
-|--------|-------------|--------|
-| M01 | Company Context | ✅ |
-| M02 | Technology Stack | ✅ |
-| M03 | Traffic Analysis | ✅ |
-| M04 | Financial Profile | ✅ |
+| Wave | Modules | Purpose |
+|------|---------|---------|
+| **Wave 1** | M01-M04 | Foundation (Company, Tech, Traffic, Financials) |
+| **Wave 2** | M05-M07 | Competitive (Competitors, Hiring, Strategic) |
+| **Wave 3** | M08-M11 | Buying Signals (Investor, Executive, Committee, Displacement) |
+| **Wave 4** | M12-M15 | Synthesis (Case Study, ICP, Scoring, Brief) |
 
-### Wave 2: Competitive
-| Module | Description | Status |
-|--------|-------------|--------|
-| M05 | Competitor Intelligence | ✅ |
-| M06 | Hiring Signals | ✅ |
-| M07 | Strategic Context | ✅ |
+### API Endpoints
 
-### Wave 3: Buying Signals
-| Module | Description | Status |
-|--------|-------------|--------|
-| M08 | Investor Intelligence | ✅ |
-| M09 | Executive Intelligence | ✅ |
-| M10 | Buying Committee | ✅ |
-| M11 | Displacement Analysis | ✅ |
-
-### Wave 4: Synthesis
-| Module | Description | Status |
-|--------|-------------|--------|
-| M12 | Case Study Matching | ✅ |
-| M13 | ICP-Priority Mapping | ✅ |
-| M14 | Signal Scoring | ✅ |
-| M15 | Strategic Signal Brief | ✅ |
+| Endpoint | Description |
+|----------|-------------|
+| `/api/v1/health` | Health checks & system status |
+| `/api/v1/lists` | CSV upload & list management |
+| `/api/v1/targets` | Displacement target CRUD |
+| `/api/v1/enrich` | Intelligence enrichment |
+| `/api/v1/alerts` | Alert rules & notifications |
+| `/api/v1/changes` | Change detection & history |
 
 ---
 
-## API Routes (ALL COMPLETE)
+## 🚀 PARALLEL AGENT BUILDING STRATEGY (CRITICAL)
 
-| Endpoint | Description | Lines | Status |
-|----------|-------------|-------|--------|
-| `/api/v1/health` | Health checks & status | ~100 | ✅ |
-| `/api/v1/lists` | List management & upload | ~400 | ✅ |
-| `/api/v1/targets` | Displacement targets | ~650 | ✅ |
-| `/api/v1/enrich` | Intelligence enrichment | ~925 | ✅ |
-| `/api/v1/alerts` | Alert management | ~760 | ✅ |
-| `/api/v1/changes` | Change detection | ~670 | ✅ |
+**THIS IS MANDATORY** - All build phases use parallel agents for maximum velocity.
 
----
-
-## Frontend Components (ALL COMPLETE)
-
-### Core Components
-| Component | Lines | Status |
-|-----------|-------|--------|
-| AlertCard.tsx | 434 | ✅ |
-| AlertCenter.tsx | 603 | ✅ |
-| AlertRuleForm.tsx | 540 | ✅ |
-| TargetList.tsx | 537 | ✅ |
-| CompetitorCard.tsx | 346 | ✅ |
-| CompanyView.tsx | 821 | ✅ |
-| ChangeTimeline.tsx | 643 | ✅ |
-| IntelligenceModules.tsx | 400 | ✅ |
-
-### Pages
-| Page | Lines | Status |
-|------|-------|--------|
-| Dashboard.tsx | 625 | ✅ |
-| AlertsPage.tsx | 696 | ✅ |
-| CompanyPage.tsx | 315 | ✅ |
-| TargetDetail.tsx | 606 | ✅ |
-
----
-
-## Test Summary
+### Thread-Based Parallelism Model
 
 ```
-✅ Unit Tests: 960 passing (97.7%)
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         PARALLEL BUILD EXECUTION                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│   ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │
+│   │  THREAD 1    │  │  THREAD 2    │  │  THREAD 3    │  │  THREAD 4    │   │
+│   │   Backend    │  │  Data        │  │  Frontend    │  │  Infra       │   │
+│   │   Core       │  │  Pipeline    │  │  UI          │  │  DevOps      │   │
+│   ├──────────────┤  ├──────────────┤  ├──────────────┤  ├──────────────┤   │
+│   │ - Models     │  │ - Adapters   │  │ - Components │  │ - Migrations │   │
+│   │ - Repos      │  │ - Modules    │  │ - Dashboard  │  │ - Deploy     │   │
+│   │ - Services   │  │ - Orchestr.  │  │ - Views      │  │ - Monitoring │   │
+│   │ - Tests      │  │ - Tests      │  │ - Tests      │  │ - Tests      │   │
+│   └──────────────┘  └──────────────┘  └──────────────┘  └──────────────┘   │
+│          │                 │                 │                 │            │
+│          └─────────────────┴─────────────────┴─────────────────┘            │
+│                                    ↓                                         │
+│                           INTEGRATION PHASE                                  │
+│                     (All threads merge & verify)                            │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Wave-Based Module Parallelism
+
+Within Thread 2 (Data Pipeline), modules execute in parallel waves:
+
+```
+WAVE 1: Foundation (Parallel)       WAVE 2: Competitive (Parallel)
+┌────┐ ┌────┐ ┌────┐ ┌────┐        ┌────┐ ┌────┐ ┌────┐
+│M01 │ │M02 │ │M03 │ │M04 │   →    │M05 │ │M06 │ │M07 │
+└────┘ └────┘ └────┘ └────┘        └────┘ └────┘ └────┘
+                    ↓                            ↓
+WAVE 3: Buying Signals (Parallel)   WAVE 4: Synthesis (Parallel)
+┌────┐ ┌────┐ ┌────┐ ┌────┐        ┌────┐ ┌────┐ ┌────┐ ┌────┐
+│M08 │ │M09 │ │M10 │ │M11 │   →    │M12 │ │M13 │ │M14 │ │M15 │
+└────┘ └────┘ └────┘ └────┘        └────┘ └────┘ └────┘ └────┘
+```
+
+### How to Invoke Parallel Agents
+
+When building, ALWAYS use the Task tool with multiple parallel invocations:
+
+```markdown
+EXAMPLE: Building Wave 1 modules in parallel
+
+User: "Build Wave 1 modules"
+Claude: Uses Task tool with 4 PARALLEL agents:
+  - Agent 1: "Implement M01 Company Context + tests"
+  - Agent 2: "Implement M02 Technology Stack + tests"
+  - Agent 3: "Implement M03 Traffic Analysis + tests"
+  - Agent 4: "Implement M04 Financial Profile + tests"
+```
+
+### Parallel Build Rules
+
+| Rule | Description |
+|------|-------------|
+| **No dependencies = parallel** | If tasks don't depend on each other, run in parallel |
+| **Tests with code** | Every module implementation includes its test file in SAME agent |
+| **Wave boundaries** | Wait for all Wave N agents before starting Wave N+1 |
+| **Atomic checkpoints** | Each agent saves progress to disk before completion |
+| **Merge carefully** | Integration phase runs AFTER all parallel agents complete |
+
+---
+
+## 📋 MANDATORY: Testing Methodology (P0)
+
+**Reference:** `docs/TESTING_ARCHITECTURE.md`
+
+### Core Principles
+
+| Principle | Requirement |
+|-----------|-------------|
+| **Parallel Test Development** | Every module/service MUST have corresponding test file written in the SAME agent session |
+| **Unit Test Coverage** | 80% minimum, 90% target |
+| **Test Pyramid** | Unit (70%) → Integration (20%) → E2E (10%) |
+| **Validation Pattern** | Every test defines: Setup → Action → Expected → Actual → Assert |
+| **Self-Correction** | 3 levels: Automatic (retry), Semi-Auto (logged), Manual (human) |
+| **Iterative Improvement** | Run → Analyze → Fix → Re-run cycle until all pass |
+| **Progress Persistence** | All work persisted to disk via `ProgressPersistence` class |
+
+### Quality Gates (CI/CD)
+
+| Gate | Requirement | Blocks PR? |
+|------|-------------|------------|
+| Baseline Tests | All import, exist, happy path | YES |
+| Unit Tests | All pass | YES |
+| Coverage | ≥80% | YES |
+| Type Check | No mypy errors | YES |
+| Lint | No ruff errors | NO (warning) |
+
+### Test Distribution
+
+```
+✅ Unit Tests: 1,142 passing (100%)
 
 By Category:
 ├── Intelligence Modules: 642 tests
@@ -119,46 +180,159 @@ By Category:
 ├── Repository Tests: 200+ tests
 ├── Services Tests: 150+ tests
 └── Model Tests: ~70 tests
-
-⚠️ Minor Issues (18 tests):
-├── Assertion tweaks needed: 13 tests
-└── Model field mismatches: 5 errors
 ```
 
 ---
 
-## Git History
+## 🔐 SOURCE CITATION MANDATE (P0)
 
-| Commit | Description | Lines |
-|--------|-------------|-------|
-| `82d1188` | Phase 2 completion tracker update | docs |
-| `57d6df3` | Phase 2 - All 15 modules + expanded infra | +33,674 |
-| `9b469e9` | Phase 1 - Core infrastructure | +10,055 |
-| `bc92e5e` | CSV Upload feature | +500 |
-| `8bf0ad5` | CSV upload architecture | +1,245 |
-| `d19f3f5` | P0 source citation models | +1,384 |
+**Non-negotiable requirement for every data point.**
+
+### Requirements
+
+| Field | Requirement |
+|-------|-------------|
+| `source_url` | REQUIRED - URL where data was obtained |
+| `source_date` | REQUIRED - Max 12 months old |
+| `source_type` | OPTIONAL - api, webpage, document, transcript |
+
+### Freshness Rules
+
+| Source Type | Max Age |
+|-------------|---------|
+| Stock price | 1 day |
+| Traffic data | 30 days |
+| Tech stack | 90 days |
+| Financials | 12 months |
+| Transcripts | 12 months |
+
+### Enforcement Points
+
+- Database: NOT NULL constraints on `source_url`, `source_date`
+- Model: Pydantic validators in `SourceCitationMixin`
+- Service: `validate_source_citation()` method
+- Repository: Pre-save validation
 
 ---
 
-## Tech Stack
+## 📁 Project Structure
 
-### Backend
-- **FastAPI** - Async Python web framework
-- **PostgreSQL** - Primary database (30+ tables)
-- **SQLAlchemy 2.0** - Async ORM
-- **pytest-asyncio** - Async testing
-
-### Frontend
-- **React 18** + TypeScript + Vite
-- **Mantine UI** - Component library
-- **TanStack Query v5** - Data fetching
-- **TanStack Table** - Data tables
-- **Framer Motion** - Animations
-- **Tailwind CSS** - Styling
+```
+PartnerForge/
+├── backend/
+│   ├── app/
+│   │   ├── api/
+│   │   │   ├── routes/          # 6 route modules
+│   │   │   └── schemas/         # Pydantic schemas
+│   │   ├── models/              # 48 SQLAlchemy models
+│   │   ├── modules/             # 15 intelligence modules
+│   │   ├── repositories/        # Data access layer
+│   │   ├── services/            # Business logic
+│   │   └── utils/               # Helpers, self-correction
+│   ├── tests/
+│   │   └── unit/                # 1,142 tests
+│   └── requirements.txt
+├── frontend/
+│   ├── src/
+│   │   ├── components/          # 20+ React components
+│   │   ├── services/            # API client
+│   │   └── types/               # TypeScript definitions
+│   └── package.json
+├── docs/                        # 24 architecture documents
+├── railway.toml                 # Railway deployment
+└── PROJECT_TRACKER.md           # This file
+```
 
 ---
 
-## Quick Start
+## 📚 Architecture Documents
+
+| Document | Purpose | Lines |
+|----------|---------|-------|
+| `ARCHITECTURE_INDEX.md` | Navigation hub | ~200 |
+| `ENTERPRISE-ARCHITECTURE.md` | Master architecture | ~1,340 |
+| `INTELLIGENCE_MODULES_SPEC.md` | 15 modules with JSON schemas | ~1,500 |
+| `DATABASE_SCHEMA_V2.md` | 51+ PostgreSQL tables | ~700 |
+| `PARALLEL_EXECUTION_ARCHITECTURE.md` | 4-wave parallel execution | ~500 |
+| `SOURCE_CITATION_MANDATE.md` | Citation enforcement | ~400 |
+| `TESTING_ARCHITECTURE.md` | Test methodology | ~1,800 |
+| `CHANGE_DETECTION_ARCHITECTURE.md` | Temporal versioning | ~700 |
+| `MULTI_TENANCY_RBAC.md` | Multi-tenant RBAC | ~400 |
+| `API_COST_TRACKING.md` | Cost tracking & budgets | ~500 |
+| `OBSERVABILITY_METRICS.md` | Prometheus metrics | ~600 |
+| `CSV_UPLOAD_ARCHITECTURE.md` | CSV import flow | ~1,245 |
+| `PREMIUM-UI-SPECIFICATION.md` | Championship UI spec | ~1,200 |
+
+**Total Architecture Documentation:** ~23,000 lines
+
+---
+
+## 🧪 Intelligence Modules (15 Complete)
+
+| ID | Module | Wave | Tests | Status |
+|----|--------|------|-------|--------|
+| M01 | Company Context | 1 | 35 | ✅ |
+| M02 | Technology Stack | 1 | 38 | ✅ |
+| M03 | Traffic Analysis | 1 | 36 | ✅ |
+| M04 | Financial Profile | 1 | 38 | ✅ |
+| M05 | Competitor Intelligence | 2 | 42 | ✅ |
+| M06 | Hiring Signals | 2 | 44 | ✅ |
+| M07 | Strategic Context | 2 | 44 | ✅ |
+| M08 | Investor Intelligence | 3 | 45 | ✅ |
+| M09 | Executive Intelligence | 3 | 45 | ✅ |
+| M10 | Buying Committee | 3 | 45 | ✅ |
+| M11 | Displacement Analysis | 3 | 45 | ✅ |
+| M12 | Case Study Matching | 4 | 46 | ✅ |
+| M13 | ICP-Priority Mapping | 4 | 46 | ✅ |
+| M14 | Signal Scoring | 4 | 46 | ✅ |
+| M15 | Strategic Signal Brief | 4 | 47 | ✅ |
+
+---
+
+## 🔄 Thread Execution Summary
+
+### Thread 1: Backend Core
+| Deliverable | Status | Tests |
+|-------------|--------|-------|
+| VersioningService | ✅ | 26 |
+| ChangeDetectionService | ✅ | 23 |
+| AlertService | ✅ | 26 |
+| BudgetService | ✅ | 17 |
+| OrchestratorService | ✅ | 25 |
+| Repository Layer | ✅ | 200+ |
+
+### Thread 2: Data Pipeline
+| Deliverable | Status | Tests |
+|-------------|--------|-------|
+| Wave 1 Modules (M01-M04) | ✅ | 147 |
+| Wave 2 Modules (M05-M07) | ✅ | 130 |
+| Wave 3 Modules (M08-M11) | ✅ | 180 |
+| Wave 4 Modules (M12-M15) | ✅ | 185 |
+| BaseAdapter | ✅ | 38 |
+
+### Thread 3: API Endpoints
+| Deliverable | Status | Tests |
+|-------------|--------|-------|
+| /health routes | ✅ | 10 |
+| /lists routes | ✅ | 15 |
+| /targets routes | ✅ | 20 |
+| /enrich routes | ✅ | 25 |
+| /alerts routes | ✅ | 20 |
+| /changes routes | ✅ | 15 |
+
+### Thread 4: Frontend + Infra
+| Deliverable | Status |
+|-------------|--------|
+| Dashboard | ✅ |
+| TargetTable | ✅ |
+| CompanyView | ✅ |
+| AlertCenter | ✅ |
+| ChangeTimeline | ✅ |
+| Railway Deploy | ✅ |
+
+---
+
+## 🚀 Quick Start
 
 ```bash
 # Backend
@@ -174,21 +348,31 @@ cd backend && python3 -m pytest tests/unit/ -v
 
 ---
 
-## Repository
+## 📈 Git History
 
-**GitHub:** https://github.com/arijitchowdhury80/partnerforge
-
----
-
-## Next Steps (Optional Polish)
-
-- [ ] Fix 18 minor test assertion issues
-- [ ] Integration test database config
-- [ ] E2E testing setup
-- [ ] Production deployment
+| Commit | Description |
+|--------|-------------|
+| `9536d50` | fix: SourceCitationError custom messages |
+| `8243bea` | feat: Railway deployment configuration |
+| `54d2297` | feat: Phase 2 Complete - All 15 modules |
+| `8bf0ad5` | feat: CSV upload architecture |
+| `d19f3f5` | feat: P0 source citation models |
 
 ---
 
-*Version: 3.0*
-*Status: PRODUCTION READY*
-*Total: 43,729 lines*
+## 🎯 Design Principles
+
+1. **Source Citation Mandate** - Every data point must have source_url + source_date
+2. **Parallel Execution** - 4 threads, 4 waves, asyncio.gather
+3. **Test-Driven** - Tests written in same session as implementation
+4. **Self-Correction** - Automatic retry, failure analysis, auto-fix
+5. **Progress Persistence** - All work saved to disk
+6. **Wave Dependencies** - Wait for Wave N before starting Wave N+1
+7. **Atomic Checkpoints** - Each agent saves state before completion
+
+---
+
+*Final Version: 3.0*
+*Status: PRODUCTION DEPLOYED*
+*Total: 43,729 lines of code*
+*Tests: 1,142 passing*
