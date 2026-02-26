@@ -329,11 +329,16 @@ class TestAdapterCircuitBreaker:
         adapter = mock_adapter_with_circuit_breaker
         adapter.set_mock_error("fail-endpoint", ConnectionError("Network error"))
 
+        # Disable retries for this test so each call is one failure
+        adapter.retry_config.max_retries = 0
+
         # Make calls until circuit opens (threshold=3)
+        # With 0 retries, errors come as RetryExhaustedError wrapping ConnectionError
         for i in range(3):
             try:
                 await adapter.call("fail-endpoint")
-            except ConnectionError:
+            except Exception:
+                # Catch any error (RetryExhaustedError or ConnectionError)
                 pass
 
         # Circuit should now be open
@@ -348,8 +353,9 @@ class TestAdapterCircuitBreaker:
         """Circuit breaker rejects are tracked in metrics."""
         adapter = mock_adapter_with_circuit_breaker
 
-        # Force circuit open
+        # Force circuit open - must also set last_failure_time to prevent recovery
         adapter.circuit_breaker._state = CircuitState.OPEN
+        adapter.circuit_breaker._last_failure_time = datetime.utcnow()
 
         try:
             await adapter.call("test-endpoint")
@@ -527,7 +533,9 @@ class TestAdapterHealthCheck:
 
     def test_health_check_unhealthy(self, mock_adapter):
         """Unhealthy adapter (circuit open) returns negative health check."""
+        # Force circuit open - must also set last_failure_time to prevent recovery
         mock_adapter.circuit_breaker._state = CircuitState.OPEN
+        mock_adapter.circuit_breaker._last_failure_time = datetime.utcnow()
 
         health = mock_adapter.health_check()
         assert health["healthy"] is False

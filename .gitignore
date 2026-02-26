@@ -1,7 +1,12 @@
+# =============================================================================
+# PartnerForge .gitignore
+# =============================================================================
+
 # macOS
 .DS_Store
 .AppleDouble
 .LSOverride
+._*
 
 # Python
 __pycache__/
@@ -15,31 +20,88 @@ venv/
 *.egg-info/
 dist/
 build/
+.eggs/
+*.egg
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+.coverage.*
+*.cover
 
 # IDE
 .idea/
 .vscode/
 *.swp
 *.swo
+*~
+*.sublime-workspace
+*.sublime-project
 
 # Logs
 *.log
+logs/
 
 # Environment
 .env
 .env.local
+.env.*.local
+!.env.example
 
 # Temporary files
 *.tmp
 *.temp
+tmp/
+temp/
+
 # Sample data files (large)
 *.csv
+!output/*.csv
 
 # Node.js
 node_modules/
 .npm/
 package-lock.json
+.pnp
+.pnp.js
+.yarn-integrity
+
+# Build outputs
+frontend/dist/
+frontend/build/
 
 # Database files
 *.db
 *.sqlite
+*.sqlite3
+!data/.gitkeep
+
+# Docker
+.docker/
+
+# Backup files
+*.bak
+*.backup
+backup_*.sql
+
+# Alembic
+alembic/versions/*.pyc
+
+# Testing
+.tox/
+.nox/
+coverage.xml
+*.cover
+*.py,cover
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Secrets (never commit these)
+*.pem
+*.key
+credentials.json
+secrets.json
+*_credentials.json

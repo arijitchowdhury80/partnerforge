@@ -75,3 +75,11 @@ export {
   useModuleCompletionStatus,
   usePrefetchModule,
 } from './useIntelligence';
+
+// Column detection hooks
+export {
+  useColumnDetection,
+  useManualColumnMapping,
+  type ColumnDetectionResult,
+  type UseColumnDetectionOptions,
+} from './useColumnDetection';

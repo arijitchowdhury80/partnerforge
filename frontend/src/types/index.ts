@@ -398,139 +398,29 @@ export interface FilterState {
 }
 
 // =============================================================================
-// CSV Upload Types
+// CSV Upload Types (re-exported from upload.ts for backwards compatibility)
 // =============================================================================
 
-export type UploadStatus =
-  | 'uploaded'
-  | 'parsing'
-  | 'parsed'
-  | 'validating'
-  | 'validated'
-  | 'queued'
-  | 'processing'
-  | 'completed'
-  | 'failed';
-
-export type ListItemStatus =
-  | 'pending'
-  | 'validating'
-  | 'valid'
-  | 'invalid'
-  | 'queued'
-  | 'enriching'
-  | 'enriched'
-  | 'failed';
-
-export interface ColumnMapping {
-  domain?: string;
-  company_name?: string;
-  salesforce_id?: string;
-  demandbase_id?: string;
-  revenue?: string;
-  traffic?: string;
-  industry?: string;
-  owner?: string;
-  region?: string;
-  journey_stage?: string;
-  engagement_score?: string;
-}
-
-export interface ValidationError {
-  field: string;
-  error: string;
-}
-
-export interface UploadedList {
-  id: string;
-  user_id?: string;
-  team_id?: string;
-  name: string;
-  description?: string;
-  source: 'salesforce' | 'demandbase' | '6sense' | 'manual';
-  original_filename: string;
-  file_size_bytes: number;
-  total_rows: number;
-  valid_rows: number;
-  invalid_rows: number;
-  duplicate_rows: number;
-  column_mapping: ColumnMapping;
-  status: UploadStatus;
-  processed_count: number;
-  success_count: number;
-  error_count: number;
-  created_at: string;
-  parsing_started_at?: string;
-  parsing_completed_at?: string;
-  enrichment_started_at?: string;
-  enrichment_completed_at?: string;
-  error_message?: string;
-}
-
-export interface UploadedListItem {
-  id: string;
-  list_id: string;
-  row_number: number;
-  domain: string;
-  company_name?: string;
-  salesforce_id?: string;
-  demandbase_id?: string;
-  csv_data: Record<string, unknown>;
-  status: ListItemStatus;
-  validation_errors?: ValidationError[];
-  enrichment_job_id?: string;
-  displacement_target_id?: number;
-  created_at: string;
-  validated_at?: string;
-  enrichment_started_at?: string;
-  enrichment_completed_at?: string;
-  error_message?: string;
-  retry_count: number;
-}
-
-export interface UploadResponse {
-  id: string;
-  name: string;
-  total_rows: number;
-  column_mapping: ColumnMapping;
-  detected_columns: string[];
-  status: UploadStatus;
-  requires_mapping_confirmation: boolean;
-}
-
-export interface ValidationResult {
-  list_id: string;
-  total: number;
-  valid: number;
-  invalid: number;
-  duplicates: number;
-  status: 'validated' | 'validating';
-}
-
-export interface EnrichmentJobResponse {
-  job_id: string;
-  list_id: string;
-  total_items: number;
-  status: 'queued' | 'processing' | 'completed' | 'failed';
-  estimated_time_seconds: number;
-}
-
-export interface ListStatusResponse {
-  id: string;
-  name: string;
-  status: UploadStatus;
-  total_rows: number;
-  valid_rows: number;
-  invalid_rows: number;
-  processed_count: number;
-  success_count: number;
-  error_count: number;
-  progress_percent: number;
-  created_at: string;
-  enrichment_started_at?: string;
-  enrichment_completed_at?: string;
-  estimated_remaining_seconds?: number;
-}
+export type {
+  UploadStatus,
+  ListItemStatus,
+  ColumnMapping,
+  FieldConfig,
+  ValidationError,
+  ValidationResult,
+  UploadedList,
+  UploadedListItem,
+  UploadResponse,
+  EnrichmentJobResponse,
+  ListStatusResponse,
+  CSVUploaderProps,
+  ColumnMapperProps,
+  UploadPreviewProps,
+  UploadProgressProps,
+  UploadListProps,
+  UploadWizardState,
+  UploadStep,
+} from './upload';
 
 // =============================================================================
 // KPI Card Types

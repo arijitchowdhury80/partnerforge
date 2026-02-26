@@ -32,6 +32,33 @@ from .lists import (
     PaginationMeta,
 )
 
+from .targets import (
+    # Enums
+    TargetStatus,
+    SortField,
+    SortOrder,
+    EnrichmentLevel,
+
+    # Response schemas
+    TargetSummary,
+    TargetResponse,
+    TargetListResponse,
+
+    # Search schemas
+    TargetSearchRequest,
+    TargetSearchResponse,
+
+    # Status update schemas
+    TargetStatusUpdate,
+    TargetStatusUpdateResponse,
+
+    # Stats schemas
+    TargetStats,
+    StatusBreakdown,
+    VerticalBreakdown,
+    PartnerTechBreakdown,
+)
+
 __all__ = [
     # Upload
     "ListUploadResponse",
@@ -58,4 +85,29 @@ __all__ = [
 
     # Pagination
     "PaginationMeta",
+
+    # Target Enums
+    "TargetStatus",
+    "SortField",
+    "SortOrder",
+    "EnrichmentLevel",
+
+    # Target Response
+    "TargetSummary",
+    "TargetResponse",
+    "TargetListResponse",
+
+    # Target Search
+    "TargetSearchRequest",
+    "TargetSearchResponse",
+
+    # Target Status
+    "TargetStatusUpdate",
+    "TargetStatusUpdateResponse",
+
+    # Target Stats
+    "TargetStats",
+    "StatusBreakdown",
+    "VerticalBreakdown",
+    "PartnerTechBreakdown",
 ]

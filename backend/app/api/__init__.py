@@ -10,11 +10,12 @@ Modules:
 """
 
 from .deps import get_db, get_current_user
-from .routes import health, lists
+from .routes import health, lists, targets
 
 __all__ = [
     "get_db",
     "get_current_user",
     "health",
     "lists",
+    "targets",
 ]

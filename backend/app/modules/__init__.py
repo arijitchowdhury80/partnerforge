@@ -56,9 +56,41 @@ from .base import (
 
 # Wave 1: Foundation Modules
 from .m01_company_context import M01CompanyContextModule, CompanyContextData
+from .m02_tech_stack import (
+    M02TechStackModule,
+    TechStackData,
+    TechnologyItem,
+    SearchProviderInfo as TechStackSearchProviderInfo,
+)
+from .m03_traffic import (
+    M03TrafficModule,
+    TrafficAnalysisData,
+    TrafficMetrics,
+    TrafficTrend,
+    TrafficSources,
+    Geography,
+    CountryShare,
+    Demographics,
+    Keywords,
+    WebsiteRank,
+    SearchRevenueEstimate,
+)
 
-# Wave 2: Competitive Modules (TODO)
-# from .m05_competitors import M05CompetitorModule
+# Wave 2: Competitive Modules
+from .m05_competitors import (
+    M05CompetitorIntelligenceModule,
+    CompetitorIntelligenceData,
+    CompetitorSite,
+    SearchProviderInfo,
+)
+from .m06_hiring import (
+    M06HiringSignalsModule,
+    HiringSignalsData,
+    JobPosting,
+    SEARCH_KEYWORDS,
+    ENGINEERING_KEYWORDS,
+    PRODUCT_KEYWORDS,
+)
 
 # Wave 3: Buying Signals Modules (TODO)
 # from .m08_investor import M08InvestorModule
@@ -81,4 +113,30 @@ __all__ = [
     # Wave 1 Modules
     "M01CompanyContextModule",
     "CompanyContextData",
+    "M02TechStackModule",
+    "TechStackData",
+    "TechnologyItem",
+    "TechStackSearchProviderInfo",
+    "M03TrafficModule",
+    "TrafficAnalysisData",
+    "TrafficMetrics",
+    "TrafficTrend",
+    "TrafficSources",
+    "Geography",
+    "CountryShare",
+    "Demographics",
+    "Keywords",
+    "WebsiteRank",
+    "SearchRevenueEstimate",
+    # Wave 2 Modules
+    "M05CompetitorIntelligenceModule",
+    "CompetitorIntelligenceData",
+    "CompetitorSite",
+    "SearchProviderInfo",
+    "M06HiringSignalsModule",
+    "HiringSignalsData",
+    "JobPosting",
+    "SEARCH_KEYWORDS",
+    "ENGINEERING_KEYWORDS",
+    "PRODUCT_KEYWORDS",
 ]

@@ -37,6 +37,7 @@ from .base import (
 )
 from ..models.core import Company, Technology, CompanyTechnology, CustomerLogo
 from ..models.evidence import CaseStudy
+from ..models.targets import DisplacementTarget
 
 
 class CompanyRepository(BaseRepository[Company]):
@@ -620,3 +621,139 @@ class CompanyRepository(BaseRepository[Company]):
 
         result = await self._session.execute(query)
         return list(result.scalars().all())
+
+    # =========================================================================
+    # Intelligence Operations
+    # =========================================================================
+
+    async def get_with_intelligence(
+        self,
+        domain: str,
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Get a company with its associated intelligence data.
+
+        Retrieves company information along with displacement target data
+        and intelligence module data (if available).
+
+        Args:
+            domain: Company domain
+
+        Returns:
+            Dictionary with company data and intelligence, or None if not found:
+            {
+                "company": Company,
+                "target": DisplacementTarget | None,
+                "intelligence_completeness": float,
+                "has_intelligence": bool,
+            }
+        """
+        # Get the company
+        company = await self.get_by_domain(domain)
+        if company is None:
+            return None
+
+        # Get displacement target data (if this domain is a target)
+        target_query = select(DisplacementTarget).where(
+            DisplacementTarget.domain == domain.lower().strip()
+        )
+        target_result = await self._session.execute(target_query)
+        target = target_result.scalar_one_or_none()
+
+        # Build response
+        result = {
+            "company": company,
+            "target": target,
+            "has_intelligence": target is not None,
+            "intelligence_completeness": 0.0,
+        }
+
+        # If target exists, calculate basic intelligence completeness
+        if target:
+            # Count non-null intelligence fields
+            intel_fields = [
+                target.financials_json,
+                target.hiring_signals,
+                target.tech_stack_json,
+                target.exec_quote,
+                target.trigger_events,
+                target.competitors_using_algolia,
+                target.displacement_angle,
+            ]
+            filled_count = sum(1 for f in intel_fields if f is not None)
+            result["intelligence_completeness"] = (filled_count / len(intel_fields)) * 100
+
+        return result
+
+    async def search_companies(
+        self,
+        query: str,
+        *,
+        include_targets: bool = False,
+        min_icp_score: Optional[int] = None,
+        vertical: Optional[str] = None,
+        limit: int = 20,
+    ) -> List[Dict[str, Any]]:
+        """
+        Search companies with optional target intelligence matching.
+
+        Extended search that can include displacement target data for
+        companies that are both customers and potential targets.
+
+        Args:
+            query: Search query (matches name or domain)
+            include_targets: If True, include displacement target data
+            min_icp_score: Filter targets by minimum ICP score
+            vertical: Filter by vertical
+            limit: Maximum results
+
+        Returns:
+            List of dictionaries with company and optional target data
+        """
+        search_term = f"%{query}%"
+
+        # Build company search
+        company_conditions = [
+            or_(
+                Company.name.ilike(search_term),
+                Company.domain.ilike(search_term),
+            )
+        ]
+
+        if vertical:
+            company_conditions.append(Company.vertical == vertical)
+
+        company_query = (
+            select(Company)
+            .where(and_(*company_conditions))
+            .order_by(Company.name)
+            .limit(limit)
+        )
+
+        company_result = await self._session.execute(company_query)
+        companies = list(company_result.scalars().all())
+
+        if not include_targets:
+            return [{"company": c, "target": None} for c in companies]
+
+        # Get matching targets
+        results = []
+        for company in companies:
+            target_query = select(DisplacementTarget).where(
+                DisplacementTarget.domain == company.domain
+            )
+
+            if min_icp_score is not None:
+                target_query = target_query.where(
+                    DisplacementTarget.icp_score >= min_icp_score
+                )
+
+            target_result = await self._session.execute(target_query)
+            target = target_result.scalar_one_or_none()
+
+            results.append({
+                "company": company,
+                "target": target,
+            })
+
+        return results

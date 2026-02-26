@@ -78,12 +78,23 @@ class RateLimitError(AdapterError):
     def __init__(
         self,
         adapter_name: str,
-        wait_time_seconds: float,
+        wait_time_seconds: float = None,
         endpoint: Optional[str] = None,
+        wait_time_ms: float = None,
     ):
-        self.wait_time_seconds = wait_time_seconds
+        # Support both seconds and milliseconds
+        if wait_time_ms is not None:
+            self.wait_time_ms = wait_time_ms
+            self.wait_time_seconds = wait_time_ms / 1000.0
+        elif wait_time_seconds is not None:
+            self.wait_time_seconds = wait_time_seconds
+            self.wait_time_ms = wait_time_seconds * 1000.0
+        else:
+            self.wait_time_seconds = 0.0
+            self.wait_time_ms = 0.0
+
         super().__init__(
-            f"Rate limit exceeded. Wait {wait_time_seconds:.1f}s",
+            f"Rate limit exceeded. Wait {self.wait_time_ms:.0f}ms ({self.wait_time_seconds:.1f}s)",
             adapter_name,
             endpoint,
         )

@@ -2,7 +2,13 @@
 PartnerForge FastAPI Application
 
 Enterprise ABM Intelligence Platform
-Version 2.0
+Version 3.0
+
+Health Endpoints:
+- /health          - Basic health check
+- /ready           - Full readiness (DB + Redis)
+- /health/live     - Kubernetes liveness
+- /health/detailed - Full component status
 """
 
 from fastapi import FastAPI, HTTPException, Depends, Query, BackgroundTasks
@@ -15,11 +21,12 @@ from typing import Optional
 import logging
 
 from .config import get_settings, ENRICHMENT_WAVES
-from .database import get_session, check_database_health, init_db, close_db
+from .database import get_session, init_db, close_db
 
 # Import API routers
 from .api.routes import health as health_router
 from .api.routes import lists as lists_router
+from .api.routes import targets as targets_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -89,23 +96,13 @@ app.include_router(health_router.router)
 # List management endpoints (API v1)
 app.include_router(lists_router.router, prefix="/api/v1")
 
+# Targets endpoints (API v1)
+app.include_router(targets_router.router, prefix="/api/v1")
+
 
 # =============================================================================
-# Health & Status Endpoints (Legacy - keeping for backward compatibility)
+# Stats & Dashboard Endpoints
 # =============================================================================
-
-@app.get("/health")
-async def health_check():
-    """Health check endpoint."""
-    db_status = await check_database_health()
-    return {
-        "status": "healthy" if db_status["status"] == "healthy" else "degraded",
-        "app": settings.APP_NAME,
-        "version": settings.APP_VERSION,
-        "timestamp": datetime.now().isoformat(),
-        "database": db_status,
-    }
-
 
 @app.get("/api/stats")
 async def get_stats(db: AsyncSession = Depends(get_session)):
