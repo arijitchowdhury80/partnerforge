@@ -4,22 +4,18 @@
  * Navigation sidebar with Algolia brand styling and glassmorphism effects.
  */
 
-import { NavLink, Stack, Group, Text, Badge, ThemeIcon, Divider, Box, Progress } from '@mantine/core';
+import { NavLink, Stack, Text, ThemeIcon, Box, Badge, Divider } from '@mantine/core';
 import {
   IconDashboard,
   IconBuilding,
   IconUpload,
   IconSettings,
   IconChartBar,
-  IconTarget,
-  IconBolt,
-  IconDatabase,
   IconBell,
   IconBook,
 } from '@tabler/icons-react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { getStats } from '@/services/api';
+import { EnrichmentPanel } from './EnrichmentPanel';
 
 interface NavItem {
   icon: React.ElementType;
@@ -45,16 +41,6 @@ const secondaryNavItems: NavItem[] = [
 export function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
-
-  const { data: stats } = useQuery({
-    queryKey: ['stats'],
-    queryFn: getStats,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-  });
-
-  const enrichmentProgress = stats?.enriched_companies && stats?.total_companies
-    ? Math.round((stats.enriched_companies / stats.total_companies) * 100)
-    : 0;
 
   return (
     <Stack h="100%" justify="space-between" p="md">
@@ -137,30 +123,6 @@ export function Sidebar() {
             />
           ))}
         </Stack>
-      </Box>
-
-      {/* Enrichment Progress Footer */}
-      <Box
-        p="md"
-        style={{
-          background: 'linear-gradient(135deg, rgba(0, 61, 255, 0.1), rgba(84, 104, 255, 0.05))',
-          borderRadius: 'var(--mantine-radius-md)',
-          border: '1px solid rgba(0, 61, 255, 0.2)',
-        }}
-      >
-        <Group justify="space-between" mb="xs">
-          <Text size="xs" fw={600} c="#334155">Enrichment Progress</Text>
-          <Text size="xs" fw={500} c="#64748b">{enrichmentProgress}%</Text>
-        </Group>
-        <Progress
-          value={enrichmentProgress}
-          size="sm"
-          color="blue"
-          animated={enrichmentProgress > 0 && enrichmentProgress < 100}
-        />
-        <Text size="xs" c="#64748b" mt="xs">
-          {stats?.enriched_companies || 0} of {stats?.total_companies || 0} enriched
-        </Text>
       </Box>
     </Stack>
   );
