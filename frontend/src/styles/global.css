@@ -992,10 +992,11 @@ a:hover, .algolia-link:hover {
 }
 
 .mantine-Pagination-control[data-disabled] {
-  color: #94a3b8 !important;
-  background-color: #f8fafc !important;
-  border-color: #e2e8f0 !important;
+  color: #64748b !important;
+  background-color: #e2e8f0 !important;
+  border-color: #94a3b8 !important;
   opacity: 1 !important;
+  cursor: not-allowed !important;
 }
 
 /* Dots separator */
