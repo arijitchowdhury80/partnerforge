@@ -97,10 +97,16 @@ export async function getHealth(): Promise<{
 }
 
 export async function getStats(): Promise<DashboardStats> {
+  // Fetch more fields to determine enrichment depth
   const { data, count } = await supabaseFetch<Array<{
     icp_score: number | null;
     vertical: string | null;
-  }>>('displacement_targets?select=icp_score,vertical', { countExact: true });
+    sw_monthly_visits: number | null;
+    revenue: number | null;
+    tech_stack_json: string | null;
+    competitors_json: string | null;
+    enrichment_level: string | null;
+  }>>('displacement_targets?select=icp_score,vertical,sw_monthly_visits,revenue,tech_stack_json,competitors_json,enrichment_level', { countExact: true });
 
   if (!data) {
     return {
@@ -111,12 +117,16 @@ export async function getStats(): Promise<DashboardStats> {
       cold_leads: 0,
       modules_active: 2,
       waves_configured: 1,
+      enrichment_depth: { basic: 0, standard: 0, deep: 0, unenriched: 0 },
     };
   }
 
   // 3 tiers: Hot (80-100), Warm (40-79), Cold (0-39)
   let hot = 0, warm = 0, cold = 0, enriched = 0;
   const byVertical: Record<string, number> = {};
+
+  // Enrichment depth counters
+  let deepCount = 0, standardCount = 0, basicCount = 0, unenrichedCount = 0;
 
   for (const target of data) {
     const score = target.icp_score || 0;
@@ -127,6 +137,32 @@ export async function getStats(): Promise<DashboardStats> {
 
     const v = target.vertical || 'Unknown';
     byVertical[v] = (byVertical[v] || 0) + 1;
+
+    // Determine enrichment depth
+    // Deep: has financials OR tech stack OR competitors
+    const hasDeepData = (
+      (target.revenue && target.revenue > 0) ||
+      (target.tech_stack_json && target.tech_stack_json !== '{}') ||
+      (target.competitors_json && target.competitors_json !== '[]') ||
+      target.enrichment_level === 'deep' ||
+      target.enrichment_level === 'full'
+    );
+
+    // Standard: has traffic data
+    const hasStandardData = target.sw_monthly_visits && target.sw_monthly_visits > 0;
+
+    // Basic: has ICP score
+    const hasBasicData = score > 0;
+
+    if (hasDeepData) {
+      deepCount++;
+    } else if (hasStandardData) {
+      standardCount++;
+    } else if (hasBasicData) {
+      basicCount++;
+    } else {
+      unenrichedCount++;
+    }
   }
 
   return {
@@ -138,6 +174,12 @@ export async function getStats(): Promise<DashboardStats> {
     modules_active: 2,
     waves_configured: 1,
     by_vertical: byVertical,
+    enrichment_depth: {
+      basic: basicCount,
+      standard: standardCount,
+      deep: deepCount,
+      unenriched: unenrichedCount,
+    },
   };
 }
 

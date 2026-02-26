@@ -124,6 +124,9 @@ export function Sidebar() {
           ))}
         </Stack>
       </Box>
+
+      {/* Enrichment Panel Footer */}
+      <EnrichmentPanel />
     </Stack>
   );
 }
