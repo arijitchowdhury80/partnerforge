@@ -815,3 +815,50 @@ async def trigger_target_enrichment(
         "triggered_by": current_user.email,
         "created_at": datetime.utcnow().isoformat(),
     }
+
+
+# =============================================================================
+# Clear All Targets Endpoint (Admin/Test)
+# =============================================================================
+
+@router.delete("/admin/clear-all")
+async def clear_all_targets(
+    confirm: bool = Query(False, description="Set to true to confirm deletion"),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Clear ALL displacement targets from the database.
+
+    **DANGER:** This deletes all data. Use only for testing or reset.
+    Requires confirm=true to execute.
+    """
+    if not confirm:
+        # Get count first
+        count_result = await db.execute(
+            select(func.count()).select_from(DisplacementTarget)
+        )
+        count = count_result.scalar() or 0
+
+        return {
+            "warning": "This will delete ALL targets. Set confirm=true to proceed.",
+            "current_count": count,
+            "action": "none",
+        }
+
+    # Count before delete
+    count_result = await db.execute(
+        select(func.count()).select_from(DisplacementTarget)
+    )
+    count = count_result.scalar() or 0
+
+    # Delete all
+    await db.execute(text("DELETE FROM displacement_targets"))
+    await db.commit()
+
+    logger.info(f"Cleared all targets: {count} records deleted")
+
+    return {
+        "deleted": count,
+        "action": "cleared",
+        "message": f"Deleted {count} targets. Database is now empty.",
+    }
