@@ -15,6 +15,7 @@ import {
   IconBolt,
   IconDatabase,
   IconBell,
+  IconBook,
 } from '@tabler/icons-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -37,6 +38,7 @@ const mainNavItems: NavItem[] = [
 ];
 
 const secondaryNavItems: NavItem[] = [
+  { icon: IconBook, label: 'Documentation', path: '/docs' },
   { icon: IconSettings, label: 'Settings', path: '/settings' },
 ];
 

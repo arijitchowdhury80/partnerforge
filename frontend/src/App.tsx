@@ -25,6 +25,7 @@ import { CompanyPage } from './pages/CompanyPage';
 import { AlertsPage } from './pages/AlertsPage';
 import { CompaniesPage } from './pages/CompaniesPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
+import { DocsPage } from './pages/DocsPage';
 
 // Styles
 import '@mantine/core/styles.css';
@@ -136,6 +137,9 @@ function App() {
 
               {/* Alerts */}
               <Route path="/alerts" element={<AlertsPage />} />
+
+              {/* Documentation */}
+              <Route path="/docs" element={<DocsPage />} />
 
               {/* Settings (placeholder) */}
               <Route
