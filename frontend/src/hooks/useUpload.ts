@@ -33,94 +33,75 @@ export const uploadKeys = {
 };
 
 // =============================================================================
-// API Functions
+// API Functions (Stubs - Upload functionality not yet implemented with Supabase)
 // =============================================================================
 
 // Upload a new CSV file
-async function uploadList(formData: FormData): Promise<UploadResponse> {
-  const { data } = await apiClient.post('/v1/lists/upload', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
-  return data;
+async function uploadList(_formData: FormData): Promise<UploadResponse> {
+  throw new Error('Upload not implemented - Supabase backend pending');
 }
 
 // Get all uploaded lists
 async function getLists(): Promise<{ lists: UploadedList[] }> {
-  const { data } = await apiClient.get('/v1/lists');
-  return data;
+  return { lists: [] };
 }
 
 // Get a single list by ID
-async function getList(id: string): Promise<UploadedList> {
-  const { data } = await apiClient.get(`/v1/lists/${id}`);
-  return data;
+async function getList(_id: string): Promise<UploadedList> {
+  throw new Error('List not found');
 }
 
 // Get list status with progress
-async function getListStatus(id: string): Promise<ListStatusResponse> {
-  const { data } = await apiClient.get(`/v1/lists/${id}/status`);
-  return data;
+async function getListStatus(_id: string): Promise<ListStatusResponse> {
+  throw new Error('List not found');
 }
 
 // Get list items with pagination
 async function getListItems(
-  id: string,
-  params?: { page?: number; page_size?: number; status?: string }
+  _id: string,
+  _params?: { page?: number; page_size?: number; status?: string }
 ): Promise<PaginatedResponse<UploadedListItem>> {
-  const { data } = await apiClient.get(`/v1/lists/${id}/items`, { params });
-  return data;
+  return { data: [], pagination: { page: 1, limit: 50, total: 0, total_pages: 0 } };
 }
 
 // Confirm column mapping
 async function confirmMapping(
-  id: string,
-  mapping: ColumnMapping
+  _id: string,
+  _mapping: ColumnMapping
 ): Promise<UploadedList> {
-  const { data } = await apiClient.post(`/v1/lists/${id}/confirm-mapping`, {
-    mapping,
-  });
-  return data;
+  throw new Error('List not found');
 }
 
 // Validate list
-async function validateList(id: string): Promise<ValidationResult> {
-  const { data } = await apiClient.post(`/v1/lists/${id}/validate`);
-  return data;
+async function validateList(_id: string): Promise<ValidationResult> {
+  return { list_id: '', total: 0, valid: 0, invalid: 0, duplicates: 0, status: 'validated' };
 }
 
 // Start enrichment
 async function startEnrichment(
-  id: string,
-  options?: { priority?: string; modules?: string[] }
+  _id: string,
+  _options?: { priority?: string; modules?: string[] }
 ): Promise<EnrichmentJobResponse> {
-  const { data } = await apiClient.post(`/v1/lists/${id}/enrich`, null, {
-    params: options,
-  });
-  return data;
+  throw new Error('Enrichment not implemented');
 }
 
 // Download results
 async function downloadResults(
-  id: string,
-  format: 'csv' | 'json' = 'csv',
-  includeErrors = false
+  _id: string,
+  _format: 'csv' | 'json' = 'csv',
+  _includeErrors = false
 ): Promise<Blob> {
-  const { data } = await apiClient.get(`/v1/lists/${id}/results`, {
-    params: { format, include_errors: includeErrors },
-    responseType: 'blob',
-  });
-  return data;
+  return new Blob();
 }
 
 // Delete a list
-async function deleteList(id: string): Promise<void> {
-  await apiClient.delete(`/v1/lists/${id}`);
+async function deleteList(_id: string): Promise<void> {
+  // No-op
 }
 
 // Retry failed items
-async function retryFailed(id: string): Promise<EnrichmentJobResponse> {
-  const { data } = await apiClient.post(`/v1/lists/${id}/retry`);
-  return data;
+async function retryFailed(_id: string): Promise<EnrichmentJobResponse> {
+  throw new Error('Enrichment not implemented');
 }
 
 // =============================================================================

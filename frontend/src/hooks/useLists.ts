@@ -2,10 +2,10 @@
  * useLists - TanStack Query Hooks for List Operations
  *
  * Provides data fetching, mutations, and caching for list management.
+ * NOTE: This is a stub implementation - API not yet connected.
  */
 
 import { useQuery, useMutation, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
-import { apiClient } from '@/services/api';
 import { notifications } from '@mantine/notifications';
 import type { PaginatedResponse, EnrichmentJob } from '@/types';
 import type { UploadedListItem } from '@/components/lists/ListTable';
@@ -39,51 +39,52 @@ export const listKeys = {
 };
 
 // =============================================================================
-// Fetch Functions
+// Mock Data & Fetch Functions
 // =============================================================================
 
-async function fetchLists(filters?: ListFilters): Promise<PaginatedResponse<UploadedListItem>> {
-  // Mock implementation - replace with actual API call
-  const mockData: UploadedListItem[] = [
-    {
-      id: 'list-1',
-      name: 'Adobe AEM Targets',
-      rowCount: 2687,
-      enrichedCount: 2687,
-      partnerTech: 'Adobe AEM',
-      createdAt: new Date(Date.now() - 3600000).toISOString(),
-      status: 'complete',
-      progress: 100,
-    },
-    {
-      id: 'list-2',
-      name: 'Shopify Enterprise',
-      rowCount: 1500,
-      enrichedCount: 750,
-      partnerTech: 'Shopify',
-      createdAt: new Date(Date.now() - 7200000).toISOString(),
-      status: 'processing',
-      progress: 50,
-    },
-    {
-      id: 'list-3',
-      name: 'Salesforce Commerce',
-      rowCount: 890,
-      enrichedCount: 0,
-      partnerTech: 'Salesforce',
-      createdAt: new Date(Date.now() - 86400000).toISOString(),
-      status: 'pending',
-      progress: 0,
-    },
-  ];
+const MOCK_LISTS: UploadedListItem[] = [
+  {
+    id: 'list-1',
+    name: 'Adobe AEM Targets',
+    rowCount: 2687,
+    enrichedCount: 2687,
+    partnerTech: 'Adobe AEM',
+    createdAt: new Date(Date.now() - 3600000).toISOString(),
+    status: 'complete',
+    progress: 100,
+  },
+  {
+    id: 'list-2',
+    name: 'Shopify Enterprise',
+    rowCount: 1500,
+    enrichedCount: 750,
+    partnerTech: 'Shopify',
+    createdAt: new Date(Date.now() - 7200000).toISOString(),
+    status: 'processing',
+    progress: 50,
+  },
+  {
+    id: 'list-3',
+    name: 'Salesforce Commerce',
+    rowCount: 890,
+    enrichedCount: 0,
+    partnerTech: 'Salesforce',
+    createdAt: new Date(Date.now() - 86400000).toISOString(),
+    status: 'pending',
+    progress: 0,
+  },
+];
 
-  // Filter by status if provided
-  let filteredData = mockData;
+async function fetchLists(filters?: ListFilters): Promise<PaginatedResponse<UploadedListItem>> {
+  // Simulate API delay
+  await new Promise(resolve => setTimeout(resolve, 100));
+
+  let filteredData = [...MOCK_LISTS];
   if (filters?.status) {
-    filteredData = mockData.filter((list) => list.status === filters.status);
+    filteredData = filteredData.filter((list) => list.status === filters.status);
   }
   if (filters?.partnerTech) {
-    filteredData = mockData.filter((list) =>
+    filteredData = filteredData.filter((list) =>
       list.partnerTech.toLowerCase().includes(filters.partnerTech!.toLowerCase())
     );
   }
@@ -100,54 +101,59 @@ async function fetchLists(filters?: ListFilters): Promise<PaginatedResponse<Uplo
 }
 
 async function fetchListDetail(id: string): Promise<UploadedListItem> {
-  const { data } = await apiClient.get(`/lists/${id}`);
-  return data;
+  await new Promise(resolve => setTimeout(resolve, 100));
+  const item = MOCK_LISTS.find(l => l.id === id);
+  if (!item) throw new Error(`List not found: ${id}`);
+  return item;
 }
 
 async function uploadList(payload: UploadListPayload): Promise<UploadedListItem> {
-  const formData = new FormData();
-  formData.append('file', payload.file);
-  formData.append('partner_tech', payload.partnerTech);
-  if (payload.name) {
-    formData.append('name', payload.name);
-  }
-
-  const { data } = await apiClient.post('/lists/upload', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-  return data;
+  await new Promise(resolve => setTimeout(resolve, 500));
+  return {
+    id: `list-${Date.now()}`,
+    name: payload.name || payload.file.name,
+    rowCount: 100,
+    enrichedCount: 0,
+    partnerTech: payload.partnerTech,
+    createdAt: new Date().toISOString(),
+    status: 'pending',
+    progress: 0,
+  };
 }
 
-async function deleteList(id: string): Promise<void> {
-  await apiClient.delete(`/lists/${id}`);
+async function deleteList(_id: string): Promise<void> {
+  await new Promise(resolve => setTimeout(resolve, 200));
 }
 
 async function startListEnrichment(id: string): Promise<EnrichmentJob> {
-  const { data } = await apiClient.post(`/lists/${id}/enrich`);
-  return data;
+  await new Promise(resolve => setTimeout(resolve, 200));
+  return {
+    job_id: `job-${Date.now()}`,
+    domain: id,
+    status: 'queued',
+    modules: [],
+  };
 }
 
 async function retryFailedEnrichment(id: string): Promise<EnrichmentJob> {
-  const { data } = await apiClient.post(`/lists/${id}/retry`);
-  return data;
+  await new Promise(resolve => setTimeout(resolve, 200));
+  return {
+    job_id: `job-${Date.now()}`,
+    domain: id,
+    status: 'queued',
+    modules: [],
+  };
 }
 
-async function exportList(id: string): Promise<Blob> {
-  const { data } = await apiClient.get(`/lists/${id}/export`, {
-    responseType: 'blob',
-  });
-  return data;
+async function exportList(_id: string): Promise<Blob> {
+  await new Promise(resolve => setTimeout(resolve, 200));
+  return new Blob(['domain,company_name,icp_score\nexample.com,Example,75'], { type: 'text/csv' });
 }
 
 // =============================================================================
 // Query Hooks
 // =============================================================================
 
-/**
- * Fetch all lists with optional filtering
- */
 export function useLists(
   filters?: ListFilters,
   options?: Omit<UseQueryOptions<PaginatedResponse<UploadedListItem>>, 'queryKey' | 'queryFn'>
@@ -155,14 +161,11 @@ export function useLists(
   return useQuery({
     queryKey: listKeys.lists(filters),
     queryFn: () => fetchLists(filters),
-    staleTime: 1000 * 60 * 2, // 2 minutes
+    staleTime: 1000 * 60 * 2,
     ...options,
   });
 }
 
-/**
- * Fetch a single list by ID
- */
 export function useListDetail(
   id: string,
   options?: Omit<UseQueryOptions<UploadedListItem>, 'queryKey' | 'queryFn'>
@@ -179,9 +182,6 @@ export function useListDetail(
 // Mutation Hooks
 // =============================================================================
 
-/**
- * Upload a new list
- */
 export function useUploadList() {
   const queryClient = useQueryClient();
 
@@ -205,9 +205,6 @@ export function useUploadList() {
   });
 }
 
-/**
- * Delete a list
- */
 export function useDeleteList() {
   const queryClient = useQueryClient();
 
@@ -231,9 +228,6 @@ export function useDeleteList() {
   });
 }
 
-/**
- * Start enrichment for a list
- */
 export function useStartEnrichment() {
   const queryClient = useQueryClient();
 
@@ -257,9 +251,6 @@ export function useStartEnrichment() {
   });
 }
 
-/**
- * Retry failed enrichments for a list
- */
 export function useRetryEnrichment() {
   const queryClient = useQueryClient();
 
@@ -283,9 +274,6 @@ export function useRetryEnrichment() {
   });
 }
 
-/**
- * Export a list to CSV
- */
 export function useExportList() {
   return useMutation({
     mutationFn: async (id: string) => {

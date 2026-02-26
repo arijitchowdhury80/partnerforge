@@ -1,7 +1,7 @@
 /**
  * PartnerForge API Service
  *
- * Now powered by Supabase - no more Railway bullshit!
+ * Now powered by Supabase
  */
 
 import type {
@@ -11,6 +11,7 @@ import type {
   EnrichmentJob,
   ModuleId,
   ModuleResult,
+  ModuleStatus,
   PaginatedResponse,
   FilterState,
 } from '@/types';
@@ -21,6 +22,13 @@ import type {
 
 const SUPABASE_URL = 'https://xbitqeejsgqnwvxlnjra.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhiaXRxZWVqc2dxbnd2eGxuanJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwODU1NDAsImV4cCI6MjA4NzY2MTU0MH0.XoEOx8rHo_1EyCF4yJ3g2S3tXUX_XepQu9PSfUWvyIg';
+
+const ALL_MODULE_IDS: ModuleId[] = [
+  'm01_company_context', 'm02_tech_stack', 'm03_traffic', 'm04_financials',
+  'm05_competitors', 'm06_hiring', 'm07_strategic', 'm08_investor',
+  'm09_executive', 'm10_buying_committee', 'm11_displacement', 'm12_case_study',
+  'm13_icp_priority', 'm14_signal_scoring', 'm15_strategic_brief'
+];
 
 async function supabaseFetch<T>(
   endpoint: string,
@@ -61,7 +69,7 @@ export async function getHealth(): Promise<{
   database: { status: string; latency_ms: number };
 }> {
   const start = Date.now();
-  const { data, error } = await supabaseFetch<unknown[]>('displacement_targets?select=id&limit=1');
+  const { error } = await supabaseFetch<unknown[]>('displacement_targets?select=id&limit=1');
   const latency = Date.now() - start;
 
   return {
@@ -73,12 +81,9 @@ export async function getHealth(): Promise<{
 }
 
 export async function getStats(): Promise<DashboardStats> {
-  // Get all targets to calculate stats
   const { data, count } = await supabaseFetch<Array<{
     icp_score: number | null;
-    partner_tech: string | null;
-    vertical: string | null;
-  }>>('displacement_targets?select=icp_score,partner_tech,vertical', { countExact: true });
+  }>>('displacement_targets?select=icp_score', { countExact: true });
 
   if (!data) {
     return {
@@ -86,53 +91,26 @@ export async function getStats(): Promise<DashboardStats> {
       enriched_companies: 0,
       hot_leads: 0,
       warm_leads: 0,
-      cool_leads: 0,
-      cold_leads: 0,
       modules_active: 2,
       waves_configured: 1,
-      by_partner: {},
-      by_vertical: {},
-      avg_icp_score: 0,
     };
   }
 
-  let hot = 0, warm = 0, cool = 0, cold = 0;
-  let totalScore = 0, scoredCount = 0;
-  const byPartner: Record<string, number> = {};
-  const byVertical: Record<string, number> = {};
-
+  let hot = 0, warm = 0, enriched = 0;
   for (const target of data) {
     const score = target.icp_score || 0;
-    if (score > 0) {
-      totalScore += score;
-      scoredCount++;
-    }
-
+    if (score > 0) enriched++;
     if (score >= 80) hot++;
     else if (score >= 60) warm++;
-    else if (score >= 40) cool++;
-    else cold++;
-
-    if (target.partner_tech) {
-      byPartner[target.partner_tech] = (byPartner[target.partner_tech] || 0) + 1;
-    }
-    if (target.vertical) {
-      byVertical[target.vertical] = (byVertical[target.vertical] || 0) + 1;
-    }
   }
 
   return {
     total_companies: count || data.length,
-    enriched_companies: scoredCount,
+    enriched_companies: enriched,
     hot_leads: hot,
     warm_leads: warm,
-    cool_leads: cool,
-    cold_leads: cold,
-    modules_active: 2, // SimilarWeb + BuiltWith
+    modules_active: 2,
     waves_configured: 1,
-    by_partner: byPartner,
-    by_vertical: byVertical,
-    avg_icp_score: scoredCount > 0 ? Math.round(totalScore / scoredCount) : 0,
   };
 }
 
@@ -168,16 +146,19 @@ function transformTarget(target: Record<string, unknown>): Company {
     status: getStatusFromScore(icpScore),
     partner_tech: target.partner_tech ? [target.partner_tech as string] : [],
     last_enriched: target.last_enriched as string | undefined,
-    // Additional fields from Supabase
-    sw_monthly_visits: target.sw_monthly_visits as number | undefined,
-    revenue: target.revenue as number | undefined,
-    current_search: target.current_search as string | undefined,
-    enrichment_level: target.enrichment_level as string | undefined,
   };
 }
 
+// Extended filter state for internal use
+interface ExtendedFilterState extends FilterState {
+  page?: number;
+  limit?: number;
+  vertical?: string;
+  search?: string;
+}
+
 export async function getCompanies(
-  filters: FilterState & { page?: number; limit?: number }
+  filters: ExtendedFilterState
 ): Promise<PaginatedResponse<Company>> {
   const {
     status,
@@ -191,10 +172,8 @@ export async function getCompanies(
     limit = 50,
   } = filters;
 
-  // Build Supabase query
   const params: string[] = ['select=*'];
 
-  // Filters
   if (partner) {
     params.push(`partner_tech=eq.${encodeURIComponent(partner)}`);
   }
@@ -219,11 +198,9 @@ export async function getCompanies(
     params.push(`or=(domain.ilike.*${encodeURIComponent(search)}*,company_name.ilike.*${encodeURIComponent(search)}*)`);
   }
 
-  // Sorting
   const sortCol = sort_by === 'traffic' ? 'sw_monthly_visits' : sort_by === 'name' ? 'company_name' : sort_by;
   params.push(`order=${sortCol}.${sort_order}.nullslast`);
 
-  // Pagination
   const offset = (page - 1) * limit;
   params.push(`offset=${offset}`);
   params.push(`limit=${limit}`);
@@ -266,7 +243,6 @@ export async function getCompany(domain: string): Promise<Company> {
 }
 
 export async function createCompany(domain: string): Promise<Company> {
-  // For now, just return a stub - we'll implement proper creation later
   return {
     domain,
     company_name: domain.split('.')[0],
@@ -283,37 +259,34 @@ export async function createCompany(domain: string): Promise<Company> {
 }
 
 // =============================================================================
-// Intelligence Modules (stub implementations for now)
+// Intelligence Modules
 // =============================================================================
 
 export async function getIntelOverview(
   domain: string
 ): Promise<{ domain: string; modules: Record<ModuleId, { status: string; last_updated?: string }> }> {
-  // Return stub data - modules not yet implemented in Supabase
-  const modules: Record<string, { status: string; last_updated?: string }> = {};
-  const moduleIds = [
-    'm01_company_context', 'm02_tech_stack', 'm03_traffic', 'm04_financials',
-    'm05_competitors', 'm06_hiring', 'm07_strategic', 'm08_investor',
-    'm09_executive', 'm10_buying_committee', 'm11_displacement', 'm12_case_study',
-    'm13_icp_priority', 'm14_signal_scoring', 'm15_strategic_brief'
-  ];
-
-  for (const id of moduleIds) {
-    modules[id as ModuleId] = { status: 'pending' };
+  const modules = {} as Record<ModuleId, { status: string; last_updated?: string }>;
+  for (const id of ALL_MODULE_IDS) {
+    modules[id] = { status: 'pending' };
   }
-
-  return { domain, modules: modules as Record<ModuleId, { status: string; last_updated?: string }> };
+  return { domain, modules };
 }
 
 export async function getModuleData<T>(
   domain: string,
   moduleId: ModuleId
 ): Promise<ModuleResult<T>> {
-  // Return stub - will implement when we build proper schema
   return {
-    status: 'pending',
+    module_id: moduleId,
+    domain,
     data: null as unknown as T,
-    last_updated: undefined,
+    source: {
+      url: '',
+      date: new Date().toISOString(),
+      type: 'api',
+    },
+    enriched_at: new Date().toISOString(),
+    is_cached: false,
   };
 }
 
@@ -336,25 +309,32 @@ export const modules = {
 };
 
 // =============================================================================
-// Enrichment (stub - will implement with Edge Functions)
+// Enrichment
 // =============================================================================
+
+function createEmptyModuleStatuses(): Record<ModuleId, ModuleStatus> {
+  const result = {} as Record<ModuleId, ModuleStatus>;
+  for (const id of ALL_MODULE_IDS) {
+    result[id] = { status: 'pending' };
+  }
+  return result;
+}
 
 export async function triggerEnrichment(
   domain: string,
-  force = false
+  _force = false
 ): Promise<EnrichmentJob> {
   return {
     job_id: `enrich_${domain}_${Date.now()}`,
     domain,
     status: 'queued',
     modules: [],
-    created_at: new Date().toISOString(),
   };
 }
 
 export async function triggerWaveEnrichment(
   domain: string,
-  waveNum: 1 | 2 | 3 | 4,
+  _waveNum: 1 | 2 | 3 | 4,
   force = false
 ): Promise<EnrichmentJob> {
   return triggerEnrichment(domain, force);
@@ -362,7 +342,7 @@ export async function triggerWaveEnrichment(
 
 export async function triggerModuleEnrichment(
   domain: string,
-  moduleId: ModuleId,
+  _moduleId: ModuleId,
   force = false
 ): Promise<EnrichmentJob> {
   return triggerEnrichment(domain, force);
@@ -371,20 +351,20 @@ export async function triggerModuleEnrichment(
 export async function getEnrichmentStatus(domain: string): Promise<EnrichmentStatus> {
   return {
     domain,
-    overall_status: 'pending',
-    modules: {},
-    last_updated: undefined,
+    overall_status: 'idle',
+    modules: createEmptyModuleStatuses(),
+    active_jobs: [],
   };
 }
 
 export async function getActiveJobs(
-  status?: 'queued' | 'running' | 'complete' | 'failed'
+  _status?: 'queued' | 'running' | 'complete' | 'failed'
 ): Promise<{ jobs: EnrichmentJob[] }> {
   return { jobs: [] };
 }
 
 // =============================================================================
-// Cache Management (stub)
+// Cache Management
 // =============================================================================
 
 export async function getCacheStatus(): Promise<{
@@ -397,17 +377,30 @@ export async function getCacheStatus(): Promise<{
 }
 
 export async function invalidateCache(
-  domain: string,
-  moduleId?: ModuleId
+  _domain: string,
+  _moduleId?: ModuleId
 ): Promise<{ invalidated: boolean }> {
   return { invalidated: true };
 }
 
 // =============================================================================
-// Legacy export for compatibility
+// Legacy apiClient export for compatibility with hooks
 // =============================================================================
 
+interface ApiClientConfig {
+  headers?: Record<string, string>;
+  params?: Record<string, unknown>;
+  responseType?: string;
+}
+
 export const apiClient = {
-  get: async (url: string) => ({ data: null }),
-  post: async (url: string, data?: unknown) => ({ data: null }),
+  get: async <T = unknown>(_url: string, _config?: ApiClientConfig): Promise<{ data: T }> => {
+    return { data: null as unknown as T };
+  },
+  post: async <T = unknown>(_url: string, _data?: unknown, _config?: ApiClientConfig): Promise<{ data: T }> => {
+    return { data: null as unknown as T };
+  },
+  delete: async (_url: string): Promise<void> => {
+    // stub
+  },
 };

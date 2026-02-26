@@ -29,6 +29,11 @@ export interface Company {
   status: 'hot' | 'warm' | 'cool' | 'cold';
   partner_tech?: string[];
   last_enriched?: string;
+  // Supabase fields
+  sw_monthly_visits?: number;
+  revenue?: number;
+  current_search?: string;
+  enrichment_level?: string;
 }
 
 // =============================================================================
@@ -397,7 +402,9 @@ export interface DashboardStats {
 export interface FilterState {
   status?: 'hot' | 'warm' | 'cool' | 'cold';
   partner?: string;
+  vertical?: string;
   min_score?: number;
+  search?: string;
   sort_by: 'icp_score' | 'traffic' | 'revenue' | 'name';
   sort_order: 'asc' | 'desc';
 }
