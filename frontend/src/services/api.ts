@@ -146,6 +146,11 @@ function transformTarget(target: Record<string, unknown>): Company {
     status: getStatusFromScore(icpScore),
     partner_tech: target.partner_tech ? [target.partner_tech as string] : [],
     last_enriched: target.last_enriched as string | undefined,
+    // Extended Supabase fields
+    sw_monthly_visits: target.sw_monthly_visits as number | undefined,
+    revenue: target.revenue as number | undefined,
+    current_search: target.current_search as string | undefined,
+    enrichment_level: target.enrichment_level as string | undefined,
   };
 }
 
