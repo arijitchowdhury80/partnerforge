@@ -75,6 +75,18 @@ PARTNER_TECH_MAP = {
         "display_name": "Zendesk",
         "category": "Support",
         "icp_tier": 3
+    },
+    "amplience": {
+        "builtwith_name": "Amplience",
+        "display_name": "Amplience",
+        "category": "CMS",
+        "icp_tier": 1
+    },
+    "spryker": {
+        "builtwith_name": "Spryker",
+        "display_name": "Spryker",
+        "category": "Ecommerce",
+        "icp_tier": 1
     }
 }
 
