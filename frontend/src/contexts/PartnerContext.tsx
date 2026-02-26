@@ -169,18 +169,19 @@ export function getSelectionTechName(selection: PartnerSelection): string | unde
     };
     return techNameMap[`${selection.partner.key}-${selection.product.key}`] || selection.product.name;
   }
-  // Default partner tech name
+  // Default partner tech name - use broad names for ilike matching
+  // e.g., 'Adobe' matches both 'Adobe Experience Manager' AND 'Adobe Commerce'
   const defaultTechMap: Record<string, string> = {
-    adobe: 'Adobe Experience Manager',
-    salesforce: 'Salesforce Commerce Cloud',
+    adobe: 'Adobe',                // Matches AEM, Commerce, Campaign, Analytics
+    salesforce: 'Salesforce',      // Matches all Salesforce products
     shopify: 'Shopify',
-    sap: 'SAP Commerce Cloud',
+    sap: 'SAP',                    // Matches SAP Commerce Cloud, Hybris
     commercetools: 'commercetools',
     bigcommerce: 'BigCommerce',
     vtex: 'VTEX',
     amplience: 'Amplience',
     spryker: 'Spryker',
-    elastic: 'Elasticsearch',
+    elastic: 'Elastic',            // Matches Elasticsearch, Elastic Cloud
   };
   return defaultTechMap[selection.partner.key];
 }
