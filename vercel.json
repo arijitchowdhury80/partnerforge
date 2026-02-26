@@ -1,6 +1,10 @@
 {
-  "framework": null,
-  "buildCommand": null,
-  "outputDirectory": ".",
-  "cleanUrls": true
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "frontend/dist",
+  "framework": "vite",
+  "installCommand": "cd frontend && npm install",
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://partnerforge-production.up.railway.app/api/:path*" },
+    { "source": "/(.*)", "destination": "/" }
+  ]
 }
