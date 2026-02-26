@@ -15,7 +15,6 @@ import {
   IconBook,
 } from '@tabler/icons-react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { EnrichmentPanel } from './EnrichmentPanel';
 
 interface NavItem {
   icon: React.ElementType;
@@ -124,9 +123,6 @@ export function Sidebar() {
           ))}
         </Stack>
       </Box>
-
-      {/* Enrichment Panel Footer */}
-      <EnrichmentPanel />
     </Stack>
   );
 }
