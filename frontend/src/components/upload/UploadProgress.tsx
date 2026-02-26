@@ -59,8 +59,9 @@ export function UploadProgress({
   const { data: status, isLoading, error, refetch } = useQuery({
     queryKey: ['list-status', listId],
     queryFn: () => fetchListStatus(listId),
-    refetchInterval: (data) => {
+    refetchInterval: (query) => {
       // Stop polling when complete or failed
+      const data = query.state.data;
       if (data?.status === 'completed' || data?.status === 'failed') {
         return false;
       }

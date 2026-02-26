@@ -232,7 +232,7 @@ function KPICard({ card, index, isLoading }: KPICardProps) {
                   `}
                 >
                   {card.prefix}
-                  {rounded}
+                  {rounded as unknown as React.ReactNode}
                   {card.suffix}
                 </motion.span>
               </>

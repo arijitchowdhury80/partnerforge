@@ -55,17 +55,35 @@ from pipeline.models.source import SourceCitation, SourceType
 @pytest.fixture
 def yahoo_adapter() -> YahooFinanceAdapter:
     """Create YahooFinanceAdapter for testing."""
-    return YahooFinanceAdapter(
+    from pipeline.utils.rate_limiter import TokenBucketRateLimiter
+
+    adapter = YahooFinanceAdapter(
         enable_cache=True,
     )
+    # Use a permissive rate limiter for tests
+    adapter.rate_limiter = TokenBucketRateLimiter(
+        name="test_yahoo_finance",
+        tokens_per_second=1000.0,  # Very high for tests
+        bucket_size=1000,
+    )
+    return adapter
 
 
 @pytest.fixture
 def yahoo_adapter_no_cache() -> YahooFinanceAdapter:
     """Create YahooFinanceAdapter with caching disabled."""
-    return YahooFinanceAdapter(
+    from pipeline.utils.rate_limiter import TokenBucketRateLimiter
+
+    adapter = YahooFinanceAdapter(
         enable_cache=False,
     )
+    # Use a permissive rate limiter for tests
+    adapter.rate_limiter = TokenBucketRateLimiter(
+        name="test_yahoo_finance_no_cache",
+        tokens_per_second=1000.0,
+        bucket_size=1000,
+    )
+    return adapter
 
 
 @pytest.fixture
@@ -253,16 +271,16 @@ def mock_earnings() -> Dict[str, Any]:
             {"quarter": "2024-Q1", "eps_estimate": 3.50, "eps_actual": 3.58},
             {"quarter": "2023-Q4", "eps_estimate": 3.20, "eps_actual": 3.25},
         ],
-        "earnings_estimates": {
-            "current_quarter": 3.75,
-            "next_quarter": 3.90,
-            "current_year": 16.50,
-            "next_year": 18.00,
-        },
-        "revenue_estimates": {
-            "current_quarter": 67000000000,
-            "current_year": 265000000000,
-        },
+        "earnings_estimates": [
+            {"period": "current_quarter", "estimate": 3.75},
+            {"period": "next_quarter", "estimate": 3.90},
+            {"period": "current_year", "estimate": 16.50},
+            {"period": "next_year", "estimate": 18.00},
+        ],
+        "revenue_estimates": [
+            {"period": "current_quarter", "estimate": 67000000000},
+            {"period": "current_year", "estimate": 265000000000},
+        ],
     }
 
 
@@ -642,8 +660,12 @@ class TestAPIMethods:
             response = await yahoo_adapter.get_history("COST", period="6mo", interval="1wk")
 
             # Verify call was made with correct params
+            # _make_request receives (endpoint, params_dict, timeout)
             call_args = mock_request.call_args
-            assert call_args[1]["symbol"] == "COST"
+            params = call_args[0][1]  # Second positional arg is the params dict
+            assert params["symbol"] == "COST"
+            assert params["period"] == "6mo"
+            assert params["interval"] == "1wk"
 
 
 # ============================================================================
@@ -731,10 +753,13 @@ class TestErrorHandling:
     @pytest.mark.asyncio
     async def test_timeout_handling(self, yahoo_adapter):
         """Timeout is handled properly."""
+        from pipeline.adapters.base import RetryExhaustedError
+
         with patch.object(yahoo_adapter, "_make_request", new_callable=AsyncMock) as mock_request:
             mock_request.side_effect = asyncio.TimeoutError("Request timeout")
 
-            with pytest.raises(asyncio.TimeoutError):
+            # TimeoutError triggers retry, which eventually exhausts and raises RetryExhaustedError
+            with pytest.raises((asyncio.TimeoutError, TimeoutError, RetryExhaustedError)):
                 await yahoo_adapter.get_stock_info("COST")
 
 

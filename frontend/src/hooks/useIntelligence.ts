@@ -93,9 +93,10 @@ export function useEnrichmentStatus(domain: string | undefined, options?: { poll
     queryFn: () => getEnrichmentStatus(domain!),
     enabled: !!domain,
     staleTime: 1000 * 30, // 30 seconds
-    refetchInterval: (data) => {
+    refetchInterval: (query) => {
       if (!options?.polling) return false;
       // Stop polling when not running
+      const data = query.state.data;
       if (data?.overall_status !== 'running') {
         return false;
       }

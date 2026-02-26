@@ -178,7 +178,7 @@ export function TargetTable({ companies, loading = false, pagination }: TargetTa
         </Text>
       }
       onRowClick={({ record }) => navigate(`/company/${record.domain}`)}
-      rowStyle={{ cursor: 'pointer' }}
+      rowStyle={() => ({ cursor: 'pointer' })}
     />
   );
 }

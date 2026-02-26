@@ -17,20 +17,11 @@ import {
 } from '@tabler/icons-react';
 import { TextInput, Select, Button, Progress, Text, Group } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
+import type { UploadResponse } from '@/types';
 
 interface CSVUploaderProps {
   onUploadComplete: (listId: string, response: UploadResponse) => void;
   onError?: (error: Error) => void;
-}
-
-interface UploadResponse {
-  id: string;
-  name: string;
-  total_rows: number;
-  column_mapping: Record<string, string>;
-  detected_columns: string[];
-  status: string;
-  requires_mapping_confirmation: boolean;
 }
 
 const MAX_FILE_SIZE_MB = 50;
