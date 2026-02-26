@@ -1,376 +1,108 @@
 # Health API
 
-The Health API provides endpoints for monitoring service health, readiness, and runtime metrics. These endpoints are used by orchestration platforms (Kubernetes, Railway) and monitoring systems.
-
-**Base Path:** `/` (root level)
-
----
-
-## Endpoints
-
-| Method | Path | Description | Auth |
-|--------|------|-------------|------|
-| GET | `/health` | Basic health check | No |
-| GET | `/ready` | Readiness probe | No |
-| GET | `/health/ready` | Readiness probe (alias) | No |
-| GET | `/health/live` | Liveness probe | No |
-| GET | `/health/detailed` | Full diagnostics | No |
-| GET | `/version` | Version information | No |
-| GET | `/metrics` | Runtime metrics | No |
+> **Status: DEPRECATED (February 2026)**
+>
+> With the migration from Railway to Supabase, there is no separate backend server. Traditional health check endpoints are no longer applicable.
 
 ---
 
-## Basic Health Check
+## Architecture Change
 
-Quick check if the service is running.
+**Before:** Railway-hosted FastAPI backend with health endpoints
+**After:** Frontend communicates directly with Supabase REST API
 
-```http
-GET /health
-```
+---
 
-### Response (200 OK)
+## No Server-Side Health Endpoints
 
-```json
-{
-  "status": "healthy",
-  "timestamp": "2026-02-26T10:35:00",
-  "service": "PartnerForge API",
-  "version": "2.2.0"
-}
-```
+The following endpoints from the old Railway API are **no longer available**:
 
-### Response (503 Service Unavailable)
+| Old Endpoint | Status |
+|--------------|--------|
+| `GET /health` | Removed |
+| `GET /ready` | Removed |
+| `GET /health/ready` | Removed |
+| `GET /health/live` | Removed |
+| `GET /health/detailed` | Removed |
+| `GET /version` | Removed |
+| `GET /metrics` | Removed |
 
-```json
-{
-  "status": "unhealthy",
-  "timestamp": "2026-02-26T10:35:00",
-  "service": "PartnerForge API",
-  "version": "2.2.0",
-  "error": "Database connection failed"
-}
-```
+---
 
-### Example
+## Monitoring Supabase Health
+
+### Supabase Status Page
+
+Check Supabase service status at: [status.supabase.com](https://status.supabase.com)
+
+### Simple Connectivity Test
+
+Verify the API is reachable by making a simple query:
 
 ```bash
-curl "https://partnerforge-production.up.railway.app/health"
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=count" \
+  -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhiaXRxZWVqc2dxbnd2eGxuanJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwODU1NDAsImV4cCI6MjA4NzY2MTU0MH0.XoEOx8rHo_1EyCF4yJ3g2S3tXUX_XepQu9PSfUWvyIg" \
+  -H "Prefer: count=exact"
 ```
 
----
+**Success Response:**
+```json
+[{"count": 2737}]
+```
 
-## Readiness Probe
-
-Check if the service is ready to accept traffic. Verifies database connectivity.
-
+**Headers:**
 ```http
-GET /ready
-GET /health/ready
+Content-Range: 0-0/2737
 ```
 
-### Response (200 OK)
+### Uptime Monitoring
 
-```json
-{
-  "status": "healthy",
-  "timestamp": "2026-02-26T10:35:00",
-  "checks": {
-    "database": {
-      "status": "healthy",
-      "latency_ms": 2.34,
-      "driver": "postgresql"
-    },
-    "redis": {
-      "status": "healthy",
-      "latency_ms": 1.12,
-      "redis_version": "7.0.0",
-      "optional": false
-    }
-  },
-  "service": "PartnerForge API",
-  "version": "2.2.0"
-}
-```
+For automated monitoring, set up a simple HTTP check:
 
-### Response (503 Not Ready)
-
-```json
-{
-  "status": "unhealthy",
-  "timestamp": "2026-02-26T10:35:00",
-  "checks": {
-    "database": {
-      "status": "unhealthy",
-      "error": "Connection refused",
-      "latency_ms": null
-    }
-  },
-  "service": "PartnerForge API",
-  "version": "2.2.0"
-}
-```
-
-### Use Case
-
-Kubernetes/Railway uses this endpoint to determine when to route traffic:
-- **200**: Service ready for traffic
-- **503**: Service not ready, don't route traffic
-
-### Example
-
-```bash
-curl "https://partnerforge-production.up.railway.app/ready"
-```
+**URL:** `https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=domain&limit=1`
+**Headers:** `apikey: <anon_key>`
+**Expected:** HTTP 200 with JSON array
 
 ---
 
-## Liveness Probe
+## Vercel Frontend Health
 
-Check if the service process is alive. Returns 200 if the process is running.
+The frontend is hosted on Vercel. Check status at: [vercel.com/status](https://vercel.com/status)
 
-```http
-GET /health/live
-```
+### Frontend URL
 
-### Response (200 OK)
-
-```json
-{
-  "status": "healthy",
-  "timestamp": "2026-02-26T10:35:00"
-}
-```
-
-### Use Case
-
-Kubernetes uses this to detect crashed processes:
-- **200**: Process is alive
-- **Non-200**: Process may need restart
-
-### Example
-
-```bash
-curl "https://partnerforge-production.up.railway.app/health/live"
-```
+**Production:** https://partnerforge.vercel.app
 
 ---
 
-## Detailed Health Check
+## What Replaces Health Metrics?
 
-Comprehensive health report with all subsystems.
-
-```http
-GET /health/detailed
-```
-
-### Response
-
-```json
-{
-  "status": "healthy",
-  "timestamp": "2026-02-26T10:35:00",
-  "service": "PartnerForge API",
-  "version": "2.2.0",
-  "environment": "production",
-  "python_version": "3.11.0",
-  "checks": {
-    "database": {
-      "status": "healthy",
-      "latency_ms": 2.34,
-      "driver": "postgresql",
-      "pool_size": 20,
-      "pool_checked_out": 3,
-      "pool_overflow": 0,
-      "max_overflow": 10
-    },
-    "redis": {
-      "status": "healthy",
-      "latency_ms": 1.12,
-      "redis_version": "7.0.0",
-      "connected_clients": 5,
-      "used_memory_human": "2.5M"
-    },
-    "configuration": {
-      "status": "healthy",
-      "message": "All required configuration present",
-      "api_keys_configured": {
-        "builtwith": true,
-        "similarweb": true,
-        "yahoo_finance": true
-      }
-    },
-    "resources": {
-      "status": "healthy",
-      "memory_mb": 234.5,
-      "memory_percent": 12.3,
-      "cpu_percent": 5.2,
-      "threads": 12,
-      "open_files": 45
-    }
-  }
-}
-```
-
-### Subsystem Checks
-
-| Check | What It Verifies |
-|-------|------------------|
-| `database` | PostgreSQL/SQLite connectivity, pool status |
-| `redis` | Redis connectivity (if configured) |
-| `configuration` | Required env vars, API keys |
-| `resources` | Memory, CPU, file handles |
-
-### Example
-
-```bash
-curl "https://partnerforge-production.up.railway.app/health/detailed" | jq
-```
+| Old Metric | New Approach |
+|------------|--------------|
+| Database connectivity | Supabase Dashboard |
+| Request counts | Supabase Dashboard > API Logs |
+| Error rates | Supabase Dashboard > Logs |
+| Response times | Browser DevTools / Supabase Dashboard |
+| Memory/CPU | Not applicable (serverless) |
 
 ---
 
-## Version Information
+## Supabase Dashboard
 
-Get service version and build information.
+Access detailed metrics at: https://supabase.com/dashboard/project/xbitqeejsgqnwvxlnjra
 
-```http
-GET /version
-```
-
-### Response
-
-```json
-{
-  "service": "PartnerForge API",
-  "version": "2.2.0",
-  "api_version": "v1",
-  "supported_api_versions": ["v1"],
-  "build_date": "2026-02-26",
-  "git_commit": "b8a36f3",
-  "git_branch": "main"
-}
-```
-
-### Example
-
-```bash
-curl "https://partnerforge-production.up.railway.app/version"
-```
+- **API Logs:** Real-time request logs
+- **Database:** Connection pool, query performance
+- **Storage:** Usage statistics
+- **Auth:** User activity (if enabled)
 
 ---
 
-## Runtime Metrics
+## Alerting
 
-Get runtime performance metrics.
-
-```http
-GET /metrics
-```
-
-### Response
-
-```json
-{
-  "uptime_seconds": 3600,
-  "requests_total": 12345,
-  "requests_per_minute": 42.5,
-  "memory_bytes": 245856256,
-  "memory_percent": 12.3,
-  "cpu_percent": 5.2,
-  "threads": 12,
-  "open_files": 45,
-  "active_connections": 8,
-  "enrichment_jobs": {
-    "queued": 2,
-    "running": 1,
-    "completed_today": 45,
-    "failed_today": 2
-  }
-}
-```
-
-### Example
-
-```bash
-curl "https://partnerforge-production.up.railway.app/metrics"
-```
-
----
-
-## Health Check Configuration
-
-### Railway (railway.toml)
-
-```toml
-[[services.health_checks]]
-path = "/health"
-interval = 30
-timeout = 5
-```
-
-### Kubernetes
-
-```yaml
-livenessProbe:
-  httpGet:
-    path: /health/live
-    port: 8000
-  initialDelaySeconds: 10
-  periodSeconds: 10
-
-readinessProbe:
-  httpGet:
-    path: /ready
-    port: 8000
-  initialDelaySeconds: 5
-  periodSeconds: 5
-```
-
-### Docker Compose
-
-```yaml
-healthcheck:
-  test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-  interval: 30s
-  timeout: 5s
-  retries: 3
-```
-
----
-
-## Status Codes
-
-| Code | Meaning | Action |
-|------|---------|--------|
-| 200 | Healthy | All good |
-| 503 | Unhealthy | Check logs, may need restart |
-
----
-
-## Monitoring Integration
-
-### Uptime Monitoring (e.g., UptimeRobot)
-
-Monitor: `https://partnerforge-production.up.railway.app/health`
-- Interval: 60 seconds
-- Timeout: 10 seconds
-- Alert on: Non-200 response
-
-### Prometheus Scraping
-
-```yaml
-scrape_configs:
-  - job_name: 'partnerforge'
-    static_configs:
-      - targets: ['partnerforge-production.up.railway.app']
-    metrics_path: '/metrics'
-    scheme: 'https'
-```
-
-### Grafana Dashboard
-
-Key metrics to display:
-- `requests_per_minute`
-- `memory_percent`
-- `cpu_percent`
-- `enrichment_jobs.running`
-- `enrichment_jobs.queued`
+Set up alerts in Supabase Dashboard:
+1. Go to Project Settings > Alerts
+2. Configure alerts for:
+   - Database connection issues
+   - High API error rates
+   - Storage quota warnings

@@ -243,149 +243,35 @@ curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?sele
 
 ---
 
-## Cancel Job
+## Deprecated Endpoints
 
-Cancel a running enrichment job.
+The following endpoints no longer exist after the Railway removal:
 
-```http
-POST /api/v1/enrich/{domain}/cancel
+### Cancel Job
+**Status:** Removed
+**Reason:** No server-side job queue exists. Client-side enrichment can be cancelled by refreshing the page.
+
+### Retry Failed Modules
+**Status:** Removed
+**Reason:** Simply re-trigger enrichment from the UI or call the APIs again.
+
+### Check Cache Status
+**Status:** Removed
+**Alternative:** Check the `last_enriched` timestamp in the database:
+
+```bash
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?domain=eq.costco.com&select=last_enriched" \
+  -H "apikey: YOUR_ANON_KEY"
 ```
 
-### Query Parameters
+### List Enrichment Jobs
+**Status:** Removed
+**Reason:** No job queue. Query `last_enriched` to see enrichment history:
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `job_id` | string | latest running | Specific job ID |
-
-### Response
-
-```json
-{
-  "job_id": "enrich_costco_com_20260226103500_abc12345",
-  "status": "cancelled",
-  "message": "Job cancelled. 7 modules were already completed.",
-  "modules_completed": 7
-}
-```
-
----
-
-## Retry Failed Modules
-
-Retry modules that failed in a previous job.
-
-```http
-POST /api/v1/enrich/{domain}/retry
-```
-
-### Request Body (optional)
-
-```json
-{
-  "failed_modules_only": true
-}
-```
-
-### Response
-
-```json
-{
-  "job_id": "enrich_costco_com_20260226103501_xyz98765",
-  "domain": "costco.com",
-  "status": "queued",
-  "modules": ["m03_traffic", "m05_competitors"],
-  "force": true,
-  "estimated_time_seconds": 6,
-  "created_at": "2026-02-26T10:35:30"
-}
-```
-
----
-
-## Check Cache Status
-
-Check which modules have cached data and their freshness.
-
-```http
-GET /api/v1/enrich/{domain}/cache
-```
-
-### Response
-
-```json
-{
-  "domain": "costco.com",
-  "modules": [
-    {
-      "module_id": "m01_company_context",
-      "is_cached": true,
-      "cached_at": "2026-02-26T10:30:00",
-      "freshness": "fresh",
-      "ttl_remaining_seconds": 2592000
-    },
-    {
-      "module_id": "m02_tech_stack",
-      "is_cached": true,
-      "cached_at": "2026-02-26T10:30:00",
-      "freshness": "stale",
-      "ttl_remaining_seconds": 172800
-    }
-  ],
-  "overall_freshness": "stale",
-  "last_enrichment": "2026-02-26T10:30:00",
-  "stale_modules": ["m02_tech_stack", "m03_traffic"]
-}
-```
-
-### Freshness States
-
-| State | Description | TTL |
-|-------|-------------|-----|
-| `fresh` | Data recently updated | >7 days |
-| `stale` | Data older than TTL | <7 days |
-| `expired` | Data very old | 0 |
-| `missing` | No cached data | N/A |
-
----
-
-## List Enrichment Jobs
-
-List all enrichment jobs with optional filtering.
-
-```http
-GET /api/v1/enrich
-```
-
-### Query Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `domain` | string | - | Filter by domain |
-| `status` | string | - | Filter by status |
-| `limit` | int | 50 | Max results (max: 100) |
-| `offset` | int | 0 | Pagination offset |
-
-### Response
-
-```json
-{
-  "jobs": [
-    {
-      "job_id": "enrich_costco_com_20260226103500_abc12345",
-      "domain": "costco.com",
-      "status": "completed",
-      "progress_percent": 100.0,
-      "modules_total": 15,
-      "modules_completed": 15,
-      "priority": "normal",
-      "created_at": "2026-02-26T10:35:00",
-      "started_at": "2026-02-26T10:35:01"
-    }
-  ],
-  "total": 1,
-  "running_count": 0,
-  "queued_count": 0
-}
+```bash
+# Recently enriched targets
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=domain,last_enriched&last_enriched=not.is.null&order=last_enriched.desc&limit=20" \
+  -H "apikey: YOUR_ANON_KEY"
 ```
 
 ---
