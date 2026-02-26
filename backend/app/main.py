@@ -34,6 +34,7 @@ from .api.routes import intelligence as intelligence_router
 from .api.routes import jobs as jobs_router
 from .api.routes import seed as seed_router
 from .api.routes import functional_test as test_router
+from .api.routes import discover as discover_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -126,6 +127,9 @@ app.include_router(seed_router.router, prefix="/api/v1")
 
 # Functional test endpoints (real API integration)
 app.include_router(test_router.router, prefix="/api/v1")
+
+# Partner discovery endpoints (BuiltWith Lists API)
+app.include_router(discover_router.router)
 
 
 # =============================================================================
