@@ -60,7 +60,7 @@ export function Sidebar() {
     <Stack h="100%" justify="space-between" p="md">
       {/* Main Navigation */}
       <Box>
-        <Text size="xs" fw={500} c="dimmed" tt="uppercase" mb="sm">
+        <Text size="xs" fw={600} c="#64748b" tt="uppercase" mb="sm">
           Navigation
         </Text>
         <Stack gap="xs">
@@ -90,6 +90,10 @@ export function Sidebar() {
                     borderLeft: '3px solid var(--mantine-color-blue-6)',
                   },
                 },
+                label: {
+                  color: '#334155',
+                  fontWeight: 500,
+                },
               }}
             />
           ))}
@@ -98,7 +102,7 @@ export function Sidebar() {
         <Divider my="lg" />
 
         {/* Secondary Navigation */}
-        <Text size="xs" fw={500} c="dimmed" tt="uppercase" mb="sm">
+        <Text size="xs" fw={600} c="#64748b" tt="uppercase" mb="sm">
           Configuration
         </Text>
         <Stack gap="xs">
@@ -117,6 +121,10 @@ export function Sidebar() {
                 root: {
                   borderRadius: 'var(--mantine-radius-md)',
                 },
+                label: {
+                  color: '#334155',
+                  fontWeight: 500,
+                },
               }}
             />
           ))}
@@ -133,8 +141,8 @@ export function Sidebar() {
         }}
       >
         <Group justify="space-between" mb="xs">
-          <Text size="xs" fw={500}>Enrichment Progress</Text>
-          <Text size="xs" c="dimmed">{enrichmentProgress}%</Text>
+          <Text size="xs" fw={600} c="#334155">Enrichment Progress</Text>
+          <Text size="xs" fw={500} c="#64748b">{enrichmentProgress}%</Text>
         </Group>
         <Progress
           value={enrichmentProgress}
@@ -142,7 +150,7 @@ export function Sidebar() {
           color="blue"
           animated={enrichmentProgress > 0 && enrichmentProgress < 100}
         />
-        <Text size="xs" c="dimmed" mt="xs">
+        <Text size="xs" c="#64748b" mt="xs">
           {stats?.enriched_companies || 0} of {stats?.total_companies || 0} enriched
         </Text>
       </Box>

@@ -166,12 +166,12 @@ interface [InterfaceName] {
 
 The following actions should automatically trigger documentation updates:
 
-### 1. API Route Creation
+### 1. API/Database Changes
 
-When a new route is added to `backend/app/api/routes/`:
+When new Supabase tables or API patterns are added:
 - Create corresponding section in `docs/api/endpoints/`
 - Add to endpoint summary table in `docs/api/README.md`
-- Update schemas.md with new request/response types
+- Update schemas.md with new TypeScript interfaces
 
 ### 2. Database Migration
 
@@ -267,8 +267,8 @@ Review and resolve documentation debt in each sprint/session.
 ## Automation (Future)
 
 Planned automation for documentation:
-1. **OpenAPI Generation** — Auto-generate API docs from FastAPI
-2. **Schema Extraction** — Auto-generate TypeScript types from Python models
+1. **OpenAPI Generation** — Auto-generate API docs from Supabase schema
+2. **Schema Extraction** — Auto-generate TypeScript types from PostgreSQL
 3. **Test Coverage** — Link test files to documented features
 4. **Changelog Generation** — Auto-generate from commits
 

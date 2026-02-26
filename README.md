@@ -1,6 +1,6 @@
 # PartnerForge
 
-Partner Intelligence Platform for Algolia Sales. Finds companies using partner technologies (Adobe AEM, Shopify, etc.) who are NOT using Algolia — displacement opportunities for co-sell motions.
+Partner Intelligence Platform for Algolia Sales. Finds companies using partner technologies (Adobe AEM, Shopify, Amplience, Spryker, etc.) who are NOT using Algolia — displacement opportunities for co-sell motions.
 
 ## Core Logic
 
@@ -8,17 +8,34 @@ Partner Intelligence Platform for Algolia Sales. Finds companies using partner t
 Displacement Targets = Companies Using Partner Tech − Existing Algolia Customers
 ```
 
-## Quick Start
+## Live Deployment
 
-```bash
-# View the executive dashboard
-open executive-dashboard.html
+| Service | URL |
+|---------|-----|
+| **Frontend** | https://partnerforge.vercel.app |
+| **Database** | Supabase (PostgreSQL + REST API) |
+| **Repository** | https://github.com/arijitchowdhury80/partnerforge |
 
-# Run ICP scoring on targets
-python scripts/icp_scoring.py
+## Architecture
 
-# Analyze a company's competitors
-python scripts/competitive_intelligence.py --domain costco.com --save
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         Users                                    │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    Vercel (Frontend)                             │
+│                 partnerforge.vercel.app                          │
+│              React 18 + TypeScript + Mantine                     │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼ Direct REST API Calls
+┌─────────────────────────────────────────────────────────────────┐
+│                    Supabase (Database + API)                     │
+│              xbitqeejsgqnwvxlnjra.supabase.co                    │
+│            PostgreSQL + PostgREST + Row Level Security           │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ## Data Sources
@@ -31,14 +48,11 @@ python scripts/competitive_intelligence.py --domain costco.com --save
 
 ## Database
 
-SQLite database at `data/partnerforge.db` caches all API responses to save credits.
+PostgreSQL hosted on Supabase. Data is accessed via auto-generated REST API.
 
 | Table | Records | Purpose |
 |-------|---------|---------|
-| `displacement_targets` | 2,687 | AEM users NOT on Algolia |
-| `companies` | 400 | Existing Algolia customers |
-| `competitive_intel` | 25 | Competitor tech stack analysis |
-| `case_studies` | 161 | For matching to targets |
+| `displacement_targets` | 2,737 | Partner tech users NOT on Algolia |
 
 ## ICP Scoring (0-100 points)
 
@@ -49,56 +63,57 @@ SQLite database at `data/partnerforge.db` caches all API responses to save credi
 | Tech Spend | 20 | $100K+=20, $50K+=15 |
 | Partner Tech | 10 | Adobe=10, Shopify=7 |
 
-## Dashboard
+## Partner Coverage
 
-`executive-dashboard.html` provides a tabbed interface:
+| Partner | Targets |
+|---------|---------|
+| Adobe AEM | 2,687 |
+| Adobe Commerce | 18 |
+| Amplience | 20 |
+| Spryker | 12 |
 
-- **All Targets** — Full list sorted by ICP Tier → Score
-- **🔥 Hot** — Score 80+ (immediate outreach)
-- **🌡️ Warm** — Score 60-79 (nurture ready)
-- **❄️ Cool** — Score 40-59 (qualify further)
-- **Tier 1/2/3** — Filter by Commerce/Content/Support
-- **By Vertical** — Expandable industry groups
-- **Competitive Intel** — SimilarWeb → BuiltWith analysis
+## Quick Start
 
-## Scripts
+```bash
+# Frontend development
+cd frontend && npm install && npm run dev
 
-| Script | Purpose |
-|--------|---------|
-| `icp_scoring.py` | Apply ICP scoring to all targets |
-| `competitive_intelligence.py` | Analyze competitors via SimilarWeb → BuiltWith |
-| `import_customer_evidence.py` | Import Excel → SQLite |
-| `fetch_partner_targets.py` | Fetch from BuiltWith Lists API |
+# View at http://localhost:5173
+```
 
 ## Project Structure
 
 ```
 PartnerForge/
-├── README.md
-├── MEMORY.md                 # Project documentation
+├── README.md                 # This file
 ├── PRD.md                    # Product requirements
-├── executive-dashboard.html  # Main dashboard (tabbed)
-├── data/
-│   └── partnerforge.db       # SQLite database
-├── output/
-│   └── *.csv                 # Exported reports
-├── scripts/
-│   ├── icp_scoring.py
-│   ├── competitive_intelligence.py
-│   ├── import_customer_evidence.py
-│   └── fetch_partner_targets.py
-└── supabase/
-    └── migrations/           # For future Supabase migration
+├── DEPLOYMENT.md             # Deployment guide
+├── frontend/                 # React application
+│   ├── src/
+│   │   ├── components/       # UI components
+│   │   ├── services/         # API client (Supabase)
+│   │   └── types/            # TypeScript definitions
+│   └── package.json
+├── docs/                     # Architecture documentation
+│   ├── README.md             # Documentation index
+│   ├── prd/                  # PRD versions
+│   └── api/                  # API documentation
+├── scripts/                  # Utility scripts
+└── data/                     # Local data (legacy SQLite backup)
 ```
 
-## Key Findings (2026-02-25)
+## Documentation
 
-- **2,687 AEM displacement targets**
-- **5 hot leads** (score 80+)
-- **149 warm leads** (score 60-79)
-- **Est. pipeline**: $63M
-- **Competitive intel**: Sam's Club, Macy's, Kmart, Sears use Elasticsearch (not Algolia)
+See [docs/README.md](docs/README.md) for full architecture documentation including:
+- Intelligence module specifications
+- Database schema
+- API endpoints
+- UI/UX specifications
 
 ## License
 
 Internal Algolia use only.
+
+---
+
+*Last updated: 2026-02-26*

@@ -20,14 +20,26 @@ import time
 import os
 from datetime import datetime
 from typing import Optional, Dict, List
+from pathlib import Path
 
-# API Keys
-BUILTWITH_API_KEY = "8fd992ef-88d0-4554-a20b-364e97b2d302"
-SIMILARWEB_API_KEY = "483b77d48d254810b4caf3d376b28ce7"
+# Load environment variables from .env file
+from dotenv import load_dotenv
+env_path = Path(__file__).parent.parent / '.env'
+load_dotenv(env_path)
 
-# Supabase config
-SUPABASE_URL = "https://xbitqeejsgqnwvxlnjra.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhiaXRxZWVqc2dxbnd2eGxuanJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwODU1NDAsImV4cCI6MjA4NzY2MTU0MH0.XoEOx8rHo_1EyCF4yJ3g2S3tXUX_XepQu9PSfUWvyIg"
+# API Keys from environment
+BUILTWITH_API_KEY = os.getenv("BUILTWITH_API_KEY")
+SIMILARWEB_API_KEY = os.getenv("SIMILARWEB_API_KEY")
+
+# Supabase config from environment
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_ANON_KEY")  # Read-only operations use anon key
+
+# Validate required keys
+required_keys = ["BUILTWITH_API_KEY", "SIMILARWEB_API_KEY", "SUPABASE_URL", "SUPABASE_ANON_KEY"]
+missing = [k for k in required_keys if not os.getenv(k)]
+if missing:
+    raise ValueError(f"Missing required environment variables: {', '.join(missing)}. Check .env file.")
 
 # Output directory
 OUTPUT_DIR = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/PartnerForge/data/enrichments"

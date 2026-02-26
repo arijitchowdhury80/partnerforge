@@ -628,11 +628,11 @@ export function TargetList({
       )}
 
       {/* Table */}
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <div style={{ overflowX: 'auto', background: 'white' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', background: 'white' }}>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} style={{ borderBottom: `2px solid ${GRAY_200}` }}>
+              <tr key={headerGroup.id} style={{ borderBottom: `2px solid ${GRAY_200}`, background: 'white' }}>
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
@@ -640,6 +640,7 @@ export function TargetList({
                       padding: '12px 16px',
                       textAlign: 'left',
                       width: header.getSize(),
+                      background: 'white',
                     }}
                   >
                     {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
@@ -675,6 +676,7 @@ export function TargetList({
                       style={{
                         padding: '16px',
                         width: cell.column.getSize(),
+                        background: 'inherit',
                       }}
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}

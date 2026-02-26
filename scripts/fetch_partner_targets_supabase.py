@@ -12,13 +12,24 @@ Usage:
 import json
 import subprocess
 import argparse
+import os
 import requests
 from datetime import datetime
+from pathlib import Path
 
-# Supabase config
-SUPABASE_URL = "https://xbitqeejsgqnwvxlnjra.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhiaXRxZWVqc2dxbnd2eGxuanJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwODU1NDAsImV4cCI6MjA4NzY2MTU0MH0.XoEOx8rHo_1EyCF4yJ3g2S3tXUX_XepQu9PSfUWvyIg"
-BUILTWITH_API_KEY = "8fd992ef-88d0-4554-a20b-364e97b2d302"
+# Load environment variables from .env file
+from dotenv import load_dotenv
+env_path = Path(__file__).parent.parent / '.env'
+load_dotenv(env_path)
+
+# Config from environment
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")  # Needs write access
+BUILTWITH_API_KEY = os.getenv("BUILTWITH_API_KEY")
+
+# Validate required keys
+if not all([SUPABASE_URL, SUPABASE_KEY, BUILTWITH_API_KEY]):
+    raise ValueError("Missing required environment variables. Check .env file.")
 
 # Partner technology mapping for BuiltWith
 PARTNER_TECH_MAP = {

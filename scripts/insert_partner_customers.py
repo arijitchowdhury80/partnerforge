@@ -9,13 +9,22 @@ Usage:
     python3 insert_partner_customers.py
 """
 
+import os
 import requests
-import json
 from datetime import datetime
+from pathlib import Path
 
-# Supabase config
-SUPABASE_URL = "https://xbitqeejsgqnwvxlnjra.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhiaXRxZWVqc2dxbnd2eGxuanJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwODU1NDAsImV4cCI6MjA4NzY2MTU0MH0.XoEOx8rHo_1EyCF4yJ3g2S3tXUX_XepQu9PSfUWvyIg"
+# Load environment variables from .env file
+from dotenv import load_dotenv
+env_path = Path(__file__).parent.parent / '.env'
+load_dotenv(env_path)
+
+# Supabase config from environment
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")  # Use service role for writes
+
+if not SUPABASE_URL or not SUPABASE_KEY:
+    raise ValueError("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in .env file")
 
 # Known Amplience customers from case studies
 AMPLIENCE_CUSTOMERS = [
@@ -80,54 +89,64 @@ def get_existing_domains():
 
 
 def insert_targets(targets: list, partner_tech: str):
-    """Insert targets into Supabase."""
-    headers = {
-        "apikey": SUPABASE_KEY,
-        "Authorization": f"Bearer {SUPABASE_KEY}",
-        "Content-Type": "application/json",
-        "Prefer": "return=minimal,resolution=merge-duplicates"
-    }
+    """Insert or update targets into Supabase using upsert."""
+    inserted = 0
+    updated = 0
 
-    existing = get_existing_domains()
-
-    # Prepare batch
-    batch = []
     for target in targets:
-        if target["domain"].lower() in existing:
-            print(f"   ⏭️  Skipping {target['domain']} (already exists)")
-            continue
-
+        domain = target["domain"].lower()
         record = {
-            "domain": target["domain"].lower(),
+            "domain": domain,
             "company_name": target["company_name"],
             "partner_tech": partner_tech,
             "vertical": target.get("vertical", "Unknown"),
             "country": target.get("country", ""),
-            "icp_score": 50,  # Default score for case study customers
+            "icp_score": 50,
             "icp_tier": 2,
             "icp_tier_name": "Commerce" if partner_tech == "Amplience" else "B2B Commerce",
             "enrichment_level": "basic",
             "last_enriched": datetime.now().isoformat()
         }
-        batch.append(record)
 
-    if not batch:
-        print(f"   ℹ️  No new targets to insert for {partner_tech}")
-        return 0
+        # Try upsert with on_conflict
+        headers = {
+            "apikey": SUPABASE_KEY,
+            "Authorization": f"Bearer {SUPABASE_KEY}",
+            "Content-Type": "application/json",
+            "Prefer": "resolution=merge-duplicates"
+        }
 
-    # Batch insert
-    response = requests.post(
-        f"{SUPABASE_URL}/rest/v1/displacement_targets",
-        headers=headers,
-        json=batch
-    )
+        response = requests.post(
+            f"{SUPABASE_URL}/rest/v1/displacement_targets?on_conflict=domain",
+            headers=headers,
+            json=record
+        )
 
-    if response.status_code < 300:
-        print(f"   ✅ Inserted {len(batch)} new {partner_tech} targets")
-        return len(batch)
-    else:
-        print(f"   ❌ Error: {response.status_code} - {response.text[:200]}")
-        return 0
+        if response.status_code < 300:
+            inserted += 1
+            print(f"   ✅ {domain}")
+        elif response.status_code == 409:
+            # Already exists, update partner_tech
+            update_headers = {
+                "apikey": SUPABASE_KEY,
+                "Authorization": f"Bearer {SUPABASE_KEY}",
+                "Content-Type": "application/json",
+            }
+            update_resp = requests.patch(
+                f"{SUPABASE_URL}/rest/v1/displacement_targets?domain=eq.{domain}",
+                headers=update_headers,
+                json={"partner_tech": partner_tech}
+            )
+            if update_resp.status_code < 300:
+                updated += 1
+                print(f"   🔄 {domain} (updated partner_tech)")
+            else:
+                print(f"   ⚠️ {domain} - update failed")
+        else:
+            print(f"   ❌ {domain} - {response.status_code}")
+
+    print(f"\n   Summary: {inserted} inserted, {updated} updated")
+    return inserted + updated
 
 
 def main():

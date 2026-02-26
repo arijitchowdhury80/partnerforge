@@ -539,7 +539,7 @@ function DistributionTable({ distribution }: DistributionTableProps) {
 // Cell Value - clean number display
 function CellValue({ value, color, muted }: { value: number; color: string; muted?: boolean }) {
   if (value === 0) {
-    return <Text c={GRAY_200} size="sm">—</Text>;
+    return <Text c="#94a3b8" size="sm">—</Text>;
   }
   return (
     <Text fw={600} size="md" c={muted ? GRAY_500 : color}>
