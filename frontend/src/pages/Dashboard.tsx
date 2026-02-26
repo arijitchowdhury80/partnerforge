@@ -251,7 +251,7 @@ export function Dashboard() {
                   clearable
                   styles={{
                     input: {
-                      backgroundColor: 'white',
+                      backgroundColor: '#ffffff',
                       borderColor: GRAY_200,
                       color: GRAY_900,
                       fontSize: '14px',
@@ -260,6 +260,24 @@ export function Dashboard() {
                       color: GRAY_700,
                       fontWeight: 600,
                       marginBottom: 4,
+                    },
+                    dropdown: {
+                      backgroundColor: '#ffffff',
+                      borderColor: GRAY_200,
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                    },
+                    option: {
+                      color: GRAY_900,
+                      fontSize: '14px',
+                      padding: '10px 14px',
+                      '&[data-selected]': {
+                        backgroundColor: ALGOLIA_BLUE,
+                        color: '#ffffff',
+                      },
+                      '&[data-hovered]': {
+                        backgroundColor: GRAY_100,
+                        color: GRAY_900,
+                      },
                     },
                   }}
                 />
@@ -282,7 +300,7 @@ export function Dashboard() {
                     clearable
                     styles={{
                       input: {
-                        backgroundColor: 'white',
+                        backgroundColor: '#ffffff',
                         borderColor: GRAY_200,
                         color: GRAY_900,
                         fontSize: '14px',
@@ -291,6 +309,24 @@ export function Dashboard() {
                         color: GRAY_700,
                         fontWeight: 600,
                         marginBottom: 4,
+                      },
+                      dropdown: {
+                        backgroundColor: '#ffffff',
+                        borderColor: GRAY_200,
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                      },
+                      option: {
+                        color: GRAY_900,
+                        fontSize: '14px',
+                        padding: '10px 14px',
+                        '&[data-selected]': {
+                          backgroundColor: ALGOLIA_BLUE,
+                          color: '#ffffff',
+                        },
+                        '&[data-hovered]': {
+                          backgroundColor: GRAY_100,
+                          color: GRAY_900,
+                        },
                       },
                     }}
                   />
