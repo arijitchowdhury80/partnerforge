@@ -652,3 +652,52 @@ a:hover, .algolia-link:hover {
 
 /* Shadow utilities */
 .shadow-algolia { box-shadow: 0 4px 20px rgba(0, 61, 255, 0.15); }
+
+/* =============================================================================
+ * MANTINE COMBOBOX/SELECT OVERRIDES
+ * Fix dropdown option visibility - white bg with dark text, light hover
+ * ============================================================================= */
+
+/* Dropdown container */
+.mantine-Select-dropdown,
+.mantine-Combobox-dropdown {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* All options - base state */
+.mantine-Select-option,
+.mantine-Combobox-option {
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+  font-size: 14px !important;
+  padding: 10px 14px !important;
+}
+
+/* Hover state - light gray background */
+.mantine-Select-option:hover,
+.mantine-Combobox-option:hover,
+.mantine-Select-option[data-hovered],
+.mantine-Combobox-option[data-hovered] {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+/* Selected state - Algolia Blue background with white text */
+.mantine-Select-option[data-selected],
+.mantine-Combobox-option[data-selected],
+.mantine-Select-option[data-checked],
+.mantine-Combobox-option[data-checked] {
+  background-color: #003DFF !important;
+  color: #ffffff !important;
+}
+
+/* Selected + Hovered - slightly darker blue */
+.mantine-Select-option[data-selected]:hover,
+.mantine-Combobox-option[data-selected]:hover,
+.mantine-Select-option[data-selected][data-hovered],
+.mantine-Combobox-option[data-selected][data-hovered] {
+  background-color: #002999 !important;
+  color: #ffffff !important;
+}
