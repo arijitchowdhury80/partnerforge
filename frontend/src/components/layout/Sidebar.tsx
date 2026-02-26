@@ -95,48 +95,6 @@ export function Sidebar() {
 
         <Divider my="lg" />
 
-        {/* Quick Stats */}
-        <Text size="xs" fw={500} c="dimmed" tt="uppercase" mb="sm">
-          Quick Stats
-        </Text>
-        <Stack gap="xs">
-          <Group justify="space-between" px="sm" py="xs">
-            <Group gap="xs">
-              <ThemeIcon size="sm" variant="light" color="red">
-                <IconTarget size={12} />
-              </ThemeIcon>
-              <Text size="sm">Hot Leads</Text>
-            </Group>
-            <Badge color="red" variant="filled" size="sm">
-              {stats?.hot_leads || 0}
-            </Badge>
-          </Group>
-          <Group justify="space-between" px="sm" py="xs">
-            <Group gap="xs">
-              <ThemeIcon size="sm" variant="light" color="orange">
-                <IconBolt size={12} />
-              </ThemeIcon>
-              <Text size="sm">Warm Leads</Text>
-            </Group>
-            <Badge color="orange" variant="filled" size="sm">
-              {stats?.warm_leads || 0}
-            </Badge>
-          </Group>
-          <Group justify="space-between" px="sm" py="xs">
-            <Group gap="xs">
-              <ThemeIcon size="sm" variant="light" color="blue">
-                <IconDatabase size={12} />
-              </ThemeIcon>
-              <Text size="sm">Total</Text>
-            </Group>
-            <Badge color="blue" variant="filled" size="sm">
-              {stats?.total_companies?.toLocaleString() || 0}
-            </Badge>
-          </Group>
-        </Stack>
-
-        <Divider my="lg" />
-
         {/* Secondary Navigation */}
         <Text size="xs" fw={500} c="dimmed" tt="uppercase" mb="sm">
           Configuration
