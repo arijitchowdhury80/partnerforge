@@ -457,13 +457,8 @@ export function Dashboard() {
               <Group justify="space-between" mb="lg">
                 <div>
                   <Text fw={600} c={GRAY_900} size="lg">All Targets</Text>
-                  <Text size="sm" c={GRAY_500}>Click any row to view full intelligence</Text>
+                  <Text size="sm" c={GRAY_500}>Click Status column to filter by Hot/Warm/Cold</Text>
                 </div>
-                <Group gap="xs">
-                  <Badge color="red" variant="filled" size="sm" styles={{ root: { color: '#fff' } }}>{hotCount} Hot</Badge>
-                  <Badge color="orange" variant="filled" size="sm" styles={{ root: { color: '#fff' } }}>{warmCount} Warm</Badge>
-                  <Badge color="gray" variant="filled" size="sm" styles={{ root: { color: '#fff' } }}>{coldCount} Cold</Badge>
-                </Group>
               </Group>
 
               <TargetList
