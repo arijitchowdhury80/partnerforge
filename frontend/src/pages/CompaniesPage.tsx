@@ -1,8 +1,8 @@
 /**
  * CompaniesPage - Focused Company List View
  *
- * A dedicated page for browsing and filtering displacement targets with
- * advanced filtering capabilities distinct from the Dashboard overview.
+ * A dedicated page for browsing displacement targets with Excel-style
+ * column filtering. All filters are in the table headers.
  */
 
 import { useState, useCallback, useMemo } from 'react';
@@ -16,104 +16,20 @@ import {
   Badge,
   Button,
   TextInput,
-  Select,
-  MultiSelect,
-  Slider,
-  Stack,
   Tooltip,
   ActionIcon,
-  Box,
 } from '@mantine/core';
 import {
   IconSearch,
   IconUpload,
   IconX,
   IconFilter,
-  IconFlame,
-  IconBolt,
-  IconSnowflake,
-  IconMoon,
 } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 
-import { getCompanies } from '@/services/api';
-import { TargetList } from '@/components/targets/TargetList';
-import type { FilterState } from '@/types';
-
-// =============================================================================
-// Status Badge Button Component
-// =============================================================================
-
-interface StatusBadgeButtonProps {
-  status: 'hot' | 'warm' | 'cold';
-  label: string;
-  selected: boolean;
-  onClick: () => void;
-  icon: React.ReactNode;
-}
-
-function StatusBadgeButton({ status, label, selected, onClick, icon }: StatusBadgeButtonProps) {
-  const colors: Record<string, { bg: string; border: string; text: string }> = {
-    hot: {
-      bg: selected ? 'rgba(239, 68, 68, 0.2)' : 'rgba(239, 68, 68, 0.05)',
-      border: selected ? 'rgba(239, 68, 68, 0.6)' : 'rgba(239, 68, 68, 0.2)',
-      text: selected ? '#ef4444' : 'rgba(239, 68, 68, 0.6)',
-    },
-    warm: {
-      bg: selected ? 'rgba(249, 115, 22, 0.2)' : 'rgba(249, 115, 22, 0.05)',
-      border: selected ? 'rgba(249, 115, 22, 0.6)' : 'rgba(249, 115, 22, 0.2)',
-      text: selected ? '#f97316' : 'rgba(249, 115, 22, 0.6)',
-    },
-    cold: {
-      bg: selected ? 'rgba(107, 114, 128, 0.2)' : 'rgba(107, 114, 128, 0.05)',
-      border: selected ? 'rgba(107, 114, 128, 0.6)' : 'rgba(107, 114, 128, 0.2)',
-      text: selected ? '#6b7280' : 'rgba(107, 114, 128, 0.6)',
-    },
-  };
-
-  const colorSet = colors[status];
-
-  return (
-    <motion.button
-      onClick={onClick}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '6px',
-        padding: '8px 12px',
-        borderRadius: '8px',
-        border: `1px solid ${colorSet.border}`,
-        background: colorSet.bg,
-        color: colorSet.text,
-        cursor: 'pointer',
-        transition: 'all 0.2s ease',
-        fontWeight: selected ? 600 : 400,
-        fontSize: '13px',
-      }}
-    >
-      {icon}
-      {label}
-    </motion.button>
-  );
-}
-
-// =============================================================================
-// Partner Tech Options
-// =============================================================================
-
-const PARTNER_TECH_OPTIONS = [
-  { value: 'Adobe AEM', label: 'Adobe AEM' },
-  { value: 'Shopify', label: 'Shopify' },
-  { value: 'Salesforce Commerce', label: 'Salesforce Commerce' },
-  { value: 'BigCommerce', label: 'BigCommerce' },
-  { value: 'Magento', label: 'Magento' },
-  { value: 'SAP Hybris', label: 'SAP Hybris' },
-  { value: 'Contentful', label: 'Contentful' },
-  { value: 'Sitecore', label: 'Sitecore' },
-];
+import { getCompanies, getDistribution } from '@/services/api';
+import { TargetList, type ColumnFilter } from '@/components/targets/TargetList';
 
 // =============================================================================
 // Companies Page Component
@@ -124,90 +40,140 @@ export function CompaniesPage() {
 
   // Filter state
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
-  const [selectedPartners, setSelectedPartners] = useState<string[]>([]);
-  const [minIcpScore, setMinIcpScore] = useState(0);
+  const [columnFilters, setColumnFilters] = useState<ColumnFilter[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Build filter state for API
-  const filters: FilterState & { page?: number; limit?: number } = useMemo(() => {
-    const base: FilterState & { page?: number; limit?: number } = {
+  // Build API filters from column filters
+  const apiFilters = useMemo(() => {
+    const base: {
+      sort_by: 'icp_score' | 'traffic' | 'revenue' | 'name';
+      sort_order: 'asc' | 'desc';
+      page: number;
+      limit: number;
+      status?: 'hot' | 'warm' | 'cold';
+      partner?: string;
+      vertical?: string;
+      search?: string;
+    } = {
       sort_by: 'icp_score',
       sort_order: 'desc',
       page: currentPage,
       limit: 25,
     };
 
-    // Add status filter (only first selected for now - API limitation)
-    if (selectedStatuses.length === 1) {
-      base.status = selectedStatuses[0] as 'hot' | 'warm' | 'cold';
+    // Add search filter
+    if (searchQuery.trim()) {
+      base.search = searchQuery.trim();
     }
 
-    // Add partner filter
-    if (selectedPartners.length > 0) {
-      base.partner = selectedPartners[0];
+    // Add status filter (API only supports single status)
+    const statusFilter = columnFilters.find((f) => f.column === 'status');
+    if (statusFilter?.values.length === 1) {
+      base.status = statusFilter.values[0] as 'hot' | 'warm' | 'cold';
     }
 
-    // Add min score filter
-    if (minIcpScore > 0) {
-      base.min_score = minIcpScore;
+    // Add vertical filter (API only supports single vertical)
+    const verticalFilter = columnFilters.find((f) => f.column === 'vertical');
+    if (verticalFilter?.values.length === 1) {
+      base.vertical = verticalFilter.values[0];
+    }
+
+    // Add partner tech filter (API only supports single partner)
+    const partnerFilter = columnFilters.find((f) => f.column === 'partner_tech');
+    if (partnerFilter?.values.length === 1) {
+      base.partner = partnerFilter.values[0];
     }
 
     return base;
-  }, [selectedStatuses, selectedPartners, minIcpScore, currentPage]);
+  }, [searchQuery, columnFilters, currentPage]);
 
   // Fetch companies
-  const { data: companiesData, isLoading, refetch } = useQuery({
-    queryKey: ['companies', filters, searchQuery],
-    queryFn: () => getCompanies(filters),
+  const { data: companiesData, isLoading } = useQuery({
+    queryKey: ['companies', apiFilters],
+    queryFn: () => getCompanies(apiFilters),
   });
 
-  // Filter companies by search query locally (for instant search)
+  // Fetch distribution data to get all available verticals
+  const { data: distributionData } = useQuery({
+    queryKey: ['distribution'],
+    queryFn: getDistribution,
+  });
+
+  // Get available filter options from distribution data
+  const availableVerticals = useMemo(() => {
+    if (!distributionData?.allVerticals) return [];
+    return distributionData.allVerticals.map((v) => v.name);
+  }, [distributionData]);
+
+  // Static partner tech options (these come from BuiltWith)
+  const availablePartnerTechs = useMemo(() => {
+    return [
+      'Adobe AEM',
+      'Shopify',
+      'Salesforce Commerce',
+      'BigCommerce',
+      'Magento',
+      'SAP Hybris',
+      'Contentful',
+      'Sitecore',
+    ];
+  }, []);
+
+  // Apply local filtering for multi-select scenarios (API only supports single values)
   const filteredCompanies = useMemo(() => {
     if (!companiesData?.data) return [];
-    if (!searchQuery.trim()) return companiesData.data;
 
-    const query = searchQuery.toLowerCase().trim();
-    return companiesData.data.filter(
-      (company) =>
-        company.company_name?.toLowerCase().includes(query) ||
-        company.domain?.toLowerCase().includes(query)
-    );
-  }, [companiesData?.data, searchQuery]);
+    let result = companiesData.data;
 
-  // Also filter by multiple statuses locally if more than one selected
-  const statusFilteredCompanies = useMemo(() => {
-    if (selectedStatuses.length <= 1) return filteredCompanies;
-    return filteredCompanies.filter((company) =>
-      selectedStatuses.includes(company.status)
-    );
-  }, [filteredCompanies, selectedStatuses]);
+    // Apply multi-status filter locally
+    const statusFilter = columnFilters.find((f) => f.column === 'status');
+    if (statusFilter && statusFilter.values.length > 1) {
+      result = result.filter((c) => statusFilter.values.includes(c.status));
+    }
 
-  // Toggle status selection
-  const toggleStatus = useCallback((status: string) => {
-    setSelectedStatuses((prev) =>
-      prev.includes(status)
-        ? prev.filter((s) => s !== status)
-        : [...prev, status]
-    );
+    // Apply multi-vertical filter locally
+    const verticalFilter = columnFilters.find((f) => f.column === 'vertical');
+    if (verticalFilter && verticalFilter.values.length > 1) {
+      result = result.filter((c) =>
+        verticalFilter.values.includes(c.vertical || '')
+      );
+    }
+
+    // Apply multi-partner filter locally
+    const partnerFilter = columnFilters.find((f) => f.column === 'partner_tech');
+    if (partnerFilter && partnerFilter.values.length > 1) {
+      result = result.filter((c) =>
+        c.partner_tech?.some((t) => partnerFilter.values.includes(t))
+      );
+    }
+
+    return result;
+  }, [companiesData?.data, columnFilters]);
+
+  // Handle column filter change
+  const handleColumnFilterChange = useCallback((column: string, values: string[]) => {
+    setColumnFilters((prev) => {
+      const existing = prev.filter((f) => f.column !== column);
+      if (values.length > 0) {
+        return [...existing, { column, values }];
+      }
+      return existing;
+    });
     setCurrentPage(1);
   }, []);
 
   // Clear all filters
-  const clearFilters = useCallback(() => {
+  const clearAllFilters = useCallback(() => {
     setSearchQuery('');
-    setSelectedStatuses([]);
-    setSelectedPartners([]);
-    setMinIcpScore(0);
+    setColumnFilters([]);
     setCurrentPage(1);
   }, []);
 
-  // Check if any filters are active
-  const hasActiveFilters =
-    searchQuery.trim() !== '' ||
-    selectedStatuses.length > 0 ||
-    selectedPartners.length > 0 ||
-    minIcpScore > 0;
+  // Clear a specific column filter
+  const clearColumnFilter = useCallback((column: string) => {
+    setColumnFilters((prev) => prev.filter((f) => f.column !== column));
+    setCurrentPage(1);
+  }, []);
 
   // Handle page change
   const handlePageChange = useCallback((page: number) => {
@@ -219,6 +185,37 @@ export function CompaniesPage() {
     console.log('Enrich company:', domain);
     // TODO: Trigger enrichment API call
   }, []);
+
+  // Check if any filters are active
+  const hasActiveFilters = searchQuery.trim() !== '' || columnFilters.length > 0;
+
+  // Get color for filter badge
+  const getFilterColor = (column: string): string => {
+    switch (column) {
+      case 'status':
+        return 'red';
+      case 'vertical':
+        return 'blue';
+      case 'partner_tech':
+        return 'green';
+      default:
+        return 'gray';
+    }
+  };
+
+  // Get display name for filter column
+  const getFilterLabel = (column: string): string => {
+    switch (column) {
+      case 'status':
+        return 'Status';
+      case 'vertical':
+        return 'Vertical';
+      case 'partner_tech':
+        return 'Partner Tech';
+      default:
+        return column;
+    }
+  };
 
   return (
     <Container size="xl" py="md">
@@ -248,15 +245,15 @@ export function CompaniesPage() {
         </Group>
       </motion.div>
 
-      {/* Filter Bar */}
+      {/* Search Bar */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1 }}
       >
         <Paper
-          p="lg"
-          mb="lg"
+          p="md"
+          mb="md"
           radius="lg"
           style={{
             background: 'rgba(255, 255, 255, 0.03)',
@@ -264,229 +261,130 @@ export function CompaniesPage() {
             backdropFilter: 'blur(12px)',
           }}
         >
-          <Stack gap="md">
-            {/* Top row: Search + Partner Tech */}
-            <Group gap="md" grow>
-              <TextInput
-                placeholder="Search by company name or domain..."
-                leftSection={<IconSearch size={16} />}
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setCurrentPage(1);
-                }}
-                size="md"
-                styles={{
-                  input: {
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    color: 'white',
-                    '&::placeholder': {
-                      color: 'rgba(255, 255, 255, 0.4)',
-                    },
+          <Group gap="md">
+            <TextInput
+              placeholder="Search by company name or domain..."
+              leftSection={<IconSearch size={16} />}
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1);
+              }}
+              style={{ flex: 1 }}
+              size="md"
+              styles={{
+                input: {
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  color: 'white',
+                  '&::placeholder': {
+                    color: 'rgba(255, 255, 255, 0.4)',
                   },
-                }}
-              />
-              <MultiSelect
-                placeholder="Filter by partner technology"
-                data={PARTNER_TECH_OPTIONS}
-                value={selectedPartners}
-                onChange={(value) => {
-                  setSelectedPartners(value);
-                  setCurrentPage(1);
-                }}
-                searchable
-                clearable
-                leftSection={<IconFilter size={16} />}
-                size="md"
-                styles={{
-                  input: {
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    color: 'white',
-                  },
-                  pill: {
-                    background: 'rgba(0, 61, 255, 0.2)',
-                    color: '#3b82f6',
-                  },
-                }}
-              />
-            </Group>
+                },
+              }}
+            />
 
-            {/* Bottom row: Status badges + ICP Score + Clear */}
-            <Group justify="space-between" align="flex-end" wrap="wrap" gap="md">
-              {/* Status Badges */}
-              <Group gap="xs">
-                <Text size="sm" c="dimmed" mr="xs">
-                  Status:
-                </Text>
-                <StatusBadgeButton
-                  status="hot"
-                  label="Hot"
-                  selected={selectedStatuses.includes('hot')}
-                  onClick={() => toggleStatus('hot')}
-                  icon={<IconFlame size={14} />}
-                />
-                <StatusBadgeButton
-                  status="warm"
-                  label="Warm"
-                  selected={selectedStatuses.includes('warm')}
-                  onClick={() => toggleStatus('warm')}
-                  icon={<IconBolt size={14} />}
-                />
-                <StatusBadgeButton
-                  status="cold"
-                  label="Cold"
-                  selected={selectedStatuses.includes('cold')}
-                  onClick={() => toggleStatus('cold')}
-                  icon={<IconSnowflake size={14} />}
-                />
-              </Group>
-
-              {/* ICP Score Slider */}
-              <Group gap="md" align="flex-end">
-                <Box w={200}>
-                  <Text size="xs" c="dimmed" mb={4}>
-                    Min ICP Score: {minIcpScore}
-                  </Text>
-                  <Slider
-                    value={minIcpScore}
-                    onChange={(value) => {
-                      setMinIcpScore(value);
-                      setCurrentPage(1);
-                    }}
-                    min={0}
-                    max={100}
-                    step={5}
-                    marks={[
-                      { value: 0, label: '0' },
-                      { value: 50, label: '50' },
-                      { value: 100, label: '100' },
-                    ]}
-                    styles={{
-                      track: { background: 'rgba(255, 255, 255, 0.1)' },
-                      bar: { background: 'linear-gradient(90deg, #003dff, #00d4ff)' },
-                      mark: { borderColor: 'rgba(255, 255, 255, 0.2)' },
-                      markLabel: { color: 'rgba(255, 255, 255, 0.5)', fontSize: '10px' },
-                    }}
-                  />
-                </Box>
-
-                {/* Clear Filters Button */}
-                <AnimatePresence>
-                  {hasActiveFilters && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      transition={{ duration: 0.2 }}
+            {/* Clear All Filters */}
+            <AnimatePresence>
+              {hasActiveFilters && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Tooltip label="Clear all filters">
+                    <Button
+                      variant="subtle"
+                      color="gray"
+                      leftSection={<IconX size={14} />}
+                      onClick={clearAllFilters}
+                      size="sm"
                     >
-                      <Tooltip label="Clear all filters">
-                        <Button
-                          variant="subtle"
-                          color="gray"
-                          leftSection={<IconX size={14} />}
-                          onClick={clearFilters}
-                          size="sm"
-                        >
-                          Clear Filters
-                        </Button>
-                      </Tooltip>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </Group>
-            </Group>
-          </Stack>
+                      Clear All
+                    </Button>
+                  </Tooltip>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </Group>
         </Paper>
       </motion.div>
 
-      {/* Results Count */}
+      {/* Results Count + Active Filters */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3, delay: 0.2 }}
       >
-        <Group justify="space-between" mb="md">
+        <Group justify="space-between" mb="md" wrap="wrap">
           <Group gap="xs">
             <Text size="sm" c="dimmed">
               Showing
             </Text>
             <Badge variant="light" color="blue" size="lg">
-              {statusFilteredCompanies.length}
+              {filteredCompanies.length}
             </Badge>
             <Text size="sm" c="dimmed">
               of {companiesData?.pagination?.total || 0} companies
             </Text>
           </Group>
 
-          {hasActiveFilters && (
-            <Group gap="xs">
-              {selectedStatuses.map((status) => (
-                <Badge
-                  key={status}
-                  variant="outline"
-                  color={
-                    status === 'hot'
-                      ? 'red'
-                      : status === 'warm'
-                      ? 'orange'
-                      : 'gray'
-                  }
-                  rightSection={
-                    <ActionIcon
-                      size="xs"
-                      variant="transparent"
-                      onClick={() => toggleStatus(status)}
-                    >
-                      <IconX size={10} />
-                    </ActionIcon>
-                  }
-                >
-                  {status}
-                </Badge>
-              ))}
-              {selectedPartners.map((partner) => (
-                <Badge
-                  key={partner}
-                  variant="outline"
-                  color="green"
-                  rightSection={
-                    <ActionIcon
-                      size="xs"
-                      variant="transparent"
-                      onClick={() =>
-                        setSelectedPartners((prev) => prev.filter((p) => p !== partner))
+          {/* Active Filter Badges */}
+          <AnimatePresence>
+            {columnFilters.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <Group gap="xs">
+                  <IconFilter size={14} style={{ color: 'rgba(255,255,255,0.4)' }} />
+                  {columnFilters.map((filter) => (
+                    <Badge
+                      key={filter.column}
+                      variant="outline"
+                      color={getFilterColor(filter.column)}
+                      rightSection={
+                        <ActionIcon
+                          size="xs"
+                          variant="transparent"
+                          onClick={() => clearColumnFilter(filter.column)}
+                        >
+                          <IconX size={10} />
+                        </ActionIcon>
                       }
                     >
-                      <IconX size={10} />
-                    </ActionIcon>
-                  }
-                >
-                  {partner}
-                </Badge>
-              ))}
-              {minIcpScore > 0 && (
-                <Badge
-                  variant="outline"
-                  color="violet"
-                  rightSection={
-                    <ActionIcon
-                      size="xs"
-                      variant="transparent"
-                      onClick={() => setMinIcpScore(0)}
-                    >
-                      <IconX size={10} />
-                    </ActionIcon>
-                  }
-                >
-                  ICP {'>'}= {minIcpScore}
-                </Badge>
-              )}
-            </Group>
-          )}
+                      {getFilterLabel(filter.column)}:{' '}
+                      {filter.values.length === 1
+                        ? filter.values[0]
+                        : `${filter.values.length} selected`}
+                    </Badge>
+                  ))}
+                </Group>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </Group>
       </motion.div>
+
+      {/* Hint about column filters */}
+      {!hasActiveFilters && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3, delay: 0.3 }}
+        >
+          <Text size="xs" c="dimmed" mb="sm">
+            <IconFilter
+              size={12}
+              style={{ marginRight: 4, verticalAlign: 'middle' }}
+            />
+            Tip: Click the dropdown arrow on column headers (Status, Vertical,
+            Partner Tech) to filter like Excel
+          </Text>
+        </motion.div>
+      )}
 
       {/* Company Table */}
       <motion.div
@@ -495,11 +393,15 @@ export function CompaniesPage() {
         transition={{ duration: 0.4, delay: 0.3 }}
       >
         <TargetList
-          companies={statusFilteredCompanies}
+          companies={filteredCompanies}
           isLoading={isLoading}
           pagination={companiesData?.pagination}
           onPageChange={handlePageChange}
           onEnrichCompany={handleEnrichCompany}
+          columnFilters={columnFilters}
+          onColumnFilterChange={handleColumnFilterChange}
+          availableVerticals={availableVerticals}
+          availablePartnerTechs={availablePartnerTechs}
         />
       </motion.div>
     </Container>

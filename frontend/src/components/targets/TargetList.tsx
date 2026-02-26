@@ -2,10 +2,10 @@
  * TargetList Component
  *
  * Premium data table for displacement targets using TanStack Table.
- * Features sorting, filtering, virtualization hints, and glassmorphism design.
+ * Features Excel-style column filters, sorting, and glassmorphism design.
  */
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -22,8 +22,6 @@ import {
 } from '@tanstack/react-table';
 import {
   Paper,
-  TextInput,
-  Button,
   Group,
   Text,
   Badge,
@@ -32,29 +30,41 @@ import {
   Menu,
   Checkbox,
   Pagination,
-  SegmentedControl,
   Avatar,
-  Anchor,
+  Popover,
+  Stack,
+  Button,
+  ScrollArea,
+  Divider,
+  UnstyledButton,
 } from '@mantine/core';
 import {
-  IconSearch,
-  IconFilter,
-  IconSortAscending,
-  IconSortDescending,
   IconEye,
   IconRefresh,
   IconExternalLink,
   IconDownload,
   IconColumns,
-  IconDotsVertical,
   IconArrowUp,
   IconArrowDown,
   IconSelector,
+  IconFilter,
+  IconX,
+  IconChevronDown,
+  IconCheck,
 } from '@tabler/icons-react';
-import type { Company, FilterState } from '@/types';
-import { StatusBadge, getStatusFromScore } from '@/components/common/StatusBadge';
+import type { Company } from '@/types';
+import { StatusBadge } from '@/components/common/StatusBadge';
 import { ScoreGauge } from '@/components/common/ScoreGauge';
 import { TableRowSkeleton } from '@/components/common/LoadingSpinner';
+
+// =============================================================================
+// Types
+// =============================================================================
+
+export interface ColumnFilter {
+  column: string;
+  values: string[];
+}
 
 interface TargetListProps {
   companies: Company[];
@@ -66,17 +76,293 @@ interface TargetListProps {
     total_pages: number;
   };
   onPageChange?: (page: number) => void;
-  onFiltersChange?: (filters: FilterState) => void;
   onEnrichCompany?: (domain: string) => void;
+  // Column filter callbacks
+  columnFilters?: ColumnFilter[];
+  onColumnFilterChange?: (column: string, values: string[]) => void;
+  // Available filter options (derived from all data, not just current page)
+  availableVerticals?: string[];
+  availablePartnerTechs?: string[];
 }
+
+// =============================================================================
+// Column Filter Header Component
+// =============================================================================
+
+interface FilterableHeaderProps {
+  column: any;
+  label: string;
+  filterKey: string;
+  options: string[];
+  selectedValues: string[];
+  onFilterChange: (values: string[]) => void;
+  colorMap?: Record<string, string>;
+}
+
+function FilterableHeader({
+  column,
+  label,
+  filterKey,
+  options,
+  selectedValues,
+  onFilterChange,
+  colorMap,
+}: FilterableHeaderProps) {
+  const [opened, setOpened] = useState(false);
+  const hasFilter = selectedValues.length > 0;
+
+  const toggleValue = (value: string) => {
+    if (selectedValues.includes(value)) {
+      onFilterChange(selectedValues.filter((v) => v !== value));
+    } else {
+      onFilterChange([...selectedValues, value]);
+    }
+  };
+
+  const clearFilter = () => {
+    onFilterChange([]);
+    setOpened(false);
+  };
+
+  const selectAll = () => {
+    onFilterChange([...options]);
+  };
+
+  return (
+    <Group gap={4} wrap="nowrap">
+      {/* Sort button */}
+      <UnstyledButton
+        onClick={() => column.toggleSorting()}
+        className="flex items-center gap-1 hover:text-white transition-colors"
+      >
+        <span>{label}</span>
+        {{
+          asc: <IconArrowUp size={12} />,
+          desc: <IconArrowDown size={12} />,
+        }[column.getIsSorted() as string] ?? (
+          <IconSelector size={12} className="opacity-30" />
+        )}
+      </UnstyledButton>
+
+      {/* Filter dropdown */}
+      <Popover
+        opened={opened}
+        onChange={setOpened}
+        position="bottom-start"
+        shadow="lg"
+        width={220}
+      >
+        <Popover.Target>
+          <ActionIcon
+            variant={hasFilter ? 'filled' : 'subtle'}
+            size="xs"
+            color={hasFilter ? 'blue' : 'gray'}
+            onClick={() => setOpened(!opened)}
+          >
+            {hasFilter ? (
+              <Badge size="xs" circle variant="filled" color="blue">
+                {selectedValues.length}
+              </Badge>
+            ) : (
+              <IconChevronDown size={12} />
+            )}
+          </ActionIcon>
+        </Popover.Target>
+
+        <Popover.Dropdown
+          style={{
+            background: 'rgba(30, 30, 40, 0.98)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(12px)',
+          }}
+        >
+          <Stack gap="xs">
+            <Group justify="space-between">
+              <Text size="xs" fw={600} c="white">
+                Filter by {label}
+              </Text>
+              {hasFilter && (
+                <ActionIcon
+                  variant="subtle"
+                  size="xs"
+                  onClick={clearFilter}
+                  c="dimmed"
+                >
+                  <IconX size={12} />
+                </ActionIcon>
+              )}
+            </Group>
+
+            <Divider color="white/10" />
+
+            <Group gap="xs">
+              <Button
+                size="compact-xs"
+                variant="subtle"
+                color="gray"
+                onClick={selectAll}
+              >
+                Select All
+              </Button>
+              <Button
+                size="compact-xs"
+                variant="subtle"
+                color="gray"
+                onClick={clearFilter}
+              >
+                Clear
+              </Button>
+            </Group>
+
+            <ScrollArea.Autosize mah={200}>
+              <Stack gap={4}>
+                {options.map((option) => {
+                  const isSelected = selectedValues.includes(option);
+                  const color = colorMap?.[option];
+
+                  return (
+                    <UnstyledButton
+                      key={option}
+                      onClick={() => toggleValue(option)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        padding: '6px 8px',
+                        borderRadius: 4,
+                        background: isSelected
+                          ? 'rgba(59, 130, 246, 0.2)'
+                          : 'transparent',
+                        border: isSelected
+                          ? '1px solid rgba(59, 130, 246, 0.4)'
+                          : '1px solid transparent',
+                        transition: 'all 0.15s ease',
+                      }}
+                      className="hover:bg-white/5"
+                    >
+                      <Checkbox
+                        checked={isSelected}
+                        onChange={() => {}}
+                        size="xs"
+                        styles={{
+                          input: {
+                            cursor: 'pointer',
+                          },
+                        }}
+                      />
+                      {color ? (
+                        <Badge size="xs" color={color} variant="light">
+                          {option}
+                        </Badge>
+                      ) : (
+                        <Text size="xs" c="white/80">
+                          {option}
+                        </Text>
+                      )}
+                    </UnstyledButton>
+                  );
+                })}
+              </Stack>
+            </ScrollArea.Autosize>
+          </Stack>
+        </Popover.Dropdown>
+      </Popover>
+    </Group>
+  );
+}
+
+// =============================================================================
+// Simple Sort Header (no filter)
+// =============================================================================
+
+interface SortHeaderProps {
+  column: any;
+  label: string;
+}
+
+function SortHeader({ column, label }: SortHeaderProps) {
+  return (
+    <UnstyledButton
+      onClick={() => column.toggleSorting()}
+      className="flex items-center gap-1 hover:text-white transition-colors"
+    >
+      <span>{label}</span>
+      {{
+        asc: <IconArrowUp size={12} />,
+        desc: <IconArrowDown size={12} />,
+      }[column.getIsSorted() as string] ?? (
+        <IconSelector size={12} className="opacity-30" />
+      )}
+    </UnstyledButton>
+  );
+}
+
+// =============================================================================
+// Partner Tech Cell with Tooltip
+// =============================================================================
+
+function PartnerTechCell({ techs }: { techs: string[] }) {
+  if (techs.length === 0) {
+    return (
+      <Text size="xs" c="dimmed">
+        ---
+      </Text>
+    );
+  }
+
+  if (techs.length === 1) {
+    return (
+      <Badge size="xs" variant="light" color="green">
+        {techs[0]}
+      </Badge>
+    );
+  }
+
+  return (
+    <Tooltip
+      label={
+        <Stack gap={4}>
+          {techs.map((tech) => (
+            <Text key={tech} size="xs">
+              {tech}
+            </Text>
+          ))}
+        </Stack>
+      }
+      withArrow
+      multiline
+    >
+      <Group gap={4}>
+        <Badge size="xs" variant="light" color="green">
+          {techs[0]}
+        </Badge>
+        <Badge
+          size="xs"
+          variant="light"
+          color="gray"
+          style={{ cursor: 'help' }}
+        >
+          +{techs.length - 1}
+        </Badge>
+      </Group>
+    </Tooltip>
+  );
+}
+
+// =============================================================================
+// Main TargetList Component
+// =============================================================================
 
 export function TargetList({
   companies,
   isLoading = false,
   pagination,
   onPageChange,
-  onFiltersChange,
   onEnrichCompany,
+  columnFilters = [],
+  onColumnFilterChange,
+  availableVerticals = [],
+  availablePartnerTechs = [],
 }: TargetListProps) {
   const navigate = useNavigate();
 
@@ -84,19 +370,58 @@ export function TargetList({
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'icp_score', desc: true },
   ]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [globalFilter, setGlobalFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+
+  // Get filter values for a column
+  const getFilterValues = useCallback(
+    (column: string) => {
+      const filter = columnFilters.find((f) => f.column === column);
+      return filter?.values || [];
+    },
+    [columnFilters]
+  );
+
+  // Handle filter change for a column
+  const handleFilterChange = useCallback(
+    (column: string, values: string[]) => {
+      onColumnFilterChange?.(column, values);
+    },
+    [onColumnFilterChange]
+  );
+
+  // Extract unique values from current data for fallback
+  const uniqueVerticals = useMemo(() => {
+    if (availableVerticals.length > 0) return availableVerticals;
+    const set = new Set<string>();
+    companies.forEach((c) => {
+      if (c.vertical) set.add(c.vertical);
+    });
+    return Array.from(set).sort();
+  }, [companies, availableVerticals]);
+
+  const uniquePartnerTechs = useMemo(() => {
+    if (availablePartnerTechs.length > 0) return availablePartnerTechs;
+    const set = new Set<string>();
+    companies.forEach((c) => {
+      c.partner_tech?.forEach((t) => set.add(t));
+    });
+    return Array.from(set).sort();
+  }, [companies, availablePartnerTechs]);
+
+  // Status options with colors
+  const statusOptions = ['hot', 'warm', 'cold'];
+  const statusColors: Record<string, string> = {
+    hot: 'red',
+    warm: 'orange',
+    cold: 'gray',
+  };
 
   // Define columns
   const columns = useMemo<ColumnDef<Company>[]>(
     () => [
       {
         accessorKey: 'company_name',
-        header: ({ column }) => (
-          <SortHeader column={column} label="Company" />
-        ),
+        header: ({ column }) => <SortHeader column={column} label="Company" />,
         cell: ({ row }) => {
           const company = row.original;
           return (
@@ -107,7 +432,9 @@ export function TargetList({
                 color="blue"
                 className="flex-shrink-0"
               >
-                {(company.company_name || company.domain).charAt(0).toUpperCase()}
+                {(company.company_name || company.domain)
+                  .charAt(0)
+                  .toUpperCase()}
               </Avatar>
               <div className="min-w-0">
                 <Text size="sm" fw={500} c="white" truncate>
@@ -146,51 +473,59 @@ export function TargetList({
       },
       {
         accessorKey: 'status',
-        header: 'Status',
+        header: ({ column }) => (
+          <FilterableHeader
+            column={column}
+            label="Status"
+            filterKey="status"
+            options={statusOptions}
+            selectedValues={getFilterValues('status')}
+            onFilterChange={(values) => handleFilterChange('status', values)}
+            colorMap={statusColors}
+          />
+        ),
         cell: ({ getValue }) => {
           const status = getValue<Company['status']>();
           return <StatusBadge status={status} size="sm" />;
         },
-        size: 100,
-        filterFn: (row, _columnId, filterValue) => {
-          if (!filterValue || filterValue === 'all') return true;
-          return row.original.status === filterValue;
-        },
+        size: 120,
       },
       {
         accessorKey: 'vertical',
         header: ({ column }) => (
-          <SortHeader column={column} label="Vertical" />
+          <FilterableHeader
+            column={column}
+            label="Vertical"
+            filterKey="vertical"
+            options={uniqueVerticals}
+            selectedValues={getFilterValues('vertical')}
+            onFilterChange={(values) => handleFilterChange('vertical', values)}
+          />
         ),
         cell: ({ getValue }) => (
           <Text size="sm" c="white/70">
             {getValue<string>() || '---'}
           </Text>
         ),
-        size: 120,
+        size: 140,
       },
       {
         accessorKey: 'partner_tech',
-        header: 'Partner Tech',
+        header: ({ column }) => (
+          <FilterableHeader
+            column={column}
+            label="Partner Tech"
+            filterKey="partner_tech"
+            options={uniquePartnerTechs}
+            selectedValues={getFilterValues('partner_tech')}
+            onFilterChange={(values) =>
+              handleFilterChange('partner_tech', values)
+            }
+          />
+        ),
         cell: ({ getValue }) => {
           const techs = getValue<string[]>() || [];
-          if (techs.length === 0) {
-            return <Text size="xs" c="dimmed">---</Text>;
-          }
-          return (
-            <Group gap={4}>
-              {techs.slice(0, 2).map((tech) => (
-                <Badge key={tech} size="xs" variant="light" color="green">
-                  {tech}
-                </Badge>
-              ))}
-              {techs.length > 2 && (
-                <Badge size="xs" variant="light" color="gray">
-                  +{techs.length - 2}
-                </Badge>
-              )}
-            </Group>
-          );
+          return <PartnerTechCell techs={techs} />;
         },
         size: 150,
       },
@@ -201,13 +536,14 @@ export function TargetList({
         ),
         cell: ({ getValue }) => {
           const score = getValue<number>();
-          if (!score) return <Text size="xs" c="dimmed">---</Text>;
+          if (!score)
+            return (
+              <Text size="xs" c="dimmed">
+                ---
+              </Text>
+            );
           return (
-            <Text
-              size="sm"
-              fw={500}
-              c={score >= 50 ? 'green.4' : 'white/60'}
-            >
+            <Text size="sm" fw={500} c={score >= 50 ? 'green.4' : 'white/60'}>
               {score}
             </Text>
           );
@@ -227,11 +563,17 @@ export function TargetList({
             );
           }
           const d = new Date(date);
-          const daysSince = Math.floor((Date.now() - d.getTime()) / (1000 * 60 * 60 * 24));
+          const daysSince = Math.floor(
+            (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24)
+          );
           return (
             <Tooltip label={d.toLocaleString()}>
               <Text size="xs" c={daysSince > 7 ? 'yellow.4' : 'dimmed'}>
-                {daysSince === 0 ? 'Today' : daysSince === 1 ? 'Yesterday' : `${daysSince}d ago`}
+                {daysSince === 0
+                  ? 'Today'
+                  : daysSince === 1
+                  ? 'Yesterday'
+                  : `${daysSince}d ago`}
               </Text>
             </Tooltip>
           );
@@ -245,7 +587,7 @@ export function TargetList({
           const company = row.original;
           return (
             <Group gap="xs" justify="flex-end" wrap="nowrap">
-              <Tooltip label="View Details">
+              <Tooltip label="View Intelligence">
                 <ActionIcon
                   variant="subtle"
                   size="sm"
@@ -287,40 +629,44 @@ export function TargetList({
         size: 100,
       },
     ],
-    [navigate, onEnrichCompany]
+    [
+      navigate,
+      onEnrichCompany,
+      getFilterValues,
+      handleFilterChange,
+      uniqueVerticals,
+      uniquePartnerTechs,
+    ]
   );
-
-  // Apply status filter
-  const filteredData = useMemo(() => {
-    if (statusFilter === 'all') return companies;
-    return companies.filter((c) => c.status === statusFilter);
-  }, [companies, statusFilter]);
 
   // Create table instance
   const table = useReactTable({
-    data: filteredData,
+    data: companies,
     columns,
     state: {
       sorting,
-      columnFilters,
       columnVisibility,
-      globalFilter,
     },
     onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
-    onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     manualPagination: !!pagination,
     pageCount: pagination?.total_pages || -1,
   });
 
-  const handleRowClick = useCallback((domain: string) => {
-    navigate(`/company/${domain}`);
-  }, [navigate]);
+  const handleRowClick = useCallback(
+    (domain: string) => {
+      navigate(`/company/${domain}`);
+    },
+    [navigate]
+  );
+
+  // Count active filters
+  const activeFilterCount = columnFilters.reduce(
+    (acc, f) => acc + (f.values.length > 0 ? 1 : 0),
+    0
+  );
 
   return (
     <motion.div
@@ -332,38 +678,18 @@ export function TargetList({
         radius="lg"
         className="bg-white/5 border border-white/10 overflow-hidden"
       >
-        {/* Toolbar */}
-        <div className="p-4 border-b border-white/10">
-          <Group justify="space-between" wrap="wrap" gap="md">
-            {/* Search */}
-            <TextInput
-              placeholder="Search companies..."
-              leftSection={<IconSearch size={16} />}
-              value={globalFilter}
-              onChange={(e) => setGlobalFilter(e.target.value)}
-              className="flex-1 min-w-[200px] max-w-[400px]"
-              classNames={{
-                input: 'bg-white/5 border-white/10 text-white placeholder:text-white/40',
-              }}
-            />
+        {/* Minimal Toolbar - just column visibility and export */}
+        <div className="p-3 border-b border-white/10">
+          <Group justify="space-between">
+            <Group gap="xs">
+              {activeFilterCount > 0 && (
+                <Badge variant="light" color="blue" size="sm">
+                  {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''}{' '}
+                  active
+                </Badge>
+              )}
+            </Group>
 
-            {/* Status filter */}
-            <SegmentedControl
-              value={statusFilter}
-              onChange={setStatusFilter}
-              size="xs"
-              data={[
-                { label: 'All', value: 'all' },
-                { label: 'Hot', value: 'hot' },
-                { label: 'Warm', value: 'warm' },
-                { label: 'Cold', value: 'cold' },
-              ]}
-              classNames={{
-                root: 'bg-white/5',
-              }}
-            />
-
-            {/* Actions */}
             <Group gap="xs">
               {/* Column visibility */}
               <Menu shadow="md" width={200}>
@@ -447,7 +773,10 @@ export function TargetList({
               ) : table.getRowModel().rows.length === 0 ? (
                 // Empty state
                 <tr>
-                  <td colSpan={columns.length} className="px-4 py-12 text-center">
+                  <td
+                    colSpan={columns.length}
+                    className="px-4 py-12 text-center"
+                  >
                     <Text c="dimmed">No companies found</Text>
                   </td>
                 </tr>
@@ -493,8 +822,8 @@ export function TargetList({
             <Group justify="space-between">
               <Text size="sm" c="dimmed">
                 Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
-                {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
-                {pagination.total} results
+                {Math.min(pagination.page * pagination.limit, pagination.total)}{' '}
+                of {pagination.total} results
               </Text>
               <Pagination
                 value={pagination.page}
@@ -511,26 +840,5 @@ export function TargetList({
         )}
       </Paper>
     </motion.div>
-  );
-}
-
-// Sort header component
-interface SortHeaderProps {
-  column: any;
-  label: string;
-}
-
-function SortHeader({ column, label }: SortHeaderProps) {
-  return (
-    <button
-      onClick={() => column.toggleSorting()}
-      className="flex items-center gap-1 hover:text-white transition-colors"
-    >
-      <span>{label}</span>
-      {{
-        asc: <IconArrowUp size={12} />,
-        desc: <IconArrowDown size={12} />,
-      }[column.getIsSorted() as string] ?? <IconSelector size={12} className="opacity-30" />}
-    </button>
   );
 }

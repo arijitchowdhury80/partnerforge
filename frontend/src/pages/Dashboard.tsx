@@ -333,7 +333,6 @@ export function Dashboard() {
             isLoading={companiesLoading}
             pagination={companies?.pagination}
             onPageChange={setPage}
-            onFiltersChange={setFilters}
           />
         </Paper>
       </motion.div>
