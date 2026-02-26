@@ -85,6 +85,9 @@ export function Dashboard() {
   // Check if a specific partner is selected (not "All Partners")
   const hasPartnerSelected = selection.partner.key !== 'all';
 
+  // Get proper tech name for filtering (moved up so queries can use it)
+  const partnerTechName = getSelectionTechName(selection);
+
   // View mode for distribution grid (Partner/Product/Vertical/Account)
   const [viewMode, setViewMode] = useState<ViewMode>('product');
 
@@ -99,12 +102,29 @@ export function Dashboard() {
     targets: [],
   });
 
-  // All targets for the distribution grid
+  // All targets for the distribution grid - filtered by partner when selected
   const { data: allTargetsData } = useQuery({
-    queryKey: ['allTargets', selectedPartner.key],
+    queryKey: ['allTargets', selectedPartner.key, partnerTechName],
+    queryFn: async () => {
+      const result = await getTargets({
+        limit: 5000,
+        partner: partnerTechName, // Filter by selected partner
+      });
+      return result.targets;
+    },
+  });
+
+  // Get unique partners from actual data (for "Select Partner" buttons)
+  const { data: allPartnersData } = useQuery({
+    queryKey: ['uniquePartners'],
     queryFn: async () => {
       const result = await getTargets({ limit: 5000 });
-      return result.targets;
+      // Extract unique partner_tech values
+      const uniquePartners = new Set<string>();
+      result.targets.forEach(t => {
+        if (t.partner_tech) uniquePartners.add(t.partner_tech);
+      });
+      return Array.from(uniquePartners).sort();
     },
   });
 
