@@ -3,7 +3,7 @@
 **Version:** 2.0
 **Last Updated:** 2026-02-25
 **Status:** Canonical Reference
-**Documents:** 19 architecture docs (~16,200 lines)
+**Documents:** 23 architecture docs (~22,600 lines)
 
 ---
 

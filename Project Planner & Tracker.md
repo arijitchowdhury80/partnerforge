@@ -561,6 +561,7 @@ Following architecture pressure testing, the following P1 capabilities were iden
 | **Multi-Tenancy & RBAC** | `docs/MULTI_TENANCY_RBAC.md` | P1 | ✅ Architecture Complete |
 | **API Cost Tracking** | `docs/API_COST_TRACKING.md` | P1 | ✅ Architecture Complete |
 | **Observability & Metrics** | `docs/OBSERVABILITY_METRICS.md` | P1 | ✅ Architecture Complete |
+| **CSV Upload & List Import** | `docs/CSV_UPLOAD_ARCHITECTURE.md` | P0 | ✅ Architecture Complete |
 
 ---
 
@@ -732,6 +733,60 @@ Following architecture pressure testing, the following P1 capabilities were iden
 | Implement health check endpoints | ✅ Done | P0 |
 | Implement distributed tracing | ⚪ Not Started | P2 |
 | Set up PagerDuty integration | ⚪ Not Started | P2 |
+
+---
+
+### P0.5: CSV Upload & List Import (CRITICAL)
+
+**Why Critical:** Marketing teams have sanitized Salesforce/Demandbase lists ready for enrichment. This is an **alternative entry point** to BuiltWith discovery.
+
+**Reference:** `docs/CSV_UPLOAD_ARCHITECTURE.md` (~1,245 lines)
+
+**User Journey:**
+```
+1. Upload CSV (Salesforce export) → 2. Auto-detect columns → 3. User confirms mapping
+       ↓
+4. Validate rows → 5. Show valid/invalid/duplicate → 6. Confirm & queue
+       ↓
+7. Enrichment (15 modules) → 8. Real-time progress → 9. Results ready
+```
+
+**Key Features:**
+- Auto-detect column mapping (domain, company_name, revenue, industry, etc.)
+- Support for Salesforce, Demandbase, 6sense, HubSpot exports
+- Large file chunking (up to 50MB)
+- Duplicate detection (internal + external)
+- Per-row enrichment status tracking
+- Preserve original CSV data in `raw_data` JSONB
+
+**Database Tables:**
+- `uploaded_lists` - Upload metadata, status, statistics
+- `uploaded_list_rows` - Individual rows with validation status
+- `column_mapping_presets` - Reusable mapping configurations
+- `upload_processing_queue` - Chunked processing for large files
+
+**Implementation Tasks:**
+
+| Task | Status | Priority |
+|------|--------|----------|
+| Create `uploaded_lists` table | ⚪ Not Started | P0 |
+| Create `uploaded_list_rows` table | ⚪ Not Started | P0 |
+| Create SQLAlchemy models | ⚪ Not Started | P0 |
+| CSVParserService (encoding, delimiter detection) | ⚪ Not Started | P0 |
+| ColumnMappingService (auto-detect) | ⚪ Not Started | P0 |
+| ValidationService (domain required, dedup) | ⚪ Not Started | P0 |
+| StorageService (S3/local) | ⚪ Not Started | P0 |
+| UploadEnrichmentBridge | ⚪ Not Started | P0 |
+| POST /api/v1/uploads endpoint | ⚪ Not Started | P0 |
+| GET /api/v1/uploads/{id}/preview endpoint | ⚪ Not Started | P0 |
+| POST /api/v1/uploads/{id}/confirm endpoint | ⚪ Not Started | P0 |
+| CSVUploader React component | ⚪ Not Started | P0 |
+| ColumnMapper React component | ⚪ Not Started | P0 |
+| UploadList dashboard | ⚪ Not Started | P0 |
+| ChunkedUploadProcessor | ⚪ Not Started | P1 |
+| Column mapping presets | ⚪ Not Started | P1 |
+
+---
 
 ### Key Corner Cases Identified
 
