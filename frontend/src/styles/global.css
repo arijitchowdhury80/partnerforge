@@ -9,10 +9,10 @@
   --algolia-purple: #5468ff;
   --algolia-gray: #21243d;
 
-  /* Signal Status (3 tiers) */
-  --color-hot: #ef4444;
-  --color-warm: #f97316;
-  --color-cold: #6b7280;
+  /* Signal Status (3 tiers) - BOLD, VISIBLE COLORS */
+  --color-hot: #dc2626;
+  --color-warm: #ea580c;
+  --color-cold: #64748b;
 
   /* Margin Zones */
   --margin-green: #22c55e;
@@ -23,6 +23,23 @@
   --fresh: #22c55e;
   --stale: #eab308;
   --expired: #ef4444;
+
+  /* Enterprise-Grade Typography */
+  --font-size-base: 16px;
+  --font-size-sm: 14px;
+  --font-size-xs: 13px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+}
+
+/* Base font size for readability */
+html {
+  font-size: 16px;
+}
+
+body {
+  font-size: var(--font-size-base);
+  line-height: 1.6;
 }
 
 /* Scrollbar Styling */

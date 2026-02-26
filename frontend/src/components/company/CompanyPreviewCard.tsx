@@ -7,6 +7,7 @@
 import { Paper, Group, Stack, Text, Badge, Progress, Divider, Avatar } from '@mantine/core';
 import { IconFlame, IconTrendingUp, IconSnowflake, IconWorld, IconBuilding } from '@tabler/icons-react';
 import type { Company } from '@/types';
+import { CompanyLogo } from '@/components/ui/CompanyLogo';
 
 const ALGOLIA_BLUE = '#003DFF';
 const GRAY_500 = '#64748b';
@@ -53,13 +54,12 @@ export function CompanyPreviewCard({ company }: CompanyPreviewCardProps) {
     >
       {/* Header */}
       <Group gap="sm" mb="sm">
-        <Avatar
-          src={`https://logo.clearbit.com/${company.domain}`}
+        <CompanyLogo
+          domain={company.domain}
+          companyName={company.company_name}
           size={40}
           radius="md"
-        >
-          {company.company_name?.charAt(0) || '?'}
-        </Avatar>
+        />
         <div style={{ flex: 1 }}>
           <Text size="sm" fw={600} c={GRAY_700} lineClamp={1}>
             {company.company_name}

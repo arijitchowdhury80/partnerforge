@@ -20,12 +20,14 @@ import {
   TextInput,
   Tooltip,
   ActionIcon,
+  Select,
 } from '@mantine/core';
 import {
   IconSearch,
   IconUpload,
   IconX,
   IconFilter,
+  IconChevronDown,
 } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -214,7 +216,7 @@ export function CompaniesPage() {
                 {VERSION}
               </Badge>
             </Group>
-            <Text c="dimmed" size="sm" mt={4}>
+            <Text c="#64748b" size="sm" mt={4}>
               Click column header dropdowns (Status, Vertical, Partner Tech) to filter like Excel
             </Text>
           </div>
@@ -239,6 +241,7 @@ export function CompaniesPage() {
           p="md"
           mb="md"
           withBorder
+          style={{ background: 'white' }}
         >
           <Group gap="md">
             <TextInput
@@ -251,6 +254,46 @@ export function CompaniesPage() {
               }}
               style={{ flex: 1 }}
               size="md"
+              styles={{
+                input: {
+                  backgroundColor: 'white',
+                  borderColor: '#e2e8f0',
+                  color: '#334155',
+                  '&::placeholder': {
+                    color: '#94a3b8',
+                  },
+                },
+              }}
+            />
+
+            {/* Partner Tech Filter */}
+            <Select
+              placeholder="All Partners"
+              data={[
+                { value: '', label: 'All Partners' },
+                { value: 'Adobe Experience Manager', label: 'Adobe AEM' },
+                { value: 'Adobe Commerce', label: 'Adobe Commerce' },
+                { value: 'Amplience', label: 'Amplience' },
+                { value: 'Spryker', label: 'Spryker' },
+              ]}
+              value={columnFilters.find(f => f.column === 'partner_tech')?.values[0] || ''}
+              onChange={(value) => {
+                if (value) {
+                  handleColumnFilterChange('partner_tech', [value]);
+                } else {
+                  handleColumnFilterChange('partner_tech', []);
+                }
+              }}
+              w={180}
+              size="md"
+              rightSection={<IconChevronDown size={14} />}
+              styles={{
+                input: {
+                  backgroundColor: 'white',
+                  borderColor: '#e2e8f0',
+                  color: '#334155',
+                },
+              }}
             />
 
             {/* Clear All Filters */}
@@ -288,13 +331,13 @@ export function CompaniesPage() {
       >
         <Group justify="space-between" mb="md" wrap="wrap">
           <Group gap="xs">
-            <Text size="sm" c="dimmed">
+            <Text size="sm" c="#64748b">
               Showing
             </Text>
             <Badge variant="light" color="blue" size="lg">
               {filteredCompanies.length}
             </Badge>
-            <Text size="sm" c="dimmed">
+            <Text size="sm" c="#64748b">
               of {companiesData?.pagination?.total || 0} companies
             </Text>
           </Group>

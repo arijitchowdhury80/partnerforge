@@ -37,8 +37,12 @@ import {
   IconCurrencyDollar,
   IconMapPin,
   IconCalendar,
+  IconPin,
+  IconPinnedOff,
 } from '@tabler/icons-react';
+import { useState } from 'react';
 import type { Company } from '@/types';
+import { CompanyLogo } from '@/components/ui/CompanyLogo';
 
 const ALGOLIA_BLUE = '#003DFF';
 const GRAY_50 = '#f8fafc';
@@ -62,6 +66,8 @@ interface CompanyDrawerProps {
 }
 
 export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDrawerProps) {
+  const [isPinned, setIsPinned] = useState(false);
+
   if (!company) return null;
 
   const status = STATUS_CONFIG[company.status] || STATUS_CONFIG.cold;
@@ -89,12 +95,38 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
       size="lg"
       title={null}
       padding={0}
+      closeOnClickOutside={!isPinned}
+      withOverlay={!isPinned}
+      lockScroll={!isPinned}
+      trapFocus={!isPinned}
       styles={{
-        content: { background: GRAY_50 },
+        content: {
+          background: GRAY_50,
+          boxShadow: isPinned ? '-4px 0 20px rgba(0,0,0,0.15)' : undefined,
+        },
         header: { display: 'none' },
         body: { padding: 0, height: '100%' },
       }}
     >
+      {/* Pinned indicator banner */}
+      {isPinned && (
+        <div
+          style={{
+            background: ALGOLIA_BLUE,
+            color: 'white',
+            padding: '6px 20px',
+            fontSize: 12,
+            fontWeight: 500,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+          }}
+        >
+          <IconPin size={14} />
+          <span>Pinned — Click anywhere on the page to continue researching</span>
+        </div>
+      )}
+
       {/* Header */}
       <div
         style={{
@@ -102,19 +134,18 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
           borderBottom: `1px solid ${GRAY_200}`,
           padding: 20,
           position: 'sticky',
-          top: 0,
+          top: isPinned ? 0 : 0,
           zIndex: 10,
         }}
       >
         <Group justify="space-between" mb="md">
           <Group gap="md">
-            <Avatar
-              src={`https://logo.clearbit.com/${company.domain}`}
+            <CompanyLogo
+              domain={company.domain}
+              companyName={company.company_name}
               size={56}
               radius="md"
-            >
-              {company.company_name?.charAt(0) || '?'}
-            </Avatar>
+            />
             <div>
               <Text size="lg" fw={600} c={GRAY_900}>
                 {company.company_name}
@@ -141,6 +172,15 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
             >
               {status.label}
             </Badge>
+            <Tooltip label={isPinned ? 'Unpin drawer' : 'Pin drawer for side-by-side view'}>
+              <ActionIcon
+                variant={isPinned ? 'filled' : 'subtle'}
+                color={isPinned ? 'blue' : 'gray'}
+                onClick={() => setIsPinned(!isPinned)}
+              >
+                {isPinned ? <IconPinnedOff size={18} /> : <IconPin size={18} />}
+              </ActionIcon>
+            </Tooltip>
             <ActionIcon variant="subtle" color="gray" onClick={onClose}>
               ✕
             </ActionIcon>

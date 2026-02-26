@@ -85,6 +85,10 @@ export function Sidebar() {
               styles={{
                 root: {
                   borderRadius: 'var(--mantine-radius-md)',
+                  backgroundColor: 'transparent',
+                  '&:hover': {
+                    backgroundColor: '#f1f5f9',
+                  },
                   '&[data-active]': {
                     backgroundColor: 'rgba(0, 61, 255, 0.1)',
                     borderLeft: '3px solid var(--mantine-color-blue-6)',
@@ -120,6 +124,10 @@ export function Sidebar() {
               styles={{
                 root: {
                   borderRadius: 'var(--mantine-radius-md)',
+                  backgroundColor: 'transparent',
+                  '&:hover': {
+                    backgroundColor: '#f1f5f9',
+                  },
                 },
                 label: {
                   color: '#334155',

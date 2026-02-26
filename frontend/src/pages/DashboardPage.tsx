@@ -381,7 +381,7 @@ export function DashboardPage() {
         <Grid.Col span={{ base: 12, md: 6 }}>
           <Paper p="md" withBorder>
             <Tooltip label="Distribution of targets by partner technology stack" withArrow>
-              <Text fw={500} mb="md" style={{ cursor: 'help' }}>Partner Technology Breakdown</Text>
+              <Text fw={600} size="lg" mb="md" style={{ cursor: 'help' }}>Partner Technology Breakdown</Text>
             </Tooltip>
             <BarList
               data={[
@@ -431,8 +431,8 @@ export function DashboardPage() {
       {/* Data Table */}
       <Paper p="md" withBorder>
         <Group justify="space-between" mb="md">
-          <Text fw={500}>Displacement Targets</Text>
-          <Badge variant="light">
+          <Text fw={600} size="lg">Displacement Targets</Text>
+          <Badge variant="filled" color="blue" size="lg" style={{ fontWeight: 600 }}>
             {companies?.pagination.total || 0} companies
           </Badge>
         </Group>

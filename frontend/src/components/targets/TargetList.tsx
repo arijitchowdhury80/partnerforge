@@ -50,6 +50,7 @@ import {
 } from '@tabler/icons-react';
 import type { Company } from '@/types';
 import { CompanyDrawer } from '@/components/company/CompanyDrawer';
+import { CompanyLogo } from '@/components/ui/CompanyLogo';
 
 // Colors
 const ALGOLIA_BLUE = '#003DFF';
@@ -149,7 +150,7 @@ function FilterHeader({
         onClick={() => column.toggleSorting()}
         style={{ display: 'flex', alignItems: 'center', gap: 4 }}
       >
-        <Text size="xs" fw={600} c={GRAY_500} tt="uppercase">{label}</Text>
+        <Text size="sm" fw={700} c={GRAY_700} tt="uppercase">{label}</Text>
         {{
           asc: <IconArrowUp size={12} color={ALGOLIA_BLUE} />,
           desc: <IconArrowDown size={12} color={ALGOLIA_BLUE} />,
@@ -292,7 +293,7 @@ function SortHeader({ column, label }: { column: any; label: string }) {
       onClick={() => column.toggleSorting()}
       style={{ display: 'flex', alignItems: 'center', gap: 4 }}
     >
-      <Text size="xs" fw={600} c={GRAY_500} tt="uppercase">{label}</Text>
+      <Text size="sm" fw={700} c={GRAY_700} tt="uppercase">{label}</Text>
       {{
         asc: <IconArrowUp size={12} color={ALGOLIA_BLUE} />,
         desc: <IconArrowDown size={12} color={ALGOLIA_BLUE} />,
@@ -307,34 +308,41 @@ function SortHeader({ column, label }: { column: any; label: string }) {
 
 function StatusBadge({ status }: { status: 'hot' | 'warm' | 'cold' }) {
   const config = {
-    hot: { color: 'red', icon: IconFlame, label: 'HOT' },
-    warm: { color: 'orange', icon: IconTrendingUp, label: 'WARM' },
-    cold: { color: 'gray', icon: IconSnowflake, label: 'COLD' },
+    hot: { bg: '#dc2626', icon: IconFlame, label: 'HOT' },
+    warm: { bg: '#ea580c', icon: IconTrendingUp, label: 'WARM' },
+    cold: { bg: '#64748b', icon: IconSnowflake, label: 'COLD' },
   };
-  const { color, icon: Icon, label } = config[status] || config.cold;
+  const { bg, icon: Icon, label } = config[status] || config.cold;
   return (
-    <Badge
-      size="lg"
-      variant="light"
-      color={color}
-      leftSection={<Icon size={14} />}
-      styles={{
-        root: { fontWeight: 600, fontSize: 12, padding: '8px 12px' },
+    <div
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 6,
+        padding: '8px 14px',
+        borderRadius: 6,
+        background: bg,
+        color: 'white',
+        fontWeight: 700,
+        fontSize: 13,
+        letterSpacing: '0.5px',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
       }}
     >
+      <Icon size={16} stroke={2.5} />
       {label}
-    </Badge>
+    </div>
   );
 }
 
 function ScoreDisplay({ score }: { score: number }) {
   const color = score >= 80 ? '#dc2626' : score >= 40 ? '#ea580c' : GRAY_500;
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      <div style={{ width: 40, height: 6, borderRadius: 3, background: GRAY_200, overflow: 'hidden' }}>
-        <div style={{ width: `${score}%`, height: '100%', background: color, borderRadius: 3 }} />
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <div style={{ width: 50, height: 8, borderRadius: 4, background: GRAY_200, overflow: 'hidden' }}>
+        <div style={{ width: `${score}%`, height: '100%', background: color, borderRadius: 4 }} />
       </div>
-      <Text size="sm" fw={600} style={{ color }}>{score}</Text>
+      <Text size="md" fw={700} style={{ color, minWidth: 28 }}>{score}</Text>
     </div>
   );
 }
@@ -436,17 +444,20 @@ export function TargetList({
           const company = row.original;
           return (
             <Group gap="sm" wrap="nowrap">
-              <Avatar size="sm" radius="md" color="blue">
-                {(company.company_name || company.domain).charAt(0).toUpperCase()}
-              </Avatar>
+              <CompanyLogo
+                domain={company.domain}
+                companyName={company.company_name}
+                size="sm"
+                radius="md"
+              />
               <div>
-                <Text size="sm" fw={500} c={GRAY_900} lineClamp={1}>
+                <Text size="md" fw={600} c={GRAY_900} lineClamp={1}>
                   {company.company_name || company.domain}
                 </Text>
                 <Anchor
                   href={`https://${company.domain}`}
                   target="_blank"
-                  size="xs"
+                  size="sm"
                   c={GRAY_500}
                   onClick={(e) => e.stopPropagation()}
                 >
@@ -491,11 +502,11 @@ export function TargetList({
           />
         ),
         cell: ({ getValue }) => (
-          <Text size="sm" c={GRAY_700} lineClamp={1}>
+          <Text size="md" c={GRAY_700} lineClamp={1}>
             {getValue<string>() || '—'}
           </Text>
         ),
-        size: 160,
+        size: 180,
       },
       {
         accessorKey: 'partner_tech',
@@ -510,16 +521,21 @@ export function TargetList({
         ),
         cell: ({ getValue, row }) => {
           const techs = getValue<string[]>() || [];
-          if (techs.length === 0) return <Text size="sm" c={GRAY_400}>—</Text>;
+          if (techs.length === 0) return <Text size="md" c={GRAY_400}>—</Text>;
           return (
             <Tooltip label={`Source: BuiltWith • ${techs.join(', ')}`} withArrow>
               <Anchor
                 href={`https://builtwith.com/${row.original.domain}`}
                 target="_blank"
                 onClick={(e) => e.stopPropagation()}
-                size="sm"
+                size="md"
               >
-                <Badge size="sm" variant="light" color="green">
+                <Badge
+                  size="lg"
+                  variant="filled"
+                  color="green"
+                  styles={{ root: { fontWeight: 600, fontSize: 12 } }}
+                >
                   {techs[0]}
                   {techs.length > 1 && ` +${techs.length - 1}`}
                 </Badge>
@@ -527,7 +543,7 @@ export function TargetList({
             </Tooltip>
           );
         },
-        size: 160,
+        size: 180,
       },
       {
         accessorKey: 'sw_monthly_visits',
@@ -540,16 +556,16 @@ export function TargetList({
                 href={`https://www.similarweb.com/website/${row.original.domain}/`}
                 target="_blank"
                 onClick={(e) => e.stopPropagation()}
-                size="sm"
+                size="md"
                 c={visits && visits > 1000000 ? 'green' : GRAY_700}
-                fw={500}
+                fw={600}
               >
                 {formatTraffic(visits)}
               </Anchor>
             </Tooltip>
           );
         },
-        size: 100,
+        size: 110,
       },
       {
         id: 'actions',
