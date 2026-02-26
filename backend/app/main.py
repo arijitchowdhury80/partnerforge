@@ -17,6 +17,10 @@ import logging
 from .config import get_settings, ENRICHMENT_WAVES
 from .database import get_session, check_database_health, init_db, close_db
 
+# Import API routers
+from .api.routes import health as health_router
+from .api.routes import lists as lists_router
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -76,7 +80,18 @@ app.add_middleware(
 
 
 # =============================================================================
-# Health & Status Endpoints
+# Register API Routers
+# =============================================================================
+
+# Health check endpoints (root level for load balancers)
+app.include_router(health_router.router)
+
+# List management endpoints (API v1)
+app.include_router(lists_router.router, prefix="/api/v1")
+
+
+# =============================================================================
+# Health & Status Endpoints (Legacy - keeping for backward compatibility)
 # =============================================================================
 
 @app.get("/health")

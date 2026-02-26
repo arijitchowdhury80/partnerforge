@@ -5,57 +5,51 @@ Shared fixtures for all tests.
 """
 
 import pytest
-import asyncio
+import pytest_asyncio
 from datetime import datetime, timedelta
 from typing import AsyncGenerator
 import json
-
-# Mark all tests as async by default
-pytest_plugins = ('pytest_asyncio',)
-
-
-# =============================================================================
-# Event Loop Fixture
-# =============================================================================
-
-@pytest.fixture(scope="session")
-def event_loop():
-    """Create event loop for async tests."""
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
 
 
 # =============================================================================
 # Database Fixtures
 # =============================================================================
 
-@pytest.fixture(scope="session")
+@pytest_asyncio.fixture
 async def test_engine():
-    """Create test database engine (in-memory SQLite)."""
+    """Create test database engine (in-memory SQLite).
+
+    Uses isolated metadata that only includes versioning tables
+    to avoid pre-existing relationship issues in platform models.
+    """
     from sqlalchemy.ext.asyncio import create_async_engine
-    from app.database import Base
+    from sqlalchemy import MetaData
+
+    # Import ONLY versioning models (avoid platform models with relationship bugs)
+    from app.models.versioning import IntelSnapshot, ChangeEvent, SnapshotComparison
 
     engine = create_async_engine(
         "sqlite+aiosqlite:///:memory:",
         echo=False,
     )
 
+    # Create only the tables we need for versioning tests
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(IntelSnapshot.__table__.create)
+        await conn.run_sync(ChangeEvent.__table__.create)
+        await conn.run_sync(SnapshotComparison.__table__.create)
 
     yield engine
 
     await engine.dispose()
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def db_session(test_engine) -> AsyncGenerator:
     """Create test database session with rollback after each test."""
-    from sqlalchemy.ext.asyncio import AsyncSession
-    from sqlalchemy.orm import sessionmaker
+    from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-    async_session = sessionmaker(
+    async_session = async_sessionmaker(
         test_engine,
         class_=AsyncSession,
         expire_on_commit=False,

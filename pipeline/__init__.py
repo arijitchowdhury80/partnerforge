@@ -22,13 +22,26 @@ Date: 2026-02-25
 """
 
 from pipeline.models.source import SourceCitation, SourcedDataPoint
-from pipeline.orchestrator import EnrichmentOrchestrator
-from pipeline.aggregator import ResultAggregator
+
+# Optional imports for modules that may not exist yet
+try:
+    from pipeline.orchestrator import EnrichmentOrchestrator
+except ImportError:
+    EnrichmentOrchestrator = None
+
+try:
+    from pipeline.aggregator import ResultAggregator
+except ImportError:
+    ResultAggregator = None
 
 __version__ = "1.0.0"
 __all__ = [
     "SourceCitation",
     "SourcedDataPoint",
-    "EnrichmentOrchestrator",
-    "ResultAggregator",
 ]
+
+# Add optional exports if they exist
+if EnrichmentOrchestrator is not None:
+    __all__.append("EnrichmentOrchestrator")
+if ResultAggregator is not None:
+    __all__.append("ResultAggregator")

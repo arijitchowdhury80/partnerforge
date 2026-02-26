@@ -689,11 +689,14 @@ pip install {module_name}
 
         Maps class names to their likely file locations.
         """
-        # Model name patterns
+        # Model name patterns - order matters! More specific patterns first
         patterns = {
-            "Intel": "backend/app/models/intelligence.py",
+            "IntelSnapshot": "backend/app/models/versioning.py",  # Specific before generic
+            "SnapshotComparison": "backend/app/models/versioning.py",
+            "ChangeEvent": "backend/app/models/versioning.py",
             "Snapshot": "backend/app/models/versioning.py",
             "Change": "backend/app/models/versioning.py",
+            "Intel": "backend/app/models/intelligence.py",  # Generic Intel* last
             "Alert": "backend/app/models/alerts.py",
             "User": "backend/app/models/platform.py",
             "Team": "backend/app/models/platform.py",

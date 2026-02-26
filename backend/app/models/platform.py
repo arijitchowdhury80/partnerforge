@@ -85,8 +85,12 @@ class User(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationships
-    team = relationship("Team", back_populates="members")
-    account_assignments = relationship("AccountAssignment", back_populates="user")
+    team = relationship("Team", back_populates="members", foreign_keys=[team_id])
+    account_assignments = relationship(
+        "AccountAssignment",
+        back_populates="user",
+        foreign_keys="[AccountAssignment.user_id]"
+    )
     alert_rules = relationship("AlertRule", back_populates="user")
     alerts = relationship("Alert", back_populates="user")
     alert_preferences = relationship("AlertPreference", back_populates="user", uselist=False)
@@ -129,7 +133,7 @@ class Team(Base):
     # Relationships
     members = relationship("User", back_populates="team", foreign_keys=[User.team_id])
     manager = relationship("User", foreign_keys=[manager_id])
-    territories = relationship("Territory", back_populates="team")
+    territories = relationship("Territory", back_populates="team", foreign_keys="[Territory.team_id]")
 
     __table_args__ = (
         Index("idx_teams_name", "name"),
@@ -172,7 +176,7 @@ class Territory(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationships
-    team = relationship("Team", back_populates="territories")
+    team = relationship("Team", back_populates="territories", foreign_keys=[team_id])
     account_assignments = relationship("AccountAssignment", back_populates="territory")
 
     __table_args__ = (

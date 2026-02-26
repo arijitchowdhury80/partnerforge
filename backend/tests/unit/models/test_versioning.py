@@ -229,18 +229,31 @@ class TestChangeEvent:
 
         Setup:
             - Valid change event data
+            - Parent snapshot (required)
 
         Expected:
             - Event is created
             - All fields stored correctly
         """
-        from app.models.versioning import ChangeEvent
+        from app.models.versioning import ChangeEvent, IntelSnapshot
 
-        # SETUP
+        # SETUP - Create parent snapshot first
+        snapshot = IntelSnapshot(
+            module_type="m09_executive",
+            domain="costco.com",
+            version=1,
+            data={"executives": []},
+            source_url="https://example.com",
+            source_date=datetime.utcnow(),
+        )
+        db_session.add(snapshot)
+        await db_session.flush()
+
         data = expected_executive_change
 
         # ACTION
         event = ChangeEvent(
+            snapshot_id=snapshot.id,  # Required FK
             domain="costco.com",
             module_type="m09_executive",
             category=data["category"],
@@ -261,6 +274,7 @@ class TestChangeEvent:
         assert "CFO" in event.summary, "Summary should mention CFO"
         assert event.algolia_relevance is not None, "Algolia relevance required"
         assert event.detected_at is not None, "detected_at should be auto-set"
+        assert event.snapshot_id == snapshot.id, "Should link to parent snapshot"
 
     @pytest.mark.asyncio
     async def test_change_event_with_snapshot_link(

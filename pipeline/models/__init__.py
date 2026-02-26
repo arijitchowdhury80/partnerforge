@@ -32,21 +32,44 @@ from pipeline.models.source import (
     SourceType,
     FreshnessStatus,
 )
-from pipeline.models.company import CompanyContext
-from pipeline.models.technology import TechnologyStack, SearchProviderDetection
-from pipeline.models.traffic import TrafficAnalysis, RevenueImpact
-from pipeline.models.financial import FinancialProfile, MarginZone
+
+# Optional imports for modules that may not exist yet
+try:
+    from pipeline.models.company import CompanyContext
+except ImportError:
+    CompanyContext = None
+
+try:
+    from pipeline.models.technology import TechnologyStack, SearchProviderDetection
+except ImportError:
+    TechnologyStack = None
+    SearchProviderDetection = None
+
+try:
+    from pipeline.models.traffic import TrafficAnalysis, RevenueImpact
+except ImportError:
+    TrafficAnalysis = None
+    RevenueImpact = None
+
+try:
+    from pipeline.models.financial import FinancialProfile, MarginZone
+except ImportError:
+    FinancialProfile = None
+    MarginZone = None
 
 __all__ = [
     "SourceCitation",
     "SourcedDataPoint",
     "SourceType",
     "FreshnessStatus",
-    "CompanyContext",
-    "TechnologyStack",
-    "SearchProviderDetection",
-    "TrafficAnalysis",
-    "RevenueImpact",
-    "FinancialProfile",
-    "MarginZone",
 ]
+
+# Add optional exports if they exist
+if CompanyContext is not None:
+    __all__.append("CompanyContext")
+if TechnologyStack is not None:
+    __all__.extend(["TechnologyStack", "SearchProviderDetection"])
+if TrafficAnalysis is not None:
+    __all__.extend(["TrafficAnalysis", "RevenueImpact"])
+if FinancialProfile is not None:
+    __all__.extend(["FinancialProfile", "MarginZone"])
