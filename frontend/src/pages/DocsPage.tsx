@@ -141,6 +141,68 @@ const docSections: DocSection[] = [
 ];
 
 // =============================================================================
+// Mermaid Diagram Renderer
+// =============================================================================
+
+function MermaidDiagram({ code, index }: { code: string; index: number }) {
+  const [error, setError] = useState(false);
+
+  // Encode the Mermaid code for the mermaid.ink service
+  const encoded = btoa(unescape(encodeURIComponent(code)));
+  const imageUrl = `https://mermaid.ink/img/${encoded}?theme=dark&bgColor=1a1b1e`;
+
+  if (error) {
+    // Fallback to showing code if image fails
+    return (
+      <Paper key={`mermaid-${index}`} p="md" bg="dark.8" radius="md" my="md" style={{ overflow: 'auto' }}>
+        <Group justify="space-between" mb="xs">
+          <Badge size="sm" color="yellow" variant="light">Mermaid (render failed)</Badge>
+        </Group>
+        <Code block style={{ whiteSpace: 'pre', fontSize: '13px' }}>
+          {code}
+        </Code>
+      </Paper>
+    );
+  }
+
+  return (
+    <Paper
+      key={`mermaid-${index}`}
+      p="md"
+      bg="dark.8"
+      radius="md"
+      my="md"
+      style={{ overflow: 'auto', textAlign: 'center' }}
+    >
+      <Group justify="space-between" mb="sm">
+        <Badge size="sm" color="blue" variant="light">Mermaid Diagram</Badge>
+        <Anchor
+          href={imageUrl}
+          target="_blank"
+          size="xs"
+          c="dimmed"
+        >
+          <Group gap={4}>
+            <IconExternalLink size={12} />
+            Open full size
+          </Group>
+        </Anchor>
+      </Group>
+      <img
+        src={imageUrl}
+        alt="Mermaid diagram"
+        style={{
+          maxWidth: '100%',
+          height: 'auto',
+          borderRadius: 'var(--mantine-radius-sm)',
+        }}
+        onError={() => setError(true)}
+      />
+    </Paper>
+  );
+}
+
+// =============================================================================
 // Markdown Renderer (Simple)
 // =============================================================================
 
@@ -160,14 +222,25 @@ function renderMarkdown(markdown: string): JSX.Element[] {
     // Code blocks
     if (line.startsWith('```')) {
       if (inCodeBlock) {
-        elements.push(
-          <Paper key={`code-${i}`} p="md" bg="dark.8" radius="md" my="md" style={{ overflow: 'auto' }}>
-            <Code block style={{ whiteSpace: 'pre', fontSize: '13px' }}>
-              {codeBlockContent.join('\n')}
-            </Code>
-          </Paper>
-        );
+        // Check if this is a Mermaid diagram
+        if (codeBlockLang === 'mermaid') {
+          elements.push(
+            <MermaidDiagram key={`mermaid-${i}`} code={codeBlockContent.join('\n')} index={i} />
+          );
+        } else {
+          elements.push(
+            <Paper key={`code-${i}`} p="md" bg="dark.8" radius="md" my="md" style={{ overflow: 'auto' }}>
+              {codeBlockLang && (
+                <Badge size="xs" mb="xs" variant="light">{codeBlockLang}</Badge>
+              )}
+              <Code block style={{ whiteSpace: 'pre', fontSize: '13px' }}>
+                {codeBlockContent.join('\n')}
+              </Code>
+            </Paper>
+          );
+        }
         codeBlockContent = [];
+        codeBlockLang = '';
         inCodeBlock = false;
       } else {
         inCodeBlock = true;
