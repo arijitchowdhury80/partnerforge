@@ -1,21 +1,16 @@
 /**
- * Distribution Grid - Unified Target List View
+ * Distribution Grid - Unified Target List Wrapper
  *
- * ALL views (Partner, Product, Vertical, Account) use the same TargetList component
- * for consistent UX. The view mode controls the default sort order:
- * - Partner: Sorted by partner_tech
- * - Product: Sorted by partner_tech (product granularity)
- * - Vertical: Sorted by vertical
- * - Account: Sorted by ICP score (default)
+ * ALL views (Partner, Product, Vertical, Account) use the same TargetList component.
+ * This is a thin wrapper that:
+ * 1. Converts DisplacementTarget → Company type
+ * 2. Applies default sorting based on view mode
  *
- * This ensures:
- * - Same functionality across all views (sorting, filtering, clicking)
- * - Same visual appearance (logos, badges, columns)
- * - Consistent user experience
+ * The actual table functionality comes from TargetList (single source of truth).
+ * No duplicate UI code - just data transformation.
  */
 
-import { useMemo, useState } from 'react';
-import { Text, Badge, Group, Stack, Paper, Divider } from '@mantine/core';
+import { useMemo } from 'react';
 import type { DisplacementTarget } from '@/services/supabase';
 import type { ViewMode } from './ViewModeToggle';
 import { TargetList } from '@/components/targets/TargetList';
@@ -56,7 +51,7 @@ function convertTargetToCompany(target: DisplacementTarget): Company {
 }
 
 // =============================================================================
-// Types
+// Props
 // =============================================================================
 
 interface DistributionGridProps {
@@ -67,11 +62,11 @@ interface DistributionGridProps {
 }
 
 // =============================================================================
-// Utility Functions
+// Sorting Utilities
 // =============================================================================
 
 function normalizePartner(partnerTech: string | null | undefined): string {
-  if (!partnerTech) return 'Other';
+  if (!partnerTech) return 'ZZZ';
   const lower = partnerTech.toLowerCase();
   if (lower.includes('adobe') || lower.includes('aem')) return 'Adobe';
   if (lower.includes('amplience')) return 'Amplience';
@@ -85,123 +80,34 @@ function normalizePartner(partnerTech: string | null | undefined): string {
 }
 
 function normalizeVertical(vertical: string | null | undefined): string {
-  if (!vertical) return 'Other';
+  if (!vertical) return 'ZZZ';
   const lower = vertical.toLowerCase();
   if (lower.includes('auto')) return 'Automotive';
-  if (lower.includes('retail') || lower.includes('commerce') || lower.includes('ecommerce')) return 'Retail';
-  if (lower.includes('health') || lower.includes('medical') || lower.includes('pharma')) return 'Healthcare';
-  if (lower.includes('finance') || lower.includes('banking') || lower.includes('insurance')) return 'Finance';
-  if (lower.includes('media') || lower.includes('entertainment') || lower.includes('publishing')) return 'Media';
-  if (lower.includes('tech') || lower.includes('software') || lower.includes('saas')) return 'Technology';
+  if (lower.includes('retail') || lower.includes('commerce')) return 'Retail';
+  if (lower.includes('health') || lower.includes('medical')) return 'Healthcare';
+  if (lower.includes('finance') || lower.includes('banking')) return 'Finance';
+  if (lower.includes('media') || lower.includes('entertainment')) return 'Media';
+  if (lower.includes('tech') || lower.includes('software')) return 'Technology';
   if (lower.includes('manufact') || lower.includes('industrial')) return 'Manufacturing';
   return 'Other';
-}
-
-// =============================================================================
-// Summary Stats Component
-// =============================================================================
-
-interface SummaryStatsProps {
-  companies: Company[];
-  viewMode: ViewMode;
-}
-
-function SummaryStats({ companies, viewMode }: SummaryStatsProps) {
-  // Calculate stats based on view mode
-  const stats = useMemo(() => {
-    if (viewMode === 'partner') {
-      // Group by partner
-      const partnerCounts: Record<string, number> = {};
-      companies.forEach(c => {
-        const partner = normalizePartner(c.partner_tech?.[0]);
-        partnerCounts[partner] = (partnerCounts[partner] || 0) + 1;
-      });
-      return Object.entries(partnerCounts)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 6);
-    } else if (viewMode === 'product') {
-      // Group by product (partner_tech)
-      const productCounts: Record<string, number> = {};
-      companies.forEach(c => {
-        const product = c.partner_tech?.[0] || 'Unknown';
-        productCounts[product] = (productCounts[product] || 0) + 1;
-      });
-      return Object.entries(productCounts)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 6);
-    } else if (viewMode === 'vertical') {
-      // Group by vertical
-      const verticalCounts: Record<string, number> = {};
-      companies.forEach(c => {
-        const vertical = normalizeVertical(c.vertical);
-        verticalCounts[vertical] = (verticalCounts[vertical] || 0) + 1;
-      });
-      return Object.entries(verticalCounts)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 6);
-    }
-    // Account view - show status breakdown
-    const statusCounts = {
-      hot: companies.filter(c => c.status === 'hot').length,
-      warm: companies.filter(c => c.status === 'warm').length,
-      cold: companies.filter(c => c.status === 'cold').length,
-    };
-    return [
-      ['Hot Leads', statusCounts.hot],
-      ['Warm Leads', statusCounts.warm],
-      ['Cold Leads', statusCounts.cold],
-    ] as [string, number][];
-  }, [companies, viewMode]);
-
-  const total = companies.length;
-
-  return (
-    <Paper p="md" mb="md" radius="md" withBorder style={{ background: '#f8fafc' }}>
-      <Group justify="space-between" align="center">
-        <Group gap="lg">
-          {stats.map(([label, count]) => (
-            <Group key={label} gap="xs">
-              <Text size="sm" c="#64748b">{label}:</Text>
-              <Badge
-                variant="light"
-                color={
-                  label === 'Hot Leads' ? 'red' :
-                  label === 'Warm Leads' ? 'orange' :
-                  label === 'Cold Leads' ? 'gray' : 'blue'
-                }
-                size="lg"
-              >
-                {(count as number).toLocaleString()}
-              </Badge>
-            </Group>
-          ))}
-        </Group>
-        <Group gap="xs">
-          <Text size="sm" c="#64748b">Total:</Text>
-          <Badge variant="filled" color="blue" size="lg">{total.toLocaleString()}</Badge>
-        </Group>
-      </Group>
-    </Paper>
-  );
 }
 
 // =============================================================================
 // Main Component
 // =============================================================================
 
-export function DistributionGrid({ viewMode, targets, onCellClick, selectedPartner }: DistributionGridProps) {
+export function DistributionGrid({ viewMode, targets }: DistributionGridProps) {
   // Convert all targets to Company type
   const allCompanies = useMemo(() => {
     return targets.map(convertTargetToCompany);
   }, [targets]);
 
-  // Sort companies based on view mode
+  // Sort companies based on view mode (controls default sort order)
   const sortedCompanies = useMemo(() => {
     const sorted = [...allCompanies];
 
     switch (viewMode) {
       case 'partner':
-        // Sort by partner, then by ICP score
         return sorted.sort((a, b) => {
           const partnerA = normalizePartner(a.partner_tech?.[0]);
           const partnerB = normalizePartner(b.partner_tech?.[0]);
@@ -210,7 +116,6 @@ export function DistributionGrid({ viewMode, targets, onCellClick, selectedPartn
         });
 
       case 'product':
-        // Sort by product (partner_tech), then by ICP score
         return sorted.sort((a, b) => {
           const productA = a.partner_tech?.[0] || 'ZZZ';
           const productB = b.partner_tech?.[0] || 'ZZZ';
@@ -219,7 +124,6 @@ export function DistributionGrid({ viewMode, targets, onCellClick, selectedPartn
         });
 
       case 'vertical':
-        // Sort by vertical, then by ICP score
         return sorted.sort((a, b) => {
           const verticalA = normalizeVertical(a.vertical);
           const verticalB = normalizeVertical(b.vertical);
@@ -229,22 +133,17 @@ export function DistributionGrid({ viewMode, targets, onCellClick, selectedPartn
 
       case 'account':
       default:
-        // Default: sort by ICP score descending
         return sorted.sort((a, b) => (b.icp_score || 0) - (a.icp_score || 0));
     }
   }, [allCompanies, viewMode]);
 
+  // Use THE SAME TargetList component for ALL views
+  // Single source of truth for table UI
   return (
-    <Stack gap={0}>
-      {/* Summary stats bar */}
-      <SummaryStats companies={sortedCompanies} viewMode={viewMode} />
-
-      {/* Unified TargetList - same component for ALL views */}
-      <TargetList
-        companies={sortedCompanies}
-        allCompanies={sortedCompanies}
-        isLoading={false}
-      />
-    </Stack>
+    <TargetList
+      companies={sortedCompanies}
+      allCompanies={sortedCompanies}
+      isLoading={false}
+    />
   );
 }
