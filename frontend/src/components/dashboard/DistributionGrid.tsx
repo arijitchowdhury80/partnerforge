@@ -24,6 +24,7 @@ import type { DisplacementTarget } from '@/services/supabase';
 import type { ViewMode } from './ViewModeToggle';
 import { TargetList } from '@/components/targets/TargetList';
 import type { Company } from '@/types';
+import type { Partner } from '@/contexts/PartnerContext';
 
 // =============================================================================
 // Type Conversion: DisplacementTarget -> Company
@@ -66,6 +67,7 @@ interface DistributionGridProps {
   viewMode: ViewMode;
   targets: DisplacementTarget[];
   onCellClick: (rowKey: string, colKey: string, targets: DisplacementTarget[]) => void;
+  selectedPartner?: Partner; // When set, Product view shows only this partner's products
 }
 
 interface GridCell {
@@ -224,34 +226,117 @@ function buildPartnerVerticalGrid(targets: DisplacementTarget[]): GridRow[] {
   }).filter((row) => row.total > 0); // Only show rows with data
 }
 
-function buildProductVerticalGrid(targets: DisplacementTarget[]): GridRow[] {
-  const grid: Record<string, Record<string, DisplacementTarget[]>> = {};
+// Map Partner product keys to display names for grid
+function getProductDisplayName(partner: Partner, productKey: string): string {
+  const product = partner.products.find(p => p.key === productKey);
+  return product?.name || productKey;
+}
+
+// Check if a target's partner_tech matches a partner's product
+function targetMatchesProduct(partnerTech: string | null | undefined, partner: Partner, productKey: string): boolean {
+  if (!partnerTech) return false;
+  const lower = partnerTech.toLowerCase();
+  const product = partner.products.find(p => p.key === productKey);
+  if (!product) return false;
+
+  // Match by product name or shortName
+  const productNameLower = product.name.toLowerCase();
+  const shortNameLower = product.shortName.toLowerCase();
+
+  return lower.includes(productNameLower) ||
+         lower.includes(shortNameLower) ||
+         productNameLower.includes(lower) ||
+         // Special handling for common variations
+         (productKey === 'aem' && (lower.includes('aem') || lower.includes('experience manager'))) ||
+         (productKey === 'commerce' && (lower.includes('magento') || lower.includes('adobe commerce'))) ||
+         (productKey === 'commerce-cloud' && lower.includes('commerce cloud')) ||
+         (productKey === 'shopify-plus' && lower.includes('shopify plus')) ||
+         (productKey === 'shopify' && lower.includes('shopify') && !lower.includes('plus'));
+}
+
+function buildProductVerticalGrid(targets: DisplacementTarget[], selectedPartner?: Partner): GridRow[] {
   const grandTotal = targets.length;
 
-  // Initialize grid
-  PRODUCTS.forEach((product) => {
-    grid[product] = {};
+  // If no partner selected or "all", use fallback to static PRODUCTS list
+  if (!selectedPartner || selectedPartner.key === 'all') {
+    const grid: Record<string, Record<string, DisplacementTarget[]>> = {};
+
+    // Initialize grid with static PRODUCTS
+    PRODUCTS.forEach((product) => {
+      grid[product] = {};
+      VERTICALS.forEach((vertical) => {
+        grid[product][vertical] = [];
+      });
+    });
+
+    // Populate grid
+    targets.forEach((target) => {
+      const product = normalizeProduct(target.partner_tech);
+      const vertical = normalizeVertical(target.vertical);
+      if (grid[product] && grid[product][vertical]) {
+        grid[product][vertical].push(target);
+      }
+    });
+
+    // Convert to GridRow format
+    return PRODUCTS.map((product) => {
+      const cells: Record<string, GridCell> = {};
+      let rowTotal = 0;
+
+      VERTICALS.forEach((vertical) => {
+        const cellTargets = grid[product][vertical];
+        cells[vertical] = {
+          count: cellTargets.length,
+          targets: cellTargets,
+          percentage: grandTotal > 0 ? (cellTargets.length / grandTotal) * 100 : 0,
+        };
+        rowTotal += cellTargets.length;
+      });
+
+      return {
+        key: product,
+        label: product,
+        cells,
+        total: rowTotal,
+        totalPercentage: grandTotal > 0 ? (rowTotal / grandTotal) * 100 : 0,
+      };
+    }).filter((row) => row.total > 0);
+  }
+
+  // Partner is selected - show only that partner's products
+  const partnerProducts = selectedPartner.products;
+  const grid: Record<string, Record<string, DisplacementTarget[]>> = {};
+
+  // Initialize grid with partner's products
+  partnerProducts.forEach((product) => {
+    grid[product.key] = {};
     VERTICALS.forEach((vertical) => {
-      grid[product][vertical] = [];
+      grid[product.key][vertical] = [];
     });
   });
 
-  // Populate grid
+  // Populate grid - match targets to partner products
   targets.forEach((target) => {
-    const product = normalizeProduct(target.partner_tech);
     const vertical = normalizeVertical(target.vertical);
-    if (grid[product] && grid[product][vertical]) {
-      grid[product][vertical].push(target);
+
+    // Find which product this target belongs to
+    for (const product of partnerProducts) {
+      if (targetMatchesProduct(target.partner_tech, selectedPartner, product.key)) {
+        if (grid[product.key] && grid[product.key][vertical]) {
+          grid[product.key][vertical].push(target);
+        }
+        break; // Only count once
+      }
     }
   });
 
-  // Convert to GridRow format
-  return PRODUCTS.map((product) => {
+  // Convert to GridRow format using partner's product names
+  return partnerProducts.map((product) => {
     const cells: Record<string, GridCell> = {};
     let rowTotal = 0;
 
     VERTICALS.forEach((vertical) => {
-      const cellTargets = grid[product][vertical];
+      const cellTargets = grid[product.key][vertical];
       cells[vertical] = {
         count: cellTargets.length,
         targets: cellTargets,
@@ -261,8 +346,8 @@ function buildProductVerticalGrid(targets: DisplacementTarget[]): GridRow[] {
     });
 
     return {
-      key: product,
-      label: product,
+      key: product.key,
+      label: product.name, // Use full product name from Partner context
       cells,
       total: rowTotal,
       totalPercentage: grandTotal > 0 ? (rowTotal / grandTotal) * 100 : 0,
@@ -368,7 +453,7 @@ function GridCellComponent({ cell, rowKey, colKey, onClick, isTotal = false, tie
 // Main Component
 // =============================================================================
 
-export function DistributionGrid({ viewMode, targets, onCellClick }: DistributionGridProps) {
+export function DistributionGrid({ viewMode, targets, onCellClick, selectedPartner }: DistributionGridProps) {
   // Build grid data based on view mode
   const { rows, columns, columnLabels } = useMemo(() => {
     switch (viewMode) {
@@ -380,7 +465,7 @@ export function DistributionGrid({ viewMode, targets, onCellClick }: Distributio
         };
       case 'product':
         return {
-          rows: buildProductVerticalGrid(targets),
+          rows: buildProductVerticalGrid(targets, selectedPartner),
           columns: VERTICALS,
           columnLabels: VERTICALS,
         };
@@ -397,7 +482,7 @@ export function DistributionGrid({ viewMode, targets, onCellClick }: Distributio
           columnLabels: [],
         };
     }
-  }, [viewMode, targets]);
+  }, [viewMode, targets, selectedPartner]);
 
   // Calculate column totals
   const columnTotals = useMemo(() => {
