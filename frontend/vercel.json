@@ -8,7 +8,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://partnerforge-api.up.railway.app/api/:path*"
+      "destination": "https://partnerforge-production.up.railway.app/api/:path*"
     }
   ]
 }
