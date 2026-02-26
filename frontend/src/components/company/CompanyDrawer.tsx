@@ -55,22 +55,16 @@ import {
   SignalsAccordion,
   StrategicAccordion,
 } from './IntelligenceAccordions';
+import { COLORS } from '@/lib/constants';
 
 // =============================================================================
-// Constants
+// Status Config - uses shared COLORS
 // =============================================================================
-
-const ALGOLIA_BLUE = '#003DFF';
-const GRAY_50 = '#f8fafc';
-const GRAY_200 = '#e2e8f0';
-const GRAY_500 = '#64748b';
-const GRAY_700 = '#334155';
-const GRAY_900 = '#0f172a';
 
 const STATUS_CONFIG = {
   hot: { color: 'red', icon: IconFlame, label: 'Hot Lead', bg: '#fef2f2' },
   warm: { color: 'orange', icon: IconTrendingUp, label: 'Warm Lead', bg: '#fff7ed' },
-  cold: { color: 'gray', icon: IconSnowflake, label: 'Cold Lead', bg: '#f8fafc' },
+  cold: { color: 'gray', icon: IconSnowflake, label: 'Cold Lead', bg: COLORS.GRAY_50 },
 };
 
 // =============================================================================
@@ -142,7 +136,7 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
       trapFocus={!isPinned}
       styles={{
         content: {
-          background: GRAY_50,
+          background: COLORS.GRAY_50,
           boxShadow: isPinned ? '-8px 0 30px rgba(0,0,0,0.2)' : undefined,
         },
         header: { display: 'none' },
@@ -153,7 +147,7 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
       {isPinned && (
         <div
           style={{
-            background: `linear-gradient(135deg, ${ALGOLIA_BLUE} 0%, #5468ff 100%)`,
+            background: `linear-gradient(135deg, ${COLORS.ALGOLIA_NEBULA_BLUE} 0%, #5468ff 100%)`,
             color: 'white',
             padding: '10px 20px',
             fontSize: 13,
@@ -177,7 +171,7 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
       <div
         style={{
           background: 'white',
-          borderBottom: `1px solid ${GRAY_200}`,
+          borderBottom: `1px solid ${COLORS.GRAY_200}`,
           padding: 20,
           flexShrink: 0,
         }}
@@ -191,7 +185,7 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
               radius="md"
             />
             <div>
-              <Text size="lg" fw={600} c={GRAY_900}>
+              <Text size="lg" fw={600} c={COLORS.GRAY_900}>
                 {company.company_name}
               </Text>
               <Group gap="xs">
@@ -199,11 +193,11 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
                   href={`https://${company.domain}`}
                   target="_blank"
                   size="sm"
-                  c={ALGOLIA_BLUE}
+                  c={COLORS.ALGOLIA_NEBULA_BLUE}
                 >
                   {company.domain}
                 </Anchor>
-                <IconExternalLink size={14} color={ALGOLIA_BLUE} />
+                <IconExternalLink size={14} color={COLORS.ALGOLIA_NEBULA_BLUE} />
                 {company.ticker && (
                   <Badge variant="light" color="violet" size="sm">{company.ticker}</Badge>
                 )}
@@ -238,8 +232,8 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
         {/* ICP Score */}
         <Paper p="md" radius="md" style={{ background: status.bg }}>
           <Group justify="space-between" mb="xs">
-            <Text size="sm" fw={600} c={GRAY_900}>ICP Score</Text>
-            <Text size="xl" fw={700} c={company.icp_score >= 80 ? '#dc2626' : company.icp_score >= 40 ? '#ea580c' : GRAY_700}>
+            <Text size="sm" fw={600} c={COLORS.GRAY_900}>ICP Score</Text>
+            <Text size="xl" fw={700} c={company.icp_score >= 80 ? '#dc2626' : company.icp_score >= 40 ? '#ea580c' : COLORS.GRAY_700}>
               {company.icp_score}/100
             </Text>
           </Group>
@@ -251,12 +245,12 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
           />
           <Group mt="sm" gap="lg">
             <Group gap={4}>
-              <Text size="xs" c={GRAY_500}>Signal:</Text>
-              <Text size="xs" fw={600} c={GRAY_900}>{company.signal_score || 0}</Text>
+              <Text size="xs" c={COLORS.GRAY_500}>Signal:</Text>
+              <Text size="xs" fw={600} c={COLORS.GRAY_900}>{company.signal_score || 0}</Text>
             </Group>
             <Group gap={4}>
-              <Text size="xs" c={GRAY_500}>Priority:</Text>
-              <Text size="xs" fw={600} c={GRAY_900}>{company.priority_score || 0}</Text>
+              <Text size="xs" c={COLORS.GRAY_500}>Priority:</Text>
+              <Text size="xs" fw={600} c={COLORS.GRAY_900}>{company.priority_score || 0}</Text>
             </Group>
           </Group>
         </Paper>
@@ -281,7 +275,7 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
           styles={{
             item: {
               backgroundColor: 'white',
-              border: `1px solid ${GRAY_200}`,
+              border: `1px solid ${COLORS.GRAY_200}`,
               '&[data-active]': {
                 backgroundColor: 'white',
               },
@@ -289,7 +283,7 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
             control: {
               padding: '16px',
               '&:hover': {
-                backgroundColor: GRAY_50,
+                backgroundColor: COLORS.GRAY_50,
               },
             },
             panel: {
@@ -338,11 +332,11 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
 
         {/* Enrichment CTA */}
         {company.enrichment_level !== 'full' && (
-          <Paper p="lg" mt="md" radius="md" style={{ background: 'linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%)', border: `1px solid ${ALGOLIA_BLUE}20` }}>
+          <Paper p="lg" mt="md" radius="md" style={{ background: 'linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%)', border: `1px solid ${COLORS.ALGOLIA_NEBULA_BLUE}20` }}>
             <Group justify="space-between">
               <div>
-                <Text fw={600} c={GRAY_900} mb={4}>Unlock Full Intelligence</Text>
-                <Text size="sm" c={GRAY_500}>
+                <Text fw={600} c={COLORS.GRAY_900} mb={4}>Unlock Full Intelligence</Text>
+                <Text size="sm" c={COLORS.GRAY_500}>
                   Enrich to see detailed traffic analytics, 3-year financials, hiring signals, executive quotes, and more.
                 </Text>
               </div>
@@ -360,7 +354,7 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
 
         {/* Last Enriched */}
         {company.last_enriched && (
-          <Text size="xs" c={GRAY_500} ta="center" mt="md">
+          <Text size="xs" c={COLORS.GRAY_500} ta="center" mt="md">
             Last enriched: {new Date(company.last_enriched).toLocaleDateString()}
           </Text>
         )}
@@ -370,7 +364,7 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
       <div
         style={{
           background: 'white',
-          borderTop: `1px solid ${GRAY_200}`,
+          borderTop: `1px solid ${COLORS.GRAY_200}`,
           padding: 16,
           flexShrink: 0,
         }}
@@ -422,8 +416,8 @@ function QuickStat({ icon: Icon, label, value }: { icon: typeof IconBuilding; la
           <Icon size={12} />
         </ThemeIcon>
         <div>
-          <Text size="xs" c={GRAY_500}>{label}</Text>
-          <Text size="xs" fw={600} c={GRAY_900} lineClamp={1}>{value}</Text>
+          <Text size="xs" c={COLORS.GRAY_500}>{label}</Text>
+          <Text size="xs" fw={600} c={COLORS.GRAY_900} lineClamp={1}>{value}</Text>
         </div>
       </Group>
     </Paper>

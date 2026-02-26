@@ -127,7 +127,7 @@ export function FilterHeader({
     }
   };
 
-  const selectAllPending = () => setPendingValues([]);
+  const selectAllPending = () => setPendingValues(sortedOptions.map(o => o.value));
   const clearAllPending = () => setPendingValues([]);
 
   const applyFilter = () => {
