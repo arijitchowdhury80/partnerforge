@@ -232,106 +232,59 @@ export function Dashboard() {
                 </Text>
               </div>
 
-              {/* Partner/Tech Selection */}
-              <Group gap="md" wrap="wrap">
-                <Select
-                  label="Partner"
-                  placeholder="Select partner..."
-                  value={selection.partner.key}
-                  onChange={(value) => {
+              {/* Partner Selection Only - Products shown in Distribution Grid below */}
+              <Select
+                label="Partner"
+                placeholder="Select partner..."
+                value={selection.partner.key === 'all' ? null : selection.partner.key}
+                onChange={(value) => {
+                  if (value) {
                     const partner = partners.find(p => p.key === value);
                     if (partner) selectPartner(partner);
-                  }}
-                  data={partners.filter(p => p.key !== 'all').map(p => ({
-                    value: p.key,
-                    label: p.name,
-                  }))}
-                  w={180}
-                  size="md"
-                  clearable
-                  styles={{
-                    input: {
-                      backgroundColor: '#ffffff',
-                      borderColor: GRAY_200,
+                  } else {
+                    // Clear selection
+                    selectPartner(partners[0]); // All Partners
+                  }
+                }}
+                data={partners.filter(p => p.key !== 'all').map(p => ({
+                  value: p.key,
+                  label: p.name,
+                }))}
+                w={220}
+                size="md"
+                clearable
+                styles={{
+                  input: {
+                    backgroundColor: '#ffffff',
+                    borderColor: GRAY_200,
+                    color: GRAY_900,
+                    fontSize: '14px',
+                  },
+                  label: {
+                    color: GRAY_700,
+                    fontWeight: 600,
+                    marginBottom: 4,
+                  },
+                  dropdown: {
+                    backgroundColor: '#ffffff',
+                    borderColor: GRAY_200,
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                  },
+                  option: {
+                    color: GRAY_900,
+                    fontSize: '14px',
+                    padding: '10px 14px',
+                    '&[data-selected]': {
+                      backgroundColor: ALGOLIA_BLUE,
+                      color: '#ffffff',
+                    },
+                    '&[data-hovered]': {
+                      backgroundColor: GRAY_100,
                       color: GRAY_900,
-                      fontSize: '14px',
                     },
-                    label: {
-                      color: GRAY_700,
-                      fontWeight: 600,
-                      marginBottom: 4,
-                    },
-                    dropdown: {
-                      backgroundColor: '#ffffff',
-                      borderColor: GRAY_200,
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                    },
-                    option: {
-                      color: GRAY_900,
-                      fontSize: '14px',
-                      padding: '10px 14px',
-                      '&[data-selected]': {
-                        backgroundColor: ALGOLIA_BLUE,
-                        color: '#ffffff',
-                      },
-                      '&[data-hovered]': {
-                        backgroundColor: GRAY_100,
-                        color: GRAY_900,
-                      },
-                    },
-                  }}
-                />
-
-                {hasPartnerSelected && selection.partner.products.length > 0 && (
-                  <Select
-                    label="Tech Stack"
-                    placeholder="Select product..."
-                    value={selection.product?.key || null}
-                    onChange={(value) => {
-                      const product = selection.partner.products.find(p => p.key === value);
-                      selectProduct(product || null);
-                    }}
-                    data={selection.partner.products.map(p => ({
-                      value: p.key,
-                      label: p.name,
-                    }))}
-                    w={220}
-                    size="md"
-                    clearable
-                    styles={{
-                      input: {
-                        backgroundColor: '#ffffff',
-                        borderColor: GRAY_200,
-                        color: GRAY_900,
-                        fontSize: '14px',
-                      },
-                      label: {
-                        color: GRAY_700,
-                        fontWeight: 600,
-                        marginBottom: 4,
-                      },
-                      dropdown: {
-                        backgroundColor: '#ffffff',
-                        borderColor: GRAY_200,
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                      },
-                      option: {
-                        color: GRAY_900,
-                        fontSize: '14px',
-                        padding: '10px 14px',
-                        '&[data-selected]': {
-                          backgroundColor: ALGOLIA_BLUE,
-                          color: '#ffffff',
-                        },
-                        '&[data-hovered]': {
-                          backgroundColor: GRAY_100,
-                          color: GRAY_900,
-                        },
-                      },
-                    }}
-                  />
-                )}
-              </Group>
+                  },
+                }}
+              />
             </Group>
 
             {/* Formula Display - only show when partner selected */}
@@ -465,6 +418,7 @@ export function Dashboard() {
                   viewMode={viewMode}
                   targets={allTargetsData}
                   onCellClick={handleGridCellClick}
+                  selectedPartner={selection.partner}
                 />
               ) : (
                 <div className="flex justify-center py-8">
