@@ -244,10 +244,170 @@ function MermaidDiagram({ code, index }: { code: string; index: number }) {
 }
 
 // =============================================================================
+// Diagram Gallery - Organized view for multiple mermaid diagrams
+// =============================================================================
+
+interface DiagramInfo {
+  title: string;
+  code: string;
+  category: 'architecture' | 'data' | 'execution' | 'components';
+}
+
+const DIAGRAM_CATEGORIES = {
+  architecture: { label: 'System Architecture', icon: '🏗️' },
+  data: { label: 'Data & Processing', icon: '📊' },
+  execution: { label: 'Execution & State', icon: '⚡' },
+  components: { label: 'Components', icon: '🧩' },
+};
+
+// Categorize diagrams by their titles
+function categorizeDiagram(title: string): DiagramInfo['category'] {
+  const lower = title.toLowerCase();
+  if (lower.includes('system overview') || lower.includes('deployment') || lower.includes('architecture')) {
+    return 'architecture';
+  }
+  if (lower.includes('data flow') || lower.includes('icp') || lower.includes('database') || lower.includes('module dependency')) {
+    return 'data';
+  }
+  if (lower.includes('wave') || lower.includes('state') || lower.includes('circuit') || lower.includes('enrichment')) {
+    return 'execution';
+  }
+  return 'components';
+}
+
+// Parse markdown to extract diagrams with their titles
+function extractDiagrams(markdown: string): DiagramInfo[] {
+  const diagrams: DiagramInfo[] = [];
+  const lines = markdown.split('\n');
+  let currentTitle = '';
+  let inMermaid = false;
+  let mermaidCode: string[] = [];
+
+  for (const line of lines) {
+    // Capture section titles (## headers)
+    if (line.startsWith('## ')) {
+      currentTitle = line.slice(3).trim();
+    }
+    // Start of mermaid block
+    else if (line.trim() === '```mermaid') {
+      inMermaid = true;
+      mermaidCode = [];
+    }
+    // End of mermaid block
+    else if (inMermaid && line.trim() === '```') {
+      inMermaid = false;
+      if (mermaidCode.length > 0) {
+        diagrams.push({
+          title: currentTitle || `Diagram ${diagrams.length + 1}`,
+          code: mermaidCode.join('\n'),
+          category: categorizeDiagram(currentTitle),
+        });
+      }
+    }
+    // Inside mermaid block
+    else if (inMermaid) {
+      mermaidCode.push(line);
+    }
+  }
+
+  return diagrams;
+}
+
+function DiagramGallery({ markdown }: { markdown: string }) {
+  const [activeTab, setActiveTab] = useState<string>('architecture');
+  const [selectedDiagram, setSelectedDiagram] = useState<DiagramInfo | null>(null);
+
+  const diagrams = extractDiagrams(markdown);
+  const categorized = diagrams.reduce((acc, d) => {
+    if (!acc[d.category]) acc[d.category] = [];
+    acc[d.category].push(d);
+    return acc;
+  }, {} as Record<string, DiagramInfo[]>);
+
+  if (selectedDiagram) {
+    return (
+      <Box>
+        <Group mb="md">
+          <ActionIcon variant="subtle" onClick={() => setSelectedDiagram(null)}>
+            ←
+          </ActionIcon>
+          <Title order={3}>{selectedDiagram.title}</Title>
+        </Group>
+        <MermaidDiagram code={selectedDiagram.code} index={0} />
+      </Box>
+    );
+  }
+
+  return (
+    <Box>
+      <Title order={2} mb="xs" style={{ color: 'var(--mantine-color-blue-4)' }}>
+        Architecture Diagrams
+      </Title>
+      <Text c="dimmed" mb="lg">
+        Click a diagram to view full size. {diagrams.length} diagrams organized by category.
+      </Text>
+
+      <Tabs value={activeTab} onChange={(v) => setActiveTab(v || 'architecture')}>
+        <Tabs.List mb="lg">
+          {Object.entries(DIAGRAM_CATEGORIES).map(([key, { label, icon }]) => (
+            <Tabs.Tab key={key} value={key} leftSection={icon}>
+              {label} ({categorized[key]?.length || 0})
+            </Tabs.Tab>
+          ))}
+        </Tabs.List>
+
+        {Object.entries(DIAGRAM_CATEGORIES).map(([key]) => (
+          <Tabs.Panel key={key} value={key}>
+            <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">
+              {(categorized[key] || []).map((diagram, idx) => (
+                <Card
+                  key={idx}
+                  shadow="sm"
+                  padding="md"
+                  radius="md"
+                  withBorder
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => setSelectedDiagram(diagram)}
+                >
+                  <Card.Section p="xs" bg="dark.8" style={{ height: 120, overflow: 'hidden', position: 'relative' }}>
+                    <Box style={{ transform: 'scale(0.25)', transformOrigin: 'top left', width: '400%', height: '400%' }}>
+                      <MermaidDiagram code={diagram.code} index={idx} />
+                    </Box>
+                    <Box
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        background: 'linear-gradient(transparent 60%, rgba(26,27,30,0.9))',
+                      }}
+                    />
+                  </Card.Section>
+                  <Group justify="space-between" mt="md">
+                    <Text fw={500} size="sm" lineClamp={1}>
+                      {diagram.title}
+                    </Text>
+                    <Badge size="xs" variant="light">
+                      View
+                    </Badge>
+                  </Group>
+                </Card>
+              ))}
+            </SimpleGrid>
+          </Tabs.Panel>
+        ))}
+      </Tabs>
+    </Box>
+  );
+}
+
+// =============================================================================
 // Markdown Renderer (Simple)
 // =============================================================================
 
-function renderMarkdown(markdown: string): JSX.Element[] {
+function renderMarkdown(markdown: string, isDiagramsPage: boolean = false): JSX.Element[] {
+  // Special handling for diagrams page - use gallery view
+  if (isDiagramsPage) {
+    return [<DiagramGallery key="diagram-gallery" markdown={markdown} />];
+  }
   const lines = markdown.split('\n');
   const elements: JSX.Element[] = [];
   let inCodeBlock = false;
@@ -663,7 +823,7 @@ export function DocsPage() {
               </Alert>
             ) : (
               <Box className="markdown-content">
-                {renderMarkdown(content)}
+                {renderMarkdown(content, activeSection === 'diagrams')}
               </Box>
             )}
           </Paper>
