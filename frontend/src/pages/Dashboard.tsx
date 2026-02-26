@@ -141,17 +141,6 @@ export function Dashboard() {
     }),
   });
 
-  // Debug info
-  const debugInfo = {
-    partnerTechName,
-    companiesCount: companies?.data?.length || 0,
-    totalCount: companies?.pagination?.total || 0,
-    isLoading: companiesLoading,
-    hasError: !!companiesError,
-    errorMsg: companiesError?.toString() || 'none',
-  };
-  console.log('[Dashboard Debug]', debugInfo);
-
   const hotCount = stats?.hot_leads || 0;
   const warmCount = stats?.warm_leads || 0;
   const coldCount = stats?.cold_leads || 0;
@@ -207,15 +196,6 @@ export function Dashboard() {
 
   return (
     <div style={{ background: GRAY_50, minHeight: '100vh' }}>
-      {/* DEBUG BANNER - Remove after testing */}
-      <div style={{ background: '#fef3c7', padding: '8px 16px', borderBottom: '1px solid #f59e0b', fontSize: 12 }}>
-        <strong>DEBUG v3.2.0:</strong>{' '}
-        Partner: {partnerTechName || 'ALL'} |{' '}
-        Companies: {companies?.data?.length || 0} / {companies?.pagination?.total || 0} |{' '}
-        Loading: {companiesLoading ? 'YES' : 'NO'} |{' '}
-        Error: {companiesError ? String(companiesError) : 'none'} |{' '}
-        Stats: {stats?.total_companies || 0} total
-      </div>
       <Container size="xl" py="xl">
         {/* Header */}
         <motion.div
@@ -346,9 +326,9 @@ export function Dashboard() {
                 <Text size="sm" c={GRAY_500}>Click any row to view full intelligence</Text>
               </div>
               <Group gap="xs">
-                <Badge color="red" variant="light" size="sm">{hotCount} Hot</Badge>
-                <Badge color="orange" variant="light" size="sm">{warmCount} Warm</Badge>
-                <Badge color="gray" variant="light" size="sm">{coldCount} Cold</Badge>
+                <Badge color="red" variant="filled" size="sm" styles={{ root: { color: '#fff' } }}>{hotCount} Hot</Badge>
+                <Badge color="orange" variant="filled" size="sm" styles={{ root: { color: '#fff' } }}>{warmCount} Warm</Badge>
+                <Badge color="gray" variant="filled" size="sm" styles={{ root: { color: '#fff' } }}>{coldCount} Cold</Badge>
               </Group>
             </Group>
 
