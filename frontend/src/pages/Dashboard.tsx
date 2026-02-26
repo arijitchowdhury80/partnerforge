@@ -25,6 +25,9 @@ import {
   Card,
   ThemeIcon,
   Divider,
+  Select,
+  MultiSelect,
+  Box,
 } from '@mantine/core';
 import {
   IconMinus,
@@ -38,12 +41,11 @@ import {
   IconWorld,
 } from '@tabler/icons-react';
 
-import { DonutChart, BarList } from '@tremor/react';
 import { getStats, getCompanies, getDistribution, type DistributionData } from '@/services/api';
 import { getTargets, type DisplacementTarget } from '@/services/supabase';
 import { TargetList } from '@/components/targets/TargetList';
 import { ViewModeToggle, DistributionGrid, AccountDrillDown, type ViewMode } from '@/components/dashboard';
-import { usePartner, getSelectionTechName } from '@/contexts/PartnerContext';
+import { usePartner, getSelectionTechName, PARTNERS, type Partner, type Product } from '@/contexts/PartnerContext';
 import { AlgoliaLogo } from '@/components/common/AlgoliaLogo';
 import { getPartnerLogo } from '@/components/common/PartnerLogos';
 import type { FilterState, DashboardStats } from '@/types';
@@ -72,13 +74,16 @@ interface ColumnFilter {
 }
 
 export function Dashboard() {
-  const { selectedPartner, selection } = usePartner();
+  const { selectedPartner, selection, selectPartner, selectProduct, partners } = usePartner();
   const [filters, setFilters] = useState<FilterState>({
     sort_by: 'icp_score',
     sort_order: 'desc',
   });
   const [page, setPage] = useState(1);
   const [columnFilters, setColumnFilters] = useState<ColumnFilter[]>([]);
+
+  // Check if a specific partner is selected (not "All Partners")
+  const hasPartnerSelected = selection.partner.key !== 'all';
 
   // View mode for distribution grid (Partner/Product/Vertical/Account)
   const [viewMode, setViewMode] = useState<ViewMode>('product');
@@ -198,192 +203,11 @@ export function Dashboard() {
   return (
     <div style={{ background: GRAY_50, minHeight: '100vh' }}>
       <Container size="xl" py="xl">
-        {/* Header */}
+        {/* Header with Partner Selection */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-        >
-          <Group justify="space-between" mb="xl">
-            <div>
-              <Text size="sm" c={GRAY_500} fw={500} tt="uppercase" mb={4}>
-                Partner Intelligence
-              </Text>
-              <Text size="xl" fw={700} c={GRAY_900}>
-                Displacement Targets
-              </Text>
-            </div>
-            <FormulaDisplay partnerName={selectedPartner.name} partnerKey={selectedPartner.key} />
-          </Group>
-        </motion.div>
-
-        {/* KPI Cards */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
-        >
-          <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="lg" mb="xl">
-            <KPICard
-              label="Total Targets"
-              value={total}
-              icon={<IconTarget size={20} />}
-              color={ALGOLIA_BLUE}
-            />
-            <KPICard
-              label="Hot Leads"
-              value={hotCount}
-              sublabel="Ready for outreach"
-              icon={<IconFlame size={20} />}
-              color="#dc2626"
-            />
-            <KPICard
-              label="Warm Leads"
-              value={warmCount}
-              sublabel="Nurture pipeline"
-              icon={<IconTrendingUp size={20} />}
-              color="#ea580c"
-            />
-            <KPICard
-              label="Cold Leads"
-              value={coldCount}
-              sublabel="Low priority"
-              icon={<IconSnowflake size={20} />}
-              color={GRAY_500}
-            />
-          </SimpleGrid>
-        </motion.div>
-
-        {/* Visual Storytelling - Charts Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.15 }}
-        >
-          <SimpleGrid cols={{ base: 1, md: 3 }} spacing="lg" mb="xl">
-            {/* ICP Tier Donut Chart */}
-            <Paper
-              p="lg"
-              radius="lg"
-              style={{
-                background: 'white',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                border: `1px solid ${GRAY_200}`,
-              }}
-            >
-              <Text fw={600} c={GRAY_900} size="md" mb="md">ICP Tier Distribution</Text>
-              <DonutChart
-                data={[
-                  { name: 'Hot', value: hotCount, color: '#dc2626' },
-                  { name: 'Warm', value: warmCount, color: '#ea580c' },
-                  { name: 'Cold', value: coldCount, color: '#64748b' },
-                ].filter(d => d.value > 0)}
-                category="value"
-                index="name"
-                colors={['#dc2626', '#ea580c', '#64748b']}
-                showAnimation
-                showLabel
-                valueFormatter={(val: number) => val.toLocaleString()}
-                className="h-40"
-              />
-              <Group justify="center" mt="md" gap="lg">
-                <Group gap={6}>
-                  <div style={{ width: 12, height: 12, borderRadius: 3, background: '#dc2626' }} />
-                  <Text size="sm" c={GRAY_700}>Hot</Text>
-                </Group>
-                <Group gap={6}>
-                  <div style={{ width: 12, height: 12, borderRadius: 3, background: '#ea580c' }} />
-                  <Text size="sm" c={GRAY_700}>Warm</Text>
-                </Group>
-                <Group gap={6}>
-                  <div style={{ width: 12, height: 12, borderRadius: 3, background: '#64748b' }} />
-                  <Text size="sm" c={GRAY_700}>Cold</Text>
-                </Group>
-              </Group>
-            </Paper>
-
-            {/* Top Verticals Bar Chart */}
-            <Paper
-              p="lg"
-              radius="lg"
-              style={{
-                background: 'white',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                border: `1px solid ${GRAY_200}`,
-              }}
-            >
-              <Text fw={600} c={GRAY_900} size="md" mb="md">Top Verticals</Text>
-              <BarList
-                data={
-                  allTargetsData
-                    ? Object.entries(
-                        allTargetsData.reduce((acc, t) => {
-                          const v = t.vertical || 'Unknown';
-                          acc[v] = (acc[v] || 0) + 1;
-                          return acc;
-                        }, {} as Record<string, number>)
-                      )
-                        .filter(([name]) => name !== 'Unknown')
-                        .sort((a, b) => b[1] - a[1])
-                        .slice(0, 5)
-                        .map(([name, value]) => ({
-                          name: name.replace(/ And /g, ' & ').replace(/Business & Industrial/g, 'Business'),
-                          value,
-                        }))
-                    : []
-                }
-                color="blue"
-                showAnimation
-                valueFormatter={(val: number) => val.toLocaleString()}
-                className="mt-2"
-              />
-            </Paper>
-
-            {/* Partner Tech Bar Chart */}
-            <Paper
-              p="lg"
-              radius="lg"
-              style={{
-                background: 'white',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                border: `1px solid ${GRAY_200}`,
-              }}
-            >
-              <Text fw={600} c={GRAY_900} size="md" mb="md">Partner Technologies</Text>
-              <BarList
-                data={
-                  allTargetsData
-                    ? Object.entries(
-                        allTargetsData.reduce((acc, t) => {
-                          const tech = t.partner_tech || 'Unknown';
-                          acc[tech] = (acc[tech] || 0) + 1;
-                          return acc;
-                        }, {} as Record<string, number>)
-                      )
-                        .filter(([name]) => name !== 'Unknown' && name !== '')
-                        .sort((a, b) => b[1] - a[1])
-                        .slice(0, 5)
-                        .map(([name, value]) => ({
-                          name: name.replace('Adobe Experience Manager', 'Adobe AEM'),
-                          value,
-                          color: name.includes('Adobe') ? '#dc2626' : name.includes('Amplience') ? '#003DFF' : name.includes('Spryker') ? '#14b8a6' : '#5468FF',
-                        }))
-                    : []
-                }
-                color="indigo"
-                showAnimation
-                valueFormatter={(val: number) => val.toLocaleString()}
-                className="mt-2"
-              />
-            </Paper>
-          </SimpleGrid>
-        </motion.div>
-
-        {/* Distribution Section - Multi-Dimensional Grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.2 }}
         >
           <Paper
             p="lg"
@@ -395,32 +219,225 @@ export function Dashboard() {
               border: `1px solid ${GRAY_200}`,
             }}
           >
-            <Group justify="space-between" mb="lg">
+            <Group justify="space-between" align="flex-start" wrap="wrap" gap="lg">
               <div>
-                <Text fw={600} c={GRAY_900} size="lg">Target Distribution</Text>
-                <Text size="sm" c={GRAY_500}>
-                  {viewMode === 'partner' && 'By partner and vertical'}
-                  {viewMode === 'product' && 'By product and vertical'}
-                  {viewMode === 'vertical' && 'By vertical and ICP tier'}
-                  {viewMode === 'account' && 'All accounts'}
+                <Text size="sm" c={GRAY_500} fw={500} tt="uppercase" mb={4}>
+                  Partner Intelligence
+                </Text>
+                <Text size="xl" fw={700} c={GRAY_900}>
+                  Displacement Targets
+                </Text>
+                <Text size="sm" c={GRAY_500} mt={4}>
+                  Select a partner to see their tech stack targets minus Algolia customers
                 </Text>
               </div>
-              <ViewModeToggle value={viewMode} onChange={setViewMode} />
+
+              {/* Partner/Tech Selection */}
+              <Group gap="md" wrap="wrap">
+                <Select
+                  label="Partner"
+                  placeholder="Select partner..."
+                  value={selection.partner.key}
+                  onChange={(value) => {
+                    const partner = partners.find(p => p.key === value);
+                    if (partner) selectPartner(partner);
+                  }}
+                  data={partners.filter(p => p.key !== 'all').map(p => ({
+                    value: p.key,
+                    label: p.name,
+                  }))}
+                  w={180}
+                  size="md"
+                  clearable
+                  styles={{
+                    input: {
+                      backgroundColor: 'white',
+                      borderColor: GRAY_200,
+                      color: GRAY_900,
+                      fontSize: '14px',
+                    },
+                    label: {
+                      color: GRAY_700,
+                      fontWeight: 600,
+                      marginBottom: 4,
+                    },
+                  }}
+                />
+
+                {hasPartnerSelected && selection.partner.products.length > 0 && (
+                  <Select
+                    label="Tech Stack"
+                    placeholder="Select product..."
+                    value={selection.product?.key || null}
+                    onChange={(value) => {
+                      const product = selection.partner.products.find(p => p.key === value);
+                      selectProduct(product || null);
+                    }}
+                    data={selection.partner.products.map(p => ({
+                      value: p.key,
+                      label: p.name,
+                    }))}
+                    w={220}
+                    size="md"
+                    clearable
+                    styles={{
+                      input: {
+                        backgroundColor: 'white',
+                        borderColor: GRAY_200,
+                        color: GRAY_900,
+                        fontSize: '14px',
+                      },
+                      label: {
+                        color: GRAY_700,
+                        fontWeight: 600,
+                        marginBottom: 4,
+                      },
+                    }}
+                  />
+                )}
+              </Group>
             </Group>
 
-            {allTargetsData ? (
-              <DistributionGrid
-                viewMode={viewMode}
-                targets={allTargetsData}
-                onCellClick={handleGridCellClick}
-              />
-            ) : (
-              <div className="flex justify-center py-8">
-                <Loader color={ALGOLIA_BLUE} size="sm" />
-              </div>
+            {/* Formula Display - only show when partner selected */}
+            {hasPartnerSelected && (
+              <Box mt="lg" pt="lg" style={{ borderTop: `1px solid ${GRAY_200}` }}>
+                <FormulaDisplay partnerName={selectedPartner.name} partnerKey={selectedPartner.key} />
+              </Box>
             )}
           </Paper>
         </motion.div>
+
+        {/* KPI Cards - only show when partner selected */}
+        {hasPartnerSelected && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+          >
+            <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="lg" mb="xl">
+              <KPICard
+                label="Total Targets"
+                value={total}
+                icon={<IconTarget size={20} />}
+                color={ALGOLIA_BLUE}
+              />
+              <KPICard
+                label="Hot Leads"
+                value={hotCount}
+                sublabel="Ready for outreach"
+                icon={<IconFlame size={20} />}
+                color="#dc2626"
+              />
+              <KPICard
+                label="Warm Leads"
+                value={warmCount}
+                sublabel="Nurture pipeline"
+                icon={<IconTrendingUp size={20} />}
+                color="#ea580c"
+              />
+              <KPICard
+                label="Cold Leads"
+                value={coldCount}
+                sublabel="Low priority"
+                icon={<IconSnowflake size={20} />}
+                color={GRAY_500}
+              />
+            </SimpleGrid>
+          </motion.div>
+        )}
+
+        {/* Empty State - when no partner selected */}
+        {!hasPartnerSelected && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+          >
+            <Paper
+              p="xl"
+              radius="lg"
+              mb="xl"
+              style={{
+                background: 'white',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                border: `1px solid ${GRAY_200}`,
+                textAlign: 'center',
+              }}
+            >
+              <ThemeIcon size={64} radius="xl" variant="light" color="blue" mx="auto" mb="lg">
+                <IconTarget size={32} />
+              </ThemeIcon>
+              <Text size="xl" fw={600} c={GRAY_900} mb="xs">
+                Select a Partner to Get Started
+              </Text>
+              <Text size="md" c={GRAY_500} mb="lg" maw={500} mx="auto">
+                Choose a partner from the dropdown above to see displacement targets.
+                We'll show you companies using their tech stack who aren't using Algolia yet.
+              </Text>
+              <Group justify="center" gap="md">
+                {partners.filter(p => p.key !== 'all').slice(0, 4).map(partner => {
+                  const Logo = getPartnerLogo(partner.key);
+                  return (
+                    <Button
+                      key={partner.key}
+                      variant="light"
+                      leftSection={<Logo size={18} />}
+                      onClick={() => selectPartner(partner)}
+                      size="md"
+                    >
+                      {partner.name}
+                    </Button>
+                  );
+                })}
+              </Group>
+            </Paper>
+          </motion.div>
+        )}
+
+        {/* Distribution Section - Multi-Dimensional Grid (only when partner selected) */}
+        {hasPartnerSelected && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.2 }}
+          >
+            <Paper
+              p="lg"
+              radius="lg"
+              mb="xl"
+              style={{
+                background: 'white',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                border: `1px solid ${GRAY_200}`,
+              }}
+            >
+              <Group justify="space-between" mb="lg">
+                <div>
+                  <Text fw={600} c={GRAY_900} size="lg">Target Distribution</Text>
+                  <Text size="sm" c={GRAY_500}>
+                    {viewMode === 'partner' && 'By partner and vertical'}
+                    {viewMode === 'product' && 'By product and vertical'}
+                    {viewMode === 'vertical' && 'By vertical and ICP tier'}
+                    {viewMode === 'account' && 'All accounts'}
+                  </Text>
+                </div>
+                <ViewModeToggle value={viewMode} onChange={setViewMode} />
+              </Group>
+
+              {allTargetsData ? (
+                <DistributionGrid
+                  viewMode={viewMode}
+                  targets={allTargetsData}
+                  onCellClick={handleGridCellClick}
+                />
+              ) : (
+                <div className="flex justify-center py-8">
+                  <Loader color={ALGOLIA_BLUE} size="sm" />
+                </div>
+              )}
+            </Paper>
+          </motion.div>
+        )}
 
         {/* Account Drill-Down Drawer */}
         <AccountDrillDown
@@ -431,44 +448,46 @@ export function Dashboard() {
           onSelectTarget={handleSelectTarget}
         />
 
-        {/* Targets Table */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.3 }}
-        >
-          <Paper
-            p="lg"
-            radius="lg"
-            style={{
-              background: 'white',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-              border: `1px solid ${GRAY_200}`,
-            }}
+        {/* Targets Table (only when partner selected) */}
+        {hasPartnerSelected && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.3 }}
           >
-            <Group justify="space-between" mb="lg">
-              <div>
-                <Text fw={600} c={GRAY_900} size="lg">All Targets</Text>
-                <Text size="sm" c={GRAY_500}>Click any row to view full intelligence</Text>
-              </div>
-              <Group gap="xs">
-                <Badge color="red" variant="filled" size="sm" styles={{ root: { color: '#fff' } }}>{hotCount} Hot</Badge>
-                <Badge color="orange" variant="filled" size="sm" styles={{ root: { color: '#fff' } }}>{warmCount} Warm</Badge>
-                <Badge color="gray" variant="filled" size="sm" styles={{ root: { color: '#fff' } }}>{coldCount} Cold</Badge>
+            <Paper
+              p="lg"
+              radius="lg"
+              style={{
+                background: 'white',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                border: `1px solid ${GRAY_200}`,
+              }}
+            >
+              <Group justify="space-between" mb="lg">
+                <div>
+                  <Text fw={600} c={GRAY_900} size="lg">All Targets</Text>
+                  <Text size="sm" c={GRAY_500}>Click any row to view full intelligence</Text>
+                </div>
+                <Group gap="xs">
+                  <Badge color="red" variant="filled" size="sm" styles={{ root: { color: '#fff' } }}>{hotCount} Hot</Badge>
+                  <Badge color="orange" variant="filled" size="sm" styles={{ root: { color: '#fff' } }}>{warmCount} Warm</Badge>
+                  <Badge color="gray" variant="filled" size="sm" styles={{ root: { color: '#fff' } }}>{coldCount} Cold</Badge>
+                </Group>
               </Group>
-            </Group>
 
-            <TargetList
-              companies={filteredCompanies}
-              allCompanies={companies?.data || []}
-              isLoading={companiesLoading}
-              pagination={companies?.pagination}
-              onPageChange={setPage}
-              columnFilters={columnFilters}
-              onColumnFilterChange={handleColumnFilterChange}
-            />
-          </Paper>
-        </motion.div>
+              <TargetList
+                companies={filteredCompanies}
+                allCompanies={companies?.data || []}
+                isLoading={companiesLoading}
+                pagination={companies?.pagination}
+                onPageChange={setPage}
+                columnFilters={columnFilters}
+                onColumnFilterChange={handleColumnFilterChange}
+              />
+            </Paper>
+          </motion.div>
+        )}
       </Container>
     </div>
   );

@@ -218,10 +218,11 @@ const iconMap: Record<string, string> = {
 };
 
 export function PartnerProvider({ children }: { children: ReactNode }) {
-  // Default to Adobe AEM since that's what we have data for
+  // Default to "All Partners" - no specific partner selected
+  // User must explicitly select a partner to see filtered data
   const [selection, setSelection] = useState<PartnerSelection>({
-    partner: PARTNERS[1], // Adobe
-    product: PARTNERS[1].products[0], // AEM
+    partner: PARTNERS[0], // "All Partners" - no specific selection
+    product: null,
   });
 
   const selectPartner = (partner: Partner) => {
