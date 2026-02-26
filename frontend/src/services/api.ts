@@ -31,7 +31,7 @@ const ALL_MODULE_IDS: ModuleId[] = [
 ];
 
 // API Version for deployment tracking
-export const API_VERSION = '3.1.0-debug';
+export const API_VERSION = '3.2.0-debug-visible';
 
 async function supabaseFetch<T>(
   endpoint: string,
