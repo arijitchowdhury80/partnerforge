@@ -58,8 +58,12 @@ import {
 // Import shared libraries - SINGLE SOURCE OF TRUTH
 import {
   FilterHeader,
+  NumericFilterHeader,
   STATUS_COLOR_MAP,
+  TRAFFIC_RANGES,
+  ICP_SCORE_RANGES,
   type FilterOption,
+  type NumericRange,
 } from '@/components/common/TableFilters';
 import { COLORS } from '@/lib/constants';
 
@@ -95,6 +99,9 @@ interface TargetListProps {
   onEnrichCompany?: (domain: string) => void;
   columnFilters?: ColumnFilter[];
   onColumnFilterChange?: (column: string, values: string[]) => void;
+  /** Traffic range filter */
+  trafficRange?: NumericRange | null;
+  onTrafficRangeChange?: (range: NumericRange | null) => void;
 }
 
 // =============================================================================
@@ -194,11 +201,35 @@ export function TargetList({
   onEnrichCompany,
   columnFilters = [],
   onColumnFilterChange,
+  trafficRange: externalTrafficRange,
+  onTrafficRangeChange,
 }: TargetListProps) {
   // Use allCompanies for filter options (so multi-select works), fallback to companies
   const companiesForOptions = allCompanies || companies;
   const [sorting, setSorting] = useState<SortingState>([{ id: 'icp_score', desc: true }]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+
+  // Local traffic filter state (used if no external control provided)
+  const [localTrafficRange, setLocalTrafficRange] = useState<NumericRange | null>(null);
+  const trafficRange = externalTrafficRange !== undefined ? externalTrafficRange : localTrafficRange;
+  const handleTrafficRangeChange = onTrafficRangeChange || setLocalTrafficRange;
+
+  // Local ICP score filter state
+  const [icpScoreRange, setIcpScoreRange] = useState<NumericRange | null>(null);
+
+  // Traffic sort direction
+  const trafficSortDirection = sorting.find(s => s.id === 'sw_monthly_visits')?.desc
+    ? 'desc' as const
+    : sorting.find(s => s.id === 'sw_monthly_visits')
+    ? 'asc' as const
+    : null;
+
+  // ICP score sort direction
+  const icpSortDirection = sorting.find(s => s.id === 'icp_score')?.desc
+    ? 'desc' as const
+    : sorting.find(s => s.id === 'icp_score')
+    ? 'asc' as const
+    : null;
 
   // Drawer state
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
@@ -294,9 +325,21 @@ export function TargetList({
       },
       {
         accessorKey: 'icp_score',
-        header: ({ column }) => <TanStackSortHeader column={column} label="ICP Score" />,
+        header: () => (
+          <NumericFilterHeader
+            label="ICP Score"
+            ranges={ICP_SCORE_RANGES}
+            selectedRange={icpScoreRange}
+            onFilterChange={setIcpScoreRange}
+            sortable={true}
+            sortDirection={icpSortDirection}
+            onSortChange={(dir) => {
+              setSorting([{ id: 'icp_score', desc: dir === 'desc' }]);
+            }}
+          />
+        ),
         cell: ({ getValue }) => <ScoreDisplay score={getValue<number>() || 0} />,
-        size: 120,
+        size: 140,
       },
       {
         accessorKey: 'status',
@@ -427,7 +470,20 @@ export function TargetList({
       },
       {
         accessorKey: 'sw_monthly_visits',
-        header: ({ column }) => <TanStackSortHeader column={column} label="Traffic" />,
+        header: () => (
+          <NumericFilterHeader
+            label="Traffic"
+            ranges={TRAFFIC_RANGES}
+            selectedRange={trafficRange}
+            onFilterChange={handleTrafficRangeChange}
+            unit="Monthly"
+            sortable={true}
+            sortDirection={trafficSortDirection}
+            onSortChange={(dir) => {
+              setSorting([{ id: 'sw_monthly_visits', desc: dir === 'desc' }]);
+            }}
+          />
+        ),
         cell: ({ getValue, row }) => {
           const visits = getValue<number>();
           return (
@@ -445,10 +501,10 @@ export function TargetList({
             </Tooltip>
           );
         },
-        size: 110,
+        size: 140,
       },
     ],
-    [statusOptions, verticalOptions, partnerTechOptions, getFilterValues, handleFilterChange]
+    [statusOptions, verticalOptions, partnerTechOptions, getFilterValues, handleFilterChange, trafficRange, trafficSortDirection, handleTrafficRangeChange, icpScoreRange, icpSortDirection, setIcpScoreRange, setSorting]
   );
 
   const table = useReactTable({

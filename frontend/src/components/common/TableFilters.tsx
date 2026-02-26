@@ -339,3 +339,208 @@ export function SortHeader({ column, label }: SortHeaderProps) {
     </UnstyledButton>
   );
 }
+
+// =============================================================================
+// NumericRangeFilter - For traffic, revenue, ICP score columns
+// =============================================================================
+
+export interface NumericRange {
+  min: number | null;
+  max: number | null;
+  label: string;
+}
+
+interface NumericFilterHeaderProps {
+  label: string;
+  /** Pre-defined range options like "0-1M", "1M-10M", etc. */
+  ranges: NumericRange[];
+  /** Currently selected range */
+  selectedRange: NumericRange | null;
+  /** Called when filter changes */
+  onFilterChange: (range: NumericRange | null) => void;
+  /** Unit suffix for display (e.g., "/mo" for monthly) */
+  unit?: string;
+  /** Enable sorting */
+  sortable?: boolean;
+  /** Current sort direction */
+  sortDirection?: 'asc' | 'desc' | null;
+  /** Called when sort changes */
+  onSortChange?: (direction: 'asc' | 'desc') => void;
+}
+
+export function NumericFilterHeader({
+  label,
+  ranges,
+  selectedRange,
+  onFilterChange,
+  unit = '',
+  sortable = true,
+  sortDirection,
+  onSortChange,
+}: NumericFilterHeaderProps) {
+  const [opened, setOpened] = useState(false);
+
+  const hasAppliedFilter = selectedRange !== null;
+
+  const handleRangeSelect = (range: NumericRange | null) => {
+    onFilterChange(range);
+    setOpened(false);
+  };
+
+  const handleSort = (direction: 'asc' | 'desc') => {
+    onSortChange?.(direction);
+    setOpened(false);
+  };
+
+  return (
+    <Popover
+      opened={opened}
+      onChange={setOpened}
+      position="bottom-start"
+      shadow="xl"
+      width={280}
+    >
+      <Popover.Target>
+        <UnstyledButton
+          onClick={() => setOpened(!opened)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '6px 10px',
+            borderRadius: 6,
+            background: hasAppliedFilter || sortDirection ? 'rgba(0, 61, 255, 0.1)' : 'transparent',
+            border: hasAppliedFilter || sortDirection ? '1px solid rgba(0, 61, 255, 0.3)' : '1px solid transparent',
+            transition: 'all 0.15s ease',
+          }}
+        >
+          <Text
+            size="sm"
+            fw={700}
+            c={hasAppliedFilter || sortDirection ? COLORS.ALGOLIA_NEBULA_BLUE : COLORS.GRAY_700}
+            tt="uppercase"
+          >
+            {label}
+          </Text>
+          {sortDirection === 'asc' && <IconArrowUp size={14} color={COLORS.ALGOLIA_NEBULA_BLUE} />}
+          {sortDirection === 'desc' && <IconArrowDown size={14} color={COLORS.ALGOLIA_NEBULA_BLUE} />}
+          {hasAppliedFilter && (
+            <Badge size="sm" variant="filled" color="blue">
+              {selectedRange?.label}
+            </Badge>
+          )}
+          {!hasAppliedFilter && !sortDirection && (
+            <IconChevronDown size={16} color={COLORS.ALGOLIA_SPACE_GRAY} strokeWidth={2.5} />
+          )}
+        </UnstyledButton>
+      </Popover.Target>
+
+      <Popover.Dropdown
+        style={{
+          background: 'white',
+          border: `1px solid ${COLORS.GRAY_200}`,
+          boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+          borderRadius: 8,
+        }}
+      >
+        <Stack gap="sm">
+          <Group justify="space-between">
+            <Group gap="xs">
+              <IconFilter size={16} color={COLORS.ALGOLIA_NEBULA_BLUE} />
+              <Text size="sm" fw={600} c={COLORS.GRAY_800}>
+                {label} {unit && <Text span size="xs" c={COLORS.GRAY_500}>({unit})</Text>}
+              </Text>
+            </Group>
+          </Group>
+
+          {sortable && (
+            <>
+              <Divider label="Sort" labelPosition="left" />
+              <Group gap="xs">
+                <Button
+                  size="compact-sm"
+                  variant={sortDirection === 'desc' ? 'filled' : 'light'}
+                  color="blue"
+                  leftSection={<IconArrowDown size={14} />}
+                  onClick={() => handleSort('desc')}
+                >
+                  High to Low
+                </Button>
+                <Button
+                  size="compact-sm"
+                  variant={sortDirection === 'asc' ? 'filled' : 'light'}
+                  color="blue"
+                  leftSection={<IconArrowUp size={14} />}
+                  onClick={() => handleSort('asc')}
+                >
+                  Low to High
+                </Button>
+              </Group>
+            </>
+          )}
+
+          <Divider label="Filter by Range" labelPosition="left" />
+
+          <Stack gap={6}>
+            <UnstyledButton
+              onClick={() => handleRangeSelect(null)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '10px 14px',
+                borderRadius: 8,
+                background: !selectedRange ? '#dbeafe' : COLORS.GRAY_50,
+                border: !selectedRange ? '2px solid #3b82f6' : `1px solid ${COLORS.GRAY_200}`,
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <Text size="sm" fw={500} c={COLORS.GRAY_800}>All Values</Text>
+            </UnstyledButton>
+
+            {ranges.map((range, idx) => {
+              const isSelected = selectedRange?.label === range.label;
+              return (
+                <UnstyledButton
+                  key={idx}
+                  onClick={() => handleRangeSelect(range)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '10px 14px',
+                    borderRadius: 8,
+                    background: isSelected ? '#dbeafe' : COLORS.GRAY_50,
+                    border: isSelected ? '2px solid #3b82f6' : `1px solid ${COLORS.GRAY_200}`,
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  <Text size="sm" fw={500} c={COLORS.GRAY_800}>{range.label}</Text>
+                </UnstyledButton>
+              );
+            })}
+          </Stack>
+        </Stack>
+      </Popover.Dropdown>
+    </Popover>
+  );
+}
+
+// =============================================================================
+// Predefined Traffic Ranges
+// =============================================================================
+
+export const TRAFFIC_RANGES: NumericRange[] = [
+  { min: 50000000, max: null, label: '50M+' },
+  { min: 10000000, max: 50000000, label: '10M-50M' },
+  { min: 1000000, max: 10000000, label: '1M-10M' },
+  { min: 100000, max: 1000000, label: '100K-1M' },
+  { min: 0, max: 100000, label: '<100K' },
+];
+
+export const ICP_SCORE_RANGES: NumericRange[] = [
+  { min: 80, max: 100, label: 'Hot (80-100)' },
+  { min: 60, max: 79, label: 'Warm (60-79)' },
+  { min: 40, max: 59, label: 'Cool (40-59)' },
+  { min: 0, max: 39, label: 'Cold (0-39)' },
+];

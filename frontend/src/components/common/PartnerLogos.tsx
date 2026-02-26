@@ -103,12 +103,15 @@ export function ElasticsearchLogo({ size = 24, className }: LogoProps) {
   );
 }
 
-// Amplience Logo - Purple A in circle
+// Amplience Logo - Purple with distinctive wave pattern (content amplification)
 export function AmplienceLogo({ size = 24, className }: LogoProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
       <rect width="24" height="24" rx="4" fill="#7B2D8E" />
-      <path d="M12 5L6 19H9L10 16H14L15 19H18L12 5ZM11 13L12 9L13 13H11Z" fill="white" />
+      {/* Amplify/wave icon - distinctive brand mark */}
+      <path d="M6 15 L9 9 L12 13 L15 7 L18 15" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      <circle cx="6" cy="15" r="1.5" fill="white" />
+      <circle cx="18" cy="15" r="1.5" fill="white" />
     </svg>
   );
 }
