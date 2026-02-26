@@ -22,7 +22,7 @@ References:
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timedelta
 from enum import Enum
 from typing import (
     Any,
@@ -44,9 +44,16 @@ import time
 from pydantic import BaseModel, Field
 
 from pipeline.models.source import SourceCitation, SourceType, FreshnessStatus
-from pipeline.utils.circuit_breaker import CircuitBreaker, CircuitOpenError
-from pipeline.utils.rate_limiter import TokenBucketRateLimiter, RateLimiterRegistry
-from pipeline.utils.retry import retry_with_backoff, RetryConfig, RetryExhaustedError
+from pipeline.utils.circuit_breaker import (
+    CircuitBreaker,
+    CircuitOpenError,
+)
+from pipeline.utils.rate_limiter import (
+    TokenBucketRateLimiter,
+    rate_limiter_registry,
+    API_RATE_LIMITS,
+)
+from pipeline.utils.retry import RetryConfig, RetryExhaustedError
 
 
 logger = logging.getLogger(__name__)
@@ -71,12 +78,12 @@ class RateLimitError(AdapterError):
     def __init__(
         self,
         adapter_name: str,
-        wait_time_ms: float,
+        wait_time_seconds: float,
         endpoint: Optional[str] = None,
     ):
-        self.wait_time_ms = wait_time_ms
+        self.wait_time_seconds = wait_time_seconds
         super().__init__(
-            f"Rate limit exceeded. Wait {wait_time_ms:.0f}ms",
+            f"Rate limit exceeded. Wait {wait_time_seconds:.1f}s",
             adapter_name,
             endpoint,
         )
@@ -201,8 +208,6 @@ class CacheEntry(BaseModel):
     @property
     def is_expired(self) -> bool:
         """Check if cache entry has expired."""
-        from datetime import timedelta
-
         expiry = self.cached_at + timedelta(seconds=self.ttl_seconds)
         return datetime.utcnow() > expiry
 
@@ -268,15 +273,22 @@ class BaseAdapter(ABC):
         self.name = name
         self.source_type = source_type
         self.api_key = api_key
-        self.base_url = base_url.rstrip("/")
+        self.base_url = base_url.rstrip("/") if base_url else ""
         self.api_version = api_version
 
-        # Rate limiting
+        # Rate limiting - get from global registry or use provided
         if rate_limiter:
             self.rate_limiter = rate_limiter
+        elif name in API_RATE_LIMITS:
+            # Use pre-configured limits
+            self.rate_limiter = rate_limiter_registry.get_or_create(
+                name, **API_RATE_LIMITS[name]
+            )
         else:
-            # Get from registry or create default
-            self.rate_limiter = RateLimiterRegistry.get_or_create(name)
+            # Create default rate limiter
+            self.rate_limiter = rate_limiter_registry.get_or_create(
+                name, tokens_per_second=1.0, bucket_size=10
+            )
 
         # Circuit breaker
         if circuit_breaker:
@@ -483,6 +495,53 @@ class BaseAdapter(ABC):
             confidence=confidence,
         )
 
+    async def _execute_with_retry(
+        self,
+        endpoint: str,
+        params: Dict[str, Any],
+        timeout_seconds: int,
+    ) -> Dict[str, Any]:
+        """Execute request with retry logic."""
+        last_exception: Optional[Exception] = None
+        start_time = datetime.utcnow()
+
+        for attempt in range(self.retry_config.max_retries + 1):
+            try:
+                return await self._make_request(endpoint, params, timeout_seconds)
+
+            except Exception as e:
+                last_exception = e
+
+                # Check if exception is retryable
+                is_retryable = isinstance(e, tuple(self.retry_config.retryable_exceptions))
+
+                # If not retryable, raise immediately
+                if not is_retryable:
+                    raise
+
+                # If this was the last attempt, raise
+                if attempt >= self.retry_config.max_retries:
+                    total_time = int(
+                        (datetime.utcnow() - start_time).total_seconds() * 1000
+                    )
+                    raise RetryExhaustedError(
+                        message=f"All {self.retry_config.max_retries} retries exhausted",
+                        attempts=self.retry_config.max_retries,
+                        last_exception=last_exception,
+                        total_time_ms=total_time,
+                    )
+
+                # Calculate delay and wait
+                delay = self.retry_config.calculate_delay(attempt)
+                logger.warning(
+                    f"[{self.name}] Retry {attempt + 1}/{self.retry_config.max_retries} "
+                    f"for {endpoint} after {delay:.2f}s due to: {e}"
+                )
+                await asyncio.sleep(delay)
+
+        # Should not reach here, but handle edge case
+        raise last_exception
+
     async def call(
         self,
         endpoint: str,
@@ -515,7 +574,6 @@ class BaseAdapter(ABC):
             CircuitOpenError: If circuit breaker is open
             RetryExhaustedError: If all retries failed
             APIError: If API returns error
-            SourceCitationMissingError: If response lacks citation (P0 violation)
         """
         params = params or {}
         endpoint_config = self.get_endpoint_config(endpoint)
@@ -543,13 +601,16 @@ class BaseAdapter(ABC):
                     cost_usd=0.0,  # Cache hits are free
                 )
 
-        # Check rate limit
+        # Check rate limit (non-blocking check)
         if not bypass_rate_limit:
-            if not self.rate_limiter.try_acquire(endpoint_config.rate_limit_weight):
-                wait_time = self.rate_limiter.wait_time_ms()
+            available = self.rate_limiter.available_tokens
+            if available < endpoint_config.rate_limit_weight:
+                # Calculate approximate wait time
+                tokens_needed = endpoint_config.rate_limit_weight - available
+                wait_time = tokens_needed / self.rate_limiter.tokens_per_second
                 self.metrics.rate_limit_waits += 1
                 logger.warning(
-                    f"[{self.name}] Rate limit hit for {endpoint}, wait {wait_time}ms"
+                    f"[{self.name}] Rate limit hit for {endpoint}, wait {wait_time:.1f}s"
                 )
                 raise RateLimitError(self.name, wait_time, endpoint)
 
@@ -557,10 +618,21 @@ class BaseAdapter(ABC):
         if not self.circuit_breaker.allow_request():
             self.metrics.circuit_breaker_rejects += 1
             logger.warning(f"[{self.name}] Circuit breaker open for {endpoint}")
-            raise CircuitOpenError(
-                f"Circuit breaker open for {self.name}",
-                self.circuit_breaker,
-            )
+            # Calculate time until recovery
+            time_until_recovery = 0.0
+            if self.circuit_breaker._last_failure_time:
+                recovery_time = self.circuit_breaker._last_failure_time + timedelta(
+                    milliseconds=self.circuit_breaker.recovery_time_ms
+                )
+                time_until_recovery = max(
+                    0.0,
+                    (recovery_time - datetime.utcnow()).total_seconds()
+                )
+            raise CircuitOpenError(self.name, time_until_recovery)
+
+        # Acquire rate limit token (blocking)
+        if not bypass_rate_limit:
+            await self.rate_limiter.acquire()
 
         # Execute with retry
         start_time = time.time()
@@ -568,12 +640,8 @@ class BaseAdapter(ABC):
         self.metrics.last_call_at = datetime.utcnow()
 
         try:
-            # Wrap the request in retry logic
-            raw_response = await retry_with_backoff(
-                lambda: self._make_request(
-                    endpoint, params, endpoint_config.timeout_seconds
-                ),
-                config=self.retry_config,
+            raw_response = await self._execute_with_retry(
+                endpoint, params, endpoint_config.timeout_seconds
             )
 
             # Calculate latency
@@ -624,19 +692,17 @@ class BaseAdapter(ABC):
         self,
         endpoint: str,
         params: Optional[Dict[str, Any]] = None,
-        max_wait_ms: int = 60000,
         bypass_cache: bool = False,
     ) -> SourcedResponse:
         """
         Execute API call, waiting for rate limit if necessary.
 
-        Unlike `call()`, this method will wait for rate limit
+        Unlike `call()`, this method will always wait for rate limit
         availability instead of raising RateLimitError.
 
         Args:
             endpoint: API endpoint to call
             params: Request parameters
-            max_wait_ms: Maximum time to wait for rate limit (default 60s)
             bypass_cache: Skip cache lookup
 
         Returns:
@@ -645,13 +711,26 @@ class BaseAdapter(ABC):
         params = params or {}
         endpoint_config = self.get_endpoint_config(endpoint)
 
-        # Wait for rate limit
-        waited = await self.rate_limiter.acquire_async(
-            endpoint_config.rate_limit_weight,
-            max_wait_ms=max_wait_ms,
-        )
-        if waited:
-            self.metrics.rate_limit_waits += 1
+        # Check cache first
+        if not bypass_cache:
+            cache_key = self._generate_cache_key(endpoint, params)
+            cached_entry = self._get_from_cache(cache_key)
+            if cached_entry:
+                cache_citation = SourceCitation.from_cache(
+                    original=cached_entry.citation,
+                    cache_key=cache_key,
+                )
+                return SourcedResponse(
+                    data=cached_entry.data,
+                    citation=cache_citation,
+                    cached=True,
+                    latency_ms=0.0,
+                    cost_usd=0.0,
+                )
+
+        # Wait for rate limit token (blocking)
+        await self.rate_limiter.acquire()
+        self.metrics.rate_limit_waits += 1
 
         # Now call with rate limit bypassed (we already acquired)
         return await self.call(
@@ -720,10 +799,21 @@ class MockAdapter(BaseAdapter):
         response = await mock.call("domain-lookup", {"domain": "costco.com"})
     """
 
-    def __init__(self, name: str = "mock", source_type: SourceType = SourceType.WEBSEARCH):
+    def __init__(
+        self,
+        name: str = "mock",
+        source_type: SourceType = SourceType.WEBSEARCH,
+    ):
+        # Create a permissive rate limiter for tests
+        rate_limiter = TokenBucketRateLimiter(
+            name=f"mock_{name}",
+            tokens_per_second=1000.0,  # Very high for tests
+            bucket_size=1000,
+        )
         super().__init__(
             name=name,
             source_type=source_type,
+            rate_limiter=rate_limiter,
             default_cost_per_call=0.0,
         )
         self._mock_responses: Dict[str, Any] = {}
