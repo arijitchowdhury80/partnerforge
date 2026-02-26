@@ -34,7 +34,7 @@ import {
   IconLayoutGrid,
 } from '@tabler/icons-react';
 
-import { getStats, getCompanies, getDistribution, type DistributionData } from '@/services/api';
+import { getStats, getCompanies, getDistribution, type DistributionData, API_VERSION } from '@/services/api';
 import { TargetList } from '@/components/targets/TargetList';
 import { usePartner } from '@/contexts/PartnerContext';
 import { AlgoliaLogo } from '@/components/common/AlgoliaLogo';
@@ -126,6 +126,24 @@ export function Dashboard() {
 
   return (
     <Container size="xl" py="md">
+      {/* Debug Version Banner */}
+      <Paper
+        mb="md"
+        p="xs"
+        radius="md"
+        style={{
+          background: 'rgba(34, 197, 94, 0.1)',
+          border: '1px solid rgba(34, 197, 94, 0.3)',
+        }}
+      >
+        <Group justify="space-between">
+          <Text size="xs" c="green.4" fw={500}>
+            API v{API_VERSION} | Stats: {stats?.total_companies || 0} total | Hot: {hotCount} | Warm: {warmCount} | Cold: {coldCount}
+          </Text>
+          <Badge size="xs" color="green" variant="light">DEBUG</Badge>
+        </Group>
+      </Paper>
+
       {/* Cell Detail Modal - RESIZABLE with larger fonts */}
       <Modal
         opened={!!selectedCell}

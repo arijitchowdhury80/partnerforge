@@ -30,6 +30,9 @@ const ALL_MODULE_IDS: ModuleId[] = [
   'm13_icp_priority', 'm14_signal_scoring', 'm15_strategic_brief'
 ];
 
+// API Version for deployment tracking
+export const API_VERSION = '3.1.0-debug';
+
 async function supabaseFetch<T>(
   endpoint: string,
   options: { countExact?: boolean } = {}
@@ -44,16 +47,23 @@ async function supabaseFetch<T>(
     headers['Prefer'] = 'count=exact';
   }
 
+  const url = `${SUPABASE_URL}/rest/v1/${endpoint}`;
+  console.log(`[API v${API_VERSION}] Fetching: ${url.substring(0, 100)}...`);
+
   try {
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, { headers });
+    const response = await fetch(url, { headers });
     if (!response.ok) {
-      return { data: null, error: await response.text() };
+      const errorText = await response.text();
+      console.error(`[API v${API_VERSION}] Error ${response.status}: ${errorText}`);
+      return { data: null, error: errorText };
     }
     const data = await response.json();
     const contentRange = response.headers.get('content-range');
     const count = contentRange ? parseInt(contentRange.split('/')[1]) : undefined;
+    console.log(`[API v${API_VERSION}] Success: ${Array.isArray(data) ? data.length : 1} records, total: ${count || 'N/A'}`);
     return { data, count };
   } catch (err) {
+    console.error(`[API v${API_VERSION}] Fetch error:`, err);
     return { data: null, error: String(err) };
   }
 }
