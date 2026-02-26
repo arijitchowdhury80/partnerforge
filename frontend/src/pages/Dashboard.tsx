@@ -20,7 +20,6 @@ import {
   Select,
   Box,
   Notification,
-  Chip,
   Stack,
 } from '@mantine/core';
 import {
@@ -43,6 +42,7 @@ import { ViewModeToggle, DistributionGrid, AccountDrillDown, type ViewMode } fro
 import { usePartner, getSelectionTechName } from '@/contexts/PartnerContext';
 import { AlgoliaLogo } from '@/components/common/AlgoliaLogo';
 import { getPartnerLogo } from '@/components/common/PartnerLogos';
+import { ProductSelector } from '@/components/common/ProductSelector';
 import type { Company } from '@/types';
 import { COLORS } from '@/lib/constants';
 
@@ -421,93 +421,20 @@ export function Dashboard() {
                   }}
                 />
 
-                {/* Product Selector - shows when partner has multiple products */}
+                {/* Product Selector - uses shared component with brand colors */}
                 {hasPartnerSelected && selection.partner.products.length > 1 && (
-                  <div>
-                    <Text size="xs" c={COLORS.GRAY_500} fw={500} mb={6}>
-                      Filter by Product
-                    </Text>
-                    <Chip.Group
-                      value={selection.product?.key || 'all'}
-                      onChange={(value) => {
-                        if (value === 'all') {
-                          selectProduct(null); // All products
-                        } else {
-                          const product = selection.partner.products.find(p => p.key === value);
-                          selectProduct(product || null);
-                        }
-                      }}
-                    >
-                      <Group gap={8}>
-                        <Chip
-                          value="all"
-                          variant="outline"
-                          size="sm"
-                          styles={{
-                            label: {
-                              fontSize: '13px',
-                              fontWeight: 500,
-                              paddingLeft: 12,
-                              paddingRight: 12,
-                              backgroundColor: (selection.product?.key || 'all') === 'all' ? COLORS.ALGOLIA_NEBULA_BLUE : COLORS.ALGOLIA_WHITE,
-                              color: (selection.product?.key || 'all') === 'all' ? COLORS.ALGOLIA_WHITE : COLORS.GRAY_700,
-                              borderColor: (selection.product?.key || 'all') === 'all' ? COLORS.ALGOLIA_NEBULA_BLUE : COLORS.GRAY_300,
-                            },
-                            iconWrapper: {
-                              display: 'none',
-                            },
-                          }}
-                        >
-                          All Products
-                        </Chip>
-                        {selection.partner.products.map(product => {
-                          const isSelected = selection.product?.key === product.key;
-                          return (
-                            <Chip
-                              key={product.key}
-                              value={product.key}
-                              variant="outline"
-                              size="sm"
-                              styles={{
-                                label: {
-                                  fontSize: '13px',
-                                  fontWeight: 500,
-                                  paddingLeft: 12,
-                                  paddingRight: 12,
-                                  backgroundColor: isSelected ? COLORS.ALGOLIA_NEBULA_BLUE : COLORS.ALGOLIA_WHITE,
-                                  color: isSelected ? COLORS.ALGOLIA_WHITE : COLORS.GRAY_700,
-                                  borderColor: isSelected ? COLORS.ALGOLIA_NEBULA_BLUE : COLORS.GRAY_300,
-                                },
-                                iconWrapper: {
-                                  display: 'none',
-                                },
-                              }}
-                            >
-                              {product.shortName}
-                              {product.count !== undefined && product.count > 0 && (
-                                <Badge
-                                  size="xs"
-                                  variant="light"
-                                  color={isSelected ? 'gray' : 'blue'}
-                                  ml={6}
-                                  styles={{
-                                    root: {
-                                      fontSize: '10px',
-                                      padding: '0 6px',
-                                      backgroundColor: isSelected ? 'rgba(255,255,255,0.2)' : COLORS.GRAY_100,
-                                      color: isSelected ? COLORS.ALGOLIA_WHITE : COLORS.GRAY_600,
-                                    },
-                                  }}
-                                >
-                                  {product.count.toLocaleString()}
-                                </Badge>
-                              )}
-                            </Chip>
-                          );
-                        })}
-                      </Group>
-                    </Chip.Group>
-                  </div>
+                  <ProductSelector
+                    products={selection.partner.products}
+                    selectedProductKey={selection.product?.key || null}
+                    onSelectProduct={(productKey) => {
+                      if (productKey === null) {
+                        selectProduct(null);
+                      } else {
+                        const product = selection.partner.products.find(p => p.key === productKey);
+                        selectProduct(product || null);
+                      }
+                    }}
+                  />
                 )}
               </Stack>
             </Group>

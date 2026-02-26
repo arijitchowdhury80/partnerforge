@@ -357,6 +357,158 @@ export async function isVerifiedCustomer(domain: string): Promise<boolean> {
 }
 
 // =============================================================================
+// Partners - Fetch from database
+// =============================================================================
+
+export interface PartnerRecord {
+  id: number;
+  key: string;
+  name: string;
+  short_name: string;
+  logo_url?: string;
+  is_active: boolean;
+  sort_order: number;
+  created_at?: string;
+}
+
+export interface PartnerProductRecord {
+  id: number;
+  partner_id: number;
+  key: string;
+  name: string;
+  short_name: string;
+  builtwith_tech_name?: string;
+  is_active: boolean;
+  sort_order: number;
+}
+
+/**
+ * Fetch partners from database
+ * Falls back to counting unique partner_tech values if partners table doesn't exist
+ */
+export async function getPartners(): Promise<{
+  partners: Array<{
+    key: string;
+    name: string;
+    shortName: string;
+    count: number;
+    products: Array<{
+      key: string;
+      name: string;
+      shortName: string;
+      count: number;
+    }>;
+  }>;
+}> {
+  // Try to fetch from partners table first
+  const { data: partnersData, error: partnersError } = await supabaseRequest<PartnerRecord[]>(
+    'partners?is_active=eq.true&order=sort_order.asc'
+  );
+
+  // If partners table exists and has data, use it
+  if (!partnersError && partnersData && partnersData.length > 0) {
+    // Also fetch products for each partner
+    const { data: productsData } = await supabaseRequest<PartnerProductRecord[]>(
+      'partner_products?is_active=eq.true&order=sort_order.asc'
+    );
+
+    // Get counts from displacement_targets
+    const { data: countData } = await supabaseRequest<Array<{ partner_tech: string }>>(
+      'displacement_targets?select=partner_tech'
+    );
+
+    const partnerCounts: Record<string, number> = {};
+    if (countData) {
+      for (const row of countData) {
+        if (row.partner_tech) {
+          // Match to partner key
+          for (const p of partnersData) {
+            if (row.partner_tech.toLowerCase().includes(p.key.toLowerCase())) {
+              partnerCounts[p.key] = (partnerCounts[p.key] || 0) + 1;
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    return {
+      partners: partnersData.map(p => ({
+        key: p.key,
+        name: p.name,
+        shortName: p.short_name,
+        count: partnerCounts[p.key] || 0,
+        products: (productsData || [])
+          .filter(prod => prod.partner_id === p.id)
+          .map(prod => ({
+            key: prod.key,
+            name: prod.name,
+            shortName: prod.short_name,
+            count: 0, // Would need separate query
+          })),
+      })),
+    };
+  }
+
+  // Fallback: Derive partners from unique partner_tech values in displacement_targets
+  const { data: targetsData } = await supabaseRequest<Array<{ partner_tech: string }>>(
+    'displacement_targets?select=partner_tech'
+  );
+
+  if (!targetsData) {
+    return { partners: [] };
+  }
+
+  // Count unique partner techs
+  const partnerCounts: Record<string, number> = {};
+  for (const row of targetsData) {
+    if (row.partner_tech) {
+      // Normalize partner tech name to key
+      const tech = row.partner_tech;
+      partnerCounts[tech] = (partnerCounts[tech] || 0) + 1;
+    }
+  }
+
+  // Map known partner techs to our partner structure
+  const knownPartners: Record<string, { name: string; shortName: string }> = {
+    'Adobe Experience Manager': { name: 'Adobe', shortName: 'Adobe' },
+    'Adobe': { name: 'Adobe', shortName: 'Adobe' },
+    'Salesforce Commerce Cloud': { name: 'Salesforce', shortName: 'Salesforce' },
+    'Salesforce': { name: 'Salesforce', shortName: 'Salesforce' },
+    'Shopify': { name: 'Shopify', shortName: 'Shopify' },
+    'Shopify Plus': { name: 'Shopify', shortName: 'Shopify' },
+    'commercetools': { name: 'commercetools', shortName: 'CT' },
+    'BigCommerce': { name: 'BigCommerce', shortName: 'BigCommerce' },
+    'VTEX': { name: 'VTEX', shortName: 'VTEX' },
+    'Amplience': { name: 'Amplience', shortName: 'Amplience' },
+    'Spryker': { name: 'Spryker', shortName: 'Spryker' },
+  };
+
+  // Aggregate counts by partner key
+  const aggregated: Record<string, { name: string; shortName: string; count: number }> = {};
+  for (const [tech, count] of Object.entries(partnerCounts)) {
+    const partner = knownPartners[tech];
+    if (partner) {
+      const key = partner.name.toLowerCase().replace(/\s+/g, '');
+      if (!aggregated[key]) {
+        aggregated[key] = { ...partner, count: 0 };
+      }
+      aggregated[key].count += count;
+    }
+  }
+
+  return {
+    partners: Object.entries(aggregated).map(([key, data]) => ({
+      key,
+      name: data.name,
+      shortName: data.shortName,
+      count: data.count,
+      products: [], // No products in fallback mode
+    })),
+  };
+}
+
+// =============================================================================
 // Supabase client-like interface for compatibility
 // =============================================================================
 
