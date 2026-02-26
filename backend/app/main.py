@@ -22,7 +22,6 @@ from typing import Optional
 import logging
 import time
 import uuid
-import json
 import sys
 
 from .config import get_settings, ENRICHMENT_WAVES
@@ -37,7 +36,6 @@ from .api.routes import alerts as alerts_router
 from .api.routes import changes as changes_router
 from .api.routes import intelligence as intelligence_router
 from .api.routes import jobs as jobs_router
-from .api.routes import seed as seed_router
 from .api.routes import functional_test as test_router
 from .api.routes import discover as discover_router
 
@@ -176,9 +174,6 @@ app.include_router(intelligence_router.router, prefix="/api/v1")
 
 # Jobs endpoints (API v1) - Job management
 app.include_router(jobs_router.router, prefix="/api/v1")
-
-# Seed endpoints (for initial data loading)
-app.include_router(seed_router.router, prefix="/api/v1")
 
 # Functional test endpoints (real API integration)
 app.include_router(test_router.router, prefix="/api/v1")

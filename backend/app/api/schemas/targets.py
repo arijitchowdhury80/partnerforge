@@ -156,7 +156,7 @@ class TargetSummary(BaseModel):
     enrichment_level: Optional[str] = Field(None, description="Enrichment level")
     last_enriched: Optional[datetime] = Field(None, description="Last enrichment timestamp")
 
-    created_at: datetime = Field(..., description="Creation timestamp")
+    created_at: Optional[datetime] = Field(None, description="Creation timestamp")
 
     class Config:
         from_attributes = True
@@ -224,7 +224,7 @@ class TargetResponse(BaseModel):
     enrichment_level: Optional[str] = Field(None, description="Enrichment level")
     last_enriched: Optional[datetime] = Field(None, description="Last enrichment timestamp")
 
-    created_at: datetime = Field(..., description="Creation timestamp")
+    created_at: Optional[datetime] = Field(None, description="Creation timestamp")
 
     class Config:
         from_attributes = True
