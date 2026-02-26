@@ -50,6 +50,19 @@ import {
 import type { Company } from '@/types';
 import { CompanyDrawer } from '@/components/company/CompanyDrawer';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
+import {
+  AdobeLogo,
+  AmplienceLogo,
+  SprykerLogo,
+  ShopifyLogo,
+  BigCommerceLogo,
+  SalesforceLogo,
+  SAPLogo,
+  CommercetoolsLogo,
+  MagentoLogo,
+  ElasticsearchLogo,
+  AllPartnersLogo,
+} from '@/components/common/PartnerLogos';
 
 // Algolia Brand Colors (Official)
 const ALGOLIA_NEBULA_BLUE = '#003DFF';   // Primary - CTAs, headers
@@ -524,45 +537,38 @@ export function TargetList({
           const techs = getValue<string[]>() || [];
           if (techs.length === 0) return <Text size="md" c={GRAY_400}>—</Text>;
 
-          // Partner tech color mapping
-          const techColors: Record<string, string> = {
-            'Adobe Experience Manager': 'red',
-            'Adobe Commerce': 'grape',
-            'Amplience': 'blue',
-            'Spryker': 'teal',
-            'Shopify': 'green',
-            'BigCommerce': 'violet',
-            'Salesforce Commerce': 'cyan',
-            'SAP Commerce': 'orange',
-            'Commercetools': 'indigo',
-          };
-
-          // Short names for display
-          const shortNames: Record<string, string> = {
-            'Adobe Experience Manager': 'Adobe AEM',
-            'Adobe Commerce': 'Adobe Commerce',
-            'Salesforce Commerce': 'Salesforce',
-            'SAP Commerce': 'SAP',
+          // Map tech names to logo components
+          const getTechLogo = (tech: string) => {
+            const techLower = tech.toLowerCase();
+            if (techLower.includes('adobe') || techLower.includes('aem')) return AdobeLogo;
+            if (techLower.includes('amplience')) return AmplienceLogo;
+            if (techLower.includes('spryker')) return SprykerLogo;
+            if (techLower.includes('shopify')) return ShopifyLogo;
+            if (techLower.includes('bigcommerce')) return BigCommerceLogo;
+            if (techLower.includes('salesforce')) return SalesforceLogo;
+            if (techLower.includes('sap')) return SAPLogo;
+            if (techLower.includes('commercetools')) return CommercetoolsLogo;
+            if (techLower.includes('magento')) return MagentoLogo;
+            if (techLower.includes('elastic')) return ElasticsearchLogo;
+            return AllPartnersLogo;
           };
 
           return (
-            <Group gap={4} wrap="wrap">
-              {techs.slice(0, 3).map((tech) => (
-                <Tooltip key={tech} label={`Source: BuiltWith • ${tech}`} withArrow>
-                  <Badge
-                    size="sm"
-                    variant="filled"
-                    color={techColors[tech] || 'gray'}
-                    styles={{ root: { fontWeight: 600, fontSize: 11, color: '#fff' } }}
-                  >
-                    {shortNames[tech] || tech}
-                  </Badge>
-                </Tooltip>
-              ))}
-              {techs.length > 3 && (
-                <Tooltip label={techs.slice(3).join(', ')} withArrow>
-                  <Badge size="sm" variant="outline" color="gray" styles={{ root: { fontWeight: 600, fontSize: 11 } }}>
-                    +{techs.length - 3}
+            <Group gap={6} wrap="nowrap">
+              {techs.slice(0, 4).map((tech) => {
+                const LogoComponent = getTechLogo(tech);
+                return (
+                  <Tooltip key={tech} label={tech} withArrow position="top">
+                    <div style={{ cursor: 'pointer' }}>
+                      <LogoComponent size={28} />
+                    </div>
+                  </Tooltip>
+                );
+              })}
+              {techs.length > 4 && (
+                <Tooltip label={techs.slice(4).join(', ')} withArrow>
+                  <Badge size="sm" variant="light" color="gray" styles={{ root: { fontWeight: 600, fontSize: 11 } }}>
+                    +{techs.length - 4}
                   </Badge>
                 </Tooltip>
               )}
