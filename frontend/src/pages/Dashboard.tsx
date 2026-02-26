@@ -27,9 +27,11 @@ import {
   IconFlame,
   IconBolt,
   IconSnowflake,
-  IconX,
   IconExternalLink,
   IconDownload,
+  IconChevronDown,
+  IconChevronUp,
+  IconLayoutGrid,
 } from '@tabler/icons-react';
 
 import { getStats, getCompanies, getDistribution, type DistributionData } from '@/services/api';
@@ -124,32 +126,48 @@ export function Dashboard() {
 
   return (
     <Container size="xl" py="md">
-      {/* Cell Detail Modal */}
+      {/* Cell Detail Modal - RESIZABLE with larger fonts */}
       <Modal
         opened={!!selectedCell}
         onClose={() => setSelectedCell(null)}
         title={
-          <Group gap="sm">
+          <Group gap="md">
             <Badge
-              size="lg"
-              style={{ background: selectedCell?.color, color: 'white' }}
+              size="xl"
+              style={{ background: selectedCell?.color, color: 'white', fontSize: '16px', padding: '12px 20px' }}
             >
               {selectedCell?.tierLabel}
             </Badge>
-            <Text fw={600} c="white">{selectedCell?.vertical}</Text>
-            <Text c="dimmed">({selectedCell?.count} targets)</Text>
+            <Text fw={700} c="white" size="xl">{selectedCell?.vertical}</Text>
+            <Text c="dimmed" size="lg">({selectedCell?.count} targets)</Text>
           </Group>
         }
-        size="lg"
+        size="70%"
         styles={{
-          header: { background: '#1a1a2e', borderBottom: '1px solid rgba(255,255,255,0.1)' },
-          content: { background: '#1a1a2e' },
-          body: { padding: '20px' },
+          header: {
+            background: '#1a1a2e',
+            borderBottom: '1px solid rgba(255,255,255,0.1)',
+            padding: '20px 24px',
+          },
+          content: {
+            background: '#1a1a2e',
+            resize: 'both',
+            overflow: 'auto',
+            minWidth: '500px',
+            minHeight: '400px',
+          },
+          body: { padding: '24px' },
+          title: { fontSize: '18px' },
         }}
       >
+        {/* Resize hint */}
+        <Text size="sm" c="dimmed" mb="md" style={{ fontStyle: 'italic' }}>
+          💡 Drag bottom-right corner to resize this modal
+        </Text>
+
         {cellLoading ? (
-          <div className="flex justify-center py-8">
-            <Loader color={selectedCell?.color} />
+          <div className="flex justify-center py-12">
+            <Loader color={selectedCell?.color} size="lg" />
           </div>
         ) : (
           <>
@@ -159,8 +177,8 @@ export function Dashboard() {
               styles={{
                 table: { background: 'transparent' },
                 tr: { borderColor: 'rgba(255,255,255,0.1)' },
-                td: { color: 'white', padding: '12px' },
-                th: { color: 'rgba(255,255,255,0.6)', padding: '12px' },
+                td: { color: 'white', padding: '16px 20px', fontSize: '16px' },
+                th: { color: 'rgba(255,255,255,0.7)', padding: '16px 20px', fontSize: '14px', fontWeight: 600, textTransform: 'uppercase' },
               }}
             >
               <Table.Thead>
@@ -168,28 +186,30 @@ export function Dashboard() {
                   <Table.Th>Company</Table.Th>
                   <Table.Th>ICP Score</Table.Th>
                   <Table.Th>Traffic</Table.Th>
-                  <Table.Th>Search</Table.Th>
+                  <Table.Th>Search Provider</Table.Th>
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
                 {cellCompanies?.data.slice(0, 10).map((company) => (
                   <Table.Tr key={company.domain} style={{ cursor: 'pointer' }}>
                     <Table.Td>
-                      <Text fw={500}>{company.company_name}</Text>
-                      <Text size="xs" c="dimmed">{company.domain}</Text>
+                      <Text fw={600} size="lg">{company.company_name}</Text>
+                      <Text size="sm" c="dimmed">{company.domain}</Text>
                     </Table.Td>
                     <Table.Td>
-                      <Badge color={selectedCell?.color} variant="light">
+                      <Badge size="lg" color={selectedCell?.color} variant="light" style={{ fontSize: '16px', padding: '8px 16px' }}>
                         {company.icp_score}
                       </Badge>
                     </Table.Td>
                     <Table.Td>
-                      {company.sw_monthly_visits
-                        ? `${(company.sw_monthly_visits / 1000000).toFixed(1)}M`
-                        : '—'}
+                      <Text size="lg" fw={500}>
+                        {company.sw_monthly_visits
+                          ? `${(company.sw_monthly_visits / 1000000).toFixed(1)}M`
+                          : '—'}
+                      </Text>
                     </Table.Td>
                     <Table.Td>
-                      <Text size="sm" c="dimmed">
+                      <Text size="md" c="dimmed">
                         {company.current_search || 'Unknown'}
                       </Text>
                     </Table.Td>
@@ -197,11 +217,12 @@ export function Dashboard() {
                 ))}
               </Table.Tbody>
             </Table>
-            <Group justify="space-between" mt="lg">
+            <Group justify="space-between" mt="xl">
               <Button
                 variant="subtle"
                 color="gray"
-                leftSection={<IconDownload size={16} />}
+                size="md"
+                leftSection={<IconDownload size={20} />}
                 onClick={() => {
                   // TODO: Export CSV
                   console.log('Export CSV for', selectedCell);
@@ -212,7 +233,8 @@ export function Dashboard() {
               <Button
                 variant="gradient"
                 gradient={{ from: selectedCell?.color || '#5468FF', to: ALGOLIA_PURPLE }}
-                rightSection={<IconExternalLink size={16} />}
+                size="lg"
+                rightSection={<IconExternalLink size={20} />}
                 onClick={handleViewAll}
               >
                 View All {selectedCell?.count} Targets
@@ -245,9 +267,12 @@ export function Dashboard() {
             border: '1px solid rgba(255, 255, 255, 0.08)',
           }}
         >
-          <Group justify="space-between" mb="sm">
-            <Text fw={600} c="white" size="md">Target Distribution</Text>
-            <Text size="xs" c="dimmed">Click any cell to see companies</Text>
+          <Group justify="space-between" mb="md">
+            <Group gap="md">
+              <Text fw={700} c="white" size="lg">Target Distribution</Text>
+              <Badge size="md" variant="light" color="blue">by Vertical × ICP Tier</Badge>
+            </Group>
+            <Text size="sm" c="dimmed">Click any cell to see companies</Text>
           </Group>
           {distribution ? (
             <DistributionGrid distribution={distribution} onCellClick={handleCellClick} />
@@ -449,7 +474,7 @@ function HeroSection({ stats, partnerKey, partnerName }: HeroSectionProps) {
   );
 }
 
-// Compact Distribution Grid with Expand/Collapse Animation
+// Distribution Grid with Expand/Collapse Animation - LARGER FONTS
 interface DistributionGridProps {
   distribution: DistributionData;
   onCellClick: (cell: CellSelection) => void;
@@ -491,32 +516,47 @@ function DistributionGrid({ distribution, onCellClick }: DistributionGridProps) 
 
   return (
     <>
-      {/* Other Verticals Modal */}
+      {/* All Verticals Modal - RESIZABLE with LARGE fonts */}
       <Modal
         opened={showOtherModal}
         onClose={() => setShowOtherModal(false)}
         title={
-          <Group gap="sm">
-            <Text fw={600} c="white">All Verticals</Text>
-            <Badge size="sm" color="gray">{allVerticals.length} total</Badge>
+          <Group gap="md">
+            <Text fw={700} c="white" size="xl">All Verticals</Text>
+            <Badge size="lg" color="gray" style={{ fontSize: '14px', padding: '8px 16px' }}>{allVerticals.length} total</Badge>
           </Group>
         }
-        size="lg"
+        size="70%"
         styles={{
-          header: { background: '#1a1a2e', borderBottom: '1px solid rgba(255,255,255,0.1)' },
-          content: { background: '#1a1a2e' },
-          body: { padding: '20px' },
+          header: {
+            background: '#1a1a2e',
+            borderBottom: '1px solid rgba(255,255,255,0.1)',
+            padding: '20px 24px',
+          },
+          content: {
+            background: '#1a1a2e',
+            resize: 'both',
+            overflow: 'auto',
+            minWidth: '600px',
+            minHeight: '400px',
+          },
+          body: { padding: '24px' },
         }}
       >
-        <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+        {/* Resize hint */}
+        <Text size="sm" c="dimmed" mb="md" style={{ fontStyle: 'italic' }}>
+          💡 Drag bottom-right corner to resize this modal
+        </Text>
+
+        <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
           <Table
             striped
             highlightOnHover
             styles={{
               table: { background: 'transparent' },
               tr: { borderColor: 'rgba(255,255,255,0.1)' },
-              td: { color: 'white', padding: '10px 12px' },
-              th: { color: 'rgba(255,255,255,0.6)', padding: '10px 12px', fontSize: '11px' },
+              td: { color: 'white', padding: '16px 20px', fontSize: '16px' },
+              th: { color: 'rgba(255,255,255,0.7)', padding: '16px 20px', fontSize: '14px', fontWeight: 600, textTransform: 'uppercase' },
             }}
           >
             <Table.Thead>
@@ -530,30 +570,30 @@ function DistributionGrid({ distribution, onCellClick }: DistributionGridProps) 
             </Table.Thead>
             <Table.Tbody>
               {allVerticals.map((v, idx) => (
-                <Table.Tr key={v.name} style={{ opacity: idx < 5 ? 1 : 0.8 }}>
+                <Table.Tr key={v.name} style={{ opacity: idx < 5 ? 1 : 0.85 }}>
                   <Table.Td>
-                    <Group gap="xs">
-                      {idx < 5 && <Badge size="xs" color="blue" variant="light">Top 5</Badge>}
-                      <Text size="sm">{v.shortName}</Text>
+                    <Group gap="sm">
+                      {idx < 5 && <Badge size="md" color="blue" variant="light" style={{ fontSize: '12px' }}>Top 5</Badge>}
+                      <Text size="lg" fw={500}>{v.shortName}</Text>
                     </Group>
                   </Table.Td>
                   <Table.Td style={{ textAlign: 'center' }}>
-                    <Badge size="sm" color="red" variant={v.hot > 0 ? 'filled' : 'light'}>
+                    <Badge size="lg" color="red" variant={v.hot > 0 ? 'filled' : 'light'} style={{ fontSize: '16px', padding: '8px 16px' }}>
                       {v.hot}
                     </Badge>
                   </Table.Td>
                   <Table.Td style={{ textAlign: 'center' }}>
-                    <Badge size="sm" color="orange" variant={v.warm > 0 ? 'filled' : 'light'}>
+                    <Badge size="lg" color="orange" variant={v.warm > 0 ? 'filled' : 'light'} style={{ fontSize: '16px', padding: '8px 16px' }}>
                       {v.warm}
                     </Badge>
                   </Table.Td>
                   <Table.Td style={{ textAlign: 'center' }}>
-                    <Badge size="sm" color="gray" variant={v.cold > 0 ? 'filled' : 'light'}>
+                    <Badge size="lg" color="gray" variant={v.cold > 0 ? 'filled' : 'light'} style={{ fontSize: '16px', padding: '8px 16px' }}>
                       {v.cold}
                     </Badge>
                   </Table.Td>
                   <Table.Td style={{ textAlign: 'center' }}>
-                    <Text fw={600} size="sm">{v.total.toLocaleString()}</Text>
+                    <Text fw={700} size="lg">{v.total.toLocaleString()}</Text>
                   </Table.Td>
                 </Table.Tr>
               ))}
@@ -562,16 +602,60 @@ function DistributionGrid({ distribution, onCellClick }: DistributionGridProps) 
         </div>
       </Modal>
 
+      {/* PROMINENT Expand/Collapse Toggle - TOP OF GRID */}
+      <Group justify="space-between" mb="md">
+        <Group gap="md">
+          <Text size="md" c="dimmed">
+            {isExpanded ? `All ${allVerticals.length} verticals` : 'Top 5 verticals'}
+          </Text>
+          {!isExpanded && hiddenVerticalsCount > 0 && (
+            <Badge
+              size="lg"
+              variant="light"
+              color="violet"
+              style={{ cursor: 'pointer', fontSize: '14px' }}
+              onClick={() => setShowOtherModal(true)}
+            >
+              +{hiddenVerticalsCount} more in "Other"
+            </Badge>
+          )}
+        </Group>
+
+        {/* BIG Expand/Collapse Button */}
+        {hiddenVerticalsCount > 0 && (
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Button
+              variant={isExpanded ? 'light' : 'gradient'}
+              gradient={{ from: ALGOLIA_BLUE, to: ALGOLIA_PURPLE }}
+              size="lg"
+              onClick={() => setIsExpanded(!isExpanded)}
+              leftSection={
+                <motion.div
+                  animate={{ rotate: isExpanded ? 180 : 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <IconChevronDown size={22} />
+                </motion.div>
+              }
+              rightSection={<IconLayoutGrid size={18} />}
+              style={{ fontWeight: 600, fontSize: '16px' }}
+            >
+              {isExpanded ? 'Collapse to Top 5' : `Expand All ${allVerticals.length} Verticals`}
+            </Button>
+          </motion.div>
+        )}
+      </Group>
+
       {/* Grid Container with Animation */}
       <motion.div
         layout
-        transition={{ duration: 0.3, ease: 'easeInOut' }}
+        transition={{ duration: 0.4, ease: 'easeInOut' }}
         style={{ overflowX: 'auto' }}
       >
-        <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '4px' }}>
+        <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '6px' }}>
           <thead>
             <tr>
-              <th style={{ width: '100px', padding: '8px', textAlign: 'left', fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase' }}>
+              <th style={{ width: '120px', padding: '12px', textAlign: 'left', fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>
                 ICP Tier
               </th>
               <AnimatePresence mode="popLayout">
@@ -581,11 +665,11 @@ function DistributionGrid({ distribution, onCellClick }: DistributionGridProps) 
                     initial={{ opacity: 0, width: 0 }}
                     animate={{ opacity: 1, width: 'auto' }}
                     exit={{ opacity: 0, width: 0 }}
-                    transition={{ duration: 0.2 }}
-                    style={{ padding: '8px', textAlign: 'center', fontSize: '12px', fontWeight: 600, color: 'white' }}
+                    transition={{ duration: 0.25 }}
+                    style={{ padding: '12px', textAlign: 'center', fontSize: '14px', fontWeight: 600, color: 'white' }}
                   >
                     {v === 'Other' ? (
-                      <Tooltip label={`Click to see ${hiddenVerticalsCount} hidden verticals`} withArrow>
+                      <Tooltip label={`Click to see all ${hiddenVerticalsCount} hidden verticals`} withArrow>
                         <span
                           onClick={() => setShowOtherModal(true)}
                           style={{
@@ -593,6 +677,7 @@ function DistributionGrid({ distribution, onCellClick }: DistributionGridProps) 
                             color: ALGOLIA_PURPLE,
                             textDecoration: 'underline',
                             textDecorationStyle: 'dotted',
+                            fontSize: '14px',
                           }}
                         >
                           Other ({hiddenVerticalsCount})
@@ -604,7 +689,7 @@ function DistributionGrid({ distribution, onCellClick }: DistributionGridProps) 
                   </motion.th>
                 ))}
               </AnimatePresence>
-              <th style={{ padding: '8px', textAlign: 'center', fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase' }}>
+              <th style={{ padding: '12px', textAlign: 'center', fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>
                 Total
               </th>
             </tr>
@@ -613,14 +698,14 @@ function DistributionGrid({ distribution, onCellClick }: DistributionGridProps) 
             {tiers.map((tier, idx) => (
               <tr key={tier.key}>
                 <td style={{
-                  padding: '8px 10px',
-                  borderRadius: '8px',
-                  background: `${tier.color}15`,
-                  borderLeft: `3px solid ${tier.color}`,
-                  boxShadow: idx === 0 ? `0 0 12px ${tier.color}30` : 'none',
+                  padding: '12px 14px',
+                  borderRadius: '10px',
+                  background: `${tier.color}18`,
+                  borderLeft: `4px solid ${tier.color}`,
+                  boxShadow: idx === 0 ? `0 0 16px ${tier.color}35` : 'none',
                 }}>
-                  <div style={{ fontSize: '14px', fontWeight: 700, color: tier.color }}>{tier.label}</div>
-                  <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)' }}>{tier.score}</div>
+                  <div style={{ fontSize: '16px', fontWeight: 700, color: tier.color }}>{tier.label}</div>
+                  <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>{tier.score}</div>
                 </td>
                 <AnimatePresence mode="popLayout">
                   {displayedVerticals.map(v => {
@@ -635,7 +720,7 @@ function DistributionGrid({ distribution, onCellClick }: DistributionGridProps) 
                         initial={{ opacity: 0, width: 0 }}
                         animate={{ opacity: 1, width: 'auto' }}
                         exit={{ opacity: 0, width: 0 }}
-                        transition={{ duration: 0.2 }}
+                        transition={{ duration: 0.25 }}
                         onClick={() => {
                           if (v === 'Other') {
                             setShowOtherModal(true);
@@ -650,18 +735,18 @@ function DistributionGrid({ distribution, onCellClick }: DistributionGridProps) 
                           }
                         }}
                         style={{
-                          padding: '8px',
+                          padding: '12px',
                           textAlign: 'center',
-                          borderRadius: '8px',
-                          background: value > 0 ? `${tier.color}${Math.min(15 + Math.round((value / maxValue) * 40), 55).toString(16)}` : 'rgba(255,255,255,0.02)',
-                          border: v === 'Other' ? `1px dashed ${ALGOLIA_PURPLE}50` : '1px solid rgba(255,255,255,0.06)',
+                          borderRadius: '10px',
+                          background: value > 0 ? `${tier.color}${Math.min(18 + Math.round((value / maxValue) * 40), 58).toString(16)}` : 'rgba(255,255,255,0.02)',
+                          border: v === 'Other' ? `2px dashed ${ALGOLIA_PURPLE}60` : '1px solid rgba(255,255,255,0.08)',
                           cursor: value > 0 || v === 'Other' ? 'pointer' : 'default',
                           transition: 'all 0.15s ease',
                         }}
                         onMouseEnter={(e) => {
                           if (value > 0 || v === 'Other') {
-                            e.currentTarget.style.transform = 'scale(1.03)';
-                            e.currentTarget.style.boxShadow = `0 2px 12px ${v === 'Other' ? ALGOLIA_PURPLE : tier.color}40`;
+                            e.currentTarget.style.transform = 'scale(1.04)';
+                            e.currentTarget.style.boxShadow = `0 4px 16px ${v === 'Other' ? ALGOLIA_PURPLE : tier.color}50`;
                           }
                         }}
                         onMouseLeave={(e) => {
@@ -669,11 +754,11 @@ function DistributionGrid({ distribution, onCellClick }: DistributionGridProps) 
                           e.currentTarget.style.boxShadow = 'none';
                         }}
                       >
-                        <div style={{ fontSize: '16px', fontWeight: 700, color: value > 0 ? 'white' : 'rgba(255,255,255,0.15)' }}>
+                        <div style={{ fontSize: '20px', fontWeight: 700, color: value > 0 ? 'white' : 'rgba(255,255,255,0.15)' }}>
                           {value > 0 ? value.toLocaleString() : '—'}
                         </div>
                         {value > 0 && (
-                          <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', marginTop: '1px' }}>
+                          <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', marginTop: '2px' }}>
                             {pct(value)}%
                           </div>
                         )}
@@ -682,16 +767,16 @@ function DistributionGrid({ distribution, onCellClick }: DistributionGridProps) 
                   })}
                 </AnimatePresence>
                 <td style={{
-                  padding: '10px',
+                  padding: '14px',
                   textAlign: 'center',
-                  borderRadius: '8px',
-                  background: 'rgba(255,255,255,0.03)',
-                  border: `1px solid ${tier.color}30`,
+                  borderRadius: '10px',
+                  background: 'rgba(255,255,255,0.04)',
+                  border: `2px solid ${tier.color}40`,
                 }}>
-                  <div style={{ fontSize: '16px', fontWeight: 700, color: tier.color }}>
+                  <div style={{ fontSize: '20px', fontWeight: 700, color: tier.color }}>
                     {tier.total.toLocaleString()}
                   </div>
-                  <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>
+                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', marginTop: '2px' }}>
                     {pct(tier.total)}%
                   </div>
                 </td>
@@ -701,33 +786,10 @@ function DistributionGrid({ distribution, onCellClick }: DistributionGridProps) 
         </table>
       </motion.div>
 
-      {/* Footer with expand/collapse toggle */}
-      <Group justify="space-between" mt="sm">
-        <Text size="xs" c="dimmed">
-          Showing {isExpanded ? 'all' : 'top 5'} verticals
-          {!isExpanded && hiddenVerticalsCount > 0 && (
-            <> • <span style={{ color: ALGOLIA_PURPLE }}>{hiddenVerticalsCount} more</span> in "Other"</>
-          )}
-        </Text>
-        {hiddenVerticalsCount > 0 && (
-          <Button
-            variant="subtle"
-            size="xs"
-            color="blue"
-            onClick={() => setIsExpanded(!isExpanded)}
-            rightSection={
-              <motion.span
-                animate={{ rotate: isExpanded ? 180 : 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                ▼
-              </motion.span>
-            }
-          >
-            {isExpanded ? 'Collapse' : `Expand all ${allVerticals.length}`}
-          </Button>
-        )}
-      </Group>
+      {/* Footer info */}
+      <Text size="sm" c="dimmed" mt="sm" ta="center">
+        Click any cell to view companies • {isExpanded ? 'Showing all verticals' : 'Click "Expand" to see all verticals'}
+      </Text>
     </>
   );
 }
