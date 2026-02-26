@@ -90,6 +90,7 @@ class User(Base):
     alert_rules = relationship("AlertRule", back_populates="user")
     alerts = relationship("Alert", back_populates="user")
     alert_preferences = relationship("AlertPreference", back_populates="user", uselist=False)
+    uploaded_lists = relationship("UploadedList", back_populates="user")
 
     __table_args__ = (
         Index("idx_users_email", "email"),

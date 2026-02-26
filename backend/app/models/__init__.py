@@ -12,6 +12,7 @@ Tables by category:
 - Versioning: intel_snapshots, change_events, snapshot_comparisons
 - Alerts: alert_rules, alerts, alert_digests, alert_preferences
 - Platform: users, teams, territories, account_assignments, api_usage, api_budgets, audit_log
+- Lists: uploaded_lists, uploaded_list_items, list_processing_queue (CSV import)
 """
 
 # Core models
@@ -100,6 +101,16 @@ from .platform import (
     JobExecution,
 )
 
+# List models (CSV import)
+from .lists import (
+    UploadedList,
+    UploadedListItem,
+    ListProcessingQueue,
+    COLUMN_MAPPINGS,
+    detect_column_mapping,
+    has_required_columns,
+)
+
 # All models for easy access
 __all__ = [
     # Core
@@ -163,6 +174,13 @@ __all__ = [
     "AuditLog",
     "SystemMetric",
     "JobExecution",
+    # Lists (CSV import)
+    "UploadedList",
+    "UploadedListItem",
+    "ListProcessingQueue",
+    "COLUMN_MAPPINGS",
+    "detect_column_mapping",
+    "has_required_columns",
 ]
 
 # Model registry by category
@@ -185,6 +203,9 @@ ALERT_MODELS = [AlertRule, Alert, AlertDigest, AlertPreference]
 # Platform
 PLATFORM_MODELS = [User, Team, Territory, AccountAssignment, APIUsage, APIBudget, APICostConfig, AuditLog, SystemMetric, JobExecution]
 
+# Lists (CSV import)
+LIST_MODELS = [UploadedList, UploadedListItem, ListProcessingQueue]
+
 ALL_MODELS = (
     CORE_MODELS +
     TARGET_MODELS +
@@ -193,7 +214,8 @@ ALL_MODELS = (
     INTELLIGENCE_MODELS +
     VERSIONING_MODELS +
     ALERT_MODELS +
-    PLATFORM_MODELS
+    PLATFORM_MODELS +
+    LIST_MODELS
 )
 
 

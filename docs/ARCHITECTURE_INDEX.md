@@ -3,7 +3,7 @@
 **Version:** 2.0
 **Last Updated:** 2026-02-25
 **Status:** Canonical Reference
-**Documents:** 18 architecture docs (~15,000 lines)
+**Documents:** 19 architecture docs (~16,200 lines)
 
 ---
 
@@ -29,6 +29,7 @@
 | **API cost tracking & budgets** | [API_COST_TRACKING.md](./API_COST_TRACKING.md) |
 | **Observability & metrics** | [OBSERVABILITY_METRICS.md](./OBSERVABILITY_METRICS.md) |
 | **Testing & self-correction** | [TESTING_ARCHITECTURE.md](./TESTING_ARCHITECTURE.md) |
+| **CSV upload & list import** | [CSV_UPLOAD_ARCHITECTURE.md](./CSV_UPLOAD_ARCHITECTURE.md) |
 
 ---
 
@@ -416,4 +417,5 @@ partnerforge/
 | Frontend & UX | 2 | ~1,600 |
 | Reference Materials | 3 | ~1,450 |
 | **Testing & Quality (P0)** | 1 | ~1,800 |
-| **TOTAL** | **18 documents** | **~15,000 lines** |
+| **Data Ingestion (P0)** | 1 | ~1,245 |
+| **TOTAL** | **19 documents** | **~16,245 lines** |
