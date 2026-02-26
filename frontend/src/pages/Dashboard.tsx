@@ -267,12 +267,12 @@ export function Dashboard() {
             border: '1px solid rgba(255, 255, 255, 0.08)',
           }}
         >
-          <Group justify="space-between" mb="md">
-            <Group gap="md">
-              <Text fw={700} c="white" size="lg">Target Distribution</Text>
-              <Badge size="md" variant="light" color="blue">by Vertical × ICP Tier</Badge>
+          <Group justify="space-between" mb="sm">
+            <Group gap="sm">
+              <Text fw={700} c="white" size="xl">Target Distribution</Text>
+              <Text size="sm" c="dimmed">Verticals ranked by Hot leads priority</Text>
             </Group>
-            <Text size="sm" c="dimmed">Click any cell to see companies</Text>
+            <Text size="sm" c="dimmed">Click cells to drill down</Text>
           </Group>
           {distribution ? (
             <DistributionGrid distribution={distribution} onCellClick={handleCellClick} />
@@ -602,45 +602,26 @@ function DistributionGrid({ distribution, onCellClick }: DistributionGridProps) 
         </div>
       </Modal>
 
-      {/* PROMINENT Expand/Collapse Toggle - TOP OF GRID */}
-      <Group justify="space-between" mb="md">
-        <Group gap="md">
-          <Text size="md" c="dimmed">
-            {isExpanded ? `All ${allVerticals.length} verticals` : 'Top 5 verticals'}
-          </Text>
-          {!isExpanded && hiddenVerticalsCount > 0 && (
-            <Badge
-              size="lg"
-              variant="light"
-              color="violet"
-              style={{ cursor: 'pointer', fontSize: '14px' }}
-              onClick={() => setShowOtherModal(true)}
-            >
-              +{hiddenVerticalsCount} more in "Other"
-            </Badge>
-          )}
-        </Group>
-
-        {/* BIG Expand/Collapse Button */}
+      {/* Expand/Collapse Toggle - Clean, no redundancy */}
+      <Group justify="flex-end" mb="sm">
         {hiddenVerticalsCount > 0 && (
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Button
               variant={isExpanded ? 'light' : 'gradient'}
               gradient={{ from: ALGOLIA_BLUE, to: ALGOLIA_PURPLE }}
-              size="lg"
+              size="md"
               onClick={() => setIsExpanded(!isExpanded)}
               leftSection={
                 <motion.div
                   animate={{ rotate: isExpanded ? 180 : 0 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <IconChevronDown size={22} />
+                  <IconChevronDown size={20} />
                 </motion.div>
               }
-              rightSection={<IconLayoutGrid size={18} />}
-              style={{ fontWeight: 600, fontSize: '16px' }}
+              style={{ fontWeight: 600 }}
             >
-              {isExpanded ? 'Collapse to Top 5' : `Expand All ${allVerticals.length} Verticals`}
+              {isExpanded ? 'Show Top 5' : `Show All ${allVerticals.length}`}
             </Button>
           </motion.div>
         )}

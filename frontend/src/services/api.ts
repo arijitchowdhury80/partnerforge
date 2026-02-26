@@ -206,7 +206,7 @@ export async function getDistribution(): Promise<DistributionData> {
     }
   }
 
-  // Sort verticals by total count - EXCLUDE "Unknown" from top 5
+  // Build vertical stats
   const verticalTotals = Array.from(verticalSet).map(v => ({
     name: v,
     shortName: getShortName(v),
@@ -215,17 +215,25 @@ export async function getDistribution(): Promise<DistributionData> {
     warm: counts[v]?.warm || 0,
     cold: counts[v]?.cold || 0,
   }));
-  verticalTotals.sort((a, b) => b.total - a.total);
 
-  // IMPORTANT: "Unknown" is not a real vertical - always put it in "Other"
-  // Top 5 should only show REAL industry verticals
+  // EXCLUDE "Unknown" - it's not a real vertical, always goes to "Other"
   const realVerticals = verticalTotals.filter(v => v.name !== 'Unknown');
   const unknownVertical = verticalTotals.find(v => v.name === 'Unknown');
 
+  // SORT BY PRIORITY: Hot leads are most valuable, then Warm, then Cold
+  // Weighted score: Hot × 1000 + Warm × 10 + Cold × 1
+  // This ensures Automotive (4 hot) ranks above Unknown (309 cold)
+  realVerticals.sort((a, b) => {
+    const scoreA = a.hot * 1000 + a.warm * 10 + a.cold;
+    const scoreB = b.hot * 1000 + b.warm * 10 + b.cold;
+    return scoreB - scoreA;
+  });
+
+  // Top 5 = real verticals with highest priority score (Hot > Warm > Cold)
   const topVerticals = realVerticals.slice(0, 5).map(v => v.name);
   const otherVerticals = [...realVerticals.slice(5)];
   if (unknownVertical) {
-    otherVerticals.push(unknownVertical); // Add Unknown to Other
+    otherVerticals.push(unknownVertical); // Unknown always goes to Other
   }
   const hiddenCount = otherVerticals.length;
 
@@ -241,10 +249,10 @@ export async function getDistribution(): Promise<DistributionData> {
   }
 
   // Build tier data with ALL verticals (for expanded view)
-  // Sort: real verticals by total (descending), then Unknown at the end
-  const sortedAllVerticals = [...realVerticals];
+  // Already sorted by priority (Hot > Warm > Cold), Unknown at the end
+  const sortedAllVerticals = [...realVerticals]; // Already sorted by priority
   if (unknownVertical) {
-    sortedAllVerticals.push(unknownVertical);
+    sortedAllVerticals.push(unknownVertical); // Unknown always last
   }
   const allVerticalNames = sortedAllVerticals.map(v => v.name);
 
