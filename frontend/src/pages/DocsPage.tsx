@@ -155,9 +155,24 @@ function MermaidDiagram({ code, index }: { code: string; index: number }) {
   // Clean up the mermaid code
   const cleanCode = code.trim();
 
-  // Simple base64 encoding of the raw mermaid code
-  // Using TextEncoder for proper UTF-8 handling
-  const base64 = btoa(cleanCode);
+  // Base64 encoding with UTF-8 support (handles emojis and special characters)
+  // btoa() alone fails on non-ASCII, so we use encodeURIComponent + unescape trick
+  let base64: string;
+  try {
+    base64 = btoa(unescape(encodeURIComponent(cleanCode)));
+  } catch {
+    // If encoding fails, show fallback
+    return (
+      <Paper key={`mermaid-${index}`} p="md" bg="dark.8" radius="md" my="md" style={{ overflow: 'auto' }}>
+        <Group justify="space-between" mb="xs">
+          <Badge size="sm" color="yellow" variant="light">Mermaid (encoding error)</Badge>
+        </Group>
+        <Code block style={{ whiteSpace: 'pre', fontSize: '13px' }}>
+          {cleanCode}
+        </Code>
+      </Paper>
+    );
+  }
   const imageUrl = `https://mermaid.ink/img/${base64}`;
 
   if (error) {
