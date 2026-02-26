@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
-import { motion, useMotionValue, useTransform, animate, useInView } from 'framer-motion';
+import { motion, useMotionValue, useTransform, animate, useInView, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import {
   Container,
@@ -449,14 +449,16 @@ function HeroSection({ stats, partnerKey, partnerName }: HeroSectionProps) {
   );
 }
 
-// Compact Distribution Grid
+// Compact Distribution Grid with Expand/Collapse Animation
 interface DistributionGridProps {
   distribution: DistributionData;
   onCellClick: (cell: CellSelection) => void;
 }
 
 function DistributionGrid({ distribution, onCellClick }: DistributionGridProps) {
-  const { verticals, tiers, grandTotal } = distribution;
+  const { verticals, allVerticals, tiers, grandTotal, hiddenVerticalsCount } = distribution;
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [showOtherModal, setShowOtherModal] = useState(false);
 
   const pct = (n: number) => grandTotal > 0 ? ((n / grandTotal) * 100).toFixed(1) : '0.0';
 
@@ -471,105 +473,262 @@ function DistributionGrid({ distribution, onCellClick }: DistributionGridProps) 
       'Art And Entertainment': 'Entertainment',
       'Style And Fashion': 'Fashion',
       'Food And Drink': 'F&B',
+      'Home And Garden': 'Home',
+      'Hobbies And Interests': 'Hobbies',
+      'Family And Parenting': 'Family',
+      'Religion And Spirituality': 'Religion',
     };
     return map[name] || name;
   };
 
+  // Get displayed verticals based on expanded state
+  const displayedVerticals = isExpanded
+    ? allVerticals.map(v => v.name)
+    : verticals;
+
+  // Hidden verticals for the modal (excludes top 5)
+  const hiddenVerticals = allVerticals.slice(5);
+
   return (
-    <div style={{ overflowX: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '4px' }}>
-        <thead>
-          <tr>
-            <th style={{ width: '100px', padding: '8px', textAlign: 'left', fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase' }}>
-              ICP Tier
-            </th>
-            {verticals.map(v => (
-              <th key={v} style={{ padding: '8px', textAlign: 'center', fontSize: '12px', fontWeight: 600, color: 'white' }}>
-                {shortName(v)}
+    <>
+      {/* Other Verticals Modal */}
+      <Modal
+        opened={showOtherModal}
+        onClose={() => setShowOtherModal(false)}
+        title={
+          <Group gap="sm">
+            <Text fw={600} c="white">All Verticals</Text>
+            <Badge size="sm" color="gray">{allVerticals.length} total</Badge>
+          </Group>
+        }
+        size="lg"
+        styles={{
+          header: { background: '#1a1a2e', borderBottom: '1px solid rgba(255,255,255,0.1)' },
+          content: { background: '#1a1a2e' },
+          body: { padding: '20px' },
+        }}
+      >
+        <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+          <Table
+            striped
+            highlightOnHover
+            styles={{
+              table: { background: 'transparent' },
+              tr: { borderColor: 'rgba(255,255,255,0.1)' },
+              td: { color: 'white', padding: '10px 12px' },
+              th: { color: 'rgba(255,255,255,0.6)', padding: '10px 12px', fontSize: '11px' },
+            }}
+          >
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th>Vertical</Table.Th>
+                <Table.Th style={{ textAlign: 'center' }}>Hot</Table.Th>
+                <Table.Th style={{ textAlign: 'center' }}>Warm</Table.Th>
+                <Table.Th style={{ textAlign: 'center' }}>Cold</Table.Th>
+                <Table.Th style={{ textAlign: 'center' }}>Total</Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
+              {allVerticals.map((v, idx) => (
+                <Table.Tr key={v.name} style={{ opacity: idx < 5 ? 1 : 0.8 }}>
+                  <Table.Td>
+                    <Group gap="xs">
+                      {idx < 5 && <Badge size="xs" color="blue" variant="light">Top 5</Badge>}
+                      <Text size="sm">{v.shortName}</Text>
+                    </Group>
+                  </Table.Td>
+                  <Table.Td style={{ textAlign: 'center' }}>
+                    <Badge size="sm" color="red" variant={v.hot > 0 ? 'filled' : 'light'}>
+                      {v.hot}
+                    </Badge>
+                  </Table.Td>
+                  <Table.Td style={{ textAlign: 'center' }}>
+                    <Badge size="sm" color="orange" variant={v.warm > 0 ? 'filled' : 'light'}>
+                      {v.warm}
+                    </Badge>
+                  </Table.Td>
+                  <Table.Td style={{ textAlign: 'center' }}>
+                    <Badge size="sm" color="gray" variant={v.cold > 0 ? 'filled' : 'light'}>
+                      {v.cold}
+                    </Badge>
+                  </Table.Td>
+                  <Table.Td style={{ textAlign: 'center' }}>
+                    <Text fw={600} size="sm">{v.total.toLocaleString()}</Text>
+                  </Table.Td>
+                </Table.Tr>
+              ))}
+            </Table.Tbody>
+          </Table>
+        </div>
+      </Modal>
+
+      {/* Grid Container with Animation */}
+      <motion.div
+        layout
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
+        style={{ overflowX: 'auto' }}
+      >
+        <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '4px' }}>
+          <thead>
+            <tr>
+              <th style={{ width: '100px', padding: '8px', textAlign: 'left', fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase' }}>
+                ICP Tier
               </th>
-            ))}
-            <th style={{ padding: '8px', textAlign: 'center', fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase' }}>
-              Total
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {tiers.map((tier, idx) => (
-            <tr key={tier.key}>
-              <td style={{
-                padding: '8px 10px',
-                borderRadius: '8px',
-                background: `${tier.color}15`,
-                borderLeft: `3px solid ${tier.color}`,
-                // Hot row gets extra glow
-                boxShadow: idx === 0 ? `0 0 12px ${tier.color}30` : 'none',
-              }}>
-                <div style={{ fontSize: '14px', fontWeight: 700, color: tier.color }}>{tier.label}</div>
-                <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)' }}>{tier.score}</div>
-              </td>
-              {verticals.map(v => {
-                const value = tier.values[v] || 0;
-                const maxValue = Math.max(...Object.values(tier.values), 1);
-                return (
-                  <td
+              <AnimatePresence mode="popLayout">
+                {displayedVerticals.map(v => (
+                  <motion.th
                     key={v}
-                    onClick={() => onCellClick({
-                      tier: tier.key,
-                      tierLabel: tier.label,
-                      vertical: v,
-                      count: value,
-                      color: tier.color,
-                    })}
-                    style={{
-                      padding: '8px',
-                      textAlign: 'center',
-                      borderRadius: '8px',
-                      background: value > 0 ? `${tier.color}${Math.min(15 + Math.round((value / maxValue) * 40), 55).toString(16)}` : 'rgba(255,255,255,0.02)',
-                      border: '1px solid rgba(255,255,255,0.06)',
-                      cursor: value > 0 ? 'pointer' : 'default',
-                      transition: 'all 0.15s ease',
-                    }}
-                    onMouseEnter={(e) => {
-                      if (value > 0) {
-                        e.currentTarget.style.transform = 'scale(1.03)';
-                        e.currentTarget.style.boxShadow = `0 2px 12px ${tier.color}40`;
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'scale(1)';
-                      e.currentTarget.style.boxShadow = 'none';
-                    }}
+                    initial={{ opacity: 0, width: 0 }}
+                    animate={{ opacity: 1, width: 'auto' }}
+                    exit={{ opacity: 0, width: 0 }}
+                    transition={{ duration: 0.2 }}
+                    style={{ padding: '8px', textAlign: 'center', fontSize: '12px', fontWeight: 600, color: 'white' }}
                   >
-                    <div style={{ fontSize: '16px', fontWeight: 700, color: value > 0 ? 'white' : 'rgba(255,255,255,0.15)' }}>
-                      {value > 0 ? value.toLocaleString() : '—'}
-                    </div>
-                    {value > 0 && (
-                      <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', marginTop: '1px' }}>
-                        {pct(value)}%
-                      </div>
+                    {v === 'Other' ? (
+                      <Tooltip label={`Click to see ${hiddenVerticalsCount} hidden verticals`} withArrow>
+                        <span
+                          onClick={() => setShowOtherModal(true)}
+                          style={{
+                            cursor: 'pointer',
+                            color: ALGOLIA_PURPLE,
+                            textDecoration: 'underline',
+                            textDecorationStyle: 'dotted',
+                          }}
+                        >
+                          Other ({hiddenVerticalsCount})
+                        </span>
+                      </Tooltip>
+                    ) : (
+                      shortName(v)
                     )}
-                  </td>
-                );
-              })}
-              <td style={{
-                padding: '10px',
-                textAlign: 'center',
-                borderRadius: '8px',
-                background: 'rgba(255,255,255,0.03)',
-                border: `1px solid ${tier.color}30`,
-              }}>
-                <div style={{ fontSize: '16px', fontWeight: 700, color: tier.color }}>
-                  {tier.total.toLocaleString()}
-                </div>
-                <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>
-                  {pct(tier.total)}%
-                </div>
-              </td>
+                  </motion.th>
+                ))}
+              </AnimatePresence>
+              <th style={{ padding: '8px', textAlign: 'center', fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase' }}>
+                Total
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {tiers.map((tier, idx) => (
+              <tr key={tier.key}>
+                <td style={{
+                  padding: '8px 10px',
+                  borderRadius: '8px',
+                  background: `${tier.color}15`,
+                  borderLeft: `3px solid ${tier.color}`,
+                  boxShadow: idx === 0 ? `0 0 12px ${tier.color}30` : 'none',
+                }}>
+                  <div style={{ fontSize: '14px', fontWeight: 700, color: tier.color }}>{tier.label}</div>
+                  <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)' }}>{tier.score}</div>
+                </td>
+                <AnimatePresence mode="popLayout">
+                  {displayedVerticals.map(v => {
+                    // For "Other" in collapsed view, sum up all hidden verticals
+                    const value = v === 'Other'
+                      ? hiddenVerticals.reduce((sum, hv) => sum + (tier.values[hv.name] || 0), 0)
+                      : (tier.values[v] || 0);
+                    const maxValue = Math.max(...Object.values(tier.values), 1);
+                    return (
+                      <motion.td
+                        key={v}
+                        initial={{ opacity: 0, width: 0 }}
+                        animate={{ opacity: 1, width: 'auto' }}
+                        exit={{ opacity: 0, width: 0 }}
+                        transition={{ duration: 0.2 }}
+                        onClick={() => {
+                          if (v === 'Other') {
+                            setShowOtherModal(true);
+                          } else {
+                            onCellClick({
+                              tier: tier.key,
+                              tierLabel: tier.label,
+                              vertical: v,
+                              count: value,
+                              color: tier.color,
+                            });
+                          }
+                        }}
+                        style={{
+                          padding: '8px',
+                          textAlign: 'center',
+                          borderRadius: '8px',
+                          background: value > 0 ? `${tier.color}${Math.min(15 + Math.round((value / maxValue) * 40), 55).toString(16)}` : 'rgba(255,255,255,0.02)',
+                          border: v === 'Other' ? `1px dashed ${ALGOLIA_PURPLE}50` : '1px solid rgba(255,255,255,0.06)',
+                          cursor: value > 0 || v === 'Other' ? 'pointer' : 'default',
+                          transition: 'all 0.15s ease',
+                        }}
+                        onMouseEnter={(e) => {
+                          if (value > 0 || v === 'Other') {
+                            e.currentTarget.style.transform = 'scale(1.03)';
+                            e.currentTarget.style.boxShadow = `0 2px 12px ${v === 'Other' ? ALGOLIA_PURPLE : tier.color}40`;
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'scale(1)';
+                          e.currentTarget.style.boxShadow = 'none';
+                        }}
+                      >
+                        <div style={{ fontSize: '16px', fontWeight: 700, color: value > 0 ? 'white' : 'rgba(255,255,255,0.15)' }}>
+                          {value > 0 ? value.toLocaleString() : '—'}
+                        </div>
+                        {value > 0 && (
+                          <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', marginTop: '1px' }}>
+                            {pct(value)}%
+                          </div>
+                        )}
+                      </motion.td>
+                    );
+                  })}
+                </AnimatePresence>
+                <td style={{
+                  padding: '10px',
+                  textAlign: 'center',
+                  borderRadius: '8px',
+                  background: 'rgba(255,255,255,0.03)',
+                  border: `1px solid ${tier.color}30`,
+                }}>
+                  <div style={{ fontSize: '16px', fontWeight: 700, color: tier.color }}>
+                    {tier.total.toLocaleString()}
+                  </div>
+                  <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>
+                    {pct(tier.total)}%
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </motion.div>
+
+      {/* Footer with expand/collapse toggle */}
+      <Group justify="space-between" mt="sm">
+        <Text size="xs" c="dimmed">
+          Showing {isExpanded ? 'all' : 'top 5'} verticals
+          {!isExpanded && hiddenVerticalsCount > 0 && (
+            <> • <span style={{ color: ALGOLIA_PURPLE }}>{hiddenVerticalsCount} more</span> in "Other"</>
+          )}
+        </Text>
+        {hiddenVerticalsCount > 0 && (
+          <Button
+            variant="subtle"
+            size="xs"
+            color="blue"
+            onClick={() => setIsExpanded(!isExpanded)}
+            rightSection={
+              <motion.span
+                animate={{ rotate: isExpanded ? 180 : 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                ▼
+              </motion.span>
+            }
+          >
+            {isExpanded ? 'Collapse' : `Expand all ${allVerticals.length}`}
+          </Button>
+        )}
+      </Group>
+    </>
   );
 }
 
