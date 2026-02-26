@@ -384,9 +384,14 @@ export interface DashboardStats {
   enriched_companies: number;
   hot_leads: number;
   warm_leads: number;
+  cool_leads?: number;
+  cold_leads?: number;
   modules_active: number;
   waves_configured: number;
   last_enrichment?: string;
+  by_partner?: Record<string, number>;
+  by_vertical?: Record<string, number>;
+  avg_icp_score?: number;
 }
 
 export interface FilterState {

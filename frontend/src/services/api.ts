@@ -117,12 +117,17 @@ export async function getStats(): Promise<DashboardStats> {
   }
 
   return {
-    total_targets: count || data.length,
-    by_status: { hot, warm, cool, cold },
+    total_companies: count || data.length,
+    enriched_companies: scoredCount,
+    hot_leads: hot,
+    warm_leads: warm,
+    cool_leads: cool,
+    cold_leads: cold,
+    modules_active: 2, // SimilarWeb + BuiltWith
+    waves_configured: 1,
     by_partner: byPartner,
     by_vertical: byVertical,
     avg_icp_score: scoredCount > 0 ? Math.round(totalScore / scoredCount) : 0,
-    enriched_count: scoredCount,
   };
 }
 
