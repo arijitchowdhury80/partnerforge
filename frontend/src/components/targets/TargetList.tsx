@@ -297,9 +297,19 @@ function FilterHeader({
                       <Checkbox
                         checked={isChecked}
                         onChange={() => {}}
-                        size="sm"
+                        size="md"
                         color="blue"
-                        styles={{ input: { cursor: 'pointer' } }}
+                        styles={{
+                          input: {
+                            cursor: 'pointer',
+                            backgroundColor: isChecked ? '#3b82f6' : '#ffffff',
+                            borderColor: isChecked ? '#3b82f6' : '#d1d5db',
+                            borderWidth: 2,
+                          },
+                          icon: {
+                            color: '#ffffff',
+                          },
+                        }}
                       />
                       {colorMap?.[option.value] ? (
                         <Badge size="md" color={colorMap[option.value]} variant="filled" tt="capitalize" styles={{ root: { color: '#fff' } }}>
