@@ -30,13 +30,13 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Sidebar } from './Sidebar';
 import { AlgoliaLogo } from '@/components/common/AlgoliaLogo';
 
-// Light theme colors
-const ALGOLIA_BLUE = '#003DFF';
-const GRAY_50 = '#f8fafc';
-const GRAY_100 = '#f1f5f9';
-const GRAY_200 = '#e2e8f0';
-const GRAY_700 = '#334155';
-const GRAY_900 = '#0f172a';
+// Algolia Brand Colors (Official)
+const ALGOLIA_NEBULA_BLUE = '#003DFF';   // Primary - CTAs, headers
+const ALGOLIA_SPACE_GRAY = '#21243D';    // Body text, headings
+const ALGOLIA_PURPLE = '#5468FF';        // Accents, highlights
+const ALGOLIA_WHITE = '#FFFFFF';         // Backgrounds
+const ALGOLIA_LIGHT_GRAY = '#F5F5F7';    // Alternating sections
+const ALGOLIA_BORDER = '#E8E8ED';        // Borders
 
 export function AppShell() {
   const [opened, { toggle }] = useDisclosure();
@@ -62,16 +62,17 @@ export function AppShell() {
       padding="md"
       styles={{
         main: {
-          background: GRAY_50,
+          background: ALGOLIA_LIGHT_GRAY,
           minHeight: '100vh',
+          fontFamily: "'Source Sans 3', 'Source Sans Pro', -apple-system, BlinkMacSystemFont, sans-serif",
         },
         navbar: {
-          background: 'white',
-          borderRight: `1px solid ${GRAY_200}`,
+          background: ALGOLIA_WHITE,
+          borderRight: `1px solid ${ALGOLIA_BORDER}`,
         },
         header: {
-          background: 'white',
-          borderBottom: `1px solid ${GRAY_200}`,
+          background: ALGOLIA_WHITE,
+          borderBottom: `1px solid ${ALGOLIA_BORDER}`,
         },
       }}
     >
@@ -80,12 +81,12 @@ export function AppShell() {
         <Group h="100%" px="lg" justify="space-between">
           {/* Left: Logo */}
           <Group gap="md">
-            <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" color={GRAY_700} />
+            <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" color={ALGOLIA_SPACE_GRAY} />
 
             <Group gap="sm">
               {/* Algolia Logo */}
-              <AlgoliaLogo size={28} />
-              <Title order={4} c={GRAY_900} fw={600}>
+              <AlgoliaLogo size={32} />
+              <Title order={3} c={ALGOLIA_SPACE_GRAY} fw={700} style={{ fontFamily: "'Source Sans 3', sans-serif" }}>
                 PartnerForge
               </Title>
             </Group>
@@ -142,11 +143,12 @@ export function AppShell() {
               </Menu.Dropdown>
             </Menu>
 
-            {/* Version Badge */}
+            {/* Version Badge - Algolia Brand */}
             <Badge
               variant="gradient"
-              gradient={{ from: ALGOLIA_BLUE, to: '#5468FF' }}
-              size="sm"
+              gradient={{ from: ALGOLIA_NEBULA_BLUE, to: ALGOLIA_PURPLE }}
+              size="lg"
+              style={{ fontWeight: 700, fontSize: 14, padding: '8px 16px' }}
             >
               v3.0
             </Badge>

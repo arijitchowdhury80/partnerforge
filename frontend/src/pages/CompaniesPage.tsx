@@ -36,7 +36,14 @@ import { getCompanies } from '@/services/api';
 import { TargetList, type ColumnFilter } from '@/components/targets/TargetList';
 
 // Version for deployment tracking
-const VERSION = 'v2.5.0-WHITE-THEME';
+const VERSION = 'v3.0-ALGOLIA-BRAND';
+
+// Algolia Brand Colors (Official)
+const ALGOLIA_NEBULA_BLUE = '#003DFF';
+const ALGOLIA_SPACE_GRAY = '#21243D';
+const ALGOLIA_PURPLE = '#5468FF';
+const ALGOLIA_LIGHT_GRAY = '#F5F5F7';
+const ALGOLIA_BORDER = '#E8E8ED';
 
 // =============================================================================
 // Companies Page Component

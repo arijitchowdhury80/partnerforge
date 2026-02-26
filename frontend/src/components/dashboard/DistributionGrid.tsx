@@ -6,6 +6,8 @@
  * - Product View: Rows = Products, Cols = Verticals
  * - Vertical View: Rows = Verticals, Cols = ICP Tiers
  * - Account View: Simple paginated list
+ *
+ * Enterprise-grade styling with Algolia branding for maximum readability.
  */
 
 import { useMemo, useState } from 'react';
@@ -53,6 +55,18 @@ interface GridRow {
 // Constants
 // =============================================================================
 
+// Algolia Brand Colors
+const HEADER_BG = '#1e293b';
+const HEADER_BG_LIGHT = '#334155';
+const BODY_BG_WHITE = '#ffffff';
+const BODY_BG_ALT = '#f8fafc';
+const TOTALS_BG = '#e2e8f0';
+const TOTALS_HIGHLIGHT = '#dbeafe';
+const TEXT_DARK = '#0f172a';
+const TEXT_MUTED = '#64748b';
+const TEXT_LIGHT_MUTED = '#94a3b8';
+const ALGOLIA_BLUE = '#1d4ed8';
+
 // Known partners
 const PARTNERS = ['Adobe', 'Amplience', 'Spryker', 'Shopify', 'BigCommerce', 'Other'];
 
@@ -72,9 +86,9 @@ const VERTICALS = ['Automotive', 'Retail', 'Healthcare', 'Finance', 'Media', 'Te
 
 // ICP Tiers (3-tier system)
 const ICP_TIERS = [
-  { key: 'hot', label: 'HOT (80-100)', color: '#ef4444', min: 80, max: 100 },
-  { key: 'warm', label: 'WARM (40-79)', color: '#f97316', min: 40, max: 79 },
-  { key: 'cold', label: 'COLD (0-39)', color: '#6b7280', min: 0, max: 39 },
+  { key: 'hot', label: 'HOT (80-100)', color: '#dc2626', min: 80, max: 100 },
+  { key: 'warm', label: 'WARM (40-79)', color: '#ea580c', min: 40, max: 79 },
+  { key: 'cold', label: 'COLD (0-39)', color: '#64748b', min: 0, max: 39 },
 ];
 
 // =============================================================================
@@ -124,14 +138,9 @@ function getIcpTier(score: number | null | undefined): string {
   return 'cold';
 }
 
-function getIcpTierLabel(tierKey: string): string {
-  const tier = ICP_TIERS.find((t) => t.key === tierKey);
-  return tier?.label || tierKey;
-}
-
 function getIcpTierColor(tierKey: string): string {
   const tier = ICP_TIERS.find((t) => t.key === tierKey);
-  return tier?.color || '#6b7280';
+  return tier?.color || '#64748b';
 }
 
 // =============================================================================
@@ -277,7 +286,7 @@ function buildVerticalIcpGrid(targets: DisplacementTarget[]): GridRow[] {
 }
 
 // =============================================================================
-// Cell Component
+// Cell Component - Enterprise Grade Visibility
 // =============================================================================
 
 interface GridCellProps {
@@ -287,9 +296,10 @@ interface GridCellProps {
   onClick: (rowKey: string, colKey: string, targets: DisplacementTarget[]) => void;
   isTotal?: boolean;
   tierColor?: string;
+  rowBg?: string;
 }
 
-function GridCellComponent({ cell, rowKey, colKey, onClick, isTotal = false, tierColor }: GridCellProps) {
+function GridCellComponent({ cell, rowKey, colKey, onClick, isTotal = false, tierColor, rowBg }: GridCellProps) {
   const handleClick = () => {
     if (cell.count > 0) {
       onClick(rowKey, colKey, cell.targets);
@@ -301,17 +311,19 @@ function GridCellComponent({ cell, rowKey, colKey, onClick, isTotal = false, tie
       onClick={handleClick}
       style={{
         cursor: cell.count > 0 ? 'pointer' : 'default',
-        backgroundColor: isTotal ? 'var(--mantine-color-gray-0)' : undefined,
+        backgroundColor: isTotal ? BODY_BG_ALT : rowBg || 'transparent',
         transition: 'background-color 150ms ease',
         textAlign: 'center',
-        borderLeft: tierColor ? `3px solid ${tierColor}` : undefined,
+        borderLeft: tierColor ? `4px solid ${tierColor}` : undefined,
+        padding: '14px 12px',
       }}
-      className={cell.count > 0 ? 'hover:bg-gray-100' : ''}
     >
       <Text
-        size="sm"
         fw={isTotal ? 700 : cell.count > 0 ? 600 : 400}
-        c={cell.count > 0 ? '#1e293b' : '#94a3b8'}
+        style={{
+          color: cell.count > 0 ? TEXT_DARK : TEXT_LIGHT_MUTED,
+          fontSize: '16px',
+        }}
       >
         {cell.count.toLocaleString()}
       </Text>
@@ -340,63 +352,91 @@ function AccountList({ targets, onRowClick }: AccountListProps) {
 
   return (
     <Stack gap="md">
-      <Table striped highlightOnHover withTableBorder withColumnBorders>
+      <Table withTableBorder withColumnBorders style={{ backgroundColor: BODY_BG_WHITE }}>
         <Table.Thead>
-          <Table.Tr>
-            <Table.Th>Company</Table.Th>
-            <Table.Th>Domain</Table.Th>
-            <Table.Th style={{ textAlign: 'center' }}>Partner</Table.Th>
-            <Table.Th style={{ textAlign: 'center' }}>Vertical</Table.Th>
-            <Table.Th style={{ textAlign: 'center' }}>ICP Score</Table.Th>
-            <Table.Th style={{ textAlign: 'center' }}>Traffic</Table.Th>
+          <Table.Tr style={{ backgroundColor: HEADER_BG }}>
+            <Table.Th style={{ backgroundColor: HEADER_BG, padding: '14px 16px' }}>
+              <Text style={{ fontSize: '14px', fontWeight: 700, color: 'white', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                Company
+              </Text>
+            </Table.Th>
+            <Table.Th style={{ backgroundColor: HEADER_BG, padding: '14px 16px' }}>
+              <Text style={{ fontSize: '14px', fontWeight: 700, color: 'white', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                Domain
+              </Text>
+            </Table.Th>
+            <Table.Th style={{ textAlign: 'center', backgroundColor: HEADER_BG, padding: '14px 16px' }}>
+              <Text style={{ fontSize: '14px', fontWeight: 700, color: 'white', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                Partner
+              </Text>
+            </Table.Th>
+            <Table.Th style={{ textAlign: 'center', backgroundColor: HEADER_BG, padding: '14px 16px' }}>
+              <Text style={{ fontSize: '14px', fontWeight: 700, color: 'white', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                Vertical
+              </Text>
+            </Table.Th>
+            <Table.Th style={{ textAlign: 'center', backgroundColor: HEADER_BG, padding: '14px 16px' }}>
+              <Text style={{ fontSize: '14px', fontWeight: 700, color: 'white', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                ICP Score
+              </Text>
+            </Table.Th>
+            <Table.Th style={{ textAlign: 'center', backgroundColor: HEADER_BG, padding: '14px 16px' }}>
+              <Text style={{ fontSize: '14px', fontWeight: 700, color: 'white', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                Traffic
+              </Text>
+            </Table.Th>
           </Table.Tr>
         </Table.Thead>
-        <Table.Tbody>
-          {paginatedTargets.map((target) => (
-            <Table.Tr
-              key={target.id}
-              onClick={() => onRowClick(target)}
-              style={{ cursor: 'pointer' }}
-            >
-              <Table.Td>
-                <Text fw={500}>{target.company_name || target.domain}</Text>
-              </Table.Td>
-              <Table.Td>
-                <Text size="sm" c="#64748b">{target.domain}</Text>
-              </Table.Td>
-              <Table.Td style={{ textAlign: 'center' }}>
-                <Badge size="sm" variant="light">
-                  {normalizePartner(target.partner_tech)}
-                </Badge>
-              </Table.Td>
-              <Table.Td style={{ textAlign: 'center' }}>
-                <Badge size="sm" variant="outline" color="gray">
-                  {normalizeVertical(target.vertical)}
-                </Badge>
-              </Table.Td>
-              <Table.Td style={{ textAlign: 'center' }}>
-                <Badge
-                  size="sm"
-                  color={
-                    (target.icp_score || 0) >= 80
-                      ? 'red'
-                      : (target.icp_score || 0) >= 40
-                      ? 'orange'
-                      : 'gray'
-                  }
-                >
-                  {target.icp_score || 0}
-                </Badge>
-              </Table.Td>
-              <Table.Td style={{ textAlign: 'center' }}>
-                <Text size="sm">
-                  {target.sw_monthly_visits
-                    ? `${(target.sw_monthly_visits / 1000000).toFixed(1)}M`
-                    : '-'}
-                </Text>
-              </Table.Td>
-            </Table.Tr>
-          ))}
+        <Table.Tbody style={{ backgroundColor: BODY_BG_WHITE }}>
+          {paginatedTargets.map((target, idx) => {
+            const rowBg = idx % 2 === 0 ? BODY_BG_WHITE : BODY_BG_ALT;
+            return (
+              <Table.Tr
+                key={target.id}
+                onClick={() => onRowClick(target)}
+                style={{ cursor: 'pointer', backgroundColor: rowBg }}
+              >
+                <Table.Td style={{ backgroundColor: rowBg, padding: '14px 16px' }}>
+                  <Text style={{ fontSize: '16px', fontWeight: 600, color: TEXT_DARK }}>
+                    {target.company_name || target.domain}
+                  </Text>
+                </Table.Td>
+                <Table.Td style={{ backgroundColor: rowBg, padding: '14px 16px' }}>
+                  <Text style={{ fontSize: '14px', color: TEXT_MUTED }}>{target.domain}</Text>
+                </Table.Td>
+                <Table.Td style={{ textAlign: 'center', backgroundColor: rowBg, padding: '14px 16px' }}>
+                  <Badge size="md" variant="filled" color="blue">
+                    {normalizePartner(target.partner_tech)}
+                  </Badge>
+                </Table.Td>
+                <Table.Td style={{ textAlign: 'center', backgroundColor: rowBg, padding: '14px 16px' }}>
+                  <Badge size="md" variant="outline" color="gray">
+                    {normalizeVertical(target.vertical)}
+                  </Badge>
+                </Table.Td>
+                <Table.Td style={{ textAlign: 'center', backgroundColor: rowBg, padding: '14px 16px' }}>
+                  <Badge
+                    size="md"
+                    variant="filled"
+                    style={{
+                      backgroundColor: (target.icp_score || 0) >= 80 ? '#dc2626' : (target.icp_score || 0) >= 40 ? '#ea580c' : '#64748b',
+                      color: 'white',
+                      fontWeight: 700,
+                    }}
+                  >
+                    {target.icp_score || 0}
+                  </Badge>
+                </Table.Td>
+                <Table.Td style={{ textAlign: 'center', backgroundColor: rowBg, padding: '14px 16px' }}>
+                  <Text style={{ fontSize: '16px', color: TEXT_DARK }}>
+                    {target.sw_monthly_visits
+                      ? `${(target.sw_monthly_visits / 1000000).toFixed(1)}M`
+                      : '-'}
+                  </Text>
+                </Table.Td>
+              </Table.Tr>
+            );
+          })}
         </Table.Tbody>
       </Table>
 
@@ -406,7 +446,7 @@ function AccountList({ targets, onRowClick }: AccountListProps) {
             total={totalPages}
             value={page}
             onChange={setPage}
-            size="sm"
+            size="md"
           />
         </Group>
       )}
@@ -485,15 +525,15 @@ export function DistributionGrid({ viewMode, targets, onCellClick }: Distributio
   // Handle account view separately
   if (viewMode === 'account') {
     return (
-      <Paper p="md" withBorder>
-        <Group justify="space-between" mb="md">
-          <Group gap="xs">
-            <Text fw={500}>{title}</Text>
+      <Paper p="lg" withBorder style={{ background: BODY_BG_WHITE }}>
+        <Group justify="space-between" mb="lg">
+          <Group gap="sm">
+            <Text style={{ fontSize: '18px', fontWeight: 600, color: TEXT_DARK }}>{title}</Text>
             <Tooltip label={description} position="right" withArrow>
-              <IconInfoCircle size={16} style={{ cursor: 'help', color: '#64748b' }} />
+              <IconInfoCircle size={18} style={{ cursor: 'help', color: TEXT_MUTED }} />
             </Tooltip>
           </Group>
-          <Badge variant="light" size="lg">
+          <Badge variant="filled" size="xl" style={{ fontSize: '14px', fontWeight: 700 }}>
             {grandTotal.toLocaleString()} accounts
           </Badge>
         </Group>
@@ -506,48 +546,44 @@ export function DistributionGrid({ viewMode, targets, onCellClick }: Distributio
   }
 
   return (
-    <Paper p="md" withBorder>
-      <Group justify="space-between" mb="md">
-        <Group gap="xs">
-          <Text fw={500}>{title}</Text>
+    <Paper p="lg" withBorder style={{ background: BODY_BG_WHITE }}>
+      <Group justify="space-between" mb="lg">
+        <Group gap="sm">
+          <Text style={{ fontSize: '18px', fontWeight: 600, color: TEXT_DARK }}>{title}</Text>
           <Tooltip label={description} position="right" withArrow multiline w={250}>
-            <IconInfoCircle size={16} style={{ cursor: 'help', color: 'var(--mantine-color-dimmed)' }} />
+            <IconInfoCircle size={18} style={{ cursor: 'help', color: TEXT_MUTED }} />
           </Tooltip>
         </Group>
-        <Group gap="xs">
-          <Text size="sm" c="#64748b" fw={500}>Total:</Text>
-          <Badge variant="filled" size="lg">
+        <Group gap="sm">
+          <Text style={{ fontSize: '14px', color: TEXT_MUTED, fontWeight: 500 }}>Total:</Text>
+          <Badge variant="filled" size="xl" style={{ fontSize: '14px', fontWeight: 700 }}>
             {grandTotal.toLocaleString()}
           </Badge>
         </Group>
       </Group>
 
       <ScrollArea>
-        <Table striped withTableBorder withColumnBorders>
+        <Table withTableBorder withColumnBorders style={{ backgroundColor: BODY_BG_WHITE }}>
           <Table.Thead>
-            <Table.Tr>
-              <Table.Th style={{ minWidth: 140 }}>
-                {viewMode === 'partner' && 'PARTNER'}
-                {viewMode === 'product' && 'PRODUCT'}
-                {viewMode === 'vertical' && 'VERTICAL'}
+            <Table.Tr style={{ backgroundColor: HEADER_BG }}>
+              <Table.Th style={{ minWidth: 160, backgroundColor: HEADER_BG, padding: '14px 16px' }}>
+                <Text style={{ fontSize: '14px', fontWeight: 700, color: 'white', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  {viewMode === 'partner' && 'PARTNER'}
+                  {viewMode === 'product' && 'PRODUCT'}
+                  {viewMode === 'vertical' && 'VERTICAL'}
+                </Text>
               </Table.Th>
               {columnLabels.map((label, idx) => (
                 <Table.Th
                   key={columns[idx]}
                   style={{
                     textAlign: 'center',
-                    minWidth: 100,
-                    backgroundColor:
-                      viewMode === 'vertical' ? `${getIcpTierColor(columns[idx])}15` : undefined,
+                    minWidth: 110,
+                    backgroundColor: HEADER_BG,
+                    padding: '14px 12px',
                   }}
                 >
-                  <Text
-                    size="xs"
-                    fw={700}
-                    style={{
-                      color: viewMode === 'vertical' ? getIcpTierColor(columns[idx]) : '#334155',
-                    }}
-                  >
+                  <Text style={{ fontSize: '13px', fontWeight: 700, color: 'white', textTransform: 'uppercase', letterSpacing: '0.3px' }}>
                     {label}
                   </Text>
                 </Table.Th>
@@ -555,60 +591,68 @@ export function DistributionGrid({ viewMode, targets, onCellClick }: Distributio
               <Table.Th
                 style={{
                   textAlign: 'center',
-                  minWidth: 100,
-                  backgroundColor: 'var(--mantine-color-gray-1)',
+                  minWidth: 120,
+                  backgroundColor: HEADER_BG_LIGHT,
+                  padding: '14px 12px',
                 }}
               >
-                <Text size="xs" fw={700}>TOTAL</Text>
+                <Text style={{ fontSize: '14px', fontWeight: 700, color: 'white', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  TOTAL
+                </Text>
               </Table.Th>
             </Table.Tr>
           </Table.Thead>
-          <Table.Tbody>
-            {rows.map((row) => (
-              <Table.Tr key={row.key}>
-                <Table.Td>
-                  <Text fw={600} size="sm" c="#1e293b">{row.label}</Text>
-                </Table.Td>
-                {columns.map((col) => (
-                  <GridCellComponent
-                    key={col}
-                    cell={row.cells[col]}
-                    rowKey={row.key}
-                    colKey={col}
-                    onClick={onCellClick}
-                    tierColor={viewMode === 'vertical' ? getIcpTierColor(col) : undefined}
-                  />
-                ))}
-                <Table.Td
-                  style={{
-                    textAlign: 'center',
-                    backgroundColor: 'var(--mantine-color-gray-0)',
-                  }}
-                >
-                  <Group gap={4} justify="center">
-                    <Text size="sm" fw={700}>
-                      {row.total.toLocaleString()}
-                    </Text>
-                    <Badge size="xs" variant="light" color="gray">
-                      {row.totalPercentage.toFixed(1)}%
-                    </Badge>
-                  </Group>
-                </Table.Td>
-              </Table.Tr>
-            ))}
+          <Table.Tbody style={{ backgroundColor: BODY_BG_WHITE }}>
+            {rows.map((row, rowIdx) => {
+              const rowBg = rowIdx % 2 === 0 ? BODY_BG_WHITE : BODY_BG_ALT;
+              return (
+                <Table.Tr key={row.key} style={{ backgroundColor: rowBg }}>
+                  <Table.Td style={{ backgroundColor: rowBg, padding: '14px 16px' }}>
+                    <Text style={{ fontSize: '16px', fontWeight: 600, color: TEXT_DARK }}>{row.label}</Text>
+                  </Table.Td>
+                  {columns.map((col) => (
+                    <GridCellComponent
+                      key={col}
+                      cell={row.cells[col]}
+                      rowKey={row.key}
+                      colKey={col}
+                      onClick={onCellClick}
+                      tierColor={viewMode === 'vertical' ? getIcpTierColor(col) : undefined}
+                      rowBg={rowBg}
+                    />
+                  ))}
+                  <Table.Td
+                    style={{
+                      textAlign: 'center',
+                      backgroundColor: BODY_BG_ALT,
+                      padding: '14px 12px',
+                    }}
+                  >
+                    <Group gap={6} justify="center">
+                      <Text style={{ fontSize: '16px', fontWeight: 700, color: TEXT_DARK }}>
+                        {row.total.toLocaleString()}
+                      </Text>
+                      <Badge size="sm" variant="light" color="gray" style={{ fontWeight: 600 }}>
+                        {row.totalPercentage.toFixed(1)}%
+                      </Badge>
+                    </Group>
+                  </Table.Td>
+                </Table.Tr>
+              );
+            })}
 
             {/* Totals Row */}
-            <Table.Tr style={{ backgroundColor: 'var(--mantine-color-gray-1)' }}>
-              <Table.Td>
-                <Text fw={700} size="sm">TOTAL</Text>
+            <Table.Tr style={{ backgroundColor: TOTALS_BG }}>
+              <Table.Td style={{ backgroundColor: TOTALS_BG, padding: '14px 16px' }}>
+                <Text style={{ fontSize: '16px', fontWeight: 700, color: TEXT_DARK }}>TOTAL</Text>
               </Table.Td>
               {columns.map((col) => (
-                <Table.Td key={col} style={{ textAlign: 'center' }}>
-                  <Group gap={4} justify="center">
-                    <Text size="sm" fw={700}>
+                <Table.Td key={col} style={{ textAlign: 'center', backgroundColor: TOTALS_BG, padding: '14px 12px' }}>
+                  <Group gap={6} justify="center">
+                    <Text style={{ fontSize: '16px', fontWeight: 700, color: TEXT_DARK }}>
                       {columnTotals[col]?.count.toLocaleString() || 0}
                     </Text>
-                    <Badge size="xs" variant="light" color="gray">
+                    <Badge size="sm" variant="light" color="gray" style={{ fontWeight: 600 }}>
                       {(columnTotals[col]?.percentage ?? 0).toFixed(1)}%
                     </Badge>
                   </Group>
@@ -617,10 +661,11 @@ export function DistributionGrid({ viewMode, targets, onCellClick }: Distributio
               <Table.Td
                 style={{
                   textAlign: 'center',
-                  backgroundColor: 'var(--mantine-color-blue-0)',
+                  backgroundColor: TOTALS_HIGHLIGHT,
+                  padding: '14px 12px',
                 }}
               >
-                <Text size="sm" fw={700} c="blue">
+                <Text style={{ fontSize: '18px', fontWeight: 700, color: ALGOLIA_BLUE }}>
                   {grandTotal.toLocaleString()}
                 </Text>
               </Table.Td>
@@ -631,16 +676,16 @@ export function DistributionGrid({ viewMode, targets, onCellClick }: Distributio
 
       {/* Legend for ICP Tiers in Vertical View */}
       {viewMode === 'vertical' && (
-        <Group justify="center" mt="md" gap="lg">
+        <Group justify="center" mt="lg" gap="xl">
           {ICP_TIERS.map((tier) => (
-            <Tooltip key={tier.key} label={`Score ${tier.min}-${tier.max}`} withArrow>
-              <Group gap={4} style={{ cursor: 'help' }}>
+            <Tooltip key={tier.key} label={`ICP Score ${tier.min}-${tier.max}`} withArrow>
+              <Group gap={8} style={{ cursor: 'help' }}>
                 <Box
-                  w={12}
-                  h={12}
-                  style={{ backgroundColor: tier.color, borderRadius: 2 }}
+                  w={16}
+                  h={16}
+                  style={{ backgroundColor: tier.color, borderRadius: 4 }}
                 />
-                <Text size="xs" c="#64748b" fw={500}>{tier.label.split(' ')[0]}</Text>
+                <Text style={{ fontSize: '14px', color: TEXT_MUTED, fontWeight: 500 }}>{tier.label.split(' ')[0]}</Text>
               </Group>
             </Tooltip>
           ))}

@@ -1,244 +1,529 @@
+/* Google Fonts: Source Sans Pro - Official Algolia Font (must be first) */
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Custom CSS Variables */
+/* =============================================================================
+ * ALGOLIA BRAND SYSTEM
+ * Official brand guidelines: Confident, clear, technically credible, approachable
+ * ============================================================================= */
+
+/* =============================================================================
+ * ALGOLIA COLOR PALETTE
+ * ============================================================================= */
 :root {
-  /* Algolia Brand Colors */
-  --algolia-blue: #003dff;
-  --algolia-purple: #5468ff;
-  --algolia-gray: #21243d;
+  /* Primary Brand Colors */
+  --algolia-nebula-blue: #003DFF;    /* Primary - CTAs, headers, accents */
+  --algolia-space-gray: #21243D;     /* Body text, dark headings */
+  --algolia-purple: #5468FF;         /* Accents, highlights, links */
+  --algolia-white: #FFFFFF;          /* Backgrounds */
+  --algolia-light-gray: #F5F5F7;     /* Alternating sections */
 
-  /* Signal Status (3 tiers) - BOLD, VISIBLE COLORS */
-  --color-hot: #dc2626;
-  --color-warm: #ea580c;
-  --color-cold: #64748b;
+  /* Extended Palette */
+  --algolia-dark-blue: #002999;      /* Hover states (10% darker) */
+  --algolia-text-secondary: #5A5E9A; /* Secondary text */
+  --algolia-border: #E8E8ED;         /* Borders and dividers */
+  --algolia-surface: #FAFAFA;        /* Card backgrounds */
 
-  /* Margin Zones */
-  --margin-green: #22c55e;
-  --margin-yellow: #eab308;
-  --margin-red: #ef4444;
+  /* Status Colors - Visible on white backgrounds */
+  --status-hot: #DC2626;             /* High priority - Red 600 */
+  --status-warm: #EA580C;            /* Medium priority - Orange 600 */
+  --status-cold: #64748B;            /* Low priority - Slate 500 */
 
-  /* Source Freshness */
-  --fresh: #22c55e;
-  --stale: #eab308;
-  --expired: #ef4444;
+  /* Semantic Colors */
+  --color-success: #059669;          /* Green 600 */
+  --color-warning: #D97706;          /* Amber 600 */
+  --color-error: #DC2626;            /* Red 600 */
+  --color-info: #0284C7;             /* Sky 600 */
 
-  /* Enterprise-Grade Typography */
-  --font-size-base: 16px;
-  --font-size-sm: 14px;
-  --font-size-xs: 13px;
-  --font-size-lg: 18px;
-  --font-size-xl: 20px;
+  /* Typography Scale - Source Sans Pro */
+  --font-family: 'Source Sans 3', 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-size-hero: 48px;            /* Hero headlines */
+  --font-size-h1: 36px;              /* Page titles */
+  --font-size-h2: 28px;              /* Section headers */
+  --font-size-h3: 22px;              /* Subsection headers */
+  --font-size-h4: 18px;              /* Card titles */
+  --font-size-body: 16px;            /* Body text */
+  --font-size-body-lg: 18px;         /* Large body text */
+  --font-size-small: 14px;           /* Secondary text */
+  --font-size-caption: 12px;         /* Captions, labels */
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(33, 36, 61, 0.05);
+  --shadow-md: 0 4px 6px rgba(33, 36, 61, 0.07);
+  --shadow-lg: 0 10px 15px rgba(33, 36, 61, 0.1);
+  --shadow-xl: 0 20px 25px rgba(33, 36, 61, 0.15);
 }
 
-/* Base font size for readability */
+/* =============================================================================
+ * BASE STYLES
+ * ============================================================================= */
 html {
   font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  font-size: var(--font-size-base);
+  font-family: var(--font-family);
+  font-size: var(--font-size-body);
+  line-height: 1.6;
+  color: var(--algolia-space-gray);
+  background-color: var(--algolia-white);
+}
+
+/* =============================================================================
+ * TYPOGRAPHY
+ * ============================================================================= */
+
+/* Headlines - Bold, confident, clear */
+h1, .h1 {
+  font-size: var(--font-size-h1);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--algolia-space-gray);
+  letter-spacing: -0.02em;
+}
+
+h2, .h2 {
+  font-size: var(--font-size-h2);
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--algolia-space-gray);
+  letter-spacing: -0.01em;
+}
+
+h3, .h3 {
+  font-size: var(--font-size-h3);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--algolia-space-gray);
+}
+
+h4, .h4 {
+  font-size: var(--font-size-h4);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--algolia-space-gray);
+}
+
+/* Body text */
+p, .body-text {
+  font-size: var(--font-size-body);
+  line-height: 1.6;
+  color: var(--algolia-space-gray);
+}
+
+.body-text-lg {
+  font-size: var(--font-size-body-lg);
   line-height: 1.6;
 }
 
-/* Scrollbar Styling */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+.text-secondary {
+  color: var(--algolia-text-secondary);
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
+/* Labels and captions */
+.label {
+  font-size: var(--font-size-caption);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--algolia-text-secondary);
 }
 
-::-webkit-scrollbar-thumb {
-  background: #4b5563;
-  border-radius: 4px;
+/* =============================================================================
+ * ALGOLIA BRAND COMPONENTS
+ * ============================================================================= */
+
+/* Primary CTA Button - Nebula Blue */
+.algolia-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 28px;
+  min-height: 52px;
+  background: var(--algolia-nebula-blue);
+  color: var(--algolia-white);
+  font-family: var(--font-family);
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-md);
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #6b7280;
+.algolia-btn-primary:hover {
+  background: var(--algolia-dark-blue);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-1px);
 }
 
-/* Status Badge Styles - BOLD, VISIBLE, SOLID BACKGROUNDS */
+.algolia-btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Secondary Button */
+.algolia-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 28px;
+  min-height: 52px;
+  background: var(--algolia-white);
+  color: var(--algolia-nebula-blue);
+  font-family: var(--font-family);
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  border: 2px solid var(--algolia-nebula-blue);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.algolia-btn-secondary:hover {
+  background: rgba(0, 61, 255, 0.05);
+}
+
+/* Accent Button - Purple */
+.algolia-btn-accent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 28px;
+  min-height: 52px;
+  background: var(--algolia-purple);
+  color: var(--algolia-white);
+  font-family: var(--font-family);
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-md);
+}
+
+.algolia-btn-accent:hover {
+  background: #4355E8;
+  box-shadow: var(--shadow-lg);
+}
+
+/* =============================================================================
+ * STATUS BADGES - Enterprise Grade Visibility
+ * ============================================================================= */
+
 .status-hot {
-  background: #dc2626 !important;
-  color: white !important;
-  font-weight: 700 !important;
-  font-size: 13px !important;
-  padding: 8px 14px !important;
-  border-radius: 6px !important;
-  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: var(--status-hot);
+  color: var(--algolia-white);
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
 }
 
 .status-warm {
-  background: #ea580c !important;
-  color: white !important;
-  font-weight: 700 !important;
-  font-size: 13px !important;
-  padding: 8px 14px !important;
-  border-radius: 6px !important;
-  box-shadow: 0 2px 4px rgba(234, 88, 12, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: var(--status-warm);
+  color: var(--algolia-white);
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.3);
 }
 
 .status-cold {
-  background: #64748b !important;
-  color: white !important;
-  font-weight: 700 !important;
-  font-size: 13px !important;
-  padding: 8px 14px !important;
-  border-radius: 6px !important;
-  box-shadow: 0 2px 4px rgba(100, 116, 139, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: var(--status-cold);
+  color: var(--algolia-white);
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 2px 8px rgba(100, 116, 139, 0.3);
 }
 
-/* Margin Zone Styles */
-.margin-green {
-  @apply bg-green-500/20 text-green-400;
+/* =============================================================================
+ * ALGOLIA CARDS
+ * ============================================================================= */
+
+.algolia-card {
+  background: var(--algolia-white);
+  border: 1px solid var(--algolia-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
 }
 
-.margin-yellow {
-  @apply bg-yellow-500/20 text-yellow-400;
+.algolia-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--algolia-purple);
 }
 
-.margin-red {
-  @apply bg-red-500/20 text-red-400;
+.algolia-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md);
 }
 
-/* Freshness Badge Styles */
-.freshness-fresh {
-  @apply bg-green-500/20 text-green-400;
+.algolia-card-title {
+  font-size: var(--font-size-h4);
+  font-weight: 600;
+  color: var(--algolia-space-gray);
 }
 
-.freshness-stale {
-  @apply bg-yellow-500/20 text-yellow-400;
+/* Stat Card with Algolia gradient */
+.algolia-stat-card {
+  background: linear-gradient(135deg, rgba(0, 61, 255, 0.05) 0%, rgba(84, 104, 255, 0.02) 100%);
+  border: 1px solid rgba(0, 61, 255, 0.1);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
 }
 
-.freshness-expired {
-  @apply bg-red-500/20 text-red-400;
+.algolia-stat-value {
+  font-size: var(--font-size-h1);
+  font-weight: 700;
+  color: var(--algolia-nebula-blue);
+  line-height: 1;
 }
 
-/* Card Hover Effect */
-.card-hover {
-  @apply transition-all duration-200 hover:shadow-lg hover:scale-[1.01];
+.algolia-stat-label {
+  font-size: var(--font-size-small);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--algolia-text-secondary);
+  margin-bottom: var(--spacing-sm);
 }
 
-/* Glassmorphism Effect */
-.glass {
-  @apply backdrop-blur-md bg-white/5 border border-white/10;
+/* =============================================================================
+ * TABLE STYLES - Algolia Data Tables
+ * ============================================================================= */
+
+.algolia-table {
+  width: 100%;
+  background: var(--algolia-white);
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: var(--font-family);
 }
 
-/* Data Table Row Selection */
-.table-row-selected {
-  @apply bg-blue-500/10;
+.algolia-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--algolia-white);
 }
 
-/* Source Citation Link */
+.algolia-table th {
+  padding: 16px 20px;
+  text-align: left;
+  font-size: var(--font-size-small);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--algolia-space-gray);
+  border-bottom: 2px solid var(--algolia-border);
+}
+
+.algolia-table tbody tr {
+  border-bottom: 1px solid var(--algolia-border);
+  transition: background 0.15s ease;
+}
+
+.algolia-table tbody tr:hover {
+  background: var(--algolia-light-gray);
+}
+
+.algolia-table td {
+  padding: 16px 20px;
+  font-size: var(--font-size-body);
+  color: var(--algolia-space-gray);
+  vertical-align: middle;
+}
+
+/* Premium Table - with Algolia accent */
+.premium-table {
+  width: 100%;
+  background: var(--algolia-white);
+  font-family: var(--font-family);
+  font-size: var(--font-size-body);
+}
+
+.premium-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--algolia-white);
+}
+
+.premium-table th {
+  padding: 16px 20px;
+  text-align: left;
+  font-size: var(--font-size-small);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--algolia-space-gray);
+  border-bottom: 2px solid var(--algolia-nebula-blue);
+}
+
+.premium-table tbody tr {
+  border-bottom: 1px solid var(--algolia-border);
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.premium-table tbody tr:hover {
+  background: rgba(0, 61, 255, 0.03);
+  border-left: 3px solid var(--algolia-nebula-blue);
+}
+
+.premium-table td {
+  padding: 16px 20px;
+  font-size: var(--font-size-body);
+  color: var(--algolia-space-gray);
+}
+
+/* =============================================================================
+ * LINKS - Algolia Purple
+ * ============================================================================= */
+
+a, .algolia-link {
+  color: var(--algolia-purple);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+a:hover, .algolia-link:hover {
+  color: var(--algolia-nebula-blue);
+  text-decoration: underline;
+}
+
 .source-link {
-  @apply text-blue-400 hover:text-blue-300 hover:underline transition-colors;
+  color: var(--algolia-purple);
+  font-weight: 500;
 }
 
-/* Quote Card */
-.quote-card {
-  @apply border-l-4 border-algolia-purple pl-4 py-2 italic;
-}
-
-/* =============================================================================
- * Premium Glassmorphism Styles
- * ============================================================================= */
-
-/* Championship-level glassmorphic card */
-.glass-card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-/* Elevated glassmorphic card */
-.glass-card-elevated {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.1) 0%,
-    rgba(255, 255, 255, 0.05) 100%
-  );
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow:
-    0 25px 45px rgba(0, 0, 0, 0.2),
-    0 10px 20px rgba(0, 0, 0, 0.1);
+.source-link:hover {
+  color: var(--algolia-nebula-blue);
+  text-decoration: underline;
 }
 
 /* =============================================================================
- * Typography
+ * BADGES - Algolia Style
  * ============================================================================= */
 
-/* Hero metrics */
+.algolia-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  font-size: var(--font-size-small);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+}
+
+.algolia-badge-primary {
+  background: var(--algolia-nebula-blue);
+  color: var(--algolia-white);
+}
+
+.algolia-badge-secondary {
+  background: rgba(84, 104, 255, 0.1);
+  color: var(--algolia-purple);
+}
+
+.algolia-badge-success {
+  background: rgba(5, 150, 105, 0.1);
+  color: var(--color-success);
+}
+
+.algolia-badge-warning {
+  background: rgba(217, 119, 6, 0.1);
+  color: var(--color-warning);
+}
+
+.algolia-badge-error {
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--color-error);
+}
+
+/* =============================================================================
+ * METRIC DISPLAYS - Hero Numbers
+ * ============================================================================= */
+
 .metric-hero {
-  font-size: 64px;
+  font-family: var(--font-family);
+  font-size: var(--font-size-hero);
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1;
-  background: linear-gradient(135deg, #003DFF 0%, #5468FF 100%);
+  background: linear-gradient(135deg, var(--algolia-nebula-blue) 0%, var(--algolia-purple) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Large metrics */
 .metric-large {
-  font-size: 48px;
-  font-weight: 600;
+  font-family: var(--font-family);
+  font-size: var(--font-size-h1);
+  font-weight: 700;
+  color: var(--algolia-nebula-blue);
   letter-spacing: -0.02em;
 }
 
-/* Medium metrics */
 .metric-medium {
-  font-size: 24px;
-  font-weight: 600;
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
-}
-
-/* Data labels */
-.label-data {
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: #64748b; /* GRAY_500 - readable on white */
+  font-family: var(--font-family);
+  font-size: var(--font-size-h2);
+  font-weight: 700;
+  color: var(--algolia-space-gray);
 }
 
 /* =============================================================================
- * Glow Effects
- * ============================================================================= */
-
-.glow-blue {
-  box-shadow: 0 0 20px rgba(0, 61, 255, 0.3);
-}
-
-.glow-purple {
-  box-shadow: 0 0 20px rgba(84, 104, 255, 0.3);
-}
-
-.glow-green {
-  box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
-}
-
-.glow-red {
-  box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
-}
-
-/* =============================================================================
- * Gradient Text
+ * GRADIENT TEXT - Algolia Brand
  * ============================================================================= */
 
 .gradient-text-primary {
-  background: linear-gradient(135deg, #003DFF 0%, #5468FF 100%);
+  background: linear-gradient(135deg, var(--algolia-nebula-blue) 0%, var(--algolia-purple) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -251,81 +536,74 @@ body {
   background-clip: text;
 }
 
-.gradient-text-danger {
-  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
 /* =============================================================================
- * Table Styles
+ * SCROLLBAR STYLING
  * ============================================================================= */
 
-/* Light theme table styles - ENTERPRISE GRADE READABILITY */
-.premium-table {
-  @apply w-full;
-  background: white;
-  font-size: 15px;
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-.premium-table thead {
-  @apply sticky top-0 z-10;
-  background: white;
+::-webkit-scrollbar-track {
+  background: var(--algolia-light-gray);
+  border-radius: 4px;
 }
 
-.premium-table th {
-  @apply px-5 py-4 text-left font-bold uppercase tracking-wider;
-  font-size: 13px;
-  color: #334155; /* GRAY_700 - dark for visibility */
+::-webkit-scrollbar-thumb {
+  background: var(--algolia-text-secondary);
+  border-radius: 4px;
 }
 
-.premium-table tbody tr {
-  @apply border-b transition-colors;
-  border-color: #e2e8f0; /* GRAY_200 - visible border */
-}
-
-.premium-table tbody tr:hover {
-  background: #f1f5f9; /* GRAY_100 - visible hover */
-}
-
-.premium-table td {
-  @apply px-5 py-4;
-  font-size: 15px;
-  color: #1e293b; /* GRAY_800 - dark for readability */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--algolia-space-gray);
 }
 
 /* =============================================================================
- * Animation Classes
+ * SECTION BACKGROUNDS
+ * ============================================================================= */
+
+.section-white {
+  background: var(--algolia-white);
+}
+
+.section-light {
+  background: var(--algolia-light-gray);
+}
+
+.section-primary {
+  background: var(--algolia-nebula-blue);
+  color: var(--algolia-white);
+}
+
+.section-dark {
+  background: var(--algolia-space-gray);
+  color: var(--algolia-white);
+}
+
+/* =============================================================================
+ * ANIMATIONS
  * ============================================================================= */
 
 @keyframes shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 .animate-shimmer {
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.05) 0%,
-    rgba(255, 255, 255, 0.1) 50%,
-    rgba(255, 255, 255, 0.05) 100%
+    var(--algolia-light-gray) 0%,
+    var(--algolia-white) 50%,
+    var(--algolia-light-gray) 100%
   );
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
 }
 
 @keyframes pulse-glow {
-  0%, 100% {
-    opacity: 0.3;
-  }
-  50% {
-    opacity: 0.6;
-  }
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
 }
 
 .animate-pulse-glow {
@@ -333,15 +611,44 @@ body {
 }
 
 /* =============================================================================
- * Responsive Utilities
+ * RESPONSIVE
  * ============================================================================= */
 
 @media (max-width: 768px) {
+  :root {
+    --font-size-hero: 36px;
+    --font-size-h1: 28px;
+    --font-size-h2: 22px;
+    --font-size-h3: 18px;
+  }
+
   .metric-hero {
-    font-size: 48px;
+    font-size: 36px;
   }
 
   .metric-large {
-    font-size: 32px;
+    font-size: 28px;
   }
 }
+
+/* =============================================================================
+ * UTILITY CLASSES
+ * ============================================================================= */
+
+/* Algolia brand colors as text */
+.text-algolia-blue { color: var(--algolia-nebula-blue); }
+.text-algolia-purple { color: var(--algolia-purple); }
+.text-algolia-gray { color: var(--algolia-space-gray); }
+
+/* Algolia brand colors as backgrounds */
+.bg-algolia-blue { background-color: var(--algolia-nebula-blue); }
+.bg-algolia-purple { background-color: var(--algolia-purple); }
+.bg-algolia-gray { background-color: var(--algolia-space-gray); }
+.bg-algolia-light { background-color: var(--algolia-light-gray); }
+
+/* Border accents */
+.border-algolia-blue { border-color: var(--algolia-nebula-blue); }
+.border-algolia-purple { border-color: var(--algolia-purple); }
+
+/* Shadow utilities */
+.shadow-algolia { box-shadow: 0 4px 20px rgba(0, 61, 255, 0.15); }

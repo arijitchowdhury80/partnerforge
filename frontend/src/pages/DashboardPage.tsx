@@ -48,6 +48,12 @@ import { TargetTable } from '@/components/dashboard/TargetTable';
 import { ICPVerticalHeatmap } from '@/components/dashboard/ICPVerticalHeatmap';
 import type { FilterState } from '@/types';
 
+// Algolia Brand Colors (Official)
+const ALGOLIA_NEBULA_BLUE = '#003DFF';
+const ALGOLIA_SPACE_GRAY = '#21243D';
+const ALGOLIA_PURPLE = '#5468FF';
+const ALGOLIA_LIGHT_GRAY = '#F5F5F7';
+
 // Stat card component with trend indicator
 interface StatCardProps {
   title: string;
