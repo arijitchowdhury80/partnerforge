@@ -1,8 +1,7 @@
 /**
  * Dashboard Page
  *
- * Clean, focused dashboard with visual formula hero and interactive charting.
- * Removed redundancy - single source of truth for each metric.
+ * Clean, focused dashboard with visual formula hero and compact metrics row.
  */
 
 import { useState, useEffect, useRef } from 'react';
@@ -15,15 +14,19 @@ import {
   Paper,
   Badge,
   Grid,
-  SegmentedControl,
   Stack,
+  Tabs,
 } from '@mantine/core';
 import {
   IconMinus,
   IconEqual,
   IconTarget,
+  IconFlame,
+  IconChartPie,
+  IconBuildingSkyscraper,
+  IconCode,
 } from '@tabler/icons-react';
-import { DonutChart, AreaChart, BarChart, BarList } from '@tremor/react';
+import { DonutChart, BarList } from '@tremor/react';
 
 import { getStats, getCompanies } from '@/services/api';
 import { TargetList } from '@/components/targets/TargetList';
@@ -67,15 +70,15 @@ export function Dashboard() {
         partnerName={selectedPartner.name}
       />
 
-      {/* Charting Module */}
-      <ChartingModule stats={stats} />
-
-      {/* Top Targets Row */}
-      <Grid mb="lg">
-        <Grid.Col span={{ base: 12, md: 6 }}>
+      {/* Three Column Metrics Row */}
+      <Grid mb="lg" gutter="md">
+        <Grid.Col span={{ base: 12, md: 4 }}>
+          <StatusBreakdown stats={stats} />
+        </Grid.Col>
+        <Grid.Col span={{ base: 12, md: 4 }}>
           <TopScoresChart />
         </Grid.Col>
-        <Grid.Col span={{ base: 12, md: 6 }}>
+        <Grid.Col span={{ base: 12, md: 4 }}>
           <PartnerTechBreakdown />
         </Grid.Col>
       </Grid>
@@ -84,7 +87,7 @@ export function Dashboard() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
+        transition={{ delay: 0.2 }}
       >
         <Group justify="space-between" mb="md">
           <div>
@@ -143,10 +146,10 @@ function HeroSection({ stats, isLoading, partnerKey, partnerName }: HeroSectionP
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="mb-8"
+      className="mb-6"
     >
       <Paper
-        p="xl"
+        p="lg"
         radius="xl"
         className="relative overflow-hidden bg-gradient-to-br from-blue-600/20 via-purple-600/10 to-transparent border border-white/10 backdrop-blur-xl"
       >
@@ -161,56 +164,43 @@ function HeroSection({ stats, isLoading, partnerKey, partnerName }: HeroSectionP
 
         <div className="relative z-10">
           {/* Main number and label */}
-          <Group align="flex-end" gap="md" mb="lg">
+          <Group align="flex-end" gap="md" mb="md">
             <motion.span
-              className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent"
+              className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent"
             >
               {displayTotal}
             </motion.span>
-            <Text size="xl" c="white/70" mb="sm">
+            <Text size="lg" c="white/70" mb="xs">
               Displacement Targets
             </Text>
           </Group>
 
           {/* Visual Formula: Partner Logo − Algolia Logo = Targets */}
-          <div className="flex items-center gap-4 flex-wrap">
+          <div className="flex items-center gap-3 flex-wrap">
             {/* Companies using partner tech */}
-            <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 border border-white/10">
-              <PartnerLogo size={32} />
-              <div>
-                <Text size="xs" c="dimmed">Companies using</Text>
-                <Text size="sm" c="white" fw={600}>{partnerName}</Text>
-              </div>
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
+              <PartnerLogo size={24} />
+              <Text size="sm" c="white" fw={500}>{partnerName}</Text>
             </div>
 
             {/* Minus */}
-            <div className="p-2 rounded-full bg-red-500/20 border border-red-500/30">
-              <IconMinus size={20} className="text-red-400" />
-            </div>
+            <IconMinus size={16} className="text-red-400" />
 
             {/* Already using Algolia */}
-            <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 border border-white/10">
-              <AlgoliaLogo size={32} />
-              <div>
-                <Text size="xs" c="dimmed">Already using</Text>
-                <Text size="sm" c="white" fw={600}>Algolia</Text>
-              </div>
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
+              <AlgoliaLogo size={24} />
+              <Text size="sm" c="white" fw={500}>Algolia</Text>
             </div>
 
             {/* Equals */}
-            <div className="p-2 rounded-full bg-green-500/20 border border-green-500/30">
-              <IconEqual size={20} className="text-green-400" />
-            </div>
+            <IconEqual size={16} className="text-green-400" />
 
-            {/* Result: Displacement Targets */}
-            <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30">
-              <IconTarget size={32} className="text-blue-400" />
-              <div>
-                <Text size="xs" c="dimmed">Your pipeline</Text>
-                <Text size="sm" c="white" fw={600}>
-                  {stats?.total_companies?.toLocaleString() || '...'} targets
-                </Text>
-              </div>
+            {/* Result */}
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-500/20 border border-blue-500/30">
+              <IconTarget size={20} className="text-blue-400" />
+              <Text size="sm" c="white" fw={600}>
+                {stats?.total_companies?.toLocaleString() || '...'} targets
+              </Text>
             </div>
           </div>
         </div>
@@ -219,161 +209,68 @@ function HeroSection({ stats, isLoading, partnerKey, partnerName }: HeroSectionP
   );
 }
 
-// Charting Module with Selection
-interface ChartingModuleProps {
+// Status Breakdown - Compact Pie Chart
+interface StatusBreakdownProps {
   stats?: DashboardStats;
 }
 
-function ChartingModule({ stats }: ChartingModuleProps) {
-  const [chartType, setChartType] = useState<string>('status');
-
-  // Prepare data for each chart type
+function StatusBreakdown({ stats }: StatusBreakdownProps) {
   const statusData = [
-    { name: 'Hot', value: stats?.hot_leads || 9, color: 'red' },
-    { name: 'Warm', value: stats?.warm_leads || 49, color: 'orange' },
-    { name: 'Cool', value: 150, color: 'blue' },
-    { name: 'Cold', value: 200, color: 'gray' },
+    { name: 'Hot', value: stats?.hot_leads || 9 },
+    { name: 'Warm', value: stats?.warm_leads || 49 },
+    { name: 'Cool', value: 150 },
+    { name: 'Cold', value: 200 },
   ];
 
-  const partnerData = [
-    { name: 'Adobe AEM', value: 2687 },
-    { name: 'Shopify', value: 1500 },
-    { name: 'Salesforce Commerce', value: 890 },
-    { name: 'BigCommerce', value: 450 },
-    { name: 'Magento', value: 320 },
-  ];
-
-  const verticalData = [
-    { name: 'Commerce', value: 1850 },
-    { name: 'Media', value: 620 },
-    { name: 'Financial Services', value: 480 },
-    { name: 'Healthcare', value: 320 },
-    { name: 'Other', value: 417 },
-  ];
-
-  const timeData = [
-    { month: 'Jan', Targets: 1500, Enriched: 200 },
-    { month: 'Feb', Targets: 1800, Enriched: 400 },
-    { month: 'Mar', Targets: 2100, Enriched: 600 },
-    { month: 'Apr', Targets: 2300, Enriched: 850 },
-    { month: 'May', Targets: 2500, Enriched: 1100 },
-    { month: 'Jun', Targets: 2687, Enriched: 1400 },
-  ];
+  const colors: Record<string, string> = {
+    Hot: '#ef4444',
+    Warm: '#f97316',
+    Cool: '#3b82f6',
+    Cold: '#6b7280',
+  };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.1 }}
-      className="mb-8"
-    >
-      <Paper
-        p="lg"
-        radius="xl"
-        className="bg-white/5 border border-white/10"
-      >
-        {/* Chart Type Selector */}
-        <Group justify="space-between" mb="lg">
-          <Text fw={600} c="white" size="lg">Target Analysis</Text>
-          <SegmentedControl
-            value={chartType}
-            onChange={setChartType}
-            data={[
-              { label: 'By Status', value: 'status' },
-              { label: 'By Partner', value: 'partner' },
-              { label: 'By Vertical', value: 'vertical' },
-              { label: 'Over Time', value: 'time' },
-            ]}
-            size="sm"
-            classNames={{
-              root: 'bg-white/5',
-            }}
-          />
+    <Paper p="md" radius="lg" className="bg-white/5 border border-white/10 h-full">
+      <Group justify="space-between" mb="sm">
+        <Group gap="xs">
+          <IconChartPie size={16} className="text-blue-400" />
+          <Text fw={600} size="sm" c="white">By Status</Text>
         </Group>
+        <Badge size="xs" variant="light" color="red">
+          {stats?.hot_leads || 9} Hot
+        </Badge>
+      </Group>
 
-        {/* Chart Display */}
-        <div className="h-72">
-          {chartType === 'status' && (
-            <Grid>
-              <Grid.Col span={{ base: 12, md: 6 }}>
-                <DonutChart
-                  data={statusData}
-                  category="value"
-                  index="name"
-                  colors={['red', 'orange', 'blue', 'slate']}
-                  showAnimation
-                  showTooltip
-                  label={`${stats?.hot_leads || 9} Hot`}
-                />
-              </Grid.Col>
-              <Grid.Col span={{ base: 12, md: 6 }}>
-                <Stack gap="md" justify="center" h="100%">
-                  {statusData.map((item) => (
-                    <Group key={item.name} justify="space-between">
-                      <Group gap="sm">
-                        <div
-                          className="w-3 h-3 rounded-full"
-                          style={{
-                            backgroundColor:
-                              item.color === 'red' ? '#ef4444' :
-                              item.color === 'orange' ? '#f97316' :
-                              item.color === 'blue' ? '#3b82f6' : '#6b7280'
-                          }}
-                        />
-                        <Text size="sm" c="white">{item.name}</Text>
-                      </Group>
-                      <Text size="sm" c="white" fw={600}>
-                        {item.value.toLocaleString()}
-                      </Text>
-                    </Group>
-                  ))}
-                </Stack>
-              </Grid.Col>
-            </Grid>
-          )}
+      <div className="h-32">
+        <DonutChart
+          data={statusData}
+          category="value"
+          index="name"
+          colors={['red', 'orange', 'blue', 'slate']}
+          showAnimation
+          showTooltip
+        />
+      </div>
 
-          {chartType === 'partner' && (
-            <BarChart
-              data={partnerData}
-              index="name"
-              categories={['value']}
-              colors={['violet']}
-              showAnimation
-              showLegend={false}
-              layout="vertical"
-            />
-          )}
-
-          {chartType === 'vertical' && (
-            <BarChart
-              data={verticalData}
-              index="name"
-              categories={['value']}
-              colors={['cyan']}
-              showAnimation
-              showLegend={false}
-              layout="vertical"
-            />
-          )}
-
-          {chartType === 'time' && (
-            <AreaChart
-              data={timeData}
-              index="month"
-              categories={['Targets', 'Enriched']}
-              colors={['blue', 'emerald']}
-              showAnimation
-              showLegend
-              curveType="monotone"
-            />
-          )}
-        </div>
-      </Paper>
-    </motion.div>
+      <Stack gap={4} mt="sm">
+        {statusData.map((item) => (
+          <Group key={item.name} justify="space-between">
+            <Group gap="xs">
+              <div
+                className="w-2 h-2 rounded-full"
+                style={{ backgroundColor: colors[item.name] }}
+              />
+              <Text size="xs" c="dimmed">{item.name}</Text>
+            </Group>
+            <Text size="xs" c="white" fw={500}>{item.value}</Text>
+          </Group>
+        ))}
+      </Stack>
+    </Paper>
   );
 }
 
-// Top Scores Chart
+// Top Scores Chart - Compact
 function TopScoresChart() {
   const data = [
     { name: 'Mercedes-Benz', value: 95 },
@@ -384,17 +281,20 @@ function TopScoresChart() {
   ];
 
   return (
-    <Paper p="lg" radius="xl" className="bg-white/5 border border-white/10">
-      <Group justify="space-between" mb="md">
-        <Text fw={600} c="white">Top ICP Scores</Text>
-        <Badge variant="light" size="sm" color="blue">Top 5</Badge>
+    <Paper p="md" radius="lg" className="bg-white/5 border border-white/10 h-full">
+      <Group justify="space-between" mb="sm">
+        <Group gap="xs">
+          <IconFlame size={16} className="text-orange-400" />
+          <Text fw={600} size="sm" c="white">Top ICP Scores</Text>
+        </Group>
+        <Badge size="xs" variant="light" color="blue">Top 5</Badge>
       </Group>
-      <BarList data={data} color="blue" />
+      <BarList data={data} color="blue" className="mt-2" />
     </Paper>
   );
 }
 
-// Partner Tech Breakdown
+// Partner Tech Breakdown - Compact
 function PartnerTechBreakdown() {
   const data = [
     { name: 'Adobe AEM', value: 2687 },
@@ -405,12 +305,15 @@ function PartnerTechBreakdown() {
   ];
 
   return (
-    <Paper p="lg" radius="xl" className="bg-white/5 border border-white/10">
-      <Group justify="space-between" mb="md">
-        <Text fw={600} c="white">Partner Technology</Text>
-        <Badge variant="light" size="sm" color="violet">All Partners</Badge>
+    <Paper p="md" radius="lg" className="bg-white/5 border border-white/10 h-full">
+      <Group justify="space-between" mb="sm">
+        <Group gap="xs">
+          <IconCode size={16} className="text-violet-400" />
+          <Text fw={600} size="sm" c="white">Partner Technology</Text>
+        </Group>
+        <Badge size="xs" variant="light" color="violet">All</Badge>
       </Group>
-      <BarList data={data} color="violet" />
+      <BarList data={data} color="violet" className="mt-2" />
     </Paper>
   );
 }
