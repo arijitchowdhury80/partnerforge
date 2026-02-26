@@ -96,10 +96,16 @@ class ValidationError(RepositoryError):
 class SourceCitationError(ValidationError):
     """Raised when source citation requirements are not met."""
 
-    def __init__(self, missing_fields: List[str], data_path: Optional[str] = None):
+    def __init__(
+        self,
+        missing_fields: List[str],
+        message: Optional[str] = None,
+    ):
+        # Use custom message if provided, otherwise default to missing fields
+        error_message = message or f"Missing source citation: {', '.join(missing_fields)}"
         super().__init__(
-            f"Missing source citation: {', '.join(missing_fields)}",
-            {"missing_fields": missing_fields, "data_path": data_path},
+            error_message,
+            {"missing_fields": missing_fields, "message": message},
         )
 
 
