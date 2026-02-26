@@ -1,14 +1,14 @@
 /**
  * TargetList Component - Algolia Brand + Excel-Style Filters
- * Version: 2.4.1 - FORCE REBUILD
+ * Version: 2.5.0 - Hover Preview + Slide-over Drawer
  *
- * Click column headers (Status, Vertical, Partner Tech) to open filter popups.
- * Filter options sorted by count (most common first), with checkboxes.
+ * - Hover on row: Shows preview card with quick info
+ * - Click on row: Opens slide-over drawer with full details
+ * - Click column headers: Opens filter popups
  */
 
 import { useState, useMemo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   useReactTable,
   getCoreRowModel,
@@ -35,6 +35,7 @@ import {
   Divider,
   Button,
   Stack,
+  HoverCard,
 } from '@mantine/core';
 import {
   IconEye,
@@ -47,6 +48,8 @@ import {
   IconFilter,
 } from '@tabler/icons-react';
 import type { Company } from '@/types';
+import { CompanyPreviewCard } from '@/components/company/CompanyPreviewCard';
+import { CompanyDrawer } from '@/components/company/CompanyDrawer';
 
 // Colors
 const ALGOLIA_BLUE = '#003DFF';
@@ -339,12 +342,25 @@ export function TargetList({
   isLoading = false,
   pagination,
   onPageChange,
+  onEnrichCompany,
   columnFilters = [],
   onColumnFilterChange,
 }: TargetListProps) {
-  const navigate = useNavigate();
   const [sorting, setSorting] = useState<SortingState>([{ id: 'icp_score', desc: true }]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+
+  // Drawer state
+  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
+  const [drawerOpened, setDrawerOpened] = useState(false);
+
+  const openDrawer = useCallback((company: Company) => {
+    setSelectedCompany(company);
+    setDrawerOpened(true);
+  }, []);
+
+  const closeDrawer = useCallback(() => {
+    setDrawerOpened(false);
+  }, []);
 
   // Get current filter values for a column
   const getFilterValues = useCallback(
@@ -527,14 +543,14 @@ export function TargetList({
         header: '',
         cell: ({ row }) => (
           <Group gap="xs" justify="flex-end">
-            <Tooltip label="View Intelligence">
+            <Tooltip label="Quick View (hover row)">
               <ActionIcon
                 variant="subtle"
-                color="gray"
+                color="blue"
                 size="sm"
                 onClick={(e) => {
                   e.stopPropagation();
-                  navigate(`/company/${row.original.domain}`);
+                  openDrawer(row.original);
                 }}
               >
                 <IconEye size={16} />
@@ -558,7 +574,7 @@ export function TargetList({
         size: 80,
       },
     ],
-    [navigate, statusOptions, verticalOptions, partnerTechOptions, getFilterValues, handleFilterChange]
+    [openDrawer, statusOptions, verticalOptions, partnerTechOptions, getFilterValues, handleFilterChange]
   );
 
   const table = useReactTable({
@@ -573,7 +589,9 @@ export function TargetList({
     pageCount: pagination?.total_pages || -1,
   });
 
-  const handleRowClick = useCallback((domain: string) => navigate(`/company/${domain}`), [navigate]);
+  const handleRowClick = useCallback((company: Company) => {
+    openDrawer(company);
+  }, [openDrawer]);
 
   // Count active filters
   const activeFilterCount = columnFilters.filter((f) => f.values.length > 0).length;
@@ -635,36 +653,50 @@ export function TargetList({
           <tbody>
             <AnimatePresence>
               {table.getRowModel().rows.map((row, index) => (
-                <motion.tr
+                <HoverCard
                   key={row.id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: index * 0.02 }}
-                  onClick={() => handleRowClick(row.original.domain)}
-                  style={{
-                    borderBottom: `1px solid ${GRAY_100}`,
-                    cursor: 'pointer',
-                    transition: 'background 0.15s ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = GRAY_50;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'white';
-                  }}
+                  width={320}
+                  shadow="xl"
+                  position="right"
+                  openDelay={400}
+                  closeDelay={100}
+                  withinPortal
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <td
-                      key={cell.id}
+                  <HoverCard.Target>
+                    <motion.tr
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: index * 0.02 }}
+                      onClick={() => handleRowClick(row.original)}
                       style={{
-                        padding: '16px',
-                        width: cell.column.getSize(),
+                        borderBottom: `1px solid ${GRAY_100}`,
+                        cursor: 'pointer',
+                        transition: 'background 0.15s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = GRAY_50;
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'white';
                       }}
                     >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
-                </motion.tr>
+                      {row.getVisibleCells().map((cell) => (
+                        <td
+                          key={cell.id}
+                          style={{
+                            padding: '16px',
+                            width: cell.column.getSize(),
+                          }}
+                        >
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </td>
+                      ))}
+                    </motion.tr>
+                  </HoverCard.Target>
+                  <HoverCard.Dropdown style={{ padding: 0, border: 'none', background: 'transparent' }}>
+                    <CompanyPreviewCard company={row.original} />
+                  </HoverCard.Dropdown>
+                </HoverCard>
               ))}
             </AnimatePresence>
           </tbody>
@@ -689,6 +721,14 @@ export function TargetList({
           </Group>
         </div>
       )}
+
+      {/* Company Detail Drawer */}
+      <CompanyDrawer
+        company={selectedCompany}
+        opened={drawerOpened}
+        onClose={closeDrawer}
+        onEnrich={onEnrichCompany}
+      />
     </div>
   );
 }
