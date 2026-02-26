@@ -336,9 +336,16 @@ interface DistributionTableProps {
 function DistributionTable({ distribution }: DistributionTableProps) {
   const { allVerticals, tiers, grandTotal } = distribution;
 
-  // Take top 6 verticals for display
-  const displayVerticals = allVerticals.slice(0, 6);
-  const otherVerticals = allVerticals.slice(6);
+  // Sort by HOT priority: Hot×1000 + Warm×10 + Cold×1 (hot leads matter most)
+  const sortedVerticals = [...allVerticals].sort((a, b) => {
+    const priorityA = a.hot * 1000 + a.warm * 10 + a.cold;
+    const priorityB = b.hot * 1000 + b.warm * 10 + b.cold;
+    return priorityB - priorityA;
+  });
+
+  // Take top 6 verticals by HOT priority for display
+  const displayVerticals = sortedVerticals.slice(0, 6);
+  const otherVerticals = sortedVerticals.slice(6);
   const hasOther = otherVerticals.length > 0;
 
   // Calculate "Other" totals

@@ -35,10 +35,8 @@ import {
   Divider,
   Button,
   Stack,
-  HoverCard,
 } from '@mantine/core';
 import {
-  IconEye,
   IconExternalLink,
   IconArrowUp,
   IconArrowDown,
@@ -46,9 +44,11 @@ import {
   IconChevronDown,
   IconX,
   IconFilter,
+  IconFlame,
+  IconTrendingUp,
+  IconSnowflake,
 } from '@tabler/icons-react';
 import type { Company } from '@/types';
-import { CompanyPreviewCard } from '@/components/company/CompanyPreviewCard';
 import { CompanyDrawer } from '@/components/company/CompanyDrawer';
 
 // Colors
@@ -306,10 +306,23 @@ function SortHeader({ column, label }: { column: any; label: string }) {
 // =============================================================================
 
 function StatusBadge({ status }: { status: 'hot' | 'warm' | 'cold' }) {
-  const colors = STATUS_COLORS[status] || STATUS_COLORS.cold;
+  const config = {
+    hot: { color: 'red', icon: IconFlame, label: 'HOT' },
+    warm: { color: 'orange', icon: IconTrendingUp, label: 'WARM' },
+    cold: { color: 'gray', icon: IconSnowflake, label: 'COLD' },
+  };
+  const { color, icon: Icon, label } = config[status] || config.cold;
   return (
-    <Badge size="sm" variant="light" color={colors.badge} tt="capitalize">
-      {status}
+    <Badge
+      size="lg"
+      variant="light"
+      color={color}
+      leftSection={<Icon size={14} />}
+      styles={{
+        root: { fontWeight: 600, fontSize: 12, padding: '8px 12px' },
+      }}
+    >
+      {label}
     </Badge>
   );
 }
@@ -542,36 +555,21 @@ export function TargetList({
         id: 'actions',
         header: '',
         cell: ({ row }) => (
-          <Group gap="xs" justify="flex-end">
-            <Tooltip label="Quick View (hover row)">
-              <ActionIcon
-                variant="subtle"
-                color="blue"
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  openDrawer(row.original);
-                }}
-              >
-                <IconEye size={16} />
-              </ActionIcon>
-            </Tooltip>
-            <Tooltip label="Visit Website">
-              <ActionIcon
-                variant="subtle"
-                color="gray"
-                size="sm"
-                component="a"
-                href={`https://${row.original.domain}`}
-                target="_blank"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <IconExternalLink size={16} />
-              </ActionIcon>
-            </Tooltip>
-          </Group>
+          <Tooltip label="Open website in new tab">
+            <ActionIcon
+              variant="subtle"
+              color="gray"
+              size="md"
+              component="a"
+              href={`https://${row.original.domain}`}
+              target="_blank"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <IconExternalLink size={18} />
+            </ActionIcon>
+          </Tooltip>
         ),
-        size: 80,
+        size: 50,
       },
     ],
     [openDrawer, statusOptions, verticalOptions, partnerTechOptions, getFilterValues, handleFilterChange]
@@ -653,50 +651,36 @@ export function TargetList({
           <tbody>
             <AnimatePresence>
               {table.getRowModel().rows.map((row, index) => (
-                <HoverCard
+                <motion.tr
                   key={row.id}
-                  width={320}
-                  shadow="xl"
-                  position="right"
-                  openDelay={400}
-                  closeDelay={100}
-                  withinPortal
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: index * 0.02 }}
+                  onClick={() => handleRowClick(row.original)}
+                  style={{
+                    borderBottom: `1px solid ${GRAY_100}`,
+                    cursor: 'pointer',
+                    transition: 'background 0.15s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = GRAY_50;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'white';
+                  }}
                 >
-                  <HoverCard.Target>
-                    <motion.tr
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: index * 0.02 }}
-                      onClick={() => handleRowClick(row.original)}
+                  {row.getVisibleCells().map((cell) => (
+                    <td
+                      key={cell.id}
                       style={{
-                        borderBottom: `1px solid ${GRAY_100}`,
-                        cursor: 'pointer',
-                        transition: 'background 0.15s ease',
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = GRAY_50;
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'white';
+                        padding: '16px',
+                        width: cell.column.getSize(),
                       }}
                     >
-                      {row.getVisibleCells().map((cell) => (
-                        <td
-                          key={cell.id}
-                          style={{
-                            padding: '16px',
-                            width: cell.column.getSize(),
-                          }}
-                        >
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </td>
-                      ))}
-                    </motion.tr>
-                  </HoverCard.Target>
-                  <HoverCard.Dropdown style={{ padding: 0, border: 'none', background: 'transparent' }}>
-                    <CompanyPreviewCard company={row.original} />
-                  </HoverCard.Dropdown>
-                </HoverCard>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </td>
+                  ))}
+                </motion.tr>
               ))}
             </AnimatePresence>
           </tbody>
