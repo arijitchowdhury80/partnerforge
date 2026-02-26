@@ -1,0 +1,402 @@
+[
+  {
+    "domain": "toyotamaterial.com",
+    "company": "Toyota Material Handling",
+    "ticker": "6201.T",
+    "is_public": true,
+    "traffic": 500000,
+    "traffic_sources": {"direct": 45, "search": 40, "referral": 15},
+    "competitors": ["jungheinrich.com", "hyster.com", "crown.com", "yale.com"],
+    "revenue": 26160000000,
+    "market_cap": 38440000000,
+    "employees": 72000,
+    "icp_score": 100,
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 30,
+      "public_bonus": 10
+    },
+    "notes": "Subsidiary of Toyota Industries (6201.T). Revenue $26B, market cap $38B. Toyota Material Handling USA has $434M revenue and 1,283 employees. Global division ~$5B revenue, 2.7K employees."
+  },
+  {
+    "domain": "slv.de",
+    "company": "SLV Elektronik",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 50000,
+    "traffic_sources": {"direct": 35, "search": 50, "referral": 15},
+    "competitors": ["philips-lighting.com", "osram.com", "ledvance.com"],
+    "revenue": 24000000,
+    "market_cap": null,
+    "employees": 670,
+    "icp_score": 30,
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 0,
+      "public_bonus": 0
+    },
+    "notes": "Private German lighting company. SLV Lighting Group GmbH based in Düsseldorf, 670 employees across 17 subsidiaries. Revenue ~$16-24M."
+  },
+  {
+    "domain": "pferdusa.com",
+    "company": "PFERD USA (August Rüggeberg)",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 4620,
+    "traffic_sources": {"direct": 30, "search": 55, "referral": 15},
+    "competitors": ["norton.com", "3m.com", "weiler.com"],
+    "revenue": 500000000,
+    "market_cap": null,
+    "employees": 2500,
+    "icp_score": 45,
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 15,
+      "public_bonus": 0
+    },
+    "notes": "US subsidiary of PFERD (August Rüggeberg GmbH). German parent is 200+ years old abrasives manufacturer. ~7,500 products. Plants in USA, Spain, South Africa, China. Revenue estimated ~$500M globally."
+  },
+  {
+    "domain": "aldi-sued.de",
+    "company": "Aldi Süd",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 8195556,
+    "traffic_sources": {"direct": 52, "search": 35, "referral": 13},
+    "competitors": ["lidl.de", "rewe.de", "edeka.de", "kaufland.de"],
+    "revenue": 83000000000,
+    "market_cap": null,
+    "employees": 150000,
+    "icp_score": 90,
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 30,
+      "revenue_pts": 30,
+      "public_bonus": 0
+    },
+    "notes": "Private German discount supermarket. 8.2M monthly visits. Aldi Süd €83B revenue, part of €112B Aldi Group. #3 in Groceries category globally. Plans to open 800+ US stores by 2028."
+  },
+  {
+    "domain": "meusburger.com",
+    "company": "Meusburger Georg GmbH & Co KG",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 127426,
+    "traffic_sources": {"direct": 40, "search": 45, "referral": 15},
+    "competitors": ["hasco.com", "dme.net", "strack.de"],
+    "revenue": 386100000,
+    "market_cap": null,
+    "employees": 491,
+    "icp_score": 45,
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 15,
+      "public_bonus": 0
+    },
+    "notes": "Private Austrian tooling company. Market leader in high-precision standard parts for mold making. Revenue $386M, 491 employees. Based in Wolfurt, Vorarlberg."
+  },
+  {
+    "domain": "rosebikes.com",
+    "company": "Rose Bikes GmbH",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 1740000,
+    "traffic_sources": {"direct": 40, "search": 45, "referral": 15},
+    "competitors": ["canyon.com", "specialized.com", "trek.com", "giant-bicycles.com"],
+    "revenue": 189000000,
+    "market_cap": null,
+    "employees": 480,
+    "icp_score": 45,
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 10,
+      "revenue_pts": 0,
+      "public_bonus": 0
+    },
+    "notes": "Private German bicycle manufacturer. Family-owned since 1907, based in Bocholt. Revenue €189M (FY Oct 2023). 480 employees. D2C omnichannel model. Online store rosebikes.de generated $165M in 2024."
+  },
+  {
+    "domain": "optibelt.com",
+    "company": "Optibelt GmbH",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 55703,
+    "traffic_sources": {"direct": 35, "search": 50, "referral": 15},
+    "competitors": ["gates.com", "continental-industry.com", "habasit.com"],
+    "revenue": 757400000,
+    "market_cap": null,
+    "employees": 2400,
+    "icp_score": 45,
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 15,
+      "public_bonus": 0
+    },
+    "notes": "Private German power transmission belt manufacturer. Revenue $757M, 2,400 employees. Founded 1872, HQ in Höxter. 8 production sites in 6 countries."
+  },
+  {
+    "domain": "loeffelhardt.de",
+    "company": "Emil Löffelhardt GmbH & Co. KG",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 38247,
+    "traffic_sources": {"direct": 40, "search": 45, "referral": 15},
+    "competitors": ["wuerth.de", "elektro-wandelt.de", "voltking.de"],
+    "revenue": 200000000,
+    "market_cap": null,
+    "employees": 650,
+    "icp_score": 30,
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 0,
+      "public_bonus": 0
+    },
+    "notes": "Private German electrical wholesale distributor. 20 locations in Baden-Württemberg and Bavaria. 650 employees including 70 trainees. Revenue estimated ~€200M."
+  },
+  {
+    "domain": "zf.com",
+    "company": "ZF Friedrichshafen AG",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 953500,
+    "traffic_sources": {"direct": 45, "search": 40, "referral": 15},
+    "competitors": ["bosch.com", "continental.com", "denso.com", "aisin.com"],
+    "revenue": 41400000000,
+    "market_cap": null,
+    "employees": 156000,
+    "icp_score": 80,
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 30,
+      "public_bonus": 0
+    },
+    "notes": "Private German automotive supplier (owned by Zeppelin Foundation). €41.4B revenue (2024), 156K employees. 3rd largest automotive supplier globally. Makes transmissions, driveline, suspension."
+  },
+  {
+    "domain": "lekkerland.com",
+    "company": "Lekkerland (REWE Group)",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 7871,
+    "traffic_sources": {"direct": 50, "search": 35, "referral": 15},
+    "competitors": ["metrolog.de", "transgourmet.de"],
+    "revenue": 15000000000,
+    "market_cap": null,
+    "employees": 10000,
+    "icp_score": 60,
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 30,
+      "public_bonus": 0
+    },
+    "notes": "Part of REWE Group since 2020. Europe's convenience specialist. €15B revenue, 85,500 sales points across Germany, Belgium, Netherlands, Spain."
+  },
+  {
+    "domain": "hilti.com",
+    "company": "Hilti Corporation",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 1100000,
+    "traffic_sources": {"direct": 50, "search": 35, "referral": 15},
+    "competitors": ["makita.com", "dewalt.com", "bosch-pt.com", "milwaukee.com"],
+    "revenue": 8700000000,
+    "market_cap": null,
+    "employees": 30000,
+    "icp_score": 70,
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 10,
+      "revenue_pts": 30,
+      "public_bonus": 0
+    },
+    "notes": "Private Liechtenstein multinational. Construction tools and services. Revenue $8.7B, 30K employees. 1.1M monthly visits. Family trust ownership (Martin Hilti Foundation)."
+  },
+  {
+    "domain": "aldi.com",
+    "company": "Aldi (US)",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 5000000,
+    "traffic_sources": {"direct": 55, "search": 30, "referral": 15},
+    "competitors": ["lidl.com", "walmart.com", "costco.com", "traderjoes.com"],
+    "revenue": 121100000000,
+    "market_cap": null,
+    "employees": 50000,
+    "icp_score": 90,
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 25,
+      "revenue_pts": 30,
+      "public_bonus": 0
+    },
+    "notes": "Private US operations of Aldi Group. ALDI USA revenue $121B. 2,400+ stores, opening 225+ in 2025. Combined Aldi Nord+Süd = €112B globally. 12,000 shops worldwide."
+  },
+  {
+    "domain": "pferd.com",
+    "company": "PFERD (August Rüggeberg GmbH)",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 114165,
+    "traffic_sources": {"direct": 35, "search": 50, "referral": 15},
+    "competitors": ["norton.com", "3m.com", "weiler.com", "tyrolit.com"],
+    "revenue": 500000000,
+    "market_cap": null,
+    "employees": 2500,
+    "icp_score": 45,
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 15,
+      "public_bonus": 0
+    },
+    "notes": "Private German abrasives manufacturer. HQ in Marienheide. 200+ years history. 7,500+ products. Brand relaunched as PFERD TOOLS in 2025. Revenue estimated $500M."
+  },
+  {
+    "domain": "hardeck.de",
+    "company": "Hardeck Möbel GmbH & Co. KG",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 367700,
+    "traffic_sources": {"direct": 40, "search": 45, "referral": 15},
+    "competitors": ["ikea.de", "hoeffner.de", "poco.de", "xxxlutz.de"],
+    "revenue": 500000000,
+    "market_cap": null,
+    "employees": 2000,
+    "icp_score": 30,
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 0,
+      "public_bonus": 0
+    },
+    "notes": "Private German furniture retailer. 80+ years family-owned business based in Bochum. Online revenue $20M (2024), but declining 20-50% in 2025. Total company revenue estimated €500M."
+  },
+  {
+    "domain": "lumas.com",
+    "company": "LUMAS Gallery",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 162691,
+    "traffic_sources": {"direct": 35, "search": 45, "referral": 20},
+    "competitors": ["artsy.net", "saatchiart.com", "yellowkorner.com"],
+    "revenue": 7500000,
+    "market_cap": null,
+    "employees": 300,
+    "icp_score": 30,
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 0,
+      "public_bonus": 0
+    },
+    "notes": "Private German art gallery. Online and 30+ physical galleries worldwide. 3,000+ works by 250 artists. Revenue $7.5M, 207-300 employees."
+  },
+  {
+    "domain": "prym.com",
+    "company": "Prym Group",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 64058,
+    "traffic_sources": {"direct": 40, "search": 45, "referral": 15},
+    "competitors": ["gutermann.com", "coats.com", "singer.com"],
+    "revenue": 500000000,
+    "market_cap": null,
+    "employees": 3500,
+    "icp_score": 45,
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 15,
+      "public_bonus": 0
+    },
+    "notes": "Private German haberdashery company. One of Germany's oldest industrial firms (since 1530). 4 divisions: Consumer, Fashion, Inovan, Intimates. 3,500 employees globally."
+  },
+  {
+    "domain": "koczer.com",
+    "company": "KoçZer",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 6358,
+    "traffic_sources": {"direct": 45, "search": 40, "referral": 15},
+    "competitors": ["dhl.com", "kuehne-nagel.com"],
+    "revenue": 100000000,
+    "market_cap": null,
+    "employees": 355,
+    "icp_score": 30,
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 0,
+      "public_bonus": 0
+    },
+    "notes": "Turkish procurement and supply chain company (not German as originally listed). Part of Koç Group. Revenue $100M-1B range, 355 employees across 4 continents."
+  },
+  {
+    "domain": "koempf24.de",
+    "company": "KÖMPF Onlineshops GmbH",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 369000,
+    "traffic_sources": {"direct": 30, "search": 55, "referral": 15},
+    "competitors": ["obi.de", "hornbach.de", "bauhaus.de"],
+    "revenue": 16900000,
+    "market_cap": null,
+    "employees": 100,
+    "icp_score": 30,
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 0,
+      "public_bonus": 0
+    },
+    "notes": "Private German online shop for DIY, home and garden. ~12.3K daily visitors (369K monthly). Revenue $16.9M (2023). Primarily German audience."
+  },
+  {
+    "domain": "stauff.com",
+    "company": "STAUFF Group",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 47460,
+    "traffic_sources": {"direct": 40, "search": 45, "referral": 15},
+    "competitors": ["parker.com", "eaton.com", "danfoss.com"],
+    "revenue": 380200000,
+    "market_cap": null,
+    "employees": 1500,
+    "icp_score": 45,
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 15,
+      "public_bonus": 0
+    },
+    "notes": "Private German hydraulics manufacturer. HQ in Werdohl. Revenue $380M, 1,500 employees worldwide (650 in Germany). Won Top Company 2025/2026 awards."
+  },
+  {
+    "domain": "swisskrono.com",
+    "company": "Swiss Krono Group",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 134689,
+    "traffic_sources": {"direct": 35, "search": 50, "referral": 15},
+    "competitors": ["egger.com", "kronospan.com", "pfleiderer.com"],
+    "revenue": 1600000000,
+    "market_cap": null,
+    "employees": 5000,
+    "icp_score": 50,
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 20,
+      "public_bonus": 0
+    },
+    "notes": "Private Swiss wood-based materials manufacturer. CHF 1.6B revenue, 5,000 employees. 12 production sites in 8 countries. Exports to 120+ countries."
+  }
+]

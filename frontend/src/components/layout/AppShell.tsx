@@ -21,6 +21,7 @@ import {
   IconUser,
   IconLogout,
   IconSettings,
+  IconHome,
 } from '@tabler/icons-react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useDisclosure } from '@mantine/hooks';
@@ -92,7 +93,12 @@ export function AppShell() {
           <Group gap="md">
             <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" color={ALGOLIA_SPACE_GRAY} />
 
-            <Group gap="sm">
+            <Group
+              gap="sm"
+              onClick={() => navigate('/dashboard')}
+              style={{ cursor: 'pointer' }}
+              title="Go to Dashboard"
+            >
               {/* Algolia Logo */}
               <AlgoliaLogo size={32} />
               <Title order={3} c={ALGOLIA_SPACE_GRAY} fw={700} style={{ fontFamily: "'Source Sans 3', sans-serif" }}>
@@ -103,6 +109,20 @@ export function AppShell() {
 
           {/* Right: Actions */}
           <Group gap="xs">
+            {/* Home Button - Goes to Dashboard (Partner Selection) */}
+            <Tooltip label="Home - Partner Selection">
+              <ActionIcon
+                variant="light"
+                size="lg"
+                radius="md"
+                color="blue"
+                onClick={() => navigate('/dashboard')}
+                style={{ border: `1px solid ${ALGOLIA_BORDER}` }}
+              >
+                <IconHome size={20} stroke={1.5} />
+              </ActionIcon>
+            </Tooltip>
+
             {/* Refresh Button - Reloads all data from Supabase */}
             <Tooltip label="Refresh all data from API">
               <ActionIcon

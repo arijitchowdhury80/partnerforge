@@ -1,0 +1,427 @@
+[
+  {
+    "domain": "bekaert.com",
+    "company": "Bekaert",
+    "ticker": "BEKB.BR",
+    "is_public": true,
+    "traffic": 67326,
+    "revenue": 3850650880,
+    "market_cap": 2119908992,
+    "icp_score": 60,
+    "icp_breakdown": {
+      "base_aem": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 20,
+      "public_bonus": 10
+    },
+    "notes": "Belgian steel wire transformation company"
+  },
+  {
+    "domain": "identityforce.com",
+    "company": "TransUnion (IdentityForce)",
+    "ticker": "TRU",
+    "is_public": true,
+    "traffic": 122668,
+    "revenue": 4576300032,
+    "market_cap": 14419349504,
+    "icp_score": 60,
+    "icp_breakdown": {
+      "base_aem": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 20,
+      "public_bonus": 10
+    },
+    "notes": "Identity protection service owned by TransUnion"
+  },
+  {
+    "domain": "swisskrono.com",
+    "company": "Swiss Krono",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 134689,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 30,
+    "icp_breakdown": {
+      "base_aem": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 0,
+      "public_bonus": 0
+    },
+    "notes": "Swiss manufacturer of wood-based materials - private"
+  },
+  {
+    "domain": "meusburger.com",
+    "company": "Meusburger",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 127426,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 30,
+    "icp_breakdown": {
+      "base_aem": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 0,
+      "public_bonus": 0
+    },
+    "notes": "Austrian tooling and mold standard parts manufacturer - private"
+  },
+  {
+    "domain": "pferd.com",
+    "company": "PFERD",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 114165,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 30,
+    "icp_breakdown": {
+      "base_aem": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 0,
+      "public_bonus": 0
+    },
+    "notes": "German manufacturer of abrasive tools and brushes - private"
+  },
+  {
+    "domain": "jungheinrich.com",
+    "company": "Jungheinrich",
+    "ticker": "JUN3.DE",
+    "is_public": true,
+    "traffic": 96461,
+    "revenue": 5476883968,
+    "market_cap": 3423120128,
+    "icp_score": 65,
+    "icp_breakdown": {
+      "base_aem": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 25,
+      "public_bonus": 10
+    },
+    "notes": "German forklift and warehouse equipment manufacturer"
+  },
+  {
+    "domain": "nissan.se",
+    "company": "Nissan Sweden",
+    "ticker": "NSANY",
+    "is_public": true,
+    "traffic": 93065,
+    "revenue": 12067981492224,
+    "market_cap": 9718154240,
+    "icp_score": 70,
+    "icp_breakdown": {
+      "base_aem": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 30,
+      "public_bonus": 10
+    },
+    "notes": "Regional site for Nissan Motor Co. (parent is public)"
+  },
+  {
+    "domain": "asadventure.nl",
+    "company": "A.S.Adventure",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 73551,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 30,
+    "icp_breakdown": {
+      "base_aem": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 0,
+      "public_bonus": 0
+    },
+    "notes": "Belgian outdoor retail chain - private"
+  },
+  {
+    "domain": "bose.tw",
+    "company": "Bose Taiwan",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 116574,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 30,
+    "icp_breakdown": {
+      "base_aem": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 0,
+      "public_bonus": 0
+    },
+    "notes": "Bose Corporation regional site - private company"
+  },
+  {
+    "domain": "prym.com",
+    "company": "Prym",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 64058,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 30,
+    "icp_breakdown": {
+      "base_aem": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 0,
+      "public_bonus": 0
+    },
+    "notes": "German haberdashery and sewing accessories manufacturer - private"
+  },
+  {
+    "domain": "bluescope.com",
+    "company": "BlueScope Steel",
+    "ticker": "BSL.AX",
+    "is_public": true,
+    "traffic": 28498,
+    "revenue": 16611300352,
+    "market_cap": 12139125760,
+    "icp_score": 70,
+    "icp_breakdown": {
+      "base_aem": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 30,
+      "public_bonus": 10
+    },
+    "notes": "Australian flat steel products company"
+  },
+  {
+    "domain": "optibelt.com",
+    "company": "Optibelt",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 55703,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 30,
+    "icp_breakdown": {
+      "base_aem": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 0,
+      "public_bonus": 0
+    },
+    "notes": "German drive belt manufacturer - private"
+  },
+  {
+    "domain": "nissan.no",
+    "company": "Nissan Norway",
+    "ticker": "NSANY",
+    "is_public": true,
+    "traffic": 61947,
+    "revenue": 12067981492224,
+    "market_cap": 9718154240,
+    "icp_score": 70,
+    "icp_breakdown": {
+      "base_aem": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 30,
+      "public_bonus": 10
+    },
+    "notes": "Regional site for Nissan Motor Co. (parent is public)"
+  },
+  {
+    "domain": "stauff.com",
+    "company": "STAUFF",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 47460,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 30,
+    "icp_breakdown": {
+      "base_aem": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 0,
+      "public_bonus": 0
+    },
+    "notes": "German hydraulic components manufacturer - private"
+  },
+  {
+    "domain": "loeffelhardt.de",
+    "company": "Loeffelhardt",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 38247,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 30,
+    "icp_breakdown": {
+      "base_aem": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 0,
+      "public_bonus": 0
+    },
+    "notes": "German electronic components distributor - private"
+  },
+  {
+    "domain": "szottm59toyota.com",
+    "company": "Szott M-59 Toyota",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 8366,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 30,
+    "icp_breakdown": {
+      "base_aem": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 0,
+      "public_bonus": 0
+    },
+    "notes": "Toyota dealership in Michigan - private"
+  },
+  {
+    "domain": "ufs.com",
+    "company": "Unilever Food Solutions",
+    "ticker": "UL",
+    "is_public": true,
+    "traffic": 19324,
+    "revenue": 50503000064,
+    "market_cap": 160057819136,
+    "icp_score": 70,
+    "icp_breakdown": {
+      "base_aem": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 30,
+      "public_bonus": 10
+    },
+    "notes": "B2B foodservice division of Unilever"
+  },
+  {
+    "domain": "tusenfryd.no",
+    "company": "TusenFryd",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 32597,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 30,
+    "icp_breakdown": {
+      "base_aem": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 0,
+      "public_bonus": 0
+    },
+    "notes": "Norwegian amusement park - private"
+  },
+  {
+    "domain": "sommarland.no",
+    "company": "Sommarland",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 6822,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 30,
+    "icp_breakdown": {
+      "base_aem": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 0,
+      "public_bonus": 0
+    },
+    "notes": "Norwegian water park - private"
+  },
+  {
+    "domain": "gatewaytoyota.com",
+    "company": "Gateway Toyota",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 14808,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 30,
+    "icp_breakdown": {
+      "base_aem": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 0,
+      "public_bonus": 0
+    },
+    "notes": "Toyota dealership - private"
+  },
+  {
+    "domain": "idealindustries.com",
+    "company": "IDEAL Industries",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 15423,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 30,
+    "icp_breakdown": {
+      "base_aem": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 0,
+      "public_bonus": 0
+    },
+    "notes": "US electrical and data communications tools manufacturer - private"
+  },
+  {
+    "domain": "lekkerland.com",
+    "company": "Lekkerland (REWE Group)",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 7871,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 30,
+    "icp_breakdown": {
+      "base_aem": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 0,
+      "public_bonus": 0
+    },
+    "notes": "German convenience goods wholesaler - owned by REWE (private)"
+  },
+  {
+    "domain": "koczer.com",
+    "company": "Koczer",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 6358,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 30,
+    "icp_breakdown": {
+      "base_aem": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 0,
+      "public_bonus": 0
+    },
+    "notes": "Private company - limited public information"
+  },
+  {
+    "domain": "intenselighting.com",
+    "company": "Intense Lighting",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 3649,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 30,
+    "icp_breakdown": {
+      "base_aem": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 0,
+      "public_bonus": 0
+    },
+    "notes": "US commercial lighting manufacturer - private"
+  },
+  {
+    "domain": "kelloggsawayfromhome.com",
+    "company": "Kellogg's Away From Home (Kellanova/Mars)",
+    "ticker": "K (delisted)",
+    "is_public": false,
+    "traffic": 3714,
+    "revenue": 12749000000,
+    "market_cap": null,
+    "icp_score": 60,
+    "icp_breakdown": {
+      "base_aem": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 30,
+      "public_bonus": 0
+    },
+    "notes": "B2B foodservice site - Kellanova acquired by Mars (2024). Revenue based on last public filing."
+  }
+]

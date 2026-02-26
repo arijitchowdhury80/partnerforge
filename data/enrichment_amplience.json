@@ -1,0 +1,177 @@
+[
+  {
+    "domain": "boohoo.com",
+    "company": "Boohoo Group PLC",
+    "ticker": "BOO.L",
+    "is_public": true,
+    "traffic": 7070000,
+    "traffic_sources": {
+      "organic_search": 45.03,
+      "direct": 30.5,
+      "paid_search": 12.2,
+      "social": 7.1,
+      "referral": 3.5,
+      "email": 1.67
+    },
+    "competitors": [
+      "asos.com",
+      "prettylittlething.com",
+      "newlook.com",
+      "next.co.uk",
+      "boohooman.com"
+    ],
+    "revenue": 920000000,
+    "market_cap": 426000000,
+    "employees": 3869,
+    "icp_score": 65,
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_score": 10,
+      "revenue_score": 15,
+      "public_bonus": 10
+    },
+    "notes": "UK fast fashion retailer. Recently rebranded to Debenhams Group. Revenue declining 15% YoY. Owns Missguided, PrettyLittleThing, Karen Millen brands.",
+    "data_source": "SimilarWeb (Nov 2025), Yahoo Finance, Stock Analysis",
+    "enriched_at": "2026-02-26"
+  },
+  {
+    "domain": "crateandbarrel.com",
+    "company": "Crate & Barrel (Euromarket Designs Inc.)",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 14800000,
+    "traffic_sources": {
+      "organic_search": 42.5,
+      "direct": 35.2,
+      "paid_search": 11.8,
+      "social": 5.3,
+      "referral": 3.8,
+      "email": 1.4
+    },
+    "competitors": [
+      "cb2.com",
+      "potterybarn.com",
+      "williams-sonoma.com",
+      "wayfair.com",
+      "roomandboard.com"
+    ],
+    "revenue": 1600000000,
+    "market_cap": null,
+    "employees": 8200,
+    "icp_score": 70,
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_score": 20,
+      "revenue_score": 20,
+      "public_bonus": 0
+    },
+    "notes": "Premium home furnishings retailer. Operates ~90 Crate & Barrel stores + CB2 brand. HQ in Northbrook, IL. Online revenue $1.19B (2024).",
+    "data_source": "SimilarWeb (Dec 2024), Semrush, Zippia, ecdb.com",
+    "enriched_at": "2026-02-26"
+  },
+  {
+    "domain": "very.co.uk",
+    "company": "The Very Group",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 15700000,
+    "traffic_sources": {
+      "organic_search": 38.5,
+      "direct": 42.3,
+      "paid_search": 10.2,
+      "social": 4.8,
+      "referral": 2.9,
+      "email": 1.3
+    },
+    "competitors": [
+      "argos.co.uk",
+      "johnlewis.com",
+      "houseoffraser.co.uk",
+      "next.co.uk",
+      "marksandspencer.com"
+    ],
+    "revenue": 2700000000,
+    "market_cap": null,
+    "employees": 3700,
+    "icp_score": 70,
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_score": 20,
+      "revenue_score": 20,
+      "public_bonus": 0
+    },
+    "notes": "UK online retailer. Acquired by Carlyle Group (Nov 2025). Revenue £2.13B. Ranks #10 in UK e-commerce. HQ in Speke, UK.",
+    "data_source": "SimilarWeb (July 2025), InternetRetailing, PitchBook",
+    "enriched_at": "2026-02-26"
+  },
+  {
+    "domain": "missguided.com",
+    "company": "Missguided (Boohoo Group)",
+    "ticker": "BOO.L",
+    "is_public": true,
+    "traffic": 1500000,
+    "traffic_sources": {
+      "direct": 51.32,
+      "organic_search": 24.46,
+      "paid_search": 12.5,
+      "social": 8.2,
+      "referral": 2.3,
+      "email": 1.22
+    },
+    "competitors": [
+      "boohoo.com",
+      "prettylittlething.com",
+      "asos.com",
+      "nastygal.com",
+      "newlook.com"
+    ],
+    "revenue": 150000000,
+    "market_cap": 426000000,
+    "employees": 200,
+    "icp_score": 50,
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_score": 10,
+      "revenue_score": 0,
+      "public_bonus": 10
+    },
+    "notes": "Acquired by Boohoo Group in 2022 after administration. Brand revenue ~£150M (estimated). Traffic significantly declined post-acquisition. Parent company market cap used.",
+    "data_source": "SimilarWeb (historical), FashionUnited, PitchBook",
+    "enriched_at": "2026-02-26"
+  },
+  {
+    "domain": "landmarkgroup.com",
+    "company": "Landmark Group",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 328000,
+    "traffic_sources": {
+      "direct": 45.5,
+      "organic_search": 32.3,
+      "paid_search": 8.5,
+      "social": 7.8,
+      "referral": 4.2,
+      "email": 1.7
+    },
+    "competitors": [
+      "alshaya.com",
+      "majid-al-futtaim.com",
+      "appareluae.com",
+      "azadea.com",
+      "centrepoint.com"
+    ],
+    "revenue": 7000000000,
+    "market_cap": null,
+    "employees": 55000,
+    "icp_score": 55,
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_score": 0,
+      "revenue_score": 25,
+      "public_bonus": 0
+    },
+    "notes": "UAE-based retail conglomerate. $7B revenue, 55K employees, 2,400+ stores across 21 countries. Brands include Centrepoint, Max Fashion, Splash. $1B expansion planned through 2028. Corporate site has low traffic; retail brands (centrepoint.com, maxfashion.com) have separate high-traffic domains.",
+    "data_source": "SimilarWeb (July 2024), ZoomInfo, Bloomberg, Wikipedia",
+    "enriched_at": "2026-02-26"
+  }
+]

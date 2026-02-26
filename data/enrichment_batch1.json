@@ -1,0 +1,252 @@
+[
+  {
+    "domain": "f5.com",
+    "company": "F5 Networks",
+    "ticker": "FFIV",
+    "is_public": true,
+    "traffic": 399153,
+    "revenue": 3144048128,
+    "market_cap": 15824729088,
+    "icp_score": 60
+  },
+  {
+    "domain": "juniper.net",
+    "company": "Juniper Networks",
+    "ticker": "JNPR",
+    "is_public": true,
+    "traffic": 372019,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 40
+  },
+  {
+    "domain": "hilti.com",
+    "company": "Hilti",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 505448,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 30
+  },
+  {
+    "domain": "allianz.com.au",
+    "company": "Allianz Australia",
+    "ticker": "ALV.DE",
+    "is_public": true,
+    "traffic": 797671,
+    "revenue": 109019996160,
+    "market_cap": 145776951296,
+    "icp_score": 70
+  },
+  {
+    "domain": "bms.com",
+    "company": "Bristol-Myers Squibb",
+    "ticker": "BMY",
+    "is_public": true,
+    "traffic": 153974,
+    "revenue": 48193998848,
+    "market_cap": 124835840000,
+    "icp_score": 70
+  },
+  {
+    "domain": "moodys.com",
+    "company": "Moody's",
+    "ticker": "MCO",
+    "is_public": true,
+    "traffic": 343127,
+    "revenue": 7718000128,
+    "market_cap": 82155503616,
+    "icp_score": 65
+  },
+  {
+    "domain": "mulberry.com",
+    "company": "Mulberry Group",
+    "ticker": "MUL.L",
+    "is_public": true,
+    "traffic": 658500,
+    "revenue": 118176000,
+    "market_cap": 67354144,
+    "icp_score": 40
+  },
+  {
+    "domain": "siemens-healthineers.com",
+    "company": "Siemens Healthineers",
+    "ticker": "SHL.DE",
+    "is_public": true,
+    "traffic": 515142,
+    "revenue": 23295000576,
+    "market_cap": 47140294656,
+    "icp_score": 70
+  },
+  {
+    "domain": "zf.com",
+    "company": "ZF Friedrichshafen",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 219927,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 30
+  },
+  {
+    "domain": "daimlertruck.com",
+    "company": "Daimler Truck",
+    "ticker": "DTG.DE",
+    "is_public": true,
+    "traffic": 105386,
+    "revenue": 50842001408,
+    "market_cap": 32488468480,
+    "icp_score": 70
+  },
+  {
+    "domain": "nissan.it",
+    "company": "Nissan Italy",
+    "ticker": "NSANY",
+    "is_public": true,
+    "traffic": 496801,
+    "revenue": 12067981492224,
+    "market_cap": 9718154240,
+    "icp_score": 70
+  },
+  {
+    "domain": "odpbusiness.com",
+    "company": "ODP Corporation",
+    "ticker": "ODP",
+    "is_public": true,
+    "traffic": 342812,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 40
+  },
+  {
+    "domain": "sunstargum.com",
+    "company": "Sunstar",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 248770,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 30
+  },
+  {
+    "domain": "tapestry.com",
+    "company": "Tapestry",
+    "ticker": "TPR",
+    "is_public": true,
+    "traffic": 88647,
+    "revenue": 7514800128,
+    "market_cap": 32113639424,
+    "icp_score": 65
+  },
+  {
+    "domain": "nissan.in",
+    "company": "Nissan India",
+    "ticker": "NSANY",
+    "is_public": true,
+    "traffic": 310199,
+    "revenue": 12067981492224,
+    "market_cap": 9718154240,
+    "icp_score": 70
+  },
+  {
+    "domain": "hardeck.de",
+    "company": "Hardeck",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 261743,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 30
+  },
+  {
+    "domain": "aldi.com",
+    "company": "Aldi",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 301235,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 30
+  },
+  {
+    "domain": "averydennison.com",
+    "company": "Avery Dennison",
+    "ticker": "AVY",
+    "is_public": true,
+    "traffic": 63993,
+    "revenue": 8855499776,
+    "market_cap": 14901778432,
+    "icp_score": 65
+  },
+  {
+    "domain": "koempf24.de",
+    "company": "Koempf24",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 267577,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 30
+  },
+  {
+    "domain": "chevrolet.com.ec",
+    "company": "Chevrolet Ecuador/GM",
+    "ticker": "GM",
+    "is_public": true,
+    "traffic": 244098,
+    "revenue": 185019006976,
+    "market_cap": 76895756288,
+    "icp_score": 70
+  },
+  {
+    "domain": "landmarkgroup.com",
+    "company": "Landmark Group",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 111153,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 30
+  },
+  {
+    "domain": "vraylar.com",
+    "company": "AbbVie",
+    "ticker": "ABBV",
+    "is_public": true,
+    "traffic": 248081,
+    "revenue": 61160001536,
+    "market_cap": 401232887808,
+    "icp_score": 70
+  },
+  {
+    "domain": "missguided.com",
+    "company": "Missguided",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 542960,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 30
+  },
+  {
+    "domain": "rosebikes.com",
+    "company": "Rose Bikes",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 106040,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 30
+  },
+  {
+    "domain": "lumas.com",
+    "company": "LUMAS",
+    "ticker": null,
+    "is_public": false,
+    "traffic": 59454,
+    "revenue": null,
+    "market_cap": null,
+    "icp_score": 30
+  }
+]

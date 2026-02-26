@@ -1,0 +1,346 @@
+[
+  {
+    "company": {
+      "name": "The Very Group",
+      "domain": "very.co.uk",
+      "ticker": null,
+      "private": true
+    },
+    "similarweb": {
+      "total_visits": 14318139.798563983,
+      "top_countries": [],
+      "traffic_sources": {
+        "direct": 51.9,
+        "search": 39.8,
+        "social": 1.9,
+        "referrals": 4.7,
+        "mail": 0.1,
+        "display_ads": 1.3
+      },
+      "top_competitors": [
+        "argos.co.uk",
+        "currys.co.uk",
+        "johnlewis.com",
+        "houseoffraser.co.uk",
+        "smythstoys.com"
+      ],
+      "error": null
+    },
+    "yahoo": {
+      "revenue": null,
+      "market_cap": null,
+      "employees": null
+    }
+  },
+  {
+    "company": {
+      "name": "Crate & Barrel",
+      "domain": "crateandbarrel.com",
+      "ticker": null,
+      "private": true
+    },
+    "similarweb": {
+      "total_visits": 12513617.181473795,
+      "top_countries": [],
+      "traffic_sources": {
+        "direct": 56.2,
+        "search": 33.7,
+        "social": 2.0,
+        "referrals": 7.0,
+        "mail": 0.2,
+        "display_ads": 0.9
+      },
+      "top_competitors": [
+        "cb2.com",
+        "roomandboard.com",
+        "potterybarn.com",
+        "ikea.com",
+        "williams-sonoma.com"
+      ],
+      "error": null
+    },
+    "yahoo": {
+      "revenue": null,
+      "market_cap": null,
+      "employees": null
+    }
+  },
+  {
+    "company": {
+      "name": "Coach/Tapestry",
+      "domain": "coach.com",
+      "ticker": "TPR",
+      "private": false
+    },
+    "similarweb": {
+      "total_visits": 15600420.623538885,
+      "top_countries": [],
+      "traffic_sources": {
+        "direct": 50.4,
+        "search": 41.2,
+        "social": 2.2,
+        "referrals": 4.4,
+        "mail": 0.2,
+        "display_ads": 0.9
+      },
+      "top_competitors": [
+        "coachoutlet.com",
+        "katespade.com",
+        "gucci.com",
+        "prada.com",
+        "dooney.com"
+      ],
+      "error": null
+    },
+    "yahoo": {
+      "revenue": 7514800128.0,
+      "market_cap": 32113639424.0,
+      "employees": 12500,
+      "currency": "USD",
+      "error": null
+    }
+  },
+  {
+    "company": {
+      "name": "Converse/Nike",
+      "domain": "converse.com",
+      "ticker": "NKE",
+      "private": false
+    },
+    "similarweb": {
+      "total_visits": 6556007.774941204,
+      "top_countries": [],
+      "traffic_sources": {
+        "direct": 48.0,
+        "search": 43.2,
+        "social": 3.1,
+        "referrals": 3.9,
+        "mail": 0.2,
+        "display_ads": 0.9
+      },
+      "top_competitors": [
+        "journeys.com",
+        "vans.com",
+        "nike.com",
+        "adidas.com",
+        "zappos.com"
+      ],
+      "error": null
+    },
+    "yahoo": {
+      "revenue": 46513000448.0,
+      "market_cap": 93856309248.0,
+      "employees": 77800,
+      "currency": "USD",
+      "error": null
+    }
+  },
+  {
+    "company": {
+      "name": "Primark/ABF",
+      "domain": "primark.com",
+      "ticker": "ABF.L",
+      "private": false
+    },
+    "similarweb": {
+      "total_visits": 13820110.452581711,
+      "top_countries": [],
+      "traffic_sources": {
+        "direct": 34.4,
+        "search": 60.5,
+        "social": 1.0,
+        "referrals": 3.1,
+        "mail": 0.1,
+        "display_ads": 0.2
+      },
+      "top_competitors": [
+        "zara.com",
+        "asos.com",
+        "matalan.co.uk",
+        "next.co.uk",
+        "pullandbear.com"
+      ],
+      "error": null
+    },
+    "yahoo": {
+      "revenue": 19459000320.0,
+      "market_cap": 13777483776.0,
+      "employees": 138000,
+      "currency": "GBp",
+      "error": null
+    }
+  },
+  {
+    "company": {
+      "name": "Under Armour",
+      "domain": "underarmour.com",
+      "ticker": "UAA",
+      "private": false
+    },
+    "similarweb": {
+      "total_visits": 9476542.392026618,
+      "top_countries": [],
+      "traffic_sources": {
+        "direct": 54.0,
+        "search": 31.7,
+        "social": 3.4,
+        "referrals": 7.0,
+        "mail": 0.2,
+        "display_ads": 3.2
+      },
+      "top_competitors": [
+        "nike.com",
+        "adidas.com",
+        "newbalance.com",
+        "reebok.com",
+        "shop.lululemon.com"
+      ],
+      "error": null
+    },
+    "yahoo": {
+      "revenue": 4975792128.0,
+      "market_cap": 3232505344.0,
+      "employees": 6500,
+      "currency": "USD",
+      "error": null
+    }
+  },
+  {
+    "company": {
+      "name": "Boohoo",
+      "domain": "boohoo.com",
+      "ticker": "BOO.L",
+      "private": false
+    },
+    "similarweb": {
+      "total_visits": 7823554.638887785,
+      "top_countries": [],
+      "traffic_sources": {
+        "direct": 44.1,
+        "search": 50.5,
+        "social": 1.4,
+        "referrals": 2.5,
+        "mail": 0.1,
+        "display_ads": 0.4
+      },
+      "top_competitors": [
+        "asos.com",
+        "prettylittlething.com",
+        "newlook.com",
+        "boohooman.com",
+        "next.co.uk"
+      ],
+      "error": null
+    },
+    "yahoo": {
+      "revenue": null,
+      "market_cap": null,
+      "employees": null,
+      "currency": "USD",
+      "error": null
+    }
+  },
+  {
+    "company": {
+      "name": "Aldi Sud",
+      "domain": "aldi-sued.de",
+      "ticker": null,
+      "private": true
+    },
+    "similarweb": {
+      "total_visits": 7628421.522359181,
+      "top_countries": [],
+      "traffic_sources": {
+        "direct": 49.7,
+        "search": 41.7,
+        "social": 0.3,
+        "referrals": 4.2,
+        "mail": 1.2,
+        "display_ads": 2.7
+      },
+      "top_competitors": [
+        "aldi-nord.de",
+        "penny.de",
+        "edeka.de",
+        "norma-online.de",
+        "aldi-onlineshop.de"
+      ],
+      "error": null
+    },
+    "yahoo": {
+      "revenue": null,
+      "market_cap": null,
+      "employees": null
+    }
+  },
+  {
+    "company": {
+      "name": "NAB",
+      "domain": "nab.com.au",
+      "ticker": "NAB.AX",
+      "private": false
+    },
+    "similarweb": {
+      "total_visits": 11493900.867678415,
+      "top_countries": [],
+      "traffic_sources": {
+        "direct": 70.3,
+        "search": 27.0,
+        "social": 0.1,
+        "referrals": 1.8,
+        "mail": 0.1,
+        "display_ads": 0.4
+      },
+      "top_competitors": [
+        "commbank.com.au",
+        "westpac.com.au",
+        "anz.com.au",
+        "stgeorge.com.au",
+        "bankwest.com.au"
+      ],
+      "error": null
+    },
+    "yahoo": {
+      "revenue": 13306800332.800001,
+      "market_cap": 97399303372.8,
+      "employees": 41880,
+      "currency": "AUD",
+      "error": null
+    }
+  },
+  {
+    "company": {
+      "name": "Ricoh",
+      "domain": "ricoh.com",
+      "ticker": "7752.T",
+      "private": false
+    },
+    "similarweb": {
+      "total_visits": 10442677.20093322,
+      "top_countries": [],
+      "traffic_sources": {
+        "direct": 48.8,
+        "search": 34.1,
+        "social": 0.2,
+        "referrals": 15.6,
+        "mail": 0.1,
+        "display_ads": 1.0
+      },
+      "top_competitors": [
+        "happyhackingkb.com",
+        "amd.com",
+        "app-basic-aibicpfu-eastus.azurewebsites.net",
+        "fujitsu.com",
+        "ibm.com"
+      ],
+      "error": null
+    },
+    "yahoo": {
+      "revenue": 17251039654.7072,
+      "market_cap": 5570139278.5408,
+      "employees": 78665,
+      "currency": "JPY",
+      "error": null
+    }
+  }
+]
