@@ -144,22 +144,40 @@ const docSections: DocSection[] = [
 // Mermaid Diagram Renderer
 // =============================================================================
 
+/**
+ * Encode diagram for mermaid.ink service
+ * Format: https://mermaid.ink/img/base64:{base64-encoded-json}
+ * The JSON payload contains: { code: string, mermaid: { theme: string } }
+ */
+function encodeMermaidDiagram(code: string, theme: string = 'dark'): string {
+  const payload = JSON.stringify({
+    code: code,
+    mermaid: { theme: theme }
+  });
+  // Use encodeURIComponent + unescape for proper UTF-8 handling before base64
+  return btoa(unescape(encodeURIComponent(payload)));
+}
+
 function MermaidDiagram({ code, index }: { code: string; index: number }) {
   const [error, setError] = useState(false);
 
-  // Encode the Mermaid code for the mermaid.ink service
-  const encoded = btoa(unescape(encodeURIComponent(code)));
-  const imageUrl = `https://mermaid.ink/img/${encoded}?theme=dark&bgColor=1a1b1e`;
+  // Clean up the mermaid code - remove any leading/trailing whitespace
+  const cleanCode = code.trim();
+
+  // Use mermaid.ink with proper base64-encoded JSON payload
+  // Format: https://mermaid.ink/img/base64:{base64-encoded-json}
+  const encoded = encodeMermaidDiagram(cleanCode, 'dark');
+  const imageUrl = `https://mermaid.ink/img/base64:${encoded}`;
 
   if (error) {
-    // Fallback to showing code if image fails
+    // Fallback to showing code if image fails to load
     return (
       <Paper key={`mermaid-${index}`} p="md" bg="dark.8" radius="md" my="md" style={{ overflow: 'auto' }}>
         <Group justify="space-between" mb="xs">
           <Badge size="sm" color="yellow" variant="light">Mermaid (render failed)</Badge>
         </Group>
         <Code block style={{ whiteSpace: 'pre', fontSize: '13px' }}>
-          {code}
+          {cleanCode}
         </Code>
       </Paper>
     );
@@ -195,6 +213,7 @@ function MermaidDiagram({ code, index }: { code: string; index: number }) {
           maxWidth: '100%',
           height: 'auto',
           borderRadius: 'var(--mantine-radius-sm)',
+          backgroundColor: '#1a1b1e',
         }}
         onError={() => setError(true)}
       />
