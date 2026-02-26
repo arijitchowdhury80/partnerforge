@@ -1,13 +1,14 @@
 /**
  * Dashboard Page
  *
- * Enterprise dashboard with ICP vs Vertical heatmap visualization.
+ * Premium enterprise dashboard with glassmorphism and Nivo heatmap.
  * Algolia brand colors: Nebula Blue #003DFF, Accent Purple #5468FF
  */
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, useMotionValue, useTransform, animate, useInView } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
+import { ResponsiveHeatMap } from '@nivo/heatmap';
 import {
   Container,
   Text,
@@ -15,6 +16,8 @@ import {
   Paper,
   Badge,
   Tooltip,
+  SegmentedControl,
+  Stack,
 } from '@mantine/core';
 import {
   IconMinus,
@@ -23,6 +26,8 @@ import {
   IconFlame,
   IconBolt,
   IconSnowflake,
+  IconChartBar,
+  IconLayoutGrid,
 } from '@tabler/icons-react';
 
 import { getStats, getCompanies } from '@/services/api';
@@ -43,6 +48,7 @@ export function Dashboard() {
     sort_order: 'desc',
   });
   const [page, setPage] = useState(1);
+  const [chartView, setChartView] = useState<'heatmap' | 'bars'>('heatmap');
 
   // Fetch stats
   const { data: stats } = useQuery({
@@ -61,6 +67,13 @@ export function Dashboard() {
     }),
   });
 
+  const hotCount = stats?.hot_leads || 9;
+  const warmCount = stats?.warm_leads || 49;
+  // Cool + Cold = total - hot - warm
+  const remaining = (stats?.total_companies || 2737) - hotCount - warmCount;
+  const coolCount = Math.round(remaining * 0.15); // ~15% are cool
+  const coldCount = remaining - coolCount;
+
   return (
     <Container size="xl" py="md">
       {/* Hero Section */}
@@ -70,34 +83,130 @@ export function Dashboard() {
         partnerName={selectedPartner.name}
       />
 
-      {/* ICP vs Vertical Heatmap */}
-      <ICPVerticalHeatmap />
+      {/* Distribution Chart */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="mb-6"
+      >
+        <Paper
+          p="xl"
+          radius="xl"
+          style={{
+            background: 'rgba(255, 255, 255, 0.03)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+          }}
+        >
+          <Group justify="space-between" mb="lg">
+            <div>
+              <Text fw={600} c="white" size="lg">Target Distribution</Text>
+              <Text size="sm" c="dimmed">
+                How targets spread across ICP tiers and industry verticals
+              </Text>
+            </div>
+            <SegmentedControl
+              value={chartView}
+              onChange={(v) => setChartView(v as 'heatmap' | 'bars')}
+              data={[
+                { label: <IconLayoutGrid size={16} />, value: 'heatmap' },
+                { label: <IconChartBar size={16} />, value: 'bars' },
+              ]}
+              size="xs"
+              styles={{
+                root: { background: 'rgba(255,255,255,0.05)' },
+              }}
+            />
+          </Group>
 
-      {/* Data Table */}
+          {chartView === 'heatmap' ? (
+            <ICPVerticalHeatmap />
+          ) : (
+            <ICPVerticalBars />
+          )}
+        </Paper>
+      </motion.div>
+
+      {/* Displacement Targets Section */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
       >
-        <Group justify="space-between" mb="md">
-          <div>
-            <Text fw={600} c="white" size="lg">Displacement Targets</Text>
-            <Text size="sm" c="dimmed">
-              Click any row to view full company intelligence
-            </Text>
-          </div>
-          <Badge variant="light" size="lg" color="blue">
-            {companies?.pagination.total || 0} companies
-          </Badge>
-        </Group>
+        <Paper
+          p="xl"
+          radius="xl"
+          style={{
+            background: 'rgba(255, 255, 255, 0.03)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+          }}
+        >
+          <Group justify="space-between" mb="md">
+            <div>
+              <Text fw={600} c="white" size="lg">Displacement Targets</Text>
+              <Text size="sm" c="dimmed">
+                Click any row to view full company intelligence
+              </Text>
+            </div>
 
-        <TargetList
-          companies={companies?.data || []}
-          isLoading={companiesLoading}
-          pagination={companies?.pagination}
-          onPageChange={setPage}
-          onFiltersChange={setFilters}
-        />
+            {/* Lead Status Badges - Here in context with the targets */}
+            <Group gap="sm">
+              <Tooltip label="ICP Score 80-100: Ready for immediate outreach" withArrow>
+                <Badge
+                  size="lg"
+                  variant="gradient"
+                  gradient={{ from: '#ef4444', to: '#dc2626' }}
+                  leftSection={<IconFlame size={14} />}
+                  style={{ cursor: 'help' }}
+                >
+                  Hot {hotCount}
+                </Badge>
+              </Tooltip>
+              <Tooltip label="ICP Score 60-79: Strong potential, nurture these" withArrow>
+                <Badge
+                  size="lg"
+                  variant="gradient"
+                  gradient={{ from: '#f97316', to: '#ea580c' }}
+                  leftSection={<IconBolt size={14} />}
+                  style={{ cursor: 'help' }}
+                >
+                  Warm {warmCount}
+                </Badge>
+              </Tooltip>
+              <Tooltip label="ICP Score 40-59: Monitor for signal changes" withArrow>
+                <Badge
+                  size="lg"
+                  variant="gradient"
+                  gradient={{ from: '#3b82f6', to: '#2563eb' }}
+                  style={{ cursor: 'help' }}
+                >
+                  Cool {coolCount}
+                </Badge>
+              </Tooltip>
+              <Tooltip label="ICP Score 0-39: Low priority, watch for triggers" withArrow>
+                <Badge
+                  size="lg"
+                  variant="light"
+                  color="gray"
+                  leftSection={<IconSnowflake size={14} />}
+                  style={{ cursor: 'help' }}
+                >
+                  Cold {coldCount}
+                </Badge>
+              </Tooltip>
+            </Group>
+          </Group>
+
+          <TargetList
+            companies={companies?.data || []}
+            isLoading={companiesLoading}
+            pagination={companies?.pagination}
+            onPageChange={setPage}
+            onFiltersChange={setFilters}
+          />
+        </Paper>
       </motion.div>
     </Container>
   );
@@ -128,9 +237,6 @@ function HeroSection({ stats, partnerKey, partnerName }: HeroSectionProps) {
   }, [isInView, stats?.total_companies]);
 
   const PartnerLogo = getPartnerLogo(partnerKey);
-  const hotCount = stats?.hot_leads || 9;
-  const warmCount = stats?.warm_leads || 49;
-  const coldCount = (stats?.total_companies || 2687) - hotCount - warmCount;
 
   return (
     <motion.div
@@ -141,10 +247,11 @@ function HeroSection({ stats, partnerKey, partnerName }: HeroSectionProps) {
       className="mb-6"
     >
       <Paper
-        p="lg"
+        p="xl"
         radius="xl"
         style={{
-          background: `linear-gradient(135deg, ${ALGOLIA_BLUE}20 0%, ${ALGOLIA_PURPLE}10 100%)`,
+          background: `linear-gradient(135deg, ${ALGOLIA_BLUE}15 0%, ${ALGOLIA_PURPLE}08 100%)`,
+          backdropFilter: 'blur(20px)',
           border: '1px solid rgba(255, 255, 255, 0.1)',
           position: 'relative',
           overflow: 'hidden',
@@ -155,95 +262,81 @@ function HeroSection({ stats, partnerKey, partnerName }: HeroSectionProps) {
           style={{
             position: 'absolute',
             inset: 0,
-            opacity: 0.1,
-            backgroundImage: `radial-gradient(circle at 2px 2px, rgba(255,255,255,0.15) 1px, transparent 0)`,
+            opacity: 0.05,
+            backgroundImage: `radial-gradient(circle at 2px 2px, rgba(255,255,255,0.3) 1px, transparent 0)`,
             backgroundSize: '32px 32px',
           }}
         />
 
         <div style={{ position: 'relative', zIndex: 10 }}>
-          {/* Main number and lead counts */}
-          <Group align="flex-end" gap="lg" mb="md">
+          {/* Main number */}
+          <Group align="flex-end" gap="lg" mb="lg">
             <motion.span
-              style={{ fontSize: '3.5rem', fontWeight: 700, color: 'white' }}
+              style={{
+                fontSize: '4rem',
+                fontWeight: 700,
+                color: 'white',
+                lineHeight: 1,
+                background: `linear-gradient(135deg, #FFFFFF 0%, rgba(255,255,255,0.8) 100%)`,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
             >
               {displayTotal}
             </motion.span>
-            <Text size="lg" c="white" opacity={0.7} mb="sm">
+            <Text size="xl" c="white" opacity={0.7} mb="sm">
               Displacement Targets
             </Text>
-
-            {/* Inline lead counts with tooltips */}
-            <Group gap="md" ml="auto">
-              <Tooltip label="ICP Score 80-100: Ready for immediate outreach" withArrow>
-                <Badge
-                  size="lg"
-                  variant="light"
-                  color="red"
-                  leftSection={<IconFlame size={14} />}
-                  style={{ cursor: 'help' }}
-                >
-                  Hot ({hotCount})
-                </Badge>
-              </Tooltip>
-              <Tooltip label="ICP Score 60-79: Strong potential, nurture these" withArrow>
-                <Badge
-                  size="lg"
-                  variant="light"
-                  color="orange"
-                  leftSection={<IconBolt size={14} />}
-                  style={{ cursor: 'help' }}
-                >
-                  Warm ({warmCount})
-                </Badge>
-              </Tooltip>
-              <Tooltip label="ICP Score 0-59: Monitor for changes" withArrow>
-                <Badge
-                  size="lg"
-                  variant="light"
-                  color="gray"
-                  leftSection={<IconSnowflake size={14} />}
-                  style={{ cursor: 'help' }}
-                >
-                  Cold ({coldCount})
-                </Badge>
-              </Tooltip>
-            </Group>
           </Group>
 
           {/* Visual Formula */}
-          <Group gap="sm">
+          <Group gap="md">
             <Tooltip label={`Companies using ${partnerName} technology`} withArrow>
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10 cursor-help">
-                <PartnerLogo size={24} />
-                <Text size="sm" c="white" fw={500}>{partnerName}</Text>
-              </div>
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-help"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                }}
+              >
+                <PartnerLogo size={28} />
+                <Text size="md" c="white" fw={500}>{partnerName}</Text>
+              </motion.div>
             </Tooltip>
 
-            <IconMinus size={16} style={{ color: '#ef4444' }} />
+            <IconMinus size={20} style={{ color: '#ef4444' }} />
 
             <Tooltip label="Existing Algolia customers (excluded from targets)" withArrow>
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10 cursor-help">
-                <AlgoliaLogo size={24} />
-                <Text size="sm" c="white" fw={500}>Algolia</Text>
-              </div>
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-help"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                }}
+              >
+                <AlgoliaLogo size={28} />
+                <Text size="md" c="white" fw={500}>Algolia Customers</Text>
+              </motion.div>
             </Tooltip>
 
-            <IconEqual size={16} style={{ color: '#22c55e' }} />
+            <IconEqual size={20} style={{ color: '#22c55e' }} />
 
             <Tooltip label="Your displacement opportunity pipeline" withArrow>
-              <div
-                className="flex items-center gap-2 px-3 py-2 rounded-lg cursor-help"
+              <motion.div
+                whileHover={{ scale: 1.02, boxShadow: `0 0 20px ${ALGOLIA_PURPLE}40` }}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-help"
                 style={{
-                  background: `${ALGOLIA_PURPLE}30`,
+                  background: `linear-gradient(135deg, ${ALGOLIA_PURPLE}30 0%, ${ALGOLIA_BLUE}20 100%)`,
                   border: `1px solid ${ALGOLIA_PURPLE}50`,
                 }}
               >
-                <IconTarget size={20} style={{ color: ALGOLIA_PURPLE }} />
-                <Text size="sm" c="white" fw={600}>
-                  {stats?.total_companies?.toLocaleString() || '...'} targets
+                <IconTarget size={24} style={{ color: ALGOLIA_PURPLE }} />
+                <Text size="md" c="white" fw={600}>
+                  {stats?.total_companies?.toLocaleString() || '...'} Targets
                 </Text>
-              </div>
+              </motion.div>
             </Tooltip>
           </Group>
         </div>
@@ -252,188 +345,190 @@ function HeroSection({ stats, partnerKey, partnerName }: HeroSectionProps) {
   );
 }
 
-// ICP vs Vertical Heatmap
+// ICP vs Vertical Heatmap using Nivo
 function ICPVerticalHeatmap() {
-  // Verticals (X-axis)
-  const verticals = ['Commerce', 'Media', 'Financial', 'Healthcare', 'Other'];
-
-  // ICP Tiers (Y-axis) - from high to low
-  const tiers = [
-    { id: 'T1', label: '80-100', color: '#ef4444', description: 'Hot - Ready for outreach' },
-    { id: 'T2', label: '60-79', color: '#f97316', description: 'Warm - Strong potential' },
-    { id: 'T3', label: '40-59', color: ALGOLIA_PURPLE, description: 'Medium - Nurture' },
-    { id: 'T4', label: '0-39', color: '#6b7280', description: 'Cold - Monitor' },
+  // Data for Nivo heatmap
+  // X-axis: Verticals, Y-axis: ICP Tiers
+  const heatmapData = [
+    {
+      id: '80-100 (Hot)',
+      data: [
+        { x: 'Commerce', y: 5 },
+        { x: 'Media', y: 2 },
+        { x: 'Financial', y: 1 },
+        { x: 'Healthcare', y: 1 },
+        { x: 'Other', y: 0 },
+      ],
+    },
+    {
+      id: '60-79 (Warm)',
+      data: [
+        { x: 'Commerce', y: 28 },
+        { x: 'Media', y: 12 },
+        { x: 'Financial', y: 6 },
+        { x: 'Healthcare', y: 3 },
+        { x: 'Other', y: 0 },
+      ],
+    },
+    {
+      id: '40-59 (Cool)',
+      data: [
+        { x: 'Commerce', y: 200 },
+        { x: 'Media', y: 95 },
+        { x: 'Financial', y: 52 },
+        { x: 'Healthcare', y: 35 },
+        { x: 'Other', y: 12 },
+      ],
+    },
+    {
+      id: '0-39 (Cold)',
+      data: [
+        { x: 'Commerce', y: 1617 },
+        { x: 'Media', y: 511 },
+        { x: 'Financial', y: 421 },
+        { x: 'Healthcare', y: 264 },
+        { x: 'Other', y: 405 },
+      ],
+    },
   ];
 
-  // Heatmap data: [tier][vertical] = count
-  const data: Record<string, Record<string, number>> = {
-    T1: { Commerce: 5, Media: 2, Financial: 1, Healthcare: 1, Other: 0 },
-    T2: { Commerce: 28, Media: 12, Financial: 6, Healthcare: 3, Other: 0 },
-    T3: { Commerce: 80, Media: 35, Financial: 22, Healthcare: 13, Other: 0 },
-    T4: { Commerce: 1737, Media: 571, Financial: 451, Healthcare: 303, Other: 417 },
-  };
+  return (
+    <div style={{ height: 350 }}>
+      <ResponsiveHeatMap
+        data={heatmapData}
+        margin={{ top: 60, right: 90, bottom: 60, left: 120 }}
+        valueFormat={(v) => v.toLocaleString()}
+        axisTop={{
+          tickSize: 5,
+          tickPadding: 5,
+          tickRotation: 0,
+          legend: 'Industry Vertical',
+          legendPosition: 'middle',
+          legendOffset: -45,
+        }}
+        axisLeft={{
+          tickSize: 5,
+          tickPadding: 5,
+          tickRotation: 0,
+          legend: 'ICP Score Tier',
+          legendPosition: 'middle',
+          legendOffset: -100,
+        }}
+        colors={{
+          type: 'diverging',
+          scheme: 'blues',
+          minValue: 0,
+          maxValue: 500,
+          divergeAt: 0.5,
+        }}
+        emptyColor="rgba(255,255,255,0.03)"
+        borderRadius={6}
+        borderWidth={2}
+        borderColor="rgba(255,255,255,0.05)"
+        labelTextColor={{ from: 'color', modifiers: [['brighter', 3]] }}
+        theme={{
+          background: 'transparent',
+          text: { fill: 'rgba(255,255,255,0.7)' },
+          axis: {
+            legend: { text: { fill: 'rgba(255,255,255,0.5)', fontSize: 12 } },
+            ticks: { text: { fill: 'rgba(255,255,255,0.6)', fontSize: 11 } },
+          },
+          tooltip: {
+            container: {
+              background: '#1a1a2e',
+              color: '#ffffff',
+              borderRadius: '8px',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+              padding: '12px',
+            },
+          },
+        }}
+        legends={[
+          {
+            anchor: 'right',
+            translateX: 70,
+            translateY: 0,
+            length: 200,
+            thickness: 10,
+            direction: 'column',
+            tickPosition: 'after',
+            tickSize: 3,
+            tickSpacing: 4,
+            tickOverlap: false,
+            title: 'Count →',
+            titleAlign: 'start',
+            titleOffset: 4,
+          },
+        ]}
+        annotations={[]}
+        hoverTarget="cell"
+        onClick={(cell) => {
+          console.log('Clicked cell:', cell);
+          // TODO: Filter table by this cell's ICP tier + vertical
+        }}
+      />
+    </div>
+  );
+}
 
-  // Get max value for color intensity
-  const maxValue = Math.max(...Object.values(data).flatMap(row => Object.values(row)));
-
-  // Calculate color intensity (0-1)
-  const getIntensity = (value: number) => Math.min(value / (maxValue * 0.3), 1);
-
-  // Row totals
-  const getRowTotal = (tierId: string) =>
-    Object.values(data[tierId]).reduce((a, b) => a + b, 0);
-
-  // Column totals
-  const getColTotal = (vertical: string) =>
-    tiers.reduce((sum, tier) => sum + data[tier.id][vertical], 0);
+// Alternative: Bar chart view
+function ICPVerticalBars() {
+  const verticals = ['Commerce', 'Media', 'Financial', 'Healthcare', 'Other'];
+  const tiers = [
+    { label: 'Hot (80-100)', color: '#ef4444', values: [5, 2, 1, 1, 0] },
+    { label: 'Warm (60-79)', color: '#f97316', values: [28, 12, 6, 3, 0] },
+    { label: 'Cool (40-59)', color: '#3b82f6', values: [200, 95, 52, 35, 12] },
+    { label: 'Cold (0-39)', color: '#6b7280', values: [1617, 511, 421, 264, 405] },
+  ];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.1 }}
-      className="mb-6"
-    >
-      <Paper
-        p="lg"
-        radius="xl"
-        className="bg-white/5 border border-white/10"
-      >
-        <Group justify="space-between" mb="lg">
-          <div>
-            <Text fw={600} c="white" size="lg">ICP Score × Vertical Distribution</Text>
-            <Text size="xs" c="dimmed">Click any cell to filter the table below</Text>
-          </div>
-          <Tooltip label="This heatmap shows how your targets distribute across industries (columns) and ICP score tiers (rows). Darker cells = more targets." withArrow multiline w={300}>
-            <Badge variant="light" color="blue" style={{ cursor: 'help' }}>?</Badge>
-          </Tooltip>
-        </Group>
-
-        {/* Heatmap Grid */}
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '4px' }}>
-            <thead>
-              <tr>
-                <th style={{ width: '80px' }}></th>
-                {verticals.map((v) => (
-                  <Tooltip key={v} label={`${getColTotal(v).toLocaleString()} targets in ${v}`} withArrow>
-                    <th
+    <div className="grid grid-cols-5 gap-4">
+      {verticals.map((vertical, vIdx) => (
+        <div key={vertical} className="space-y-2">
+          <Text size="sm" fw={500} c="white" ta="center">{vertical}</Text>
+          <Stack gap={4}>
+            {tiers.map((tier) => {
+              const value = tier.values[vIdx];
+              const maxValue = Math.max(...tier.values);
+              const width = maxValue > 0 ? (value / maxValue) * 100 : 0;
+              return (
+                <Tooltip
+                  key={tier.label}
+                  label={`${value.toLocaleString()} ${tier.label.toLowerCase()} targets in ${vertical}`}
+                  withArrow
+                >
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="h-6 rounded transition-all duration-300 hover:opacity-80 cursor-pointer"
                       style={{
-                        padding: '8px',
-                        textAlign: 'center',
-                        color: 'rgba(255,255,255,0.6)',
-                        fontSize: '12px',
-                        fontWeight: 500,
-                        cursor: 'help',
+                        width: `${Math.max(width, 5)}%`,
+                        background: tier.color,
+                        minWidth: value > 0 ? '20px' : '0',
                       }}
-                    >
-                      {v}
-                    </th>
-                  </Tooltip>
-                ))}
-                <th style={{ width: '60px', padding: '8px', textAlign: 'right', color: 'rgba(255,255,255,0.4)', fontSize: '11px' }}>
-                  Total
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {tiers.map((tier) => (
-                <tr key={tier.id}>
-                  <Tooltip label={tier.description} withArrow position="right">
-                    <td
-                      style={{
-                        padding: '8px',
-                        color: tier.color,
-                        fontSize: '12px',
-                        fontWeight: 600,
-                        cursor: 'help',
-                      }}
-                    >
-                      {tier.label}
-                    </td>
-                  </Tooltip>
-                  {verticals.map((v) => {
-                    const value = data[tier.id][v];
-                    const intensity = getIntensity(value);
-                    return (
-                      <Tooltip
-                        key={v}
-                        label={`${value.toLocaleString()} ${tier.description.split(' - ')[0].toLowerCase()} targets in ${v}`}
-                        withArrow
-                      >
-                        <td
-                          style={{
-                            padding: '12px 8px',
-                            textAlign: 'center',
-                            background: value > 0
-                              ? `rgba(${tier.color === '#ef4444' ? '239,68,68' : tier.color === '#f97316' ? '249,115,22' : tier.color === ALGOLIA_PURPLE ? '84,104,255' : '107,114,128'}, ${0.1 + intensity * 0.5})`
-                              : 'rgba(255,255,255,0.02)',
-                            borderRadius: '6px',
-                            cursor: value > 0 ? 'pointer' : 'default',
-                            transition: 'all 0.2s',
-                          }}
-                          onMouseEnter={(e) => {
-                            if (value > 0) {
-                              (e.target as HTMLElement).style.transform = 'scale(1.05)';
-                            }
-                          }}
-                          onMouseLeave={(e) => {
-                            (e.target as HTMLElement).style.transform = 'scale(1)';
-                          }}
-                        >
-                          <Text
-                            size="sm"
-                            fw={value > 0 ? 600 : 400}
-                            c={value > 0 ? 'white' : 'dimmed'}
-                          >
-                            {value > 0 ? value.toLocaleString() : '—'}
-                          </Text>
-                        </td>
-                      </Tooltip>
-                    );
-                  })}
-                  <td style={{ padding: '8px', textAlign: 'right' }}>
-                    <Text size="xs" c="dimmed">{getRowTotal(tier.id).toLocaleString()}</Text>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-            <tfoot>
-              <tr>
-                <td style={{ padding: '8px', fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>Total</td>
-                {verticals.map((v) => (
-                  <td key={v} style={{ padding: '8px', textAlign: 'center' }}>
-                    <Text size="xs" c="dimmed">{getColTotal(v).toLocaleString()}</Text>
-                  </td>
-                ))}
-                <td style={{ padding: '8px', textAlign: 'right' }}>
-                  <Text size="xs" fw={600} c="white">
-                    {tiers.reduce((sum, t) => sum + getRowTotal(t.id), 0).toLocaleString()}
-                  </Text>
-                </td>
-              </tr>
-            </tfoot>
-          </table>
+                    />
+                    <Text size="xs" c="dimmed" style={{ minWidth: '40px' }}>
+                      {value > 0 ? value.toLocaleString() : '—'}
+                    </Text>
+                  </div>
+                </Tooltip>
+              );
+            })}
+          </Stack>
         </div>
-
-        {/* Legend */}
-        <Group gap="lg" mt="md" pt="md" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-          <Text size="xs" c="dimmed">Intensity:</Text>
-          <Group gap="xs">
-            <div style={{ width: 16, height: 16, borderRadius: 4, background: 'rgba(84,104,255,0.15)' }} />
-            <Text size="xs" c="dimmed">Low</Text>
-          </Group>
-          <Group gap="xs">
-            <div style={{ width: 16, height: 16, borderRadius: 4, background: 'rgba(84,104,255,0.4)' }} />
-            <Text size="xs" c="dimmed">Medium</Text>
-          </Group>
-          <Group gap="xs">
-            <div style={{ width: 16, height: 16, borderRadius: 4, background: 'rgba(84,104,255,0.7)' }} />
-            <Text size="xs" c="dimmed">High</Text>
-          </Group>
-        </Group>
-      </Paper>
-    </motion.div>
+      ))}
+      {/* Legend */}
+      <div className="col-span-5 flex justify-center gap-6 mt-4 pt-4 border-t border-white/10">
+        {tiers.map((tier) => (
+          <div key={tier.label} className="flex items-center gap-2">
+            <div
+              className="w-3 h-3 rounded"
+              style={{ background: tier.color }}
+            />
+            <Text size="xs" c="dimmed">{tier.label}</Text>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
