@@ -150,7 +150,6 @@ export const PartnerLogoMap: Record<string, React.FC<LogoProps>> = {
   bigcommerce: BigCommerceLogo,
   magento: MagentoLogo,
   vtex: VTEXLogo,
-  elastic: ElasticsearchLogo,
   amplience: AmplienceLogo,
   spryker: SprykerLogo,
 };

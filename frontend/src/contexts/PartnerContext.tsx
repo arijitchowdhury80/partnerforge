@@ -121,15 +121,7 @@ export const PARTNERS: Partner[] = [
       { key: 'spryker', name: 'Spryker Commerce OS', shortName: 'Commerce OS', count: 20 },
     ],
   },
-  {
-    key: 'elastic',
-    name: 'Elasticsearch',
-    shortName: 'Elastic',
-    products: [
-      { key: 'elasticsearch', name: 'Elasticsearch', shortName: 'Elastic' },
-      { key: 'elastic-cloud', name: 'Elastic Cloud', shortName: 'Cloud' },
-    ],
-  },
+  // NOTE: Elasticsearch is a COMPETITOR, not a partner - removed from this list
 ];
 
 // Get display name for current selection
@@ -165,7 +157,6 @@ export function getSelectionTechName(selection: PartnerSelection): string | unde
       'vtex-vtex': 'VTEX',
       'amplience-amplience': 'Amplience',
       'spryker-spryker': 'Spryker',
-      'elastic-elasticsearch': 'Elasticsearch',
     };
     return techNameMap[`${selection.partner.key}-${selection.product.key}`] || selection.product.name;
   }
@@ -181,7 +172,6 @@ export function getSelectionTechName(selection: PartnerSelection): string | unde
     vtex: 'VTEX',
     amplience: 'Amplience',
     spryker: 'Spryker',
-    elastic: 'Elastic',            // Matches Elasticsearch, Elastic Cloud
   };
   return defaultTechMap[selection.partner.key];
 }
@@ -215,7 +205,6 @@ const iconMap: Record<string, string> = {
   vtex: '💜',
   amplience: '🟣',
   spryker: '🔶',
-  elastic: '🔍',
 };
 
 export function PartnerProvider({ children }: { children: ReactNode }) {

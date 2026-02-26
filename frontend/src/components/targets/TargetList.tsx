@@ -675,6 +675,7 @@ export function TargetList({
                         company={hoveredCompany}
                         onViewDetails={() => openDrawer(hoveredCompany)}
                         onClose={handleQuickLookClose}
+                        onEnrich={onEnrichCompany}
                       />
                     </td>
                   </tr>
