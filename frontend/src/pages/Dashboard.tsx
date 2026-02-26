@@ -32,7 +32,7 @@ import {
   IconDownload,
 } from '@tabler/icons-react';
 
-import { getStats, getCompanies } from '@/services/api';
+import { getStats, getCompanies, getDistribution, type DistributionData } from '@/services/api';
 import { TargetList } from '@/components/targets/TargetList';
 import { usePartner } from '@/contexts/PartnerContext';
 import { AlgoliaLogo } from '@/components/common/AlgoliaLogo';
@@ -67,6 +67,12 @@ export function Dashboard() {
     queryFn: getStats,
   });
 
+  // Fetch distribution data for the grid
+  const { data: distribution } = useQuery({
+    queryKey: ['distribution', selectedPartner.key],
+    queryFn: getDistribution,
+  });
+
   // Fetch companies
   const { data: companies, isLoading: companiesLoading } = useQuery({
     queryKey: ['companies', filters, page, selectedPartner.key],
@@ -92,12 +98,11 @@ export function Dashboard() {
     enabled: !!selectedCell,
   });
 
-  const hotCount = stats?.hot_leads || 9;
-  const warmCount = stats?.warm_leads || 49;
-  const remaining = (stats?.total_companies || 2737) - hotCount - warmCount;
-  const coolCount = Math.round(remaining * 0.15);
-  const coldCount = remaining - coolCount;
-  const total = hotCount + warmCount + coolCount + coldCount;
+  const hotCount = stats?.hot_leads || 0;
+  const warmCount = stats?.warm_leads || 0;
+  const coolCount = stats?.cool_leads || 0;
+  const coldCount = stats?.cold_leads || 0;
+  const total = stats?.total_companies || 0;
 
   const handleCellClick = (cell: CellSelection) => {
     if (cell.count > 0) {
@@ -245,7 +250,13 @@ export function Dashboard() {
             <Text fw={600} c="white" size="md">Target Distribution</Text>
             <Text size="xs" c="dimmed">Click any cell to see companies</Text>
           </Group>
-          <DistributionGrid total={total} onCellClick={handleCellClick} />
+          {distribution ? (
+            <DistributionGrid distribution={distribution} onCellClick={handleCellClick} />
+          ) : (
+            <div className="flex justify-center py-8">
+              <Loader color="blue" size="sm" />
+            </div>
+          )}
         </Paper>
       </motion.div>
 
@@ -446,48 +457,29 @@ function HeroSection({ stats, partnerKey, partnerName }: HeroSectionProps) {
 
 // Compact Distribution Grid
 interface DistributionGridProps {
-  total: number;
+  distribution: DistributionData;
   onCellClick: (cell: CellSelection) => void;
 }
 
-function DistributionGrid({ total, onCellClick }: DistributionGridProps) {
-  const verticals = ['Commerce', 'Media', 'Financial', 'Healthcare', 'Other'];
-  const tiers = [
-    {
-      key: 'hot',
-      label: 'HOT',
-      score: '80-100',
-      color: '#ef4444',
-      values: { Commerce: 5, Media: 2, Financial: 1, Healthcare: 1, Other: 0 },
-      total: 9
-    },
-    {
-      key: 'warm',
-      label: 'WARM',
-      score: '60-79',
-      color: '#f97316',
-      values: { Commerce: 28, Media: 12, Financial: 6, Healthcare: 3, Other: 0 },
-      total: 49
-    },
-    {
-      key: 'cool',
-      label: 'COOL',
-      score: '40-59',
-      color: '#3b82f6',
-      values: { Commerce: 200, Media: 95, Financial: 52, Healthcare: 35, Other: 12 },
-      total: 394
-    },
-    {
-      key: 'cold',
-      label: 'COLD',
-      score: '0-39',
-      color: '#6b7280',
-      values: { Commerce: 1617, Media: 511, Financial: 421, Healthcare: 264, Other: 405 },
-      total: 2285
-    },
-  ];
+function DistributionGrid({ distribution, onCellClick }: DistributionGridProps) {
+  const { verticals, tiers, grandTotal } = distribution;
 
-  const pct = (n: number) => ((n / total) * 100).toFixed(1);
+  const pct = (n: number) => grandTotal > 0 ? ((n / grandTotal) * 100).toFixed(1) : '0.0';
+
+  // Shorten long vertical names for display
+  const shortName = (name: string) => {
+    const map: Record<string, string> = {
+      'Business And Industrial': 'Business',
+      'Technology And Computing': 'Technology',
+      'Automotive And Vehicles': 'Automotive',
+      'Law, Govt And Politics': 'Government',
+      'Health And Fitness': 'Healthcare',
+      'Art And Entertainment': 'Entertainment',
+      'Style And Fashion': 'Fashion',
+      'Food And Drink': 'F&B',
+    };
+    return map[name] || name;
+  };
 
   return (
     <div style={{ overflowX: 'auto' }}>
@@ -498,8 +490,8 @@ function DistributionGrid({ total, onCellClick }: DistributionGridProps) {
               ICP Tier
             </th>
             {verticals.map(v => (
-              <th key={v} style={{ padding: '8px', textAlign: 'center', fontSize: '13px', fontWeight: 600, color: 'white' }}>
-                {v}
+              <th key={v} style={{ padding: '8px', textAlign: 'center', fontSize: '12px', fontWeight: 600, color: 'white' }}>
+                {shortName(v)}
               </th>
             ))}
             <th style={{ padding: '8px', textAlign: 'center', fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase' }}>
@@ -522,7 +514,8 @@ function DistributionGrid({ total, onCellClick }: DistributionGridProps) {
                 <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.5)' }}>{tier.score}</div>
               </td>
               {verticals.map(v => {
-                const value = tier.values[v as keyof typeof tier.values];
+                const value = tier.values[v] || 0;
+                const maxValue = Math.max(...Object.values(tier.values), 1);
                 return (
                   <td
                     key={v}
@@ -534,10 +527,10 @@ function DistributionGrid({ total, onCellClick }: DistributionGridProps) {
                       color: tier.color,
                     })}
                     style={{
-                      padding: '10px',
+                      padding: '8px',
                       textAlign: 'center',
                       borderRadius: '8px',
-                      background: value > 0 ? `${tier.color}${Math.min(15 + Math.round((value / 1617) * 40), 55).toString(16)}` : 'rgba(255,255,255,0.02)',
+                      background: value > 0 ? `${tier.color}${Math.min(15 + Math.round((value / maxValue) * 40), 55).toString(16)}` : 'rgba(255,255,255,0.02)',
                       border: '1px solid rgba(255,255,255,0.06)',
                       cursor: value > 0 ? 'pointer' : 'default',
                       transition: 'all 0.15s ease',
@@ -553,11 +546,11 @@ function DistributionGrid({ total, onCellClick }: DistributionGridProps) {
                       e.currentTarget.style.boxShadow = 'none';
                     }}
                   >
-                    <div style={{ fontSize: '18px', fontWeight: 700, color: value > 0 ? 'white' : 'rgba(255,255,255,0.15)' }}>
+                    <div style={{ fontSize: '16px', fontWeight: 700, color: value > 0 ? 'white' : 'rgba(255,255,255,0.15)' }}>
                       {value > 0 ? value.toLocaleString() : '—'}
                     </div>
                     {value > 0 && (
-                      <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginTop: '2px' }}>
+                      <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', marginTop: '1px' }}>
                         {pct(value)}%
                       </div>
                     )}

@@ -83,7 +83,8 @@ export async function getHealth(): Promise<{
 export async function getStats(): Promise<DashboardStats> {
   const { data, count } = await supabaseFetch<Array<{
     icp_score: number | null;
-  }>>('displacement_targets?select=icp_score', { countExact: true });
+    vertical: string | null;
+  }>>('displacement_targets?select=icp_score,vertical', { countExact: true });
 
   if (!data) {
     return {
@@ -91,17 +92,26 @@ export async function getStats(): Promise<DashboardStats> {
       enriched_companies: 0,
       hot_leads: 0,
       warm_leads: 0,
+      cool_leads: 0,
+      cold_leads: 0,
       modules_active: 2,
       waves_configured: 1,
     };
   }
 
-  let hot = 0, warm = 0, enriched = 0;
+  let hot = 0, warm = 0, cool = 0, cold = 0, enriched = 0;
+  const byVertical: Record<string, number> = {};
+
   for (const target of data) {
     const score = target.icp_score || 0;
     if (score > 0) enriched++;
     if (score >= 80) hot++;
     else if (score >= 60) warm++;
+    else if (score >= 40) cool++;
+    else cold++;
+
+    const v = target.vertical || 'Unknown';
+    byVertical[v] = (byVertical[v] || 0) + 1;
   }
 
   return {
@@ -109,8 +119,129 @@ export async function getStats(): Promise<DashboardStats> {
     enriched_companies: enriched,
     hot_leads: hot,
     warm_leads: warm,
+    cool_leads: cool,
+    cold_leads: cold,
     modules_active: 2,
     waves_configured: 1,
+    by_vertical: byVertical,
+  };
+}
+
+// Distribution data for the grid
+export interface DistributionData {
+  verticals: string[];
+  tiers: {
+    key: 'hot' | 'warm' | 'cool' | 'cold';
+    label: string;
+    score: string;
+    color: string;
+    values: Record<string, number>;
+    total: number;
+  }[];
+  grandTotal: number;
+}
+
+export async function getDistribution(): Promise<DistributionData> {
+  const { data } = await supabaseFetch<Array<{
+    icp_score: number | null;
+    vertical: string | null;
+  }>>('displacement_targets?select=icp_score,vertical');
+
+  if (!data) {
+    return { verticals: [], tiers: [], grandTotal: 0 };
+  }
+
+  // Count by vertical and tier
+  const counts: Record<string, Record<string, number>> = {};
+  const tierTotals = { hot: 0, warm: 0, cool: 0, cold: 0 };
+  const verticalSet = new Set<string>();
+
+  for (const target of data) {
+    const score = target.icp_score || 0;
+    const vertical = target.vertical || 'Unknown';
+    verticalSet.add(vertical);
+
+    if (!counts[vertical]) {
+      counts[vertical] = { hot: 0, warm: 0, cool: 0, cold: 0 };
+    }
+
+    if (score >= 80) {
+      counts[vertical].hot++;
+      tierTotals.hot++;
+    } else if (score >= 60) {
+      counts[vertical].warm++;
+      tierTotals.warm++;
+    } else if (score >= 40) {
+      counts[vertical].cool++;
+      tierTotals.cool++;
+    } else {
+      counts[vertical].cold++;
+      tierTotals.cold++;
+    }
+  }
+
+  // Sort verticals by total count (top 6 + "Other")
+  const verticalTotals = Array.from(verticalSet).map(v => ({
+    name: v,
+    total: Object.values(counts[v] || {}).reduce((a, b) => a + b, 0)
+  }));
+  verticalTotals.sort((a, b) => b.total - a.total);
+
+  const topVerticals = verticalTotals.slice(0, 5).map(v => v.name);
+  const otherVerticals = verticalTotals.slice(5).map(v => v.name);
+
+  // Combine "Other" verticals
+  if (otherVerticals.length > 0) {
+    counts['Other'] = { hot: 0, warm: 0, cool: 0, cold: 0 };
+    for (const v of otherVerticals) {
+      counts['Other'].hot += counts[v]?.hot || 0;
+      counts['Other'].warm += counts[v]?.warm || 0;
+      counts['Other'].cool += counts[v]?.cool || 0;
+      counts['Other'].cold += counts[v]?.cold || 0;
+    }
+    topVerticals.push('Other');
+  }
+
+  // Build tier data
+  const tiers: DistributionData['tiers'] = [
+    {
+      key: 'hot',
+      label: 'HOT',
+      score: '80-100',
+      color: '#ef4444',
+      values: Object.fromEntries(topVerticals.map(v => [v, counts[v]?.hot || 0])),
+      total: tierTotals.hot,
+    },
+    {
+      key: 'warm',
+      label: 'WARM',
+      score: '60-79',
+      color: '#f97316',
+      values: Object.fromEntries(topVerticals.map(v => [v, counts[v]?.warm || 0])),
+      total: tierTotals.warm,
+    },
+    {
+      key: 'cool',
+      label: 'COOL',
+      score: '40-59',
+      color: '#3b82f6',
+      values: Object.fromEntries(topVerticals.map(v => [v, counts[v]?.cool || 0])),
+      total: tierTotals.cool,
+    },
+    {
+      key: 'cold',
+      label: 'COLD',
+      score: '0-39',
+      color: '#6b7280',
+      values: Object.fromEntries(topVerticals.map(v => [v, counts[v]?.cold || 0])),
+      total: tierTotals.cold,
+    },
+  ];
+
+  return {
+    verticals: topVerticals,
+    tiers,
+    grandTotal: data.length,
   };
 }
 
