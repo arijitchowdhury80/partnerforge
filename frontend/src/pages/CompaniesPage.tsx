@@ -396,6 +396,7 @@ export function CompaniesPage() {
         <Paper withBorder>
           <TargetList
             companies={filteredCompanies}
+            allCompanies={companiesData?.data || []}
             isLoading={isLoading}
             pagination={companiesData?.pagination}
             onPageChange={handlePageChange}

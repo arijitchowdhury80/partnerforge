@@ -460,6 +460,7 @@ export function Dashboard() {
 
             <TargetList
               companies={filteredCompanies}
+              allCompanies={companies?.data || []}
               isLoading={companiesLoading}
               pagination={companies?.pagination}
               onPageChange={setPage}

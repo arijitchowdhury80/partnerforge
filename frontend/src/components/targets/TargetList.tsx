@@ -102,6 +102,8 @@ interface FilterOption {
 
 interface TargetListProps {
   companies: Company[];
+  /** All companies BEFORE filtering - used for building filter options */
+  allCompanies?: Company[];
   isLoading?: boolean;
   pagination?: {
     page: number;
@@ -284,8 +286,13 @@ function FilterHeader({
                         </Text>
                       )}
                     </Group>
-                    {/* COUNT - shows how many companies */}
-                    <Badge size="md" variant="light" color="gray">
+                    {/* COUNT - shows how many companies (dark for visibility) */}
+                    <Badge
+                      size="md"
+                      variant="filled"
+                      color="dark"
+                      styles={{ root: { minWidth: 32, fontWeight: 700 } }}
+                    >
                       {option.count}
                     </Badge>
                   </UnstyledButton>
@@ -384,6 +391,7 @@ function formatTraffic(visits: number | undefined): string {
 
 export function TargetList({
   companies,
+  allCompanies,
   isLoading = false,
   pagination,
   onPageChange,
@@ -391,6 +399,8 @@ export function TargetList({
   columnFilters = [],
   onColumnFilterChange,
 }: TargetListProps) {
+  // Use allCompanies for filter options (so multi-select works), fallback to companies
+  const companiesForOptions = allCompanies || companies;
   const [sorting, setSorting] = useState<SortingState>([{ id: 'icp_score', desc: true }]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
@@ -424,30 +434,31 @@ export function TargetList({
     [onColumnFilterChange]
   );
 
-  // Build filter options with counts - SORTED BY COUNT (highest first)
+  // Build filter options with counts - uses UNFILTERED data so multi-select works
+  // When a filter is active, options stay available for adding more selections
   const statusOptions = useMemo<FilterOption[]>(() => {
     const counts: Record<string, number> = {};
-    companies.forEach((c) => {
+    companiesForOptions.forEach((c) => {
       if (c.status) counts[c.status] = (counts[c.status] || 0) + 1;
     });
     return Object.entries(counts)
       .map(([value, count]) => ({ value, count }))
       .sort((a, b) => b.count - a.count);
-  }, [companies]);
+  }, [companiesForOptions]);
 
   const verticalOptions = useMemo<FilterOption[]>(() => {
     const counts: Record<string, number> = {};
-    companies.forEach((c) => {
+    companiesForOptions.forEach((c) => {
       if (c.vertical) counts[c.vertical] = (counts[c.vertical] || 0) + 1;
     });
     return Object.entries(counts)
       .map(([value, count]) => ({ value, count }))
       .sort((a, b) => b.count - a.count);
-  }, [companies]);
+  }, [companiesForOptions]);
 
   const partnerTechOptions = useMemo<FilterOption[]>(() => {
     const counts: Record<string, number> = {};
-    companies.forEach((c) => {
+    companiesForOptions.forEach((c) => {
       c.partner_tech?.forEach((tech) => {
         counts[tech] = (counts[tech] || 0) + 1;
       });
@@ -455,7 +466,7 @@ export function TargetList({
     return Object.entries(counts)
       .map(([value, count]) => ({ value, count }))
       .sort((a, b) => b.count - a.count);
-  }, [companies]);
+  }, [companiesForOptions]);
 
   const statusColors: Record<string, string> = { hot: 'red', warm: 'orange', cold: 'gray' };
 
