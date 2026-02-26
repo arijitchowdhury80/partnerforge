@@ -748,8 +748,18 @@ export function DocsPage() {
     ));
   };
 
+  // DEBUG: Log what section we're on
+  console.log('[DocsPage] activeSection:', activeSection, 'isDiagrams:', activeSection === 'diagrams');
+
   return (
     <Container size="xl" py="xl">
+      {/* VERSION INDICATOR - Remove after confirming deployment */}
+      <Paper p="xs" mb="md" bg="blue.9" style={{ textAlign: 'center' }}>
+        <Text size="xs" c="white" fw={700}>
+          📚 Docs v2.1 | Section: {activeSection} | Gallery: {activeSection === 'diagrams' ? 'YES' : 'NO'}
+        </Text>
+      </Paper>
+
       <Group align="flex-start" gap="xl">
         {/* Sidebar Navigation */}
         <Paper
