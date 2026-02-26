@@ -34,3 +34,12 @@ build/
 *.temp
 # Sample data files (large)
 *.csv
+
+# Node.js
+node_modules/
+.npm/
+package-lock.json
+
+# Database files
+*.db
+*.sqlite

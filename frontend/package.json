@@ -13,6 +13,7 @@
   "dependencies": {
     "@mantine/core": "^7.5.0",
     "@mantine/dates": "^7.5.0",
+    "@mantine/dropzone": "^7.5.0",
     "@mantine/form": "^7.5.0",
     "@mantine/hooks": "^7.5.0",
     "@mantine/notifications": "^7.5.0",
@@ -21,10 +22,13 @@
     "@tremor/react": "^3.14.0",
     "axios": "^1.6.5",
     "clsx": "^2.1.0",
+    "date-fns": "^3.3.0",
     "dayjs": "^1.11.10",
+    "framer-motion": "^12.34.3",
     "mantine-datatable": "^7.5.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-dropzone": "^15.0.0",
     "react-router-dom": "^6.21.2",
     "tailwind-merge": "^2.2.0"
   },
