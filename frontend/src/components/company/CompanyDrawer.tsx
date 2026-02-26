@@ -1,8 +1,16 @@
 /**
- * CompanyDrawer - Slide-over Panel
+ * CompanyDrawer - Intelligence Research Panel
  *
- * Full company detail view in a drawer from the right.
- * Shows all intelligence data, partner tech, scores, etc.
+ * Deep-dive company view with expandable accordion sections.
+ * When pinned, allows side-by-side research with the main list.
+ *
+ * Sections:
+ * - Header: Company info, ICP score, pin/close
+ * - Traffic: Demographics, sources, countries, devices
+ * - Financials: 3-year revenue, margins, ROI projections
+ * - Tech Stack: All technologies categorized
+ * - Signals: Hiring, exec quotes, investor intel
+ * - Strategic: Competitors, case studies, displacement
  */
 
 import {
@@ -12,41 +20,48 @@ import {
   Text,
   Badge,
   Progress,
-  Divider,
-  Avatar,
-  Button,
-  Tabs,
   Paper,
   Anchor,
   ThemeIcon,
   SimpleGrid,
   ActionIcon,
   Tooltip,
+  Button,
+  Accordion,
+  ScrollArea,
+  Divider,
 } from '@mantine/core';
 import {
   IconFlame,
   IconTrendingUp,
   IconSnowflake,
-  IconWorld,
-  IconBuilding,
   IconExternalLink,
   IconRefresh,
-  IconChartBar,
-  IconUsers,
-  IconCode,
-  IconCurrencyDollar,
-  IconMapPin,
-  IconCalendar,
   IconPin,
   IconPinnedOff,
+  IconMapPin,
+  IconUsers,
+  IconCalendar,
+  IconBuilding,
+  IconBuildingSkyscraper,
 } from '@tabler/icons-react';
 import { useState } from 'react';
-import type { Company } from '@/types';
+import type { Company, TrafficData, FinancialData, TechStackData, HiringData, ExecutiveData, InvestorData, CompetitorData, CaseStudyMatch } from '@/types';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
+import {
+  TrafficAccordion,
+  FinancialsAccordion,
+  TechStackAccordion,
+  SignalsAccordion,
+  StrategicAccordion,
+} from './IntelligenceAccordions';
+
+// =============================================================================
+// Constants
+// =============================================================================
 
 const ALGOLIA_BLUE = '#003DFF';
 const GRAY_50 = '#f8fafc';
-const GRAY_100 = '#f1f5f9';
 const GRAY_200 = '#e2e8f0';
 const GRAY_500 = '#64748b';
 const GRAY_700 = '#334155';
@@ -58,33 +73,59 @@ const STATUS_CONFIG = {
   cold: { color: 'gray', icon: IconSnowflake, label: 'Cold Lead', bg: '#f8fafc' },
 };
 
+// =============================================================================
+// Extended Company with Intelligence Data
+// =============================================================================
+
+interface CompanyWithIntelligence extends Company {
+  // Deep enrichment data (populated when fully enriched)
+  traffic_data?: TrafficData;
+  financial_data?: FinancialData;
+  tech_stack_data?: TechStackData;
+  hiring_data?: HiringData;
+  executive_data?: ExecutiveData;
+  investor_data?: InvestorData;
+  competitor_data?: CompetitorData;
+  case_studies?: CaseStudyMatch[];
+  // Fallback fields from basic enrichment
+  exec_quote?: string;
+  exec_name?: string;
+  exec_title?: string;
+  displacement_angle?: string;
+}
+
+// =============================================================================
+// Props
+// =============================================================================
+
 interface CompanyDrawerProps {
-  company: Company | null;
+  company: CompanyWithIntelligence | null;
   opened: boolean;
   onClose: () => void;
   onEnrich?: (domain: string) => void;
 }
 
+// =============================================================================
+// Main Component
+// =============================================================================
+
 export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDrawerProps) {
   const [isPinned, setIsPinned] = useState(false);
+  // Default to first accordion open, more open when pinned
+  const [openAccordions, setOpenAccordions] = useState<string[]>(['traffic']);
 
   if (!company) return null;
 
   const status = STATUS_CONFIG[company.status] || STATUS_CONFIG.cold;
   const StatusIcon = status.icon;
 
-  const formatTraffic = (visits?: number) => {
-    if (!visits) return 'N/A';
-    if (visits >= 1000000) return `${(visits / 1000000).toFixed(1)}M`;
-    if (visits >= 1000) return `${(visits / 1000).toFixed(0)}K`;
-    return visits.toString();
-  };
-
-  const formatRevenue = (revenue?: number) => {
-    if (!revenue) return 'N/A';
-    if (revenue >= 1000000000) return `$${(revenue / 1000000000).toFixed(1)}B`;
-    if (revenue >= 1000000) return `$${(revenue / 1000000).toFixed(0)}M`;
-    return `$${revenue.toLocaleString()}`;
+  const handlePinToggle = () => {
+    const newPinned = !isPinned;
+    setIsPinned(newPinned);
+    // When pinned, open multiple sections for research
+    if (newPinned) {
+      setOpenAccordions(['traffic', 'financials', 'techstack']);
+    }
   };
 
   return (
@@ -92,7 +133,7 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
       opened={opened}
       onClose={onClose}
       position="right"
-      size="lg"
+      size="xl"
       title={null}
       padding={0}
       closeOnClickOutside={!isPinned}
@@ -102,28 +143,33 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
       styles={{
         content: {
           background: GRAY_50,
-          boxShadow: isPinned ? '-4px 0 20px rgba(0,0,0,0.15)' : undefined,
+          boxShadow: isPinned ? '-8px 0 30px rgba(0,0,0,0.2)' : undefined,
         },
         header: { display: 'none' },
-        body: { padding: 0, height: '100%' },
+        body: { padding: 0, height: '100%', display: 'flex', flexDirection: 'column' },
       }}
     >
-      {/* Pinned indicator banner */}
+      {/* Pinned Mode Banner */}
       {isPinned && (
         <div
           style={{
-            background: ALGOLIA_BLUE,
+            background: `linear-gradient(135deg, ${ALGOLIA_BLUE} 0%, #5468ff 100%)`,
             color: 'white',
-            padding: '6px 20px',
-            fontSize: 12,
+            padding: '10px 20px',
+            fontSize: 13,
             fontWeight: 500,
             display: 'flex',
             alignItems: 'center',
-            gap: 8,
+            justifyContent: 'space-between',
           }}
         >
-          <IconPin size={14} />
-          <span>Pinned — Click anywhere on the page to continue researching</span>
+          <Group gap="xs">
+            <IconPin size={16} />
+            <span>Research Mode — Expand sections below for deep insights</span>
+          </Group>
+          <Badge variant="white" color="blue" size="sm">
+            {company.enrichment_level === 'full' ? 'Fully Enriched' : 'Basic Data'}
+          </Badge>
         </div>
       )}
 
@@ -133,9 +179,7 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
           background: 'white',
           borderBottom: `1px solid ${GRAY_200}`,
           padding: 20,
-          position: 'sticky',
-          top: isPinned ? 0 : 0,
-          zIndex: 10,
+          flexShrink: 0,
         }}
       >
         <Group justify="space-between" mb="md">
@@ -160,6 +204,9 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
                   {company.domain}
                 </Anchor>
                 <IconExternalLink size={14} color={ALGOLIA_BLUE} />
+                {company.ticker && (
+                  <Badge variant="light" color="violet" size="sm">{company.ticker}</Badge>
+                )}
               </Group>
             </div>
           </Group>
@@ -172,12 +219,12 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
             >
               {status.label}
             </Badge>
-            <Tooltip label={isPinned ? 'Unpin drawer' : 'Pin drawer for side-by-side view'}>
+            <Tooltip label={isPinned ? 'Unpin drawer' : 'Pin for deep research'}>
               <ActionIcon
                 variant={isPinned ? 'filled' : 'light'}
                 color="blue"
                 size="lg"
-                onClick={() => setIsPinned(!isPinned)}
+                onClick={handlePinToggle}
               >
                 {isPinned ? <IconPinnedOff size={18} /> : <IconPin size={18} />}
               </ActionIcon>
@@ -188,7 +235,7 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
           </Group>
         </Group>
 
-        {/* Score Bar */}
+        {/* ICP Score */}
         <Paper p="md" radius="md" style={{ background: status.bg }}>
           <Group justify="space-between" mb="xs">
             <Text size="sm" fw={600} c={GRAY_900}>ICP Score</Text>
@@ -202,180 +249,130 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
             radius="xl"
             color={company.icp_score >= 80 ? 'red' : company.icp_score >= 40 ? 'orange' : 'gray'}
           />
+          <Group mt="sm" gap="lg">
+            <Group gap={4}>
+              <Text size="xs" c={GRAY_500}>Signal:</Text>
+              <Text size="xs" fw={600} c={GRAY_900}>{company.signal_score || 0}</Text>
+            </Group>
+            <Group gap={4}>
+              <Text size="xs" c={GRAY_500}>Priority:</Text>
+              <Text size="xs" fw={600} c={GRAY_900}>{company.priority_score || 0}</Text>
+            </Group>
+          </Group>
         </Paper>
+
+        {/* Quick Info Row */}
+        <SimpleGrid cols={4} mt="md" spacing="xs">
+          <QuickStat icon={IconBuilding} label="Industry" value={company.industry || 'Unknown'} />
+          <QuickStat icon={IconMapPin} label="HQ" value={company.headquarters?.country || 'Unknown'} />
+          <QuickStat icon={IconUsers} label="Employees" value={formatNumber(company.employee_count)} />
+          <QuickStat icon={IconCalendar} label="Founded" value={company.founded_year?.toString() || 'N/A'} />
+        </SimpleGrid>
       </div>
 
-      {/* Content */}
-      <div style={{ padding: 20 }}>
-        <Tabs defaultValue="overview" variant="outline">
-          <Tabs.List mb="md">
-            <Tabs.Tab value="overview" leftSection={<IconBuilding size={14} />}>
-              Overview
-            </Tabs.Tab>
-            <Tabs.Tab value="tech" leftSection={<IconCode size={14} />}>
-              Tech Stack
-            </Tabs.Tab>
-            <Tabs.Tab value="signals" leftSection={<IconChartBar size={14} />}>
-              Signals
-            </Tabs.Tab>
-          </Tabs.List>
+      {/* Scrollable Accordion Content */}
+      <ScrollArea style={{ flex: 1 }} p="md">
+        <Accordion
+          multiple
+          value={openAccordions}
+          onChange={setOpenAccordions}
+          variant="separated"
+          radius="md"
+          styles={{
+            item: {
+              backgroundColor: 'white',
+              border: `1px solid ${GRAY_200}`,
+              '&[data-active]': {
+                backgroundColor: 'white',
+              },
+            },
+            control: {
+              padding: '16px',
+              '&:hover': {
+                backgroundColor: GRAY_50,
+              },
+            },
+            panel: {
+              padding: '0 16px 16px 16px',
+            },
+          }}
+        >
+          {/* Traffic Intelligence */}
+          <TrafficAccordion
+            data={company.traffic_data}
+            monthlyVisits={company.sw_monthly_visits}
+          />
 
-          <Tabs.Panel value="overview">
-            <Stack gap="md">
-              {/* Quick Stats */}
-              <SimpleGrid cols={2} spacing="md">
-                <StatCard
-                  icon={IconWorld}
-                  label="Monthly Traffic"
-                  value={`${formatTraffic(company.sw_monthly_visits)}`}
-                  source="SimilarWeb"
-                  sourceUrl={`https://similarweb.com/website/${company.domain}`}
-                />
-                <StatCard
-                  icon={IconCurrencyDollar}
-                  label="Revenue"
-                  value={formatRevenue(company.revenue)}
-                  source="Estimated"
-                />
-                <StatCard
-                  icon={IconUsers}
-                  label="Employees"
-                  value={company.employee_count?.toLocaleString() || 'N/A'}
-                />
-                <StatCard
-                  icon={IconCalendar}
-                  label="Founded"
-                  value={company.founded_year?.toString() || 'N/A'}
-                />
-              </SimpleGrid>
+          {/* Financial Intelligence */}
+          <FinancialsAccordion
+            data={company.financial_data}
+            revenue={company.revenue}
+            ticker={company.ticker}
+            isPublic={company.is_public}
+          />
 
-              {/* Location */}
-              {company.headquarters && (
-                <Paper p="md" radius="md" withBorder style={{ background: 'white' }}>
-                  <Group gap="sm">
-                    <ThemeIcon size="lg" variant="light" color="blue">
-                      <IconMapPin size={18} />
-                    </ThemeIcon>
-                    <div>
-                      <Text size="xs" c={GRAY_700} fw={500}>Headquarters</Text>
-                      <Text size="sm" fw={500} c={GRAY_900}>
-                        {[company.headquarters.city, company.headquarters.state, company.headquarters.country]
-                          .filter(Boolean)
-                          .join(', ')}
-                      </Text>
-                    </div>
-                  </Group>
-                </Paper>
-              )}
+          {/* Tech Stack */}
+          <TechStackAccordion
+            data={company.tech_stack_data}
+            partnerTech={company.partner_tech}
+            currentSearch={company.current_search}
+          />
 
-              {/* Industry */}
-              <Paper p="md" radius="md" withBorder style={{ background: 'white' }}>
-                <Text size="xs" c={GRAY_700} fw={500} mb="xs">Industry & Vertical</Text>
-                <Group gap="xs">
-                  <Badge variant="light" color="blue">{company.industry || 'Unknown'}</Badge>
-                  <Badge variant="light" color="violet">{company.vertical || 'Unknown'}</Badge>
-                  {company.sub_vertical && (
-                    <Badge variant="light" color="grape">{company.sub_vertical}</Badge>
-                  )}
-                </Group>
-              </Paper>
-            </Stack>
-          </Tabs.Panel>
+          {/* Buying Signals */}
+          <SignalsAccordion
+            hiring={company.hiring_data}
+            executive={company.executive_data}
+            investor={company.investor_data}
+            execQuote={company.exec_quote}
+            execName={company.exec_name}
+            execTitle={company.exec_title}
+          />
 
-          <Tabs.Panel value="tech">
-            <Stack gap="md">
-              {/* Partner Technologies */}
-              <Paper p="md" radius="md" withBorder style={{ background: 'white' }}>
-                <Text size="sm" fw={600} mb="sm" c={GRAY_900}>Partner Technologies</Text>
-                {company.partner_tech && company.partner_tech.length > 0 ? (
-                  <Group gap="xs">
-                    {company.partner_tech.map((tech) => (
-                      <Badge key={tech} size="lg" variant="light" color="green">
-                        {tech}
-                      </Badge>
-                    ))}
-                  </Group>
-                ) : (
-                  <Text size="sm" c={GRAY_700}>No partner technologies detected</Text>
-                )}
-                <Divider my="sm" />
-                <Anchor
-                  href={`https://builtwith.com/${company.domain}`}
-                  target="_blank"
-                  size="xs"
-                  c={ALGOLIA_BLUE}
-                >
-                  View full tech stack on BuiltWith →
-                </Anchor>
-              </Paper>
+          {/* Strategic Intelligence */}
+          <StrategicAccordion
+            competitors={company.competitor_data}
+            caseStudies={company.case_studies}
+            displacementAngle={company.displacement_angle}
+          />
+        </Accordion>
 
-              {/* Current Search */}
-              {company.current_search && (
-                <Paper p="md" radius="md" withBorder style={{ background: 'white' }}>
-                  <Text size="sm" fw={600} mb="xs" c={GRAY_900}>Current Search Provider</Text>
-                  <Badge size="lg" variant="filled" color="red">
-                    {company.current_search}
-                  </Badge>
-                  <Text size="xs" c={GRAY_700} mt="xs">
-                    Displacement opportunity for Algolia
-                  </Text>
-                </Paper>
-              )}
-            </Stack>
-          </Tabs.Panel>
+        {/* Enrichment CTA */}
+        {company.enrichment_level !== 'full' && (
+          <Paper p="lg" mt="md" radius="md" style={{ background: 'linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%)', border: `1px solid ${ALGOLIA_BLUE}20` }}>
+            <Group justify="space-between">
+              <div>
+                <Text fw={600} c={GRAY_900} mb={4}>Unlock Full Intelligence</Text>
+                <Text size="sm" c={GRAY_500}>
+                  Enrich to see detailed traffic analytics, 3-year financials, hiring signals, executive quotes, and more.
+                </Text>
+              </div>
+              <Button
+                variant="filled"
+                color="blue"
+                leftSection={<IconRefresh size={16} />}
+                onClick={() => onEnrich?.(company.domain)}
+              >
+                Enrich Now
+              </Button>
+            </Group>
+          </Paper>
+        )}
 
-          <Tabs.Panel value="signals">
-            <Stack gap="md">
-              {/* Scores Breakdown */}
-              <Paper p="md" radius="md" withBorder style={{ background: 'white' }}>
-                <Text size="sm" fw={600} mb="md" c={GRAY_900}>Score Breakdown</Text>
-                <Stack gap="sm">
-                  <ScoreRow label="ICP Score" value={company.icp_score} max={100} />
-                  <ScoreRow label="Signal Score" value={company.signal_score} max={100} />
-                  <ScoreRow label="Priority Score" value={company.priority_score} max={100} />
-                </Stack>
-              </Paper>
-
-              {/* Enrichment Status */}
-              <Paper p="md" radius="md" withBorder style={{ background: 'white' }}>
-                <Group justify="space-between" mb="xs">
-                  <Text size="sm" fw={600} c={GRAY_900}>Enrichment Status</Text>
-                  <Badge
-                    variant="light"
-                    color={company.enrichment_level === 'full' ? 'green' : 'yellow'}
-                  >
-                    {company.enrichment_level || 'Basic'}
-                  </Badge>
-                </Group>
-                {company.last_enriched && (
-                  <Text size="xs" c={GRAY_700}>
-                    Last enriched: {new Date(company.last_enriched).toLocaleDateString()}
-                  </Text>
-                )}
-                <Button
-                  variant="light"
-                  color="blue"
-                  size="xs"
-                  mt="sm"
-                  leftSection={<IconRefresh size={14} />}
-                  onClick={() => onEnrich?.(company.domain)}
-                >
-                  Refresh Data
-                </Button>
-              </Paper>
-            </Stack>
-          </Tabs.Panel>
-        </Tabs>
-      </div>
+        {/* Last Enriched */}
+        {company.last_enriched && (
+          <Text size="xs" c={GRAY_500} ta="center" mt="md">
+            Last enriched: {new Date(company.last_enriched).toLocaleDateString()}
+          </Text>
+        )}
+      </ScrollArea>
 
       {/* Footer Actions */}
       <div
         style={{
-          position: 'sticky',
-          bottom: 0,
           background: 'white',
           borderTop: `1px solid ${GRAY_200}`,
           padding: 16,
+          flexShrink: 0,
         }}
       >
         <Group justify="space-between">
@@ -394,11 +391,15 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
               Visit Website
             </Button>
             <Button
+              variant="light"
+              leftSection={<IconRefresh size={14} />}
+              onClick={() => onEnrich?.(company.domain)}
+            >
+              Refresh
+            </Button>
+            <Button
               variant="filled"
               color="blue"
-              onClick={() => {
-                // Future: Open in full page view or add to campaign
-              }}
             >
               Add to Campaign
             </Button>
@@ -409,55 +410,29 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
   );
 }
 
-// Helper components
-function StatCard({
-  icon: Icon,
-  label,
-  value,
-  source,
-  sourceUrl,
-}: {
-  icon: typeof IconWorld;
-  label: string;
-  value: string;
-  source?: string;
-  sourceUrl?: string;
-}) {
+// =============================================================================
+// Helper Components
+// =============================================================================
+
+function QuickStat({ icon: Icon, label, value }: { icon: typeof IconBuilding; label: string; value: string }) {
   return (
-    <Paper p="md" radius="md" withBorder style={{ background: 'white' }}>
-      <Group gap="sm">
-        <ThemeIcon size="lg" variant="light" color="blue">
-          <Icon size={18} />
+    <Paper p="xs" radius="md" bg="white" withBorder>
+      <Group gap={6}>
+        <ThemeIcon size="sm" variant="light" color="gray">
+          <Icon size={12} />
         </ThemeIcon>
-        <div style={{ flex: 1 }}>
-          <Text size="xs" c={GRAY_700} fw={500}>{label}</Text>
-          <Text size="lg" fw={600} c={GRAY_900}>{value}</Text>
-          {source && (
-            sourceUrl ? (
-              <Anchor href={sourceUrl} target="_blank" size="xs" c={ALGOLIA_BLUE}>
-                {source} →
-              </Anchor>
-            ) : (
-              <Text size="xs" c={GRAY_500}>{source}</Text>
-            )
-          )}
+        <div>
+          <Text size="xs" c={GRAY_500}>{label}</Text>
+          <Text size="xs" fw={600} c={GRAY_900} lineClamp={1}>{value}</Text>
         </div>
       </Group>
     </Paper>
   );
 }
 
-function ScoreRow({ label, value, max }: { label: string; value: number; max: number }) {
-  const percentage = (value / max) * 100;
-  const color = percentage >= 80 ? 'red' : percentage >= 40 ? 'orange' : 'gray';
-
-  return (
-    <div>
-      <Group justify="space-between" mb={4}>
-        <Text size="sm" c={GRAY_900}>{label}</Text>
-        <Text size="sm" fw={600} c={GRAY_900}>{value}/{max}</Text>
-      </Group>
-      <Progress value={percentage} size="sm" radius="xl" color={color} />
-    </div>
-  );
+function formatNumber(n?: number): string {
+  if (!n) return 'N/A';
+  if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`;
+  if (n >= 1000) return `${(n / 1000).toFixed(0)}K`;
+  return n.toLocaleString();
 }
