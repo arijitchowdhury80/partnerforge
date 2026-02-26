@@ -31,6 +31,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { getCompanies, getDistribution } from '@/services/api';
 import { TargetList, type ColumnFilter } from '@/components/targets/TargetList';
 
+// Version for deployment tracking
+const VERSION = 'v2.1.0-column-filters';
+
 // =============================================================================
 // Companies Page Component
 // =============================================================================
@@ -227,11 +230,16 @@ export function CompaniesPage() {
       >
         <Group justify="space-between" mb="lg">
           <div>
-            <Title order={2} c="white">
-              Companies
-            </Title>
+            <Group gap="sm" align="center">
+              <Title order={2} c="white">
+                Companies
+              </Title>
+              <Badge size="xs" variant="light" color="cyan">
+                {VERSION}
+              </Badge>
+            </Group>
             <Text c="dimmed" size="sm" mt={4}>
-              Browse and filter displacement targets
+              Browse and filter displacement targets - Use column header dropdowns to filter
             </Text>
           </div>
           <Button
