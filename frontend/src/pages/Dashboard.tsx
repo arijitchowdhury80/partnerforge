@@ -8,7 +8,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, useMotionValue, useTransform, animate, useInView } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
-import { ResponsiveHeatMap } from '@nivo/heatmap';
 import {
   Container,
   Text,
@@ -345,128 +344,218 @@ function HeroSection({ stats, partnerKey, partnerName }: HeroSectionProps) {
   );
 }
 
-// ICP vs Vertical Heatmap using Nivo
+// Simple visual grid - no library complexity, just clear data
 function ICPVerticalHeatmap() {
-  // Data for Nivo heatmap
-  // X-axis: Verticals, Y-axis: ICP Tiers
-  const heatmapData = [
+  const verticals = ['Commerce', 'Media', 'Financial', 'Healthcare', 'Other'];
+  const tiers = [
     {
-      id: '80-100 (Hot)',
-      data: [
-        { x: 'Commerce', y: 5 },
-        { x: 'Media', y: 2 },
-        { x: 'Financial', y: 1 },
-        { x: 'Healthcare', y: 1 },
-        { x: 'Other', y: 0 },
-      ],
+      label: 'HOT',
+      score: '80-100',
+      color: '#ef4444',
+      bg: 'rgba(239, 68, 68, 0.15)',
+      values: { Commerce: 5, Media: 2, Financial: 1, Healthcare: 1, Other: 0 },
+      total: 9
     },
     {
-      id: '60-79 (Warm)',
-      data: [
-        { x: 'Commerce', y: 28 },
-        { x: 'Media', y: 12 },
-        { x: 'Financial', y: 6 },
-        { x: 'Healthcare', y: 3 },
-        { x: 'Other', y: 0 },
-      ],
+      label: 'WARM',
+      score: '60-79',
+      color: '#f97316',
+      bg: 'rgba(249, 115, 22, 0.15)',
+      values: { Commerce: 28, Media: 12, Financial: 6, Healthcare: 3, Other: 0 },
+      total: 49
     },
     {
-      id: '40-59 (Cool)',
-      data: [
-        { x: 'Commerce', y: 200 },
-        { x: 'Media', y: 95 },
-        { x: 'Financial', y: 52 },
-        { x: 'Healthcare', y: 35 },
-        { x: 'Other', y: 12 },
-      ],
+      label: 'COOL',
+      score: '40-59',
+      color: '#3b82f6',
+      bg: 'rgba(59, 130, 246, 0.15)',
+      values: { Commerce: 200, Media: 95, Financial: 52, Healthcare: 35, Other: 12 },
+      total: 394
     },
     {
-      id: '0-39 (Cold)',
-      data: [
-        { x: 'Commerce', y: 1617 },
-        { x: 'Media', y: 511 },
-        { x: 'Financial', y: 421 },
-        { x: 'Healthcare', y: 264 },
-        { x: 'Other', y: 405 },
-      ],
+      label: 'COLD',
+      score: '0-39',
+      color: '#6b7280',
+      bg: 'rgba(107, 114, 128, 0.15)',
+      values: { Commerce: 1617, Media: 511, Financial: 421, Healthcare: 264, Other: 405 },
+      total: 2285
     },
   ];
 
+  // Find max value for scaling cell intensity
+  const allValues = tiers.flatMap(t => Object.values(t.values));
+  const maxValue = Math.max(...allValues);
+
   return (
-    <div style={{ height: 350 }}>
-      <ResponsiveHeatMap
-        data={heatmapData}
-        margin={{ top: 60, right: 90, bottom: 60, left: 120 }}
-        valueFormat={(v) => v.toLocaleString()}
-        axisTop={{
-          tickSize: 5,
-          tickPadding: 5,
-          tickRotation: 0,
-          legend: 'Industry Vertical',
-          legendPosition: 'middle',
-          legendOffset: -45,
-        }}
-        axisLeft={{
-          tickSize: 5,
-          tickPadding: 5,
-          tickRotation: 0,
-          legend: 'ICP Score Tier',
-          legendPosition: 'middle',
-          legendOffset: -100,
-        }}
-        colors={{
-          type: 'diverging',
-          scheme: 'blues',
-          minValue: 0,
-          maxValue: 500,
-          divergeAt: 0.5,
-        }}
-        emptyColor="rgba(255,255,255,0.03)"
-        borderRadius={6}
-        borderWidth={2}
-        borderColor="rgba(255,255,255,0.05)"
-        labelTextColor={{ from: 'color', modifiers: [['brighter', 3]] }}
-        theme={{
-          background: 'transparent',
-          text: { fill: 'rgba(255,255,255,0.7)' },
-          axis: {
-            legend: { text: { fill: 'rgba(255,255,255,0.5)', fontSize: 12 } },
-            ticks: { text: { fill: 'rgba(255,255,255,0.6)', fontSize: 11 } },
-          },
-          tooltip: {
-            container: {
-              background: '#1a1a2e',
-              color: '#ffffff',
-              borderRadius: '8px',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-              padding: '12px',
-            },
-          },
-        }}
-        legends={[
-          {
-            anchor: 'right',
-            translateX: 70,
-            translateY: 0,
-            length: 200,
-            thickness: 10,
-            direction: 'column',
-            tickPosition: 'after',
-            tickSize: 3,
-            tickSpacing: 4,
-            tickOverlap: false,
-            title: 'Count →',
-            titleAlign: 'start',
-            titleOffset: 4,
-          },
-        ]}
-        annotations={[]}
-        hoverTarget="cell"
-        onClick={(cell) => {
-          console.log('Clicked cell:', cell);
-          // TODO: Filter table by this cell's ICP tier + vertical
-        }}
-      />
+    <div style={{ overflowX: 'auto' }}>
+      <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '8px' }}>
+        {/* Header row - Verticals */}
+        <thead>
+          <tr>
+            <th style={{
+              width: '180px',
+              padding: '16px',
+              textAlign: 'left',
+              fontSize: '14px',
+              fontWeight: 600,
+              color: 'rgba(255,255,255,0.5)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px'
+            }}>
+              ICP Score
+            </th>
+            {verticals.map(v => (
+              <th key={v} style={{
+                padding: '16px 24px',
+                textAlign: 'center',
+                fontSize: '18px',
+                fontWeight: 600,
+                color: 'white'
+              }}>
+                {v}
+              </th>
+            ))}
+            <th style={{
+              padding: '16px 24px',
+              textAlign: 'center',
+              fontSize: '14px',
+              fontWeight: 600,
+              color: 'rgba(255,255,255,0.5)',
+              textTransform: 'uppercase'
+            }}>
+              Total
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {tiers.map(tier => (
+            <tr key={tier.label}>
+              {/* Row label - ICP tier */}
+              <td style={{
+                padding: '16px',
+                borderRadius: '12px',
+                background: tier.bg,
+                borderLeft: `4px solid ${tier.color}`
+              }}>
+                <div style={{
+                  fontSize: '20px',
+                  fontWeight: 700,
+                  color: tier.color,
+                  marginBottom: '4px'
+                }}>
+                  {tier.label}
+                </div>
+                <div style={{
+                  fontSize: '14px',
+                  color: 'rgba(255,255,255,0.6)'
+                }}>
+                  Score {tier.score}
+                </div>
+              </td>
+              {/* Data cells */}
+              {verticals.map(v => {
+                const value = tier.values[v as keyof typeof tier.values];
+                const intensity = value / maxValue;
+                const cellBg = value > 0
+                  ? `rgba(${tier.color === '#ef4444' ? '239, 68, 68' :
+                           tier.color === '#f97316' ? '249, 115, 22' :
+                           tier.color === '#3b82f6' ? '59, 130, 246' :
+                           '107, 114, 128'}, ${0.1 + intensity * 0.5})`
+                  : 'rgba(255,255,255,0.02)';
+
+                return (
+                  <td key={v} style={{
+                    padding: '20px',
+                    textAlign: 'center',
+                    borderRadius: '12px',
+                    background: cellBg,
+                    border: `1px solid rgba(255,255,255,0.08)`,
+                    cursor: value > 0 ? 'pointer' : 'default',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (value > 0) {
+                      e.currentTarget.style.transform = 'scale(1.02)';
+                      e.currentTarget.style.boxShadow = `0 4px 20px ${tier.color}30`;
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'scale(1)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                  onClick={() => {
+                    if (value > 0) {
+                      console.log(`Filter: ${tier.label} + ${v}`);
+                    }
+                  }}
+                  >
+                    <span style={{
+                      fontSize: '28px',
+                      fontWeight: 700,
+                      color: value > 0 ? 'white' : 'rgba(255,255,255,0.2)'
+                    }}>
+                      {value > 0 ? value.toLocaleString() : '—'}
+                    </span>
+                  </td>
+                );
+              })}
+              {/* Row total */}
+              <td style={{
+                padding: '20px',
+                textAlign: 'center',
+                borderRadius: '12px',
+                background: 'rgba(255,255,255,0.05)',
+                border: `2px solid ${tier.color}40`
+              }}>
+                <span style={{
+                  fontSize: '24px',
+                  fontWeight: 700,
+                  color: tier.color
+                }}>
+                  {tier.total.toLocaleString()}
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+        {/* Footer - Column totals */}
+        <tfoot>
+          <tr>
+            <td style={{
+              padding: '16px',
+              fontSize: '14px',
+              fontWeight: 600,
+              color: 'rgba(255,255,255,0.5)',
+              textTransform: 'uppercase'
+            }}>
+              Vertical Total
+            </td>
+            {verticals.map(v => {
+              const total = tiers.reduce((sum, t) => sum + t.values[v as keyof typeof t.values], 0);
+              return (
+                <td key={v} style={{
+                  padding: '16px',
+                  textAlign: 'center',
+                  fontSize: '20px',
+                  fontWeight: 600,
+                  color: 'rgba(255,255,255,0.7)'
+                }}>
+                  {total.toLocaleString()}
+                </td>
+              );
+            })}
+            <td style={{
+              padding: '16px',
+              textAlign: 'center',
+              fontSize: '24px',
+              fontWeight: 700,
+              color: ALGOLIA_PURPLE
+            }}>
+              2,737
+            </td>
+          </tr>
+        </tfoot>
+      </table>
     </div>
   );
 }
