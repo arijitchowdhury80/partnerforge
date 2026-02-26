@@ -28,6 +28,7 @@ from .base import (
     register_module,
 )
 from ..services.validation import MissingSourceError, SourceFreshnessError
+from ..services.api_client import builtwith_client, APIClientError, APIKeyMissingError
 
 logger = logging.getLogger(__name__)
 
@@ -357,65 +358,114 @@ class M02TechStackModule(BaseIntelligenceModule):
         """
         Fetch technology data from BuiltWith API.
 
-        In production, this calls the BuiltWith MCP.
-        For now, returns mock data.
+        Calls the real BuiltWith API via the API client.
+        Falls back gracefully if API is unavailable or key is missing.
 
         Args:
             domain: The domain to look up
 
         Returns:
             dict with BuiltWith data and source citation
+
+        Raises:
+            APIClientError: If API call fails
+            APIKeyMissingError: If API key is not configured
         """
         return await self._call_builtwith_api(domain)
 
     async def _call_builtwith_api(self, domain: str) -> Dict[str, Any]:
         """
-        Call BuiltWith API (mock implementation).
+        Call BuiltWith API via the API client.
 
-        In production, this will use the BuiltWith MCP server.
+        Args:
+            domain: The domain to look up
+
+        Returns:
+            Dict with technology data and source citation
+
+        Raises:
+            APIClientError: If API call fails
+            APIKeyMissingError: If API key is not configured
         """
-        # Mock response matching expected BuiltWith structure
-        now = datetime.now()
+        try:
+            # Call the real BuiltWith API
+            raw_data = await builtwith_client.get_technologies(domain)
 
-        return {
-            "domain": domain,
-            "technologies": [
-                {
-                    "name": "Salesforce Commerce Cloud",
-                    "category": "ecommerce",
-                    "tag": "SFCC",
-                    "first_detected": "2019-03-15",
-                    "last_detected": now.strftime("%Y-%m-%d"),
-                    "confidence": 0.95
-                },
-                {
-                    "name": "Einstein Search",
-                    "category": "search",
-                    "tag": "SFCC",
-                    "first_detected": "2021-06-01",
-                    "last_detected": now.strftime("%Y-%m-%d"),
-                    "confidence": 0.85
-                },
-                {
-                    "name": "Google Analytics",
-                    "category": "analytics",
-                    "first_detected": "2015-01-01",
-                    "last_detected": now.strftime("%Y-%m-%d"),
-                    "confidence": 0.99
-                },
-                {
-                    "name": "Cloudflare",
-                    "category": "cdn",
-                    "first_detected": "2020-01-01",
-                    "last_detected": now.strftime("%Y-%m-%d"),
-                    "confidence": 0.98
-                }
-            ],
-            "tech_spend_estimate": 125000,
-            "tech_spend_source": "BuiltWith Financial API",
-            "source_url": f"https://builtwith.com/{domain}",
-            "source_date": now.isoformat(),
-        }
+            # Transform the response to match expected schema
+            # The API client returns 'categories' (list), we need 'category' (string)
+            technologies = []
+            for tech in raw_data.get("technologies", []):
+                # Get the primary category from categories list
+                categories = tech.get("categories", [])
+                primary_category = self._infer_category_from_list(categories, tech.get("name", ""))
+
+                technologies.append({
+                    "name": tech.get("name", ""),
+                    "category": primary_category,
+                    "tag": None,  # BuiltWith API doesn't return tags
+                    "first_detected": tech.get("first_detected"),
+                    "last_detected": tech.get("last_detected"),
+                    "confidence": 0.95,  # Default confidence for BuiltWith data
+                })
+
+            return {
+                "domain": raw_data.get("domain", domain),
+                "technologies": technologies,
+                "tech_spend_estimate": None,  # Not available in basic API
+                "tech_spend_source": None,
+                "source_url": raw_data.get("source_url", f"https://builtwith.com/{domain}"),
+                "source_date": raw_data.get("source_date", datetime.now().isoformat()),
+            }
+
+        except APIKeyMissingError:
+            self.logger.warning("BuiltWith API key not configured, cannot fetch data")
+            raise
+        except APIClientError as e:
+            self.logger.error(f"BuiltWith API error for {domain}: {e}")
+            raise
+
+    def _infer_category_from_list(self, categories: List[str], tech_name: str) -> str:
+        """
+        Infer a single category from BuiltWith categories list.
+
+        Maps BuiltWith categories to our internal category system.
+
+        Args:
+            categories: List of categories from BuiltWith
+            tech_name: Technology name for fallback inference
+
+        Returns:
+            Single category string matching TECH_CATEGORIES keys
+        """
+        if not categories:
+            # Fallback: infer from technology name
+            name_lower = tech_name.lower()
+            for cat_key, cat_values in TECH_CATEGORIES.items():
+                if any(v in name_lower for v in cat_values):
+                    return cat_key
+            return "other"
+
+        # Map BuiltWith categories to our categories
+        cat_str = " ".join(categories).lower()
+
+        if "search" in cat_str:
+            return "search"
+        if "ecommerce" in cat_str or "commerce" in cat_str or "shopping cart" in cat_str:
+            return "ecommerce"
+        if "cms" in cat_str or "content management" in cat_str:
+            return "cms"
+        if "analytics" in cat_str or "tracking" in cat_str:
+            return "analytics"
+        if "advertising" in cat_str or "ad network" in cat_str or "tag manager" in cat_str:
+            return "ad_tech"
+        if "payment" in cat_str or "checkout" in cat_str:
+            return "payment"
+        if "cdn" in cat_str or "content delivery" in cat_str:
+            return "cdn"
+        if "crm" in cat_str or "customer relationship" in cat_str:
+            return "crm"
+
+        return "other"
 
     async def _fetch_from_similarweb(self, domain: str) -> Dict[str, Any]:
         """

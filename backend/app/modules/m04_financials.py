@@ -29,6 +29,7 @@ from .base import (
     register_module,
 )
 from ..services.validation import MissingSourceError, SourceFreshnessError
+from ..services.api_client import yahoo_finance_client, APIClientError
 
 logger = logging.getLogger(__name__)
 
@@ -482,45 +483,29 @@ class M04FinancialProfileModule(BaseIntelligenceModule):
         domain: str
     ) -> Dict[str, Any]:
         """
-        Call Yahoo Finance API (mock implementation).
+        Call Yahoo Finance API via the API client.
 
-        In production, this will use the Yahoo Finance MCP server.
+        Uses the YahooFinanceClient from services/api_client.py
+        to fetch real financial data.
+
+        Args:
+            ticker: Stock ticker symbol (e.g., "COST")
+            domain: Company domain for source attribution
+
+        Returns:
+            Dict with financial data and source citation
+
+        Raises:
+            APIClientError: If the API request fails
         """
-        now = datetime.now()
-
-        # Mock response matching expected structure
-        # This simulates what the real API would return
-        return {
-            "domain": domain,
-            "ticker": ticker,
-            "exchange": "NYSE",
-            "is_public": True,
-            "fiscal_year_end": "September 30",
-            "revenue_3yr": [
-                {"fiscal_year": "FY2022", "revenue": 3820000000, "yoy_change": None},
-                {"fiscal_year": "FY2023", "revenue": 3730000000, "yoy_change": -0.024},
-                {"fiscal_year": "FY2024", "revenue": 3720000000, "yoy_change": -0.003},
-            ],
-            "latest_revenue": 3720000000,
-            "revenue_trend": "stable",
-            "revenue_growth_yoy": -0.003,
-            "net_income_3yr": [
-                {"fiscal_year": "FY2022", "net_income": 184600000, "margin": 0.048},
-                {"fiscal_year": "FY2023", "net_income": 153400000, "margin": 0.041},
-                {"fiscal_year": "FY2024", "net_income": 195900000, "margin": 0.053},
-            ],
-            "ebitda_margin": 0.126,
-            "operating_margin": 0.094,
-            "gross_margin": 0.51,
-            "current_price": 17.05,
-            "market_cap": 1800000000,
-            "price_52_week_high": 19.50,
-            "price_52_week_low": 12.80,
-            "analyst_consensus": "HOLD",
-            "analyst_target_price": 18.50,
-            "source_url": f"https://finance.yahoo.com/quote/{ticker}/",
-            "source_date": now.isoformat(),
-        }
+        try:
+            return await yahoo_finance_client.get_financials(ticker, domain)
+        except APIClientError as e:
+            self.logger.error(f"Yahoo Finance API failed for {ticker}: {e}")
+            raise
+        except Exception as e:
+            self.logger.error(f"Unexpected error calling Yahoo Finance for {ticker}: {e}")
+            raise APIClientError(f"Yahoo Finance request failed: {e}")
 
     async def _fetch_from_websearch(self, domain: str) -> Dict[str, Any]:
         """

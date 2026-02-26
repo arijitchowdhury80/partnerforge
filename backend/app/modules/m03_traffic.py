@@ -28,6 +28,7 @@ from .base import (
     register_module,
 )
 from ..services.validation import MissingSourceError, SourceFreshnessError
+from ..services.api_client import similarweb_client, APIClientError, APIKeyMissingError
 from ..config import get_settings
 
 logger = logging.getLogger(__name__)
@@ -454,81 +455,34 @@ class M03TrafficModule(BaseIntelligenceModule):
 
     async def _call_similarweb_api(self, domain: str) -> Dict[str, Any]:
         """
-        Call SimilarWeb API (mock implementation).
+        Call SimilarWeb API to get traffic and engagement data.
 
-        In production, this will use the SimilarWeb MCP server.
+        Uses the SimilarWebClient from api_client service which handles:
+        - Multiple endpoint aggregation (traffic, engagement, sources, geo, rank)
+        - Rate limiting and retries
+        - Error handling
+
+        Args:
+            domain: The domain to look up
+
+        Returns:
+            Dict with traffic data and source citation
+
+        Raises:
+            APIKeyMissingError: If SIMILARWEB_API_KEY is not configured
+            APIClientError: If API request fails
         """
-        # Mock response matching expected SimilarWeb structure
-        now = datetime.now()
-
-        return {
-            "domain": domain,
-            "traffic_metrics": {
-                "monthly_visits": 15200000,
-                "unique_visitors": 8500000,
-                "avg_visit_duration_seconds": 245,
-                "pages_per_visit": 4.2,
-                "bounce_rate": 0.42,
-                "mobile_share": 0.68,
-            },
-            "traffic_trend": {
-                "mom_change": 0.03,
-                "yoy_change": 0.11,
-                "trend_direction": "growing",
-            },
-            "traffic_sources": {
-                "direct": 0.38,
-                "organic_search": 0.32,
-                "paid_search": 0.12,
-                "social": 0.08,
-                "referral": 0.06,
-                "email": 0.04,
-                "display": 0.00,
-            },
-            "geography": {
-                "primary_country": "US",
-                "primary_country_share": 0.85,
-                "top_countries": [
-                    {"country": "US", "share": 0.85},
-                    {"country": "CA", "share": 0.08},
-                    {"country": "UK", "share": 0.03},
-                    {"country": "AU", "share": 0.02},
-                    {"country": "MX", "share": 0.02},
-                ],
-            },
-            "demographics": {
-                "gender_split": {"female": 0.72, "male": 0.28},
-                "age_distribution": {
-                    "18-24": 0.18,
-                    "25-34": 0.28,
-                    "35-44": 0.24,
-                    "45-54": 0.16,
-                    "55+": 0.14,
-                },
-            },
-            "keywords": {
-                "top_organic": [
-                    "sally beauty",
-                    "hair color",
-                    "hair dye",
-                    "nail supplies",
-                    "beauty supply store",
-                ],
-                "top_paid": [
-                    "professional hair color",
-                    "beauty supply store",
-                    "hair bleach",
-                ],
-            },
-            "website_rank": {
-                "global_rank": 12500,
-                "country_rank": 4200,
-                "category_rank": 45,
-                "category": "Beauty & Cosmetics",
-            },
-            "source_url": f"https://www.similarweb.com/website/{domain}/",
-            "source_date": now.isoformat(),
-        }
+        try:
+            return await similarweb_client.get_traffic_and_engagement(domain)
+        except APIKeyMissingError:
+            self.logger.error("SimilarWeb API key not configured")
+            raise
+        except APIClientError as e:
+            self.logger.error(f"SimilarWeb API error for {domain}: {e}")
+            raise
+        except Exception as e:
+            self.logger.error(f"Unexpected error calling SimilarWeb API for {domain}: {e}")
+            raise APIClientError(f"SimilarWeb API call failed: {e}")
 
     def _calculate_search_revenue(
         self,

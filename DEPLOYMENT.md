@@ -57,8 +57,8 @@ Go to **Variables** tab and add:
 
 | Variable | Value | Required |
 |----------|-------|----------|
-| `BUILTWITH_API_KEY` | `8fd992ef-88d0-4554-a20b-364e97b2d302` | Yes |
-| `SIMILARWEB_API_KEY` | `483b77d48d254810b4caf3d376b28ce7` | Yes |
+| `BUILTWITH_API_KEY` | `your_builtwith_api_key` | Yes |
+| `SIMILARWEB_API_KEY` | `your_similarweb_api_key` | Yes |
 | `DEBUG` | `false` | No |
 
 > **Note:** `DATABASE_URL` is auto-injected by Railway PostgreSQL

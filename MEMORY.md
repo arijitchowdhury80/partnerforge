@@ -195,9 +195,9 @@ COLD = Score < 50 OR negative signals
 - **Dashboard:** Full-page detail view with dark theme + tabbed intelligence
 - **Entry point:** `index.html` (static HTML + embedded JSON data)
 
-## API Keys (in scripts)
-- **BuiltWith:** `8fd992ef-88d0-4554-a20b-364e97b2d302`
-- **SimilarWeb:** `483b77d48d254810b4caf3d376b28ce7`
+## API Keys
+- **BuiltWith:** Set via `BUILTWITH_API_KEY` environment variable
+- **SimilarWeb:** Set via `SIMILARWEB_API_KEY` environment variable
 
 ## Key Findings (2026-02-25)
 

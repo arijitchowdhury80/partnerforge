@@ -15,8 +15,11 @@ import subprocess
 import argparse
 from datetime import datetime
 
+import os
 DB_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/PartnerForge/data/partnerforge.db"
-BUILTWITH_API_KEY = "8fd992ef-88d0-4554-a20b-364e97b2d302"
+BUILTWITH_API_KEY = os.getenv("BUILTWITH_API_KEY")
+if not BUILTWITH_API_KEY:
+    raise ValueError("BUILTWITH_API_KEY environment variable is required")
 
 # Partner technology mapping for BuiltWith
 PARTNER_TECH_MAP = {

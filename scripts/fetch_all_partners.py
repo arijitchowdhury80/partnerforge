@@ -24,8 +24,10 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-# API Key
-BUILTWITH_API_KEY = os.getenv("BUILTWITH_API_KEY", "8fd992ef-88d0-4554-a20b-364e97b2d302")
+# API Key from environment variable
+BUILTWITH_API_KEY = os.getenv("BUILTWITH_API_KEY")
+if not BUILTWITH_API_KEY:
+    raise ValueError("BUILTWITH_API_KEY environment variable is required")
 
 # Partner technologies to search for
 PARTNER_TECHNOLOGIES = {

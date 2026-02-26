@@ -695,7 +695,7 @@ def enrich_company(domain: str, force: bool = False) -> Dict:
 **Rate Limits:**
 - Free tier: 100 calls/day
 - Pro tier: 10,000 calls/day
-- Current key: `8fd992ef-88d0-4554-a20b-364e97b2d302`
+- Key: Set via `BUILTWITH_API_KEY` environment variable
 
 **Endpoints Used:**
 
@@ -743,7 +743,7 @@ def enrich_company(domain: str, force: bool = False) -> Dict:
 
 **Rate Limits:**
 - ~500 calls/day
-- Current key: `483b77d48d254810b4caf3d376b28ce7`
+- Key: Set via `SIMILARWEB_API_KEY` environment variable
 
 **Endpoints Used:**
 

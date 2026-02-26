@@ -19,9 +19,13 @@ import sqlite3
 from typing import Dict, List, Tuple
 import time
 
-# API Keys
-SIMILARWEB_API_KEY = "483b77d48d254810b4caf3d376b28ce7"
-BUILTWITH_API_KEY = "8fd992ef-88d0-4554-a20b-364e97b2d302"
+# API Keys from environment variables
+import os
+SIMILARWEB_API_KEY = os.getenv("SIMILARWEB_API_KEY")
+BUILTWITH_API_KEY = os.getenv("BUILTWITH_API_KEY")
+
+if not SIMILARWEB_API_KEY or not BUILTWITH_API_KEY:
+    raise ValueError("SIMILARWEB_API_KEY and BUILTWITH_API_KEY environment variables are required")
 
 DB_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/PartnerForge/data/partnerforge.db"
 
