@@ -36,7 +36,7 @@ import {
 
 import { getStats, getCompanies, getDistribution, type DistributionData, API_VERSION } from '@/services/api';
 import { TargetList } from '@/components/targets/TargetList';
-import { usePartner } from '@/contexts/PartnerContext';
+import { usePartner, getSelectionTechName } from '@/contexts/PartnerContext';
 import { AlgoliaLogo } from '@/components/common/AlgoliaLogo';
 import { getPartnerLogo } from '@/components/common/PartnerLogos';
 import type { FilterState, DashboardStats } from '@/types';
@@ -55,7 +55,7 @@ interface CellSelection {
 }
 
 export function Dashboard() {
-  const { selectedPartner } = usePartner();
+  const { selectedPartner, selection } = usePartner();
   const [filters, setFilters] = useState<FilterState>({
     sort_by: 'icp_score',
     sort_order: 'desc',
@@ -75,14 +75,17 @@ export function Dashboard() {
     queryFn: getDistribution,
   });
 
+  // Get the tech name for filtering (e.g., "Adobe Experience Manager" not "Adobe AEM")
+  const partnerTechName = getSelectionTechName(selection);
+
   // Fetch companies
   const { data: companies, isLoading: companiesLoading } = useQuery({
-    queryKey: ['companies', filters, page, selectedPartner.key],
+    queryKey: ['companies', filters, page, selectedPartner.key, partnerTechName],
     queryFn: () => getCompanies({
       ...filters,
       page,
       limit: 20,
-      partner: selectedPartner.key === 'all' ? undefined : selectedPartner.name,
+      partner: partnerTechName, // Use proper tech name, not display name
     }),
   });
 
