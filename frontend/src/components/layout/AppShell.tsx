@@ -31,11 +31,12 @@ import { Sidebar } from './Sidebar';
 import { AlgoliaLogo } from '@/components/common/AlgoliaLogo';
 
 // Light theme colors
+const ALGOLIA_BLUE = '#003DFF';
 const GRAY_50 = '#f8fafc';
 const GRAY_100 = '#f1f5f9';
 const GRAY_200 = '#e2e8f0';
 const GRAY_700 = '#334155';
-const ALGOLIA_BLUE = '#003DFF';
+const GRAY_900 = '#0f172a';
 
 export function AppShell() {
   const [opened, { toggle }] = useDisclosure();
@@ -61,18 +62,16 @@ export function AppShell() {
       padding="md"
       styles={{
         main: {
-          background: 'linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%)',
+          background: GRAY_50,
           minHeight: '100vh',
         },
         navbar: {
-          background: 'rgba(10, 10, 15, 0.95)',
-          backdropFilter: 'blur(20px)',
-          borderRight: '1px solid rgba(255, 255, 255, 0.08)',
+          background: 'white',
+          borderRight: `1px solid ${GRAY_200}`,
         },
         header: {
-          background: 'rgba(10, 10, 15, 0.95)',
-          backdropFilter: 'blur(20px)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+          background: 'white',
+          borderBottom: `1px solid ${GRAY_200}`,
         },
       }}
     >
@@ -81,12 +80,12 @@ export function AppShell() {
         <Group h="100%" px="lg" justify="space-between">
           {/* Left: Logo */}
           <Group gap="md">
-            <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" color="white" />
+            <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" color={GRAY_700} />
 
             <Group gap="sm">
               {/* Algolia Logo */}
               <AlgoliaLogo size={28} />
-              <Title order={4} c="white" fw={600}>
+              <Title order={4} c={GRAY_900} fw={600}>
                 PartnerForge
               </Title>
             </Group>
@@ -100,9 +99,8 @@ export function AppShell() {
                 variant="subtle"
                 size="lg"
                 radius="md"
+                color="gray"
                 onClick={handleRefresh}
-                style={{ color: 'rgba(255,255,255,0.6)' }}
-                className="hover:text-white hover:bg-white/10"
               >
                 <IconRefresh size={20} />
               </ActionIcon>
@@ -114,24 +112,9 @@ export function AppShell() {
                 variant="subtle"
                 size="lg"
                 radius="md"
-                style={{ color: 'rgba(255,255,255,0.6)' }}
-                className="hover:text-white hover:bg-white/10"
+                color="gray"
               >
                 <IconBell size={20} />
-              </ActionIcon>
-            </Tooltip>
-
-            {/* Theme Toggle */}
-            <Tooltip label={`Switch to ${colorScheme === 'dark' ? 'light' : 'dark'} mode`}>
-              <ActionIcon
-                variant="subtle"
-                size="lg"
-                radius="md"
-                onClick={() => toggleColorScheme()}
-                style={{ color: 'rgba(255,255,255,0.6)' }}
-                className="hover:text-white hover:bg-white/10"
-              >
-                {colorScheme === 'dark' ? <IconSun size={20} /> : <IconMoon size={20} />}
               </ActionIcon>
             </Tooltip>
 
@@ -142,19 +125,12 @@ export function AppShell() {
                   variant="subtle"
                   size="lg"
                   radius="md"
-                  style={{ color: 'rgba(255,255,255,0.6)' }}
-                  className="hover:text-white hover:bg-white/10"
+                  color="gray"
                 >
                   <IconUser size={20} />
                 </ActionIcon>
               </Menu.Target>
-              <Menu.Dropdown
-                style={{
-                  background: 'rgba(26, 27, 30, 0.98)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                }}
-              >
+              <Menu.Dropdown>
                 <Menu.Label>Account</Menu.Label>
                 <Menu.Item leftSection={<IconSettings size={14} />}>
                   Settings
@@ -169,7 +145,7 @@ export function AppShell() {
             {/* Version Badge */}
             <Badge
               variant="gradient"
-              gradient={{ from: '#5468FF', to: '#8B5CF6' }}
+              gradient={{ from: ALGOLIA_BLUE, to: '#5468FF' }}
               size="sm"
             >
               v3.0

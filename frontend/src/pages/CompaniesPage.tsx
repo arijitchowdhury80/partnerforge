@@ -3,6 +3,8 @@
  *
  * A dedicated page for browsing displacement targets with Excel-style
  * column filtering. All filters are in the table column headers.
+ *
+ * Updated: White theme to match Dashboard
  */
 
 import { useState, useCallback, useMemo } from 'react';
@@ -32,7 +34,7 @@ import { getCompanies } from '@/services/api';
 import { TargetList, type ColumnFilter } from '@/components/targets/TargetList';
 
 // Version for deployment tracking
-const VERSION = 'v2.4.1-REBUILD-FEB26';
+const VERSION = 'v2.5.0-WHITE-THEME';
 
 // =============================================================================
 // Companies Page Component
@@ -205,10 +207,10 @@ export function CompaniesPage() {
         <Group justify="space-between" mb="lg">
           <div>
             <Group gap="sm" align="center">
-              <Title order={2} c="white">
+              <Title order={2}>
                 Companies
               </Title>
-              <Badge size="xs" variant="light" color="cyan">
+              <Badge size="xs" variant="light" color="blue">
                 {VERSION}
               </Badge>
             </Group>
@@ -236,12 +238,7 @@ export function CompaniesPage() {
         <Paper
           p="md"
           mb="md"
-          radius="lg"
-          style={{
-            background: 'rgba(255, 255, 255, 0.03)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            backdropFilter: 'blur(12px)',
-          }}
+          withBorder
         >
           <Group gap="md">
             <TextInput
@@ -254,16 +251,6 @@ export function CompaniesPage() {
               }}
               style={{ flex: 1 }}
               size="md"
-              styles={{
-                input: {
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  color: 'white',
-                  '&::placeholder': {
-                    color: 'rgba(255, 255, 255, 0.4)',
-                  },
-                },
-              }}
             />
 
             {/* Clear All Filters */}
@@ -321,7 +308,7 @@ export function CompaniesPage() {
                 exit={{ opacity: 0 }}
               >
                 <Group gap="xs">
-                  <IconFilter size={14} style={{ color: 'rgba(255,255,255,0.4)' }} />
+                  <IconFilter size={14} color="#94a3b8" />
                   {columnFilters.map((filter) => (
                     <Badge
                       key={filter.column}
@@ -356,15 +343,17 @@ export function CompaniesPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.3 }}
       >
-        <TargetList
-          companies={filteredCompanies}
-          isLoading={isLoading}
-          pagination={companiesData?.pagination}
-          onPageChange={handlePageChange}
-          onEnrichCompany={handleEnrichCompany}
-          columnFilters={columnFilters}
-          onColumnFilterChange={handleColumnFilterChange}
-        />
+        <Paper withBorder>
+          <TargetList
+            companies={filteredCompanies}
+            isLoading={isLoading}
+            pagination={companiesData?.pagination}
+            onPageChange={handlePageChange}
+            onEnrichCompany={handleEnrichCompany}
+            columnFilters={columnFilters}
+            onColumnFilterChange={handleColumnFilterChange}
+          />
+        </Paper>
       </motion.div>
     </Container>
   );
