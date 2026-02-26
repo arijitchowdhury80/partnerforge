@@ -338,13 +338,43 @@ function DiagramGallery({ markdown }: { markdown: string }) {
     );
   }
 
+  // Debug: Show what we found
+  console.log('[DiagramGallery] Found diagrams:', diagrams.length, diagrams.map(d => d.title));
+
+  // If no diagrams found, show helpful message
+  if (diagrams.length === 0) {
+    return (
+      <Box>
+        <Alert icon={<IconAlertCircle size={16} />} title="No Diagrams Found" color="yellow">
+          No mermaid diagrams were extracted from this page. This may be a parsing issue.
+        </Alert>
+      </Box>
+    );
+  }
+
   return (
     <Box>
-      <Title order={2} mb="xs" style={{ color: 'var(--mantine-color-blue-4)' }}>
-        Architecture Diagrams
-      </Title>
-      <Text c="dimmed" mb="lg">
-        Click a diagram to view full size. {diagrams.length} diagrams organized by category.
+      <Paper p="md" mb="lg" withBorder style={{ background: 'linear-gradient(135deg, rgba(0,61,255,0.1), rgba(84,104,255,0.05))' }}>
+        <Group justify="space-between">
+          <Group>
+            <ThemeIcon size="lg" radius="md" variant="light" color="blue">
+              <IconChartDots size={20} />
+            </ThemeIcon>
+            <div>
+              <Title order={3} style={{ color: 'var(--mantine-color-blue-4)' }}>
+                Architecture Diagrams
+              </Title>
+              <Text size="sm" c="dimmed">
+                {diagrams.length} diagrams organized into {Object.keys(categorized).filter(k => (categorized[k]?.length || 0) > 0).length} categories
+              </Text>
+            </div>
+          </Group>
+          <Badge size="lg" variant="light" color="blue">Gallery View</Badge>
+        </Group>
+      </Paper>
+
+      <Text c="dimmed" mb="lg" size="sm">
+        Click any diagram card to view full size. Use tabs to filter by category.
       </Text>
 
       <Tabs value={activeTab} onChange={(v) => setActiveTab(v || 'architecture')}>
