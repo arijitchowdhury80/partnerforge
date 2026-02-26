@@ -64,6 +64,42 @@ export async function getStats(): Promise<DashboardStats> {
 // Companies / Targets
 // =============================================================================
 
+// Helper to derive status from ICP score
+function getStatusFromScore(score: number): 'hot' | 'warm' | 'cool' | 'cold' {
+  if (score >= 80) return 'hot';
+  if (score >= 60) return 'warm';
+  if (score >= 40) return 'cool';
+  return 'cold';
+}
+
+// Transform API target to frontend Company format
+function transformTarget(target: Record<string, unknown>): Company {
+  const icpScore = (target.icp_score as number) || 0;
+  return {
+    domain: target.domain as string,
+    company_name: (target.company_name as string) || (target.domain as string),
+    ticker: target.ticker as string | undefined,
+    exchange: target.exchange as string | undefined,
+    is_public: Boolean(target.is_public),
+    headquarters: {
+      city: '',
+      state: '',
+      country: (target.country as string) || '',
+    },
+    industry: (target.vertical as string) || '',
+    vertical: (target.vertical as string) || '',
+    icp_score: icpScore,
+    signal_score: (target.signal_score as number) || Math.round(icpScore * 0.8),
+    priority_score: (target.priority_score as number) || icpScore,
+    status: getStatusFromScore(icpScore),
+    // Convert partner_tech from string to array
+    partner_tech: target.partner_tech
+      ? [target.partner_tech as string]
+      : [],
+    last_enriched: target.last_enriched as string | undefined,
+  };
+}
+
 export async function getCompanies(
   filters: FilterState & { page?: number; limit?: number }
 ): Promise<PaginatedResponse<Company>> {
@@ -78,9 +114,10 @@ export async function getCompanies(
     sort_order: filters.sort_order || 'desc',
   };
   const { data } = await apiClient.get('/v1/targets', { params });
-  // Transform response from targets format to PaginatedResponse format
+  // Transform response from targets format to Company format
+  const targets = data.targets || [];
   return {
-    data: data.targets || [],
+    data: targets.map(transformTarget),
     pagination: data.pagination || { page: 1, limit: 50, total: 0, total_pages: 0 },
   };
 }
