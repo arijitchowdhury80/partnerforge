@@ -1,0 +1,48 @@
+{
+  "name": "partnerforge-frontend",
+  "version": "2.0.0",
+  "description": "PartnerForge - Enterprise ABM Intelligence Platform",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@mantine/core": "^7.5.0",
+    "@mantine/dates": "^7.5.0",
+    "@mantine/form": "^7.5.0",
+    "@mantine/hooks": "^7.5.0",
+    "@mantine/notifications": "^7.5.0",
+    "@tabler/icons-react": "^2.47.0",
+    "@tanstack/react-query": "^5.17.0",
+    "@tremor/react": "^3.14.0",
+    "axios": "^1.6.5",
+    "clsx": "^2.1.0",
+    "dayjs": "^1.11.10",
+    "mantine-datatable": "^7.5.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.21.2",
+    "tailwind-merge": "^2.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.17",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "postcss": "^8.4.33",
+    "postcss-preset-mantine": "^1.13.0",
+    "postcss-simple-vars": "^7.0.1",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.12"
+  }
+}

@@ -46,12 +46,76 @@ app.add_middleware(
 
 @app.get("/")
 async def root():
-    """Health check endpoint."""
+    """Root endpoint with basic info."""
     return {
         "status": "healthy",
         "service": "PartnerForge API",
         "version": "1.0.0",
     }
+
+
+@app.get("/health")
+async def health_check():
+    """
+    Health check endpoint for Railway/container orchestration.
+
+    Checks:
+    - API responsiveness
+    - Database connectivity
+    - (Future) Redis connectivity
+    """
+    from .enrichment import get_db_connection
+    import time
+
+    health = {
+        "status": "healthy",
+        "timestamp": time.time(),
+        "checks": {}
+    }
+
+    # Check database connectivity
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1")
+        conn.close()
+        health["checks"]["database"] = {"status": "healthy"}
+    except Exception as e:
+        health["checks"]["database"] = {"status": "unhealthy", "error": str(e)}
+        health["status"] = "unhealthy"
+
+    # Return appropriate status code
+    if health["status"] == "unhealthy":
+        return JSONResponse(status_code=503, content=health)
+
+    return health
+
+
+@app.get("/ready")
+async def readiness_check():
+    """
+    Readiness probe for Kubernetes/Railway.
+
+    Returns 200 when the service is ready to accept traffic.
+    """
+    from .enrichment import get_db_connection
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM displacement_targets")
+        count = cursor.fetchone()[0]
+        conn.close()
+
+        return {
+            "ready": True,
+            "targets_loaded": count,
+        }
+    except Exception as e:
+        return JSONResponse(
+            status_code=503,
+            content={"ready": False, "error": str(e)}
+        )
 
 
 @app.get("/api/company/{domain}")

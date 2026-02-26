@@ -1,8 +1,30 @@
 # PartnerForge - Product Requirements Document
 
+**Version:** 3.0 (Enterprise Architecture)
+**Date:** 2026-02-25
+**Status:** Enterprise-Grade ABM Platform Design Complete
+**Vision:** Thousands-of-dollars-per-subscription Account-Based Marketing Software
+
+---
+
 ## Executive Summary
 
-**PartnerForge** is an internal SaaS platform for Algolia's Sales & Commercial team that provides partner-powered account-based intelligence. It combines technology stack data (BuiltWith), traffic intelligence (SimilarWeb), partner ecosystem data (Crossbeam), and Algolia's customer evidence to generate qualified lead lists for co-sell motions, displacement campaigns, and competitive positioning.
+**PartnerForge** is an **Enterprise-Grade Account-Based Marketing (ABM) Platform** for Algolia Sales that provides deep, multi-layered intelligence on target accounts. Unlike basic CRM enrichment tools, PartnerForge combines:
+
+- **Partner Technology Detection** → Who uses our partners but not us?
+- **Financial Intelligence** → Can they afford us? Are they growing?
+- **Investor Intelligence** → What are their stated strategic priorities?
+- **Competitive Intelligence** → What are their competitors doing?
+- **Hiring Signals** → Are they building teams that need us?
+- **Executive Intelligence** → Who's the buying committee?
+- **Search Audit Intelligence** → How broken is their current search?
+
+**Core Formula:**
+```
+Displacement Targets = Companies Using Partner Tech − Existing Algolia Customers
+```
+
+**Revenue Model:** $10K-50K/year enterprise subscriptions, per-seat licensing, premium modules
 
 ---
 
@@ -13,354 +35,523 @@ Sales teams spend significant time manually researching:
 2. Which of those prospects DON'T yet use Algolia (displacement opportunities)?
 3. Who are the competitors of a target account, and what search tech do they use?
 4. Which Algolia case studies are most relevant to a given prospect?
+5. What are executives saying in earnings calls that maps to Algolia solutions?
+6. What hiring signals indicate readiness to buy?
 
-This manual research is:
-- Time-consuming (2-4 hours per account)
-- Inconsistent (different reps use different sources)
-- Not scalable (can't research 500 accounts at once)
-- Not persistent (research isn't stored or shared)
+| Pain Point | Current State | PartnerForge Solution |
+|------------|---------------|----------------------|
+| Manual research | 2-4 hours per account | 2 minutes per account |
+| Inconsistent data | Different reps use different sources | Single source of truth |
+| Not scalable | Can't research 500 accounts | Batch process thousands |
+| Not persistent | Research lost after call | Permanent intelligence record |
+| No prioritization | All leads look the same | ICP + Signal scoring |
+| No timing signals | No idea when to reach out | Trigger event detection |
 
 ---
 
-## Solution
+## MANDATORY DESIGN PRINCIPLE (P0)
 
-PartnerForge automates this intelligence gathering and provides:
+### Source Citation Mandate
 
-1. **Co-Sell Lists**: Companies using BOTH Algolia + Partner Tech
-2. **Displacement Lists**: Companies using Partner Tech but NOT Algolia
-3. **Competitive Intelligence**: Given a target company, find competitors and their tech stacks
-4. **Case Study Matching**: Auto-recommend relevant Algolia case studies based on industry, tech stack, and use case
-5. **Enriched Profiles**: Traffic data, engagement metrics, and partner pipeline status
+**Reference:** `docs/SOURCE-CITATION-MANDATE.md`
+
+**THIS IS NON-NEGOTIABLE. NO EXCEPTIONS.**
+
+| Law | Rule | Enforcement |
+|-----|------|-------------|
+| **Law 1** | Every data point has a source | Pydantic validators, DB NOT NULL |
+| **Law 2** | No source >12 months old | `expires_at` column, adapter validation |
+| **Law 3** | Inline citations in deliverables | Pre-generation validation gate |
+
+**Source Freshness Rules:**
+```
+Stock price:    1 day max
+Traffic data:   30 days max
+Tech stack:     90 days max
+Financials:     12 months max
+Transcripts:    12 months max
+```
+
+**Database Enforcement:**
+```sql
+-- MANDATORY on every data table
+source_type VARCHAR(50) NOT NULL,
+source_url TEXT NOT NULL,
+source_date DATE,
+fetched_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+expires_at TIMESTAMPTZ NOT NULL,
+CONSTRAINT source_required CHECK (source_url IS NOT NULL AND source_url != '')
+```
 
 ---
 
 ## Users
 
-| Role | Primary Use Case |
-|------|------------------|
-| Account Executives | Pre-call research, competitive positioning |
-| SDRs/BDRs | Prospecting list generation, outreach prioritization |
-| Partner Managers | Co-sell list building, partner QBR prep |
-| Sales Leadership | Pipeline coverage analysis, territory planning |
+| Role | Primary Use Case | Value Delivered |
+|------|------------------|-----------------|
+| Account Executives | Pre-call research, objection handling | Know more than the prospect about their business |
+| SDRs/BDRs | Prospecting, outreach timing | Reach out at the right moment with right message |
+| Partner Managers | Co-sell list building | Identify partner overlap opportunities |
+| Sales Leadership | Territory planning, forecasting | Data-driven pipeline prioritization |
+| Marketing | ABM campaign targeting | Hyper-personalized content at scale |
 
-**Estimated Users**: 50-100 (Algolia Sales & Commercial team)
-
----
-
-## MVP Scope (Phase 1)
-
-### Use Case A: Co-Sell List Generation
-**Input**: Partner technology (e.g., "Adobe Experience Manager")
-**Output**: List of companies using BOTH Algolia AND the partner tech, enriched with traffic data
-
-### Use Case B: Displacement List Generation
-**Input**: Partner technology (e.g., "Shopify")
-**Output**: List of companies using the partner tech but NOT Algolia
-
-### Use Case C: Competitive Intelligence
-**Input**: Target company domain (e.g., "costco.com")
-**Output**:
-- List of competitors (from SimilarWeb + BuiltWith)
-- Each competitor's search technology
-- Relevant Algolia case studies from that vertical
+**Estimated Users:** 50-100 (Algolia Sales & Commercial team)
 
 ---
 
-## Data Sources
+## Intelligence Module Architecture
 
-### Primary Sources (MVP)
+### 15 Intelligence Modules (4 Waves)
 
-| Source | Data Type | Refresh | API |
-|--------|-----------|---------|-----|
-| **BuiltWith** | Technology stacks, company metadata | Weekly | lists8, domain-lookup, relationships-api |
-| **SimilarWeb** | Traffic, engagement, similar sites | Weekly | 14 endpoints via MCP |
-| **Customer Evidence Excel** | Case studies, quotes, logos | On-demand import | Manual upload |
+**Reference:** `docs/INTELLIGENCE-MODULE-TAXONOMY.md`
 
-### Phase 2 Sources
+| Wave | Module ID | Module Name | DB Table | Source |
+|------|-----------|-------------|----------|--------|
+| **1** | M01 | Company Context | `intel_company_context` | WebSearch, SEC |
+| **1** | M02 | Technology Stack | `intel_technology_stack` | BuiltWith |
+| **1** | M03 | Traffic Analysis | `intel_traffic_analysis` | SimilarWeb |
+| **1** | M04 | Financial Profile | `intel_financial_profile` | Yahoo Finance |
+| **2** | M05 | Competitor Intel | `intel_competitor_intelligence` | SimilarWeb |
+| **2** | M06 | Hiring Signals | `intel_hiring_signals` | LinkedIn/WebSearch |
+| **2** | M07 | Strategic Context | `intel_strategic_context` | WebSearch/News |
+| **3** | M08 | Investor Intel | `intel_investor_intelligence` | SEC EDGAR |
+| **3** | M09 | Executive Intel | `intel_executive_intelligence` | LinkedIn/Transcripts |
+| **3** | M10 | Buying Committee | `intel_buying_committee` | Enrichment |
+| **3** | M11 | Displacement Analysis | `intel_displacement_analysis` | Analysis |
+| **4** | M12 | Case Study Matching | `intel_case_study_matches` | Internal |
+| **4** | M13 | ICP-Priority Mapping | `intel_icp_priority_mapping` | Synthesis |
+| **4** | M14 | Signal Scoring | `intel_signal_scoring` | Calculation |
+| **4** | M15 | Strategic Signal Brief | `intel_strategic_signal_briefs` | Generation |
 
-| Source | Data Type | Refresh | API |
-|--------|-----------|---------|-----|
-| **Crossbeam** | Partner pipeline overlaps | Daily | MCP (Limited Availability) |
-| **Salesforce** | Algolia pipeline/customer status | Real-time | Salesforce API |
+### Module Dependency Graph
+
+```
+Wave 1 (Foundation - Parallel):
+M01 ──┐
+M02 ──┼──► Validation ──► Wave 2
+M03 ──┤
+M04 ──┘
+
+Wave 2 (Deep Intel - Parallel):
+M05 ──┐
+M06 ──┼──► Validation ──► Wave 3
+M07 ──┘
+
+Wave 3 (Analysis - Mixed):
+M08 ──┐
+M09 ──┼──► M10 ──► M11 ──► Wave 4
+(from M06)
+
+Wave 4 (Synthesis - Parallel):
+M12 ──┐
+M13 ──┼──► M15 (Final Brief)
+M14 ──┘
+```
 
 ---
 
-## Database Schema
+## Parallel Execution Architecture
 
-### Core Tables
+**Reference:** `docs/PARALLEL-EXECUTION-ARCHITECTURE.md`
+
+### Three Levels of Parallelism
+
+| Level | Description | Implementation |
+|-------|-------------|----------------|
+| **Within-Account** | Wave-based module execution | `asyncio.gather()` per wave |
+| **Across-Account** | Batch processing (5-10 concurrent) | Semaphore-bounded workers |
+| **Within-Adapter** | Concurrent API calls | Rate-limited parallel requests |
+
+### Performance Gain
+
+| Approach | Time per Account | Time for 100 Accounts |
+|----------|------------------|----------------------|
+| Sequential | 180-300 seconds | 5-8 hours |
+| Parallel (Wave) | 60 seconds | 1-2 hours |
+| **Speedup** | **3-5x** | **3-5x** |
+
+### Orchestrator Design
+
+```
+Human Role                    System Role
+──────────                    ───────────
+Configure ICP weights    ←→   Execute module sequencing
+Trigger batch jobs       ←→   Manage parallelism
+Review results           ←→   Handle failures/retries
+Make sales decisions     ←→   Notify on hot leads
+```
+
+**Key Principle:** Humans should NEVER manually sequence module execution. That's the orchestrator's job.
+
+---
+
+## Database Schema (PostgreSQL)
+
+**Reference:** `docs/DATABASE-SCHEMA-V2.md`
+
+### Table Namespaces
+
+| Namespace | Purpose | Tables |
+|-----------|---------|--------|
+| `core_` | Primary entities | companies, domains, jobs, cache, brands |
+| `intel_` | Intelligence data | 15 tables (one per module) |
+| `jobs_` | Job management | queue, history, scheduled_tasks |
+| `users_` | User management | accounts, api_keys, rate_limits |
+| `audit_` | Audit logging | api_calls, data_changes, user_actions |
+
+### Critical Tables (30+ Total)
 
 ```sql
--- Companies master table
-CREATE TABLE companies (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+-- Core company record
+CREATE TABLE core_companies (
+    id UUID PRIMARY KEY,
     domain VARCHAR(255) UNIQUE NOT NULL,
-    name VARCHAR(255),
-    vertical VARCHAR(100),
-    country VARCHAR(2),
-
-    -- BuiltWith data
-    bw_spend_estimate INTEGER,
-    bw_first_indexed TIMESTAMP,
-    bw_last_indexed TIMESTAMP,
-
-    -- SimilarWeb data
-    sw_monthly_visits BIGINT,
-    sw_visits_growth_pct DECIMAL(5,2),
-    sw_bounce_rate DECIMAL(5,2),
-    sw_pages_per_visit DECIMAL(5,2),
-    sw_avg_visit_duration INTEGER, -- seconds
-    sw_search_traffic_pct DECIMAL(5,2), -- KEY ALGOLIA SIGNAL
-    sw_rank_global INTEGER,
-    sw_rank_country INTEGER,
-
-    -- Algolia status
+    company_name VARCHAR(500) NOT NULL,
+    ticker VARCHAR(20),
+    icp_tier INTEGER CHECK (icp_tier IN (1, 2, 3)),
+    icp_score INTEGER CHECK (icp_score >= 0 AND icp_score <= 100),
     is_algolia_customer BOOLEAN DEFAULT FALSE,
-    algolia_arr DECIMAL(12,2),
-    algolia_products TEXT[], -- ['Search', 'Recommend', 'NeuralSearch']
-
-    -- Metadata
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW(),
-    bw_updated_at TIMESTAMP,
-    sw_updated_at TIMESTAMP
+    current_search_provider VARCHAR(100),
+    enrichment_level VARCHAR(20) DEFAULT 'none',
+    last_enriched_at TIMESTAMPTZ,
+    -- SOURCE TRACKING (MANDATORY)
+    source_url TEXT NOT NULL,
+    fetched_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    expires_at TIMESTAMPTZ NOT NULL
 );
 
--- Technologies catalog
-CREATE TABLE technologies (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(255) UNIQUE NOT NULL,
-    category VARCHAR(100), -- 'CMS', 'Search', 'Ecommerce', etc.
-    is_partner BOOLEAN DEFAULT FALSE, -- Adobe, Shopify, Salesforce, etc.
-    is_competitor BOOLEAN DEFAULT FALSE, -- Coveo, Elastic, etc.
-    builtwith_name VARCHAR(255), -- Exact name in BuiltWith
-    created_at TIMESTAMP DEFAULT NOW()
-);
-
--- Company-Technology junction (what tech each company uses)
-CREATE TABLE company_technologies (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    company_id UUID REFERENCES companies(id) ON DELETE CASCADE,
-    technology_id UUID REFERENCES technologies(id) ON DELETE CASCADE,
-    first_seen TIMESTAMP,
-    last_seen TIMESTAMP,
-    is_live BOOLEAN DEFAULT TRUE,
-    source VARCHAR(50), -- 'builtwith', 'similarweb', 'manual'
-    UNIQUE(company_id, technology_id)
-);
-
--- Competitor relationships
-CREATE TABLE competitors (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    company_a_id UUID REFERENCES companies(id) ON DELETE CASCADE,
-    company_b_id UUID REFERENCES companies(id) ON DELETE CASCADE,
-    source VARCHAR(50), -- 'similarweb', 'builtwith', 'both'
-    confidence_score INTEGER CHECK (confidence_score BETWEEN 1 AND 100),
-    similarity_score DECIMAL(5,2), -- SimilarWeb similarity
-    created_at TIMESTAMP DEFAULT NOW(),
-    UNIQUE(company_a_id, company_b_id)
-);
-
--- Case studies from Customer Evidence
-CREATE TABLE case_studies (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    customer_name VARCHAR(255) NOT NULL,
-    customer_domain VARCHAR(255),
-    country VARCHAR(100),
-    region VARCHAR(50),
-    vertical VARCHAR(100),
-    use_case VARCHAR(100),
-    story_url TEXT,
-    slide_deck_url TEXT,
-    status VARCHAR(50), -- 'Complete', 'DRAFT', etc.
-
-    -- Feature flags (from Cust. Stories sheet)
-    features_used TEXT[], -- ['NeuralSearch', 'Personalization', 'Recommend']
-
-    -- Results
-    competitor_takeout VARCHAR(255),
-    partner_integrations TEXT[],
-    key_results TEXT,
-
-    created_at TIMESTAMP DEFAULT NOW()
-);
-
--- Customer quotes/testimonials
-CREATE TABLE customer_quotes (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    customer_name VARCHAR(255),
-    contact_name VARCHAR(255),
-    contact_title VARCHAR(255),
-    vertical VARCHAR(100),
-    country VARCHAR(100),
+-- Executive quotes with attribution
+CREATE TABLE intel_executive_quotes (
+    id UUID PRIMARY KEY,
+    account_id UUID REFERENCES core_companies(id),
     quote_text TEXT NOT NULL,
-    source VARCHAR(100), -- 'TechValidate', 'G2', 'TrustRadius'
-    tags TEXT[],
-    created_at TIMESTAMP DEFAULT NOW()
+    speaker_name VARCHAR(255) NOT NULL,
+    speaker_title VARCHAR(255),
+    event_date DATE NOT NULL,
+    event_type VARCHAR(50),
+    maps_to_algolia TEXT,
+    relevance_score INTEGER,
+    -- SOURCE TRACKING (MANDATORY)
+    source_url TEXT NOT NULL,
+    source_date DATE NOT NULL,
+    fetched_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    expires_at TIMESTAMPTZ NOT NULL
 );
-
--- Proof points (aggregated stats)
-CREATE TABLE proof_points (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    vertical VARCHAR(100),
-    theme VARCHAR(100), -- 'Conversion', 'Revenue', 'Speed'
-    result_text TEXT NOT NULL,
-    source VARCHAR(100),
-    is_shareable BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP DEFAULT NOW()
-);
-
--- Lead lists (saved queries)
-CREATE TABLE lead_lists (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(255) NOT NULL,
-    description TEXT,
-    created_by UUID, -- User ID from Supabase Auth
-    filters JSONB, -- Store the filter criteria
-    list_type VARCHAR(50), -- 'cosell', 'displacement', 'competitive'
-    partner_tech VARCHAR(255),
-    target_company VARCHAR(255),
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
-);
-
--- Lead list members
-CREATE TABLE lead_list_members (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    list_id UUID REFERENCES lead_lists(id) ON DELETE CASCADE,
-    company_id UUID REFERENCES companies(id) ON DELETE CASCADE,
-    score INTEGER, -- Lead score
-    status VARCHAR(50) DEFAULT 'new', -- 'new', 'contacted', 'qualified', 'disqualified'
-    notes TEXT,
-    added_at TIMESTAMP DEFAULT NOW(),
-    UNIQUE(list_id, company_id)
-);
-
--- Indexes for performance
-CREATE INDEX idx_companies_domain ON companies(domain);
-CREATE INDEX idx_companies_vertical ON companies(vertical);
-CREATE INDEX idx_companies_is_algolia ON companies(is_algolia_customer);
-CREATE INDEX idx_company_tech_company ON company_technologies(company_id);
-CREATE INDEX idx_company_tech_tech ON company_technologies(technology_id);
-CREATE INDEX idx_competitors_a ON competitors(company_a_id);
-CREATE INDEX idx_competitors_b ON competitors(company_b_id);
-CREATE INDEX idx_case_studies_vertical ON case_studies(vertical);
-CREATE INDEX idx_lead_list_members_list ON lead_list_members(list_id);
-```
-
-### Partner Technologies (Seed Data)
-
-```sql
-INSERT INTO technologies (name, category, is_partner, builtwith_name) VALUES
--- Adobe Ecosystem
-('Adobe Experience Manager', 'CMS', true, 'Adobe Experience Manager'),
-('Adobe Commerce', 'Ecommerce', true, 'Magento'),
-('Adobe Experience Platform', 'CDP', true, 'Adobe Experience Platform'),
-('Adobe Analytics', 'Analytics', true, 'Adobe Analytics'),
-
--- Shopify Ecosystem
-('Shopify', 'Ecommerce', true, 'Shopify'),
-('Shopify Plus', 'Ecommerce', true, 'Shopify Plus'),
-
--- Salesforce Ecosystem
-('Salesforce Commerce Cloud', 'Ecommerce', true, 'Salesforce Commerce Cloud'),
-('Salesforce', 'CRM', true, 'Salesforce'),
-
--- Commercetools
-('commercetools', 'Ecommerce', true, 'commercetools'),
-
--- Other Partners
-('BigCommerce', 'Ecommerce', true, 'BigCommerce'),
-('SAP Commerce Cloud', 'Ecommerce', true, 'SAP Commerce Cloud'),
-('Contentful', 'CMS', true, 'Contentful'),
-('Sanity', 'CMS', true, 'Sanity'),
-
--- Competitors (for tracking)
-('Coveo', 'Search', false, 'Coveo'),
-('Elasticsearch', 'Search', false, 'Elasticsearch'),
-('Bloomreach', 'Search', false, 'Bloomreach'),
-('Constructor.io', 'Search', false, 'Constructor'),
-('Lucidworks', 'Search', false, 'Lucidworks'),
-('Searchspring', 'Search', false, 'Searchspring'),
-('Klevu', 'Search', false, 'Klevu');
 ```
 
 ---
 
-## API Endpoints (Edge Functions)
+## Data Pipeline Design
 
-### MVP Endpoints
+**Reference:** `docs/DATA-PIPELINE-FLOWS.md`
 
-```
-POST /api/lists/cosell
-Body: { partner_tech: "Adobe Experience Manager", filters: { country: "US", min_traffic: 100000 } }
-Returns: List of companies using Algolia + partner tech
+### Adapter Layer
 
-POST /api/lists/displacement
-Body: { partner_tech: "Shopify", filters: { vertical: "Fashion" } }
-Returns: List of companies using partner tech but NOT Algolia
+| Adapter | Endpoints | Rate Limit | Purpose |
+|---------|-----------|------------|---------|
+| `BuiltWithAdapter` | 6 | 30 RPM | Tech stack detection |
+| `SimilarWebAdapter` | 11 | 60 RPM | Traffic intelligence |
+| `YahooFinanceAdapter` | 5 | 100 RPM | Financial data |
+| `SECEdgarAdapter` | 3 | 6 RPM | 10-K/10-Q filings |
+| `WebSearchAdapter` | N/A | 300 RPM | Fallback/narratives |
 
-POST /api/competitive/{domain}
-Body: { domain: "costco.com" }
-Returns: { competitors: [...], tech_stacks: {...}, case_studies: [...] }
+### BaseAdapter Pattern
 
-GET /api/companies/{domain}
-Returns: Full company profile with all enriched data
+```python
+class BaseAdapter(ABC):
+    """All adapters include retry, circuit breaker, rate limiting."""
 
-POST /api/sync/builtwith
-Body: { tech: "Algolia" }
-Triggers: Background sync of BuiltWith data for technology
+    retry_config = RetryConfig(
+        max_retries=3,
+        base_delay_ms=1000,
+        exponential_base=2,
+        jitter_factor=0.1
+    )
 
-POST /api/sync/similarweb/{domain}
-Triggers: Enrich a single company with SimilarWeb data
+    circuit_breaker = CircuitBreaker(
+        failure_threshold=5,
+        recovery_time_ms=60000
+    )
+
+    @abstractmethod
+    async def fetch(self, params: dict) -> dict: ...
+
+    def attach_source(self, data: dict, source_url: str) -> dict:
+        """MANDATORY: Every response gets source attribution."""
+        return {**data, "_source": {...}}
 ```
 
 ---
 
-## User Interface
+## API Layer
 
-### Dashboard Views
+### REST Endpoints
 
-1. **Partner Co-Sell**
-   - Select partner technology from dropdown
-   - Apply filters (country, vertical, min traffic)
-   - View/export co-sell list
-   - See matching case studies
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `GET /api/company/{domain}` | GET | Get company with enrichment status |
+| `POST /api/enrich/{domain}` | POST | Trigger enrichment (sync or async) |
+| `POST /api/batch-enrich` | POST | Batch enrich (background job) |
+| `GET /api/jobs/{job_id}` | GET | Job status polling |
+| `GET /api/targets` | GET | List paginated targets |
+| `GET /api/stats` | GET | Summary statistics |
+| `POST /api/schedule/top-leads` | POST | Schedule recurring enrichment |
 
-2. **Displacement Finder**
-   - Select partner technology
-   - See companies using partner but NOT Algolia
-   - Prioritized by traffic/engagement
-   - One-click to export
+### Interface Contract
 
-3. **Competitive Intel**
-   - Enter target company domain
-   - See competitors (SimilarWeb + BuiltWith)
-   - See each competitor's search tech
-   - Matching case studies for the vertical
+```python
+from pipeline import EnrichmentOrchestrator
 
-4. **Company Profile**
-   - Full 360° view of any company
-   - Tech stack, traffic, competitors
-   - Recommended case studies
-   - Notes and status tracking
+orchestrator = EnrichmentOrchestrator(config)
+
+result = await orchestrator.enrich(
+    domain="costco.com",
+    modules=["M01", "M02", "M03", "M04", "M05"],
+    force_refresh=False
+)
+
+assert result.status in ["completed", "partial", "failed"]
+assert result.errors == {} or result.errors == {"M05": "timeout"}
+assert result.duration_ms < 30000
+```
 
 ---
 
-## Data Refresh Strategy
+## Deliverables
 
-| Data | Frequency | Trigger |
-|------|-----------|---------|
-| BuiltWith tech lists | Weekly (Sunday) | pg_cron |
-| SimilarWeb traffic | Weekly (Monday) | pg_cron |
-| Case study import | On-demand | Manual upload |
-| Company enrichment | On first access + weekly | API call + pg_cron |
+### Per-Account Outputs (4 files)
 
-### Rate Limit Management
+| File | Purpose | Audience |
+|------|---------|----------|
+| `{company}-strategic-signal-brief.md` | LLM-consumable signal density | Downstream AI |
+| `{company}-ae-precall-brief.md` | Sales-ready prep doc | Account Executives |
+| `{company}-search-audit-report.md` | Technical audit findings | Solutions Engineers |
+| `{company}-search-audit-book.pdf` | Premium print-ready | Executive presentations |
 
-| API | Limit | Strategy |
-|-----|-------|----------|
-| BuiltWith | ~1000 calls/day | Batch sync, cache aggressively |
-| SimilarWeb | ~500 calls/day | Enrich on-demand, cache 7 days |
+### Strategic Signal Brief Structure
+
+```markdown
+## 60-Second Story
+[Narrative summary with inline citations]
+
+## Timing Signals
+- Signal 1 | SOURCE: [url]
+- Signal 2 | SOURCE: [url]
+
+## In Their Own Words
+- "Quote text" — Speaker Name, Title | SOURCE: [url]
+
+## People
+- Name | Title | Buyer Role | Priority
+
+## Money
+- Revenue: $X.XXB | SOURCE: [url]
+- Addressable: $XXM | SOURCE: calculation
+
+## Gaps (from audit)
+- Gap 1: Score X/10 | Severity: HIGH
+
+## The Angle
+[1-paragraph pitch]
+```
+
+---
+
+## ICP Scoring
+
+### Scoring Formula
+
+```python
+icp_score = (
+    vertical_score * 0.40 +    # Commerce=40, Content=25, Support=15
+    traffic_score * 0.30 +     # 50M+=30, 10M+=25, 1M+=15
+    tech_spend_score * 0.20 +  # $100K+=20, $50K+=15
+    partner_tech_score * 0.10  # Adobe=10, Shopify=7
+)
+```
+
+### ICP Tiers
+
+| Tier | Name | Points | Description |
+|------|------|--------|-------------|
+| T1 | Commerce | 40 | E-commerce, retail, marketplace |
+| T2 | Content | 25 | Media, publishing, SaaS |
+| T3 | Support | 15 | Internal search, help desk |
+
+### Priority Classification
+
+| Score Range | Priority | Action |
+|-------------|----------|--------|
+| 80-100 | HOT | Immediate outreach |
+| 60-79 | WARM | Queue for enrichment |
+| 40-59 | COOL | Background refresh |
+| 0-39 | COLD | Deprioritize |
+
+---
+
+## Current Data (as of 2026-02-25)
+
+| Table | Records |
+|-------|---------|
+| `displacement_targets` | 2,687 |
+| `companies` | 400 |
+| `competitive_intel` | 25 |
+| `case_studies` | 161 |
+
+### Hot Leads (Score ≥80)
+
+| Company | Score | Partner Tech |
+|---------|-------|--------------|
+| Mercedes-Benz | 95 | Adobe AEM |
+| Mark's | 85 | Adobe AEM |
+| Infiniti | 85 | Adobe AEM |
+| Allianz | 85 | Adobe AEM |
+| Chevrolet Mexico | 85 | Adobe AEM |
+
+---
+
+## Architecture Documents
+
+All architecture documents are persisted to `docs/`:
+
+| Document | Lines | Purpose |
+|----------|-------|---------|
+| `ARCHITECTURE_INDEX.md` | ~700 | **Navigation hub for all 13 docs** |
+| `ENTERPRISE-ARCHITECTURE.md` | ~1,340 | Master architecture, module boundaries |
+| `INTELLIGENCE_MODULES_SPEC.md` | ~1,100 | 15 modules with full JSON schemas |
+| `DATABASE_SCHEMA_V2.md` | ~850 | 30+ PostgreSQL tables with source tracking |
+| `PARALLEL_EXECUTION_ARCHITECTURE.md` | ~900 | Wave execution, Celery workers, circuit breakers |
+| `ORCHESTRATOR_DESIGN.md` | ~750 | Hybrid orchestrator (Human + System) |
+| `DATA-PIPELINE-FLOWS.md` | ~800 | Module I/O specs, adapter designs |
+| `SOURCE_CITATION_MANDATE.md` | ~550 | P0 source citation requirements |
+| `DESIGN_PRINCIPLES.md` | ~200 | Core design tenets |
+| `UI-UX-LIBRARY-RESEARCH.md` | ~400 | Mantine + Tremor + Magic UI evaluation |
+| `PREMIUM-UI-SPECIFICATION.md` | ~1,200 | **Championship-level UI spec (NEW)** |
+| `INTELLIGENCE-MODULE-TAXONOMY.md` | ~450 | Module categorization |
+| `INTELLIGENCE_DATA_MODEL.md` | ~600 | Data model patterns |
+| `ARCHITECTURE_STRESS_TEST.md` | ~1,500 | **Blind spots, corner cases, extensibility gaps (NEW)** |
+
+**Total:** 14 architecture documents, 10,500+ lines of specification
+
+---
+
+## Technical Stack
+
+### Backend Stack
+
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| **Database** | PostgreSQL (Supabase) | Primary persistence with 30+ tables |
+| **Cache** | Redis (Upstash) | Distributed cache, rate limiting |
+| **API** | FastAPI (Python 3.11) | Async REST API with 15 module endpoints |
+| **ORM** | SQLAlchemy 2.0 (async) | Async database operations |
+| **Task Queue** | Celery + Redis | Wave-based parallel execution |
+| **Hosting** | Railway | Backend deployment |
+
+### Frontend Stack (Championship-Level)
+
+**Reference:** `docs/PREMIUM-UI-SPECIFICATION.md`
+
+| Layer | Technology | Purpose |
+|-------|------------|---------|
+| **Framework** | React 18 + TypeScript + Vite | Core application |
+| **Component System** | Aceternity UI (200+ components) | Premium animated components |
+| **Data Viz** | Nivo + ECharts | Beautiful charts and metrics |
+| **Data Grid** | TanStack Table + Custom | Virtualized 2,687+ rows |
+| **Animations** | Motion (Framer) + GSAP | 60fps micro-interactions |
+| **3D Elements** | Spline | Hero section wow factor |
+| **Icons** | Hugeicons (46,000+) | Consistent iconography |
+| **Styling** | Tailwind CSS + Glassmorphism | Premium dark theme |
+| **Data Fetching** | TanStack Query | Intelligent caching |
+| **Hosting** | Vercel | Frontend deployment |
+
+### Design System
+
+| Element | Specification |
+|---------|---------------|
+| **Primary Design Trend** | Glassmorphism (blur + transparency) |
+| **Color Mode** | Dark mode default |
+| **Primary Colors** | Algolia Blue (#003DFF), Algolia Purple (#5468FF) |
+| **Status Colors** | Hot (red gradient), Warm (orange), Cool (blue), Cold (gray) |
+| **Typography** | Inter (primary), JetBrains Mono (data) |
+| **Animation Approach** | Spring-based, 60fps, reduced-motion aware |
+
+---
+
+## Development Phases
+
+### Phase 1: MVP (COMPLETED)
+- [x] Database schema
+- [x] BuiltWith sync
+- [x] SimilarWeb enrichment
+- [x] Basic dashboard
+
+### Phase 2: Intelligence v2.0 (COMPLETED)
+- [x] Full intelligence detail view
+- [x] Excel-style filtering
+- [x] Enrichment pipeline
+- [x] Case study matching
+
+### Phase 2.1: FastAPI Backend (COMPLETED)
+- [x] On-demand enrichment API
+- [x] Cache TTL (7 days)
+- [x] `/partnerforge` skill
+
+### Phase 3: Enterprise Architecture (IN PROGRESS)
+- [x] 15-module taxonomy design
+- [x] PostgreSQL schema v2 design
+- [x] Parallel execution architecture
+- [x] Source citation mandate
+- [x] **Premium UI research (50+ libraries evaluated)**
+- [x] **Backend scaffold (FastAPI + 15 module endpoints)**
+- [x] **Frontend scaffold (React + Aceternity + Nivo)**
+- [x] **Championship-level UI specification**
+- [ ] Pipeline implementation
+- [ ] Adapter implementation
+- [ ] Orchestrator implementation
+
+### Implementation Scaffold (COMPLETED)
+
+**Backend (`backend/`):**
+| File | Status | Purpose |
+|------|--------|---------|
+| `app/main.py` | ✅ Created | FastAPI app with all 15 module endpoints |
+| `app/config.py` | ✅ Created | Wave configuration, rate limits, scoring |
+| `app/database.py` | ✅ Created | PostgreSQL async connection |
+| `app/modules/base.py` | ✅ Created | BaseIntelligenceModule with source validation |
+| `app/services/validation.py` | ✅ Created | Source citation mandate enforcement |
+| `requirements.txt` | ✅ Created | FastAPI, SQLAlchemy, Celery dependencies |
+
+**Frontend (`frontend/`):**
+| File | Status | Purpose |
+|------|--------|---------|
+| `package.json` | ✅ Created | Aceternity, Nivo, TanStack, Motion |
+| `vite.config.ts` | ✅ Created | Vite configuration with aliases |
+| `tailwind.config.js` | ✅ Created | Algolia colors, status gradients |
+| `src/types/index.ts` | ✅ Created | TypeScript definitions for 15 modules |
+| `src/services/api.ts` | ✅ Created | API client for all endpoints |
+| `src/components/dashboard/Dashboard.tsx` | ✅ Created | Premium dashboard with KPIs |
+| `src/components/dashboard/TargetTable.tsx` | ✅ Created | Virtualized target table |
+| `src/components/company/CompanyView.tsx` | ✅ Created | Company detail with tabs |
+| `src/components/common/SourceBadge.tsx` | ✅ Created | Source citation UI component |
+
+### Phase 4: Premium Modules (PLANNED)
+- [ ] Search Audit integration
+- [ ] Crossbeam integration
+- [ ] Demandbase integration
+- [ ] ZoomInfo integration
+
+---
+
+## API Rate Limits
+
+| Provider | RPM | Concurrent | Strategy |
+|----------|-----|------------|----------|
+| BuiltWith | 30 | 5 | Token bucket |
+| SimilarWeb | 60 | 10 | Token bucket |
+| Yahoo Finance | 100 | 10 | Token bucket |
+| SEC EDGAR | 6 | 2 | Fixed window |
+| WebSearch | 300 | 20 | Token bucket |
 
 ---
 
@@ -368,742 +559,27 @@ Triggers: Enrich a single company with SimilarWeb data
 
 | Metric | Target |
 |--------|--------|
-| Time to generate co-sell list | < 30 seconds |
-| Lists generated per week | 50+ |
+| Time to enrich single account | < 60 seconds |
+| Time to enrich batch (100) | < 2 hours |
+| Hot lead identification accuracy | > 85% |
+| Source citation coverage | 100% |
+| Data freshness | < 12 months |
 | User adoption | 80% of sales team |
-| Data freshness | < 7 days old |
 
 ---
 
-## Development Phases
-
-### Phase 1: MVP (Week 1-2)
-- [x] Database schema
-- [x] Supabase project setup
-- [x] BuiltWith sync (lists8 API)
-- [x] SimilarWeb enrichment
-- [x] Case study import from Excel
-- [x] Basic UI: Co-sell, Displacement, Competitive Intel
-- [x] CSV export
-
-### Phase 2: Intelligence (Week 3)
-- [x] Lead scoring algorithm
-- [x] Case study matching by vertical + tech
-- [x] Competitor detection (merge BW + SW)
-- [x] Saved lists with filters
-
-### Phase 2.1: v2.0 Intelligence Detail & Enrichment (COMPLETED)
-- [x] Full Intelligence Detail View with dark theme
-- [x] Excel-style column filtering (Vertical, Tier, Country)
-- [x] Enrichment pipeline (`enrich_company.py`)
-- [x] 54 verified ticker mappings
-- [x] Priority scoring system (ICP + Signal scores)
-- [x] Database schema expansion (6 new intelligence tables)
-- [x] 16 verified case studies across 4 verticals
-- [x] Executive quote extraction and display
-- [x] Signal indicators (Budget/Pain/Timing)
-
-### Phase 3: Integrations (Week 4+)
-- [ ] Crossbeam MCP integration
-- [ ] Salesforce sync
-- [ ] Slack alerts (tech stack changes)
-- [ ] HubSpot export
-
----
-
-## v2.0 Feature Documentation
-
-### 1. Full Intelligence Detail View
-
-**Purpose**: Provide a comprehensive, single-company view of all enriched intelligence with dark theme UI.
-
-**Location**: React component at `src/components/IntelligenceDetailView.tsx`
-
-**Key Features**:
-
-#### Header Section
-- Company name (prominent display)
-- Priority badge (color-coded: Red/Orange/Yellow/Green)
-- Overall Intelligence Score (0-100)
-- Quick-link buttons: Visit Website, View in Salesforce, Export Profile
-
-#### Signal Indicators
-Three key business signals displayed as metric cards:
-- **Budget Signal**: Estimated annual spend (from company financials)
-- **Pain Signal**: Search traffic % of total traffic (high = high search dependency)
-- **Timing Signal**: Recent funding events, hiring surge, or strategic initiatives
-
-#### Two-Column Layout
-**Left Column: Key Metrics**
-- Monthly website visits (SimilarWeb)
-- Visits growth YoY
-- Bounce rate
-- Pages per visit
-- Average visit duration
-- Search traffic % (KEY ALGOLIA SIGNAL)
-- Global & country rank
-
-**Right Column: Trigger Events**
-- Recent funding rounds (date, amount, series)
-- Hiring surge indicators (roles added, departments expanding)
-- Technology stack changes (detected by BuiltWith)
-- Competitive wins/losses
-- Strategic partnerships announced
-
-#### Competitive Advantage Card
-- Glassmorphism design (semi-transparent, blurred background)
-- Competitors currently using Algolia (if any)
-- What they're using instead
-- Recommended displacement angle
-
-#### Executive Quote Section
-- Curated quotes from company executives
-- Speaker name, title, and company
-- Context: where quote came from (earnings call, interview, press release)
-- Use case relevance tagging
-
-#### Tabbed Sections
-- **Financials Tab**: Revenue, EBITDA, growth rate, margin trends, analyst ratings
-- **Quotes Tab**: All available quotes from employees and leadership
-- **Hiring Tab**: Open roles, department growth, team expansion signals
-- **Tech Stack Tab**: Full list of identified technologies, integration opportunities
-- **Full Tab**: Complete unfiltered raw data (for power users)
-
-**Dark Theme Implementation**:
-- Background: `#0F172A` (Space Gray)
-- Cards: `#1E293B` (Slate 800)
-- Primary accent: `#5468FF` (Algolia Purple)
-- Secondary accent: `#003DFF` (Nebula Blue)
-- Text: `#E2E8F0` (Slate 100)
-- Borders: `rgba(255,255,255,0.1)`
-
-### 2. Excel-Style Column Filtering
-
-**Purpose**: Enable fast, interactive filtering across large datasets without page reloads.
-
-**Location**: React component at `src/components/ColumnFilterBar.tsx`
-
-**Features**:
-
-#### Filter Icons and Dropdowns
-- Dropdown indicator (▼) on three filterable columns: Vertical, Tier, Country
-- Hover effect: Icon highlights in Algolia Blue (#003DFF)
-- Click to open modal dropdown
-
-#### Checkbox Selection Interface
-- **Select All**: Checkbox at top of dropdown menu
-- **Clear All**: Link at bottom of dropdown menu
-- Individual checkboxes for each unique value
-- Preserve state across open/close cycles
-
-#### Active Filter Indication
-- When filter is applied: Column header background changes to light blue
-- Filter count badge next to icon (e.g., "▼ (2)" = 2 categories selected)
-- Blue highlight persists until filter is cleared
-
-#### Implementation Details
-```javascript
-// Filter state in parent component
-const [activeFilters, setActiveFilters] = useState({
-  vertical: [],      // e.g., ['Retail', 'B2B']
-  tier: [],          // e.g., ['Enterprise', 'Mid-Market']
-  country: []        // e.g., ['US', 'UK', 'CA']
-});
-
-// Applied dynamically to companies table
-const filteredCompanies = companies.filter(c => {
-  if (activeFilters.vertical.length && !activeFilters.vertical.includes(c.vertical)) return false;
-  if (activeFilters.tier.length && !activeFilters.tier.includes(c.tier)) return false;
-  if (activeFilters.country.length && !activeFilters.country.includes(c.country)) return false;
-  return true;
-});
-```
-
-#### Performance Optimization
-- Debounce filter changes (300ms)
-- Only re-render affected rows
-- Preserve scroll position when filtering
-- Count matches in real-time without API calls
-
-### 3. Enrichment Pipeline
-
-**Purpose**: Automatically enhance company profiles with financial data, executive information, and strategic signals.
-
-**Location**: Python script at `scripts/enrich_company.py`
-
-**Process Overview**:
-
-#### Step 1: Company Context
-- Input: Domain name (e.g., "costco.com")
-- Query: Company name, headquarters, industry vertical
-- Source: BuiltWith domain-lookup API
-
-#### Step 2: Financial Data Enrichment
-- Query Yahoo Finance MCP for ticker (requires ticker resolution via WebSearch if needed)
-- Extract: Revenue (TTM), EBITDA, net income, growth rate, PE ratio, profit margin
-- Cache: 7-day TTL (markets updated daily after 4 PM ET)
-- Fallback: If ticker not found, mark as "Private" and skip financial endpoints
-
-**54 Verified Ticker Mappings** (manually curated list):
-```python
-TICKER_MAP = {
-    'costco.com': 'COST',
-    'wayfair.com': 'W',
-    'dickssportinggoods.com': 'DKS',
-    'guitarcenter.com': 'GC',  # Gibson Brands (private → no mapping)
-    'uncommongoods.com': None,  # Private company
-    'orientaltrading.com': None,  # Private company
-    'autozone.com': 'AZO',
-    'bestbuy.com': 'BBY',
-    'lowes.com': 'LOW',
-    # ... 45 more mappings across Retail, B2B, Media, Marketplace
-}
-```
-
-#### Step 3: Executive Intelligence
-- Extract executive bios from company website (About, Leadership pages)
-- Identify CEO, CFO, CTO, Chief Product Officer
-- Link to LinkedIn profiles
-- Parse earnings call transcripts for strategic quotes
-
-#### Step 4: Hiring Signals
-- Query BuiltWith for hiring data (via relationships-api)
-- Count open roles by department
-- Identify growth signals: hiring 50%+ YoY = "aggressive expansion"
-- Extract from careers page: titles, locations, seniority levels
-
-#### Step 5: Strategic Triggers
-- Recent funding announcements (via WebSearch)
-- M&A activity
-- Bankruptcy/restructuring news
-- Executive departures/arrivals
-- Technology stack shifts (new ecommerce platform, CMS adoption, etc.)
-
-**Scoring Algorithm**:
-```python
-priority_score = (
-    icp_score * 0.5 +           # 50%: ICP fit (vertical, size, traffic)
-    signal_score * 0.3 +         # 30%: Budget + Pain + Timing signals
-    displacement_opportunity * 0.2  # 20%: Currently using competitor search tech
-)
-
-SIGNAL_WEIGHTS = {
-    'budget': 0.4,       # Estimated spend vs company size
-    'pain': 0.4,         # Search traffic dependency
-    'timing': 0.2        # Hiring/funding/strategic events
-}
-```
-
-**Output Schema**:
-```json
-{
-  "domain": "costco.com",
-  "company_name": "Costco Wholesale Corporation",
-  "enrichment_status": "complete",
-  "financials": {
-    "ticker": "COST",
-    "revenue_ttm": 262850000000,
-    "revenue_growth_pct": 7.2,
-    "ebitda": 12500000000,
-    "profit_margin_pct": 3.1,
-    "pe_ratio": 45.3,
-    "last_updated": "2026-02-25T00:00:00Z"
-  },
-  "executives": [
-    {
-      "name": "Ron Vachris",
-      "title": "President, CEO",
-      "bio": "...",
-      "linkedin": "linkedin.com/in/...",
-      "recent_quotes": ["quote1", "quote2"]
-    }
-  ],
-  "hiring_signals": {
-    "total_open_roles": 247,
-    "growth_rate_yoy": 1.23,
-    "top_departments": ["Operations", "Technology", "Logistics"],
-    "assessment": "aggressive_expansion"
-  },
-  "triggers": [
-    {
-      "type": "technology_adoption",
-      "title": "Adopted new ecommerce platform",
-      "date": "2025-08-15",
-      "description": "Migrated from legacy system to Salesforce Commerce Cloud"
-    }
-  ],
-  "priority_score": 78
-}
-```
-
-### 4. 16 Verified Case Studies
-
-**Purpose**: Provide Algolia proof points relevant to prospect verticals and use cases.
-
-**Verification**: All URLs tested with HTTP 200 response codes.
-
-**Database Table**: `case_studies` with new fields for v2.0:
-
-```sql
-ALTER TABLE case_studies ADD COLUMN (
-    story_type VARCHAR(50),        -- 'conversion', 'revenue', 'retention'
-    tier VARCHAR(50),              -- 'Enterprise', 'Mid-Market', 'SMB'
-    buying_committee TEXT[],       -- ['CFO', 'VP Product', 'VP Ecommerce']
-    recommended_for TEXT[],        -- ['Retail', 'B2B', 'Media', 'Marketplace']
-    snippet_headline VARCHAR(255), -- "Increased search-driven revenue 35%"
-    algolia_maturity VARCHAR(50)   -- 'Foundational', 'Operational', 'Strategic'
-);
-```
-
-**Complete List (16 Case Studies)**:
-
-**Retail Vertical (5 case studies)**
-1. **AutoZone** — Drive incremental revenue through site search
-   - URL: [Verified HTTP 200]
-   - Use Case: Ecommerce search optimization
-   - Key Result: +27% conversion rate
-   - Tier: Enterprise
-
-2. **Dick's Sporting Goods** — Improve customer experience and merchandise discovery
-   - URL: [Verified HTTP 200]
-   - Use Case: Multi-category search with personalization
-   - Key Result: +14% AOV
-   - Tier: Enterprise
-
-3. **Wayfair** — Scale global search with AI-powered personalization
-   - URL: [Verified HTTP 200]
-   - Use Case: Marketplace scale + recommendations
-   - Key Result: 2x faster search queries
-   - Tier: Enterprise
-
-4. **Guitar Center** — Real-time inventory visibility in search results
-   - URL: [Verified HTTP 200]
-   - Use Case: Omnichannel inventory sync
-   - Key Result: Reduced "out of stock" customer friction
-   - Tier: Mid-Market
-
-5. **Best Buy** — Competitor displacement: Coveo → Algolia
-   - URL: [Verified HTTP 200]
-   - Use Case: High-volume search at scale
-   - Key Result: +32% query performance
-   - Tier: Enterprise
-
-**B2B Vertical (4 case studies)**
-6. **HubSpot** — Search for SaaS platform
-   - URL: [Verified HTTP 200]
-   - Use Case: In-app knowledge base search
-   - Key Result: +45% help article findability
-   - Tier: Enterprise
-
-7. **Figma** — Design file search across workspace
-   - URL: [Verified HTTP 200]
-   - Use Case: Enterprise search as core feature
-   - Key Result: 50ms search latency
-   - Tier: Enterprise
-
-8. **Notion** — Unified content search across workspace
-   - URL: [Verified HTTP 200]
-   - Use Case: Cross-functional collaboration search
-   - Key Result: +200% search usage after Algolia adoption
-   - Tier: Enterprise
-
-9. **Datadog** — Monitor search performance in platform
-   - URL: [Verified HTTP 200]
-   - Use Case: Observability platform integration
-   - Key Result: Real-time monitoring of search queries
-   - Tier: Enterprise
-
-**Media Vertical (4 case studies)**
-10. **TechCrunch** — News article search and discovery
-    - URL: [Verified HTTP 200]
-    - Use Case: Editorial content search
-    - Key Result: +78% time-to-value for readers
-    - Tier: Mid-Market
-
-11. **The Verge** — Unified multimedia content search
-    - URL: [Verified HTTP 200]
-    - Use Case: Articles, videos, podcasts discovery
-    - Key Result: +56% search engagement
-    - Tier: Mid-Market
-
-12. **Wired** — Paywall-aware search (premium content gating)
-    - URL: [Verified HTTP 200]
-    - Use Case: Subscription content handling
-    - Key Result: +34% premium subscriber conversion
-    - Tier: Enterprise
-
-13. **The New York Times** — Internal search infrastructure
-    - URL: [Verified HTTP 200]
-    - Use Case: Legacy content archive (70+ years)
-    - Key Result: 100ms latency on 100M+ articles
-    - Tier: Enterprise
-
-**Marketplace Vertical (3 case studies)**
-14. **Etsy** — Artisan marketplace product discovery
-    - URL: [Verified HTTP 200]
-    - Use Case: Peer-to-peer marketplace with ML ranking
-    - Key Result: +22% seller visibility
-    - Tier: Enterprise
-
-15. **Airbnb** — Listing search across 8M+ properties
-    - URL: [Verified HTTP 200]
-    - Use Case: Map-based + filter-based search at global scale
-    - Key Result: 80% faster search with fewer DB queries
-    - Tier: Enterprise
-
-16. **Shopify App Store** — Discover and filter apps
-    - URL: [Verified HTTP 200]
-    - Use Case: Marketplace search for merchant apps
-    - Key Result: +41% app discoverability
-    - Tier: Enterprise
-
-### 5. Database Schema v2.0 Expansion
-
-**6 New Intelligence Tables**:
-
-```sql
--- Table 1: Company Financial Data
-CREATE TABLE company_financials (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    company_id UUID REFERENCES companies(id) ON DELETE CASCADE,
-    ticker VARCHAR(10),
-    revenue_ttm BIGINT,            -- trailing twelve months
-    revenue_growth_pct DECIMAL(5,2),
-    ebitda BIGINT,
-    net_income BIGINT,
-    profit_margin_pct DECIMAL(5,2),
-    pe_ratio DECIMAL(8,2),
-    market_cap BIGINT,
-    employee_count INTEGER,
-    fiscal_year_end DATE,
-    data_source VARCHAR(50),        -- 'yahoo_finance', 'sec', 'crunchbase'
-    confidence_score INTEGER CHECK (confidence_score BETWEEN 1 AND 100),
-    updated_at TIMESTAMP DEFAULT NOW(),
-    created_at TIMESTAMP DEFAULT NOW()
-);
-
--- Table 2: Executive Directory
-CREATE TABLE executives (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    company_id UUID REFERENCES companies(id) ON DELETE CASCADE,
-    name VARCHAR(255) NOT NULL,
-    title VARCHAR(255),
-    title_normalized VARCHAR(50), -- 'CEO', 'CFO', 'CTO', 'VP_PRODUCT', etc.
-    email VARCHAR(255),
-    linkedin_profile VARCHAR(255),
-    bio TEXT,
-    start_date DATE,
-    is_current BOOLEAN DEFAULT TRUE,
-    previous_company VARCHAR(255),
-    previous_title VARCHAR(255),
-    years_in_role INTEGER,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
-);
-
--- Table 3: Executive Quotes
-CREATE TABLE executive_quotes (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    executive_id UUID REFERENCES executives(id) ON DELETE CASCADE,
-    company_id UUID REFERENCES companies(id) ON DELETE CASCADE,
-    quote_text TEXT NOT NULL,
-    context VARCHAR(255),          -- 'earnings_call', 'interview', 'press_release', 'investor_day'
-    context_url TEXT,              -- link to earnings transcript, article, etc.
-    date_said DATE,
-    relevance_tags TEXT[],         -- ['search', 'ecommerce', 'ai', 'personalization']
-    quote_strength VARCHAR(50),    -- 'strong_signal', 'supporting', 'tangential'
-    created_at TIMESTAMP DEFAULT NOW()
-);
-
--- Table 4: Hiring Signals
-CREATE TABLE hiring_signals (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    company_id UUID REFERENCES companies(id) ON DELETE CASCADE,
-    role_title VARCHAR(255),
-    department VARCHAR(100),
-    seniority_level VARCHAR(50),  -- 'C_LEVEL', 'DIRECTOR', 'MANAGER', 'IC'
-    location VARCHAR(255),
-    posted_date DATE,
-    is_open BOOLEAN DEFAULT TRUE,
-    job_url TEXT,
-    years_experience_min INTEGER,
-    years_experience_max INTEGER,
-    keywords TEXT[],               -- ['search', 'ml', 'ecommerce']
-    detected_via VARCHAR(50),      -- 'careers_page', 'linkedin', 'builtwith'
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
-);
-
--- Table 5: Strategic Triggers & Events
-CREATE TABLE strategic_triggers (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    company_id UUID REFERENCES companies(id) ON DELETE CASCADE,
-    trigger_type VARCHAR(50),      -- 'funding', 'acquisition', 'hiring_surge', 'tech_stack_change', 'bankruptcy', 'reorg'
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    event_date DATE,
-    impact_level VARCHAR(50),      -- 'high', 'medium', 'low'
-    source_url TEXT,
-    relevance_to_algolia VARCHAR(255),  -- how this connects to search/ecommerce
-    created_at TIMESTAMP DEFAULT NOW()
-);
-
--- Table 6: Buying Committee & Stakeholders
-CREATE TABLE buying_committee (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    company_id UUID REFERENCES companies(id) ON DELETE CASCADE,
-    stakeholder_name VARCHAR(255),
-    stakeholder_title VARCHAR(255),
-    department VARCHAR(100),
-    influence_level VARCHAR(50),   -- 'decision_maker', 'influencer', 'end_user'
-    budget_owner BOOLEAN DEFAULT FALSE,
-    search_decision_maker BOOLEAN DEFAULT FALSE,
-    ecommerce_decision_maker BOOLEAN DEFAULT FALSE,
-    notes TEXT,
-    created_at TIMESTAMP DEFAULT NOW()
-);
-
--- Table 7: Enrichment Status Tracking (Progress Monitor)
-CREATE TABLE enrichment_status (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    company_id UUID REFERENCES companies(id) ON DELETE CASCADE,
-    financials_status VARCHAR(50), -- 'complete', 'in_progress', 'failed', 'not_attempted'
-    financials_error TEXT,
-    executives_status VARCHAR(50),
-    executives_count INTEGER,
-    hiring_status VARCHAR(50),
-    hiring_roles_found INTEGER,
-    triggers_status VARCHAR(50),
-    triggers_found INTEGER,
-    buying_committee_status VARCHAR(50),
-    buying_committee_count INTEGER,
-    overall_priority_score INTEGER,
-    last_enrichment_attempt TIMESTAMP,
-    last_enrichment_success TIMESTAMP,
-    next_enrichment_scheduled TIMESTAMP,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
-);
-
--- Indexes for performance
-CREATE INDEX idx_company_financials_ticker ON company_financials(ticker);
-CREATE INDEX idx_executives_company ON executives(company_id);
-CREATE INDEX idx_executives_title ON executives(title_normalized);
-CREATE INDEX idx_quotes_company ON executive_quotes(company_id);
-CREATE INDEX idx_quotes_executive ON executive_quotes(executive_id);
-CREATE INDEX idx_hiring_company ON hiring_signals(company_id);
-CREATE INDEX idx_hiring_department ON hiring_signals(department);
-CREATE INDEX idx_triggers_company ON strategic_triggers(company_id);
-CREATE INDEX idx_triggers_type ON strategic_triggers(trigger_type);
-CREATE INDEX idx_buying_committee_company ON buying_committee(company_id);
-CREATE INDEX idx_enrichment_status_company ON enrichment_status(company_id);
-CREATE INDEX idx_enrichment_status_overall_score ON enrichment_status(overall_priority_score DESC);
-```
-
-**New API Endpoints (v2.0)**:
-
-```
-GET /api/companies/{id}/intelligence
-Returns: Full intelligence object with financials, executives, quotes, hiring, triggers
-
-GET /api/companies/{id}/executives
-Returns: Array of company executives with details
-
-GET /api/companies/{id}/priority-score
-Returns: { overall_score: 78, breakdown: { icp: 0.85, signals: 0.72, ... } }
-
-POST /api/enrich/company/{domain}
-Triggers: Async enrichment pipeline (financials, executives, hiring, triggers)
-Returns: { job_id: "...", status: "queued" }
-
-GET /api/enrich/status/{job_id}
-Returns: { status: "in_progress", progress: 65, current_step: "fetching_executives" }
-
-GET /api/case-studies/recommended
-Query: ?vertical=Retail&tier=Enterprise&use_case=conversion
-Returns: Ranked list of relevant case studies
-```
-
-**Intelligence Score Calculation**:
-```python
-def calculate_intelligence_score(company_data):
-    """
-    Composite score: 0-100
-    Weights:
-    - Financial data completeness: 20%
-    - Executive coverage: 15%
-    - Hiring signals recency: 15%
-    - Strategic triggers (recent): 15%
-    - Buying committee identified: 15%
-    - Growth signals (revenue/hiring YoY): 20%
-    """
-    financial_score = len(company_data.financials) / 9 * 100  # 9 financial metrics
-    executive_score = min(len(company_data.executives) / 5, 1.0) * 100  # expect ~5 execs
-    hiring_score = len([h for h in company_data.hiring if is_recent(h.posted_date)]) / 50 * 100
-    triggers_score = len([t for t in company_data.triggers if is_recent(t.event_date, months=6)]) / 5 * 100
-    committee_score = len(company_data.buying_committee) / 10 * 100
-    growth_score = (company_data.revenue_growth + company_data.hiring_growth_yoy) / 2
-
-    return (
-        financial_score * 0.20 +
-        executive_score * 0.15 +
-        hiring_score * 0.15 +
-        triggers_score * 0.15 +
-        committee_score * 0.15 +
-        growth_score * 0.20
-    )
-```
-
----
-
-## Technical Stack
-
-| Component | Technology |
-|-----------|------------|
-| Database | Supabase PostgreSQL |
-| Auth | Supabase Auth (Google SSO) |
-| Backend | Supabase Edge Functions (Deno) |
-| Frontend | React + Tailwind + shadcn/ui |
-| Hosting | Vercel |
-| Scheduling | Supabase pg_cron |
-
----
-
-## Open Questions (Updated for v2.0)
-
-1. Should we allow non-Algolia employees to access (for partner co-sell)?
-2. How do we handle companies with multiple domains?
-3. Should we track historical tech stack changes? (Partial in v2.0: Current stack + recent changes captured in strategic_triggers)
+## Open Questions
+
+1. Should premium modules (Search Audit, Crossbeam) be separate subscriptions?
+2. How do we handle GDPR compliance for EU executive data?
+3. Should we offer API access tiers for partners?
 4. Integration priority: Salesforce or HubSpot first?
-5. Should enrichment pipeline run on all companies or on-demand only? (Current: On-demand with weekly background refresh for top 500)
-6. How do we verify executive quotes for accuracy? (Current: Human review gate before public use; flag unverified quotes in UI)
-7. What's the SLA for case study relevance? (Current: Vertical + tier + use_case matching; quarterly review)
-
-## Implementation Notes (v2.0)
-
-### Enrichment Pipeline Constraints
-- **BuiltWith**: 1000 API calls/day budget (shared with sync operations)
-- **Yahoo Finance**: Ticker-based queries only; use WebSearch for ticker resolution
-- **Fallback Strategy**: If Yahoo Finance fails, cache "Private Company" status for 30 days
-- **Rate Limiting**: Queue enrichment requests; process max 10 companies/minute
-- **Estimated Duration**: 30-45 seconds per company (BuiltWith: 3s, Yahoo: 5s, Web scrape: 20s, DB write: 2s)
-
-### Data Quality Assurance
-- All financial data: Cross-reference with SEC filings (10-K, 10-Q)
-- All executive quotes: Flag source and date; require human review before customer-facing use
-- All hiring signals: Verify against actual careers page (daily scrape via Chrome MCP)
-- All triggers: Verify via at least 2 independent sources (PR + finance site, or two news outlets)
-
-### Case Study URL Verification
-Performed monthly:
-```bash
-for url in $(grep -o 'https://[^"]*' case-studies.md); do
-  status=$(curl -s -o /dev/null -w "%{http_code}" "$url")
-  if [ "$status" != "200" ]; then echo "BROKEN: $url ($status)"; fi
-done
-```
-All 16 URLs currently returning HTTP 200 (verified 2026-02-25)
+5. What's the escalation path when source citation fails?
 
 ---
 
-## Appendix: Customer Evidence Data Structure
-
-From `Customer Evidence - Algolia.xlsx`:
-
-| Sheet | Records | Key Fields |
-|-------|---------|------------|
-| Cust.Logos | 1,307 | Company, Industry, Tech, Competitor |
-| Cust.Quotes | 379 | Customer, Quote, Industry, Source |
-| Cust. Stories | 82 | Customer, URL, Features Used, Industry |
-| Case Studies | 134 | Customer, Partner/Integration, Results |
-| Adobe | 390 | Account, Partner Population (Commerce/AEM/AEP), ARR |
-| Fashion | 170 | Fashion-specific customers |
-| Grocery | 54 | Grocery-specific customers |
-| $100K+ ARR | 546 | High-value customers |
-
----
-
----
-
-## Release Notes - v2.1 (2026-02-25)
-
-### Major Features Added
-1. **FastAPI Backend** — On-demand enrichment via REST API instead of pre-population
-2. **Refresh Data Button** — Users can trigger live data refresh from BuiltWith/SimilarWeb/Yahoo Finance
-3. **Enrichment Status Badge** — Visual indicator showing data freshness (fresh/stale/not enriched)
-4. **Loading Spinner** — Progress feedback during API calls
-5. **Proper Sorting** — Dashboard now sorted by ICP score (Mercedes-Benz 95 pts first)
-6. **`/partnerforge` Skill** — Claude Code skill for CLI-based enrichment and analysis
-7. **Cache TTL** — 7-day cache with force refresh option
-
-### Architecture Change
-**Before (v2.0):** Pre-populate intelligence data for all 2,687 targets → wastes API credits
-
-**After (v2.1):** On-demand enrichment → data fetched ONLY when user clicks "View →" → cached for 7 days
-
-### New Files
-| File | Purpose |
-|------|---------|
-| `api/main.py` | FastAPI application with 4 endpoints |
-| `api/enrichment.py` | BuiltWith/SimilarWeb/Yahoo Finance integration |
-| `api/config.py` | CORS + API keys configuration |
-| `api-client.js` | JavaScript client for frontend |
-| `requirements.txt` | Python dependencies |
-| `.env.example` | API keys template |
-| `~/.claude/skills/partnerforge/SKILL.md` | Claude Code skill |
-
-### API Endpoints (v2.1)
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `GET /api/company/{domain}` | GET | Get company data (cached or needs enrichment flag) |
-| `POST /api/enrich/{domain}` | POST | Trigger enrichment (?force=true to refresh) |
-| `GET /api/targets` | GET | List targets with pagination + filtering |
-| `GET /api/stats` | GET | Summary statistics |
-
-### Backend Deployment (Pending)
-FastAPI backend requires Python hosting (Railway/Render/Fly.io). Vercel only serves static HTML.
-
----
-
-## Release Notes - v2.0 (2026-02-25)
-
-### Major Features Added
-1. **Full Intelligence Detail View** — Dark-themed single-company intelligence dashboard with 8 distinct sections
-2. **Excel-Style Filtering** — Interactive column filters (Vertical, Tier, Country) with persistent state
-3. **Enrichment Pipeline** — Automated financial, executive, hiring, and strategic trigger enrichment
-4. **Ticker Database** — 54 verified mappings for automatic Yahoo Finance integration
-5. **Case Study Library** — 16 verified case studies across Retail, B2B, Media, and Marketplace verticals
-6. **Database Schema Expansion** — 6 new intelligence tables + enrichment status tracking
-
-### Database Changes
-- Added 7 new tables: company_financials, executives, executive_quotes, hiring_signals, strategic_triggers, buying_committee, enrichment_status
-- Added 11 new indexes for query performance
-- Backward compatible: No breaking changes to existing tables
-
-### API Additions
-- `GET /api/companies/{id}/intelligence` — Full intelligence object
-- `GET /api/companies/{id}/executives` — Executive directory
-- `GET /api/companies/{id}/priority-score` — Composite scoring breakdown
-- `POST /api/enrich/company/{domain}` — Async enrichment trigger
-- `GET /api/enrich/status/{job_id}` — Enrichment progress tracking
-- `GET /api/case-studies/recommended` — Smart case study recommendation
-
-### Performance Targets
-- Intelligence detail view: <800ms load time
-- Column filtering: <300ms interaction
-- Enrichment pipeline: 30-45s per company
-- Case study matching: <100ms
-
-### Quality Metrics
-- Case study verification: 16/16 URLs (100% HTTP 200)
-- Ticker mappings: 54 companies verified
-- Financial data: ~78% coverage (public companies only)
-- Executive data: ~85% coverage across target verticals
-
----
-
-*Document Version: 2.1*
+*Document Version: 3.0*
 *Created: 2026-02-25*
 *Last Updated: 2026-02-25*
-*Author: Claude + Arijit*
-*Features Documented: All v2.1 components complete (FastAPI backend, /partnerforge skill, on-demand enrichment)*
+*Authors: Claude + Arijit*
+*Status: Enterprise Architecture Design Complete, Implementation In Progress*

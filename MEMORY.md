@@ -529,3 +529,74 @@ The FastAPI backend needs separate hosting from Vercel (which only serves static
 7. Add Shopify pipeline (needs BuiltWith credits)
 8. Implement predictive scoring (ML model for optimal timing)
 9. Add Salesforce integration (direct lead sync)
+
+---
+
+## Enterprise Architecture v3.0 (Feb 25, 2026)
+
+### Architecture Documents (17 total)
+
+| Document | Purpose | Lines |
+|----------|---------|-------|
+| `docs/ARCHITECTURE_INDEX.md` | Navigation hub | ~100 |
+| `docs/ENTERPRISE-ARCHITECTURE.md` | Master architecture | ~1,400 |
+| `docs/INTELLIGENCE_MODULES_SPEC.md` | 15 modules with JSON schemas | ~600 |
+| `docs/DATABASE_SCHEMA_V2.md` | 30+ PostgreSQL tables | ~700 |
+| `docs/DATA-PIPELINE-FLOWS.md` | Module I/O specs | ~700 |
+| `docs/PARALLEL_EXECUTION_ARCHITECTURE.md` | 4-wave execution | ~500 |
+| `docs/ORCHESTRATOR_DESIGN.md` | Hybrid orchestrator | ~400 |
+| `docs/SOURCE_CITATION_MANDATE.md` | P0 source requirements | ~400 |
+| `docs/DESIGN_PRINCIPLES.md` | 7 mandatory principles | ~200 |
+| `docs/UI-UX-LIBRARY-RESEARCH.md` | 50+ UI libraries evaluated | ~300 |
+| `docs/PREMIUM-UI-SPECIFICATION.md` | Championship UI spec | ~1,200 |
+| `docs/ARCHITECTURE_PRESSURE_TEST.md` | Blind spots & gaps | ~500 |
+| `docs/CHANGE_DETECTION_ARCHITECTURE.md` | **NEW** Versioning & notifications | ~700 |
+| `docs/MULTI_TENANCY_RBAC.md` | **NEW** Access control | ~400 |
+| `docs/API_COST_TRACKING.md` | **NEW** Budget management | ~500 |
+| `docs/OBSERVABILITY_METRICS.md` | **NEW** Metrics & alerting | ~600 |
+
+### P1 Enterprise Capabilities (NEW)
+
+| Capability | Architecture Doc | Key Features |
+|------------|------------------|--------------|
+| **Change Detection** | CHANGE_DETECTION_ARCHITECTURE.md | Snapshot versioning, change significance, opportunity signals, Slack notifications |
+| **Multi-Tenancy/RBAC** | MULTI_TENANCY_RBAC.md | User roles, territories, account ownership, data redaction |
+| **API Cost Tracking** | API_COST_TRACKING.md | Per-call costs, budget limits, alerts at 80%, cost estimation |
+| **Observability** | OBSERVABILITY_METRICS.md | Prometheus metrics, structured logs, Grafana dashboards, alerting |
+
+### Pipeline Implementation (Started)
+
+```
+pipeline/
+├── __init__.py                    ✅ Created
+├── utils/
+│   ├── __init__.py                ✅ Created
+│   ├── retry.py                   ✅ Created (exponential backoff)
+│   ├── circuit_breaker.py         ✅ Created (3 states)
+│   └── rate_limiter.py            ✅ Created (token bucket)
+├── adapters/
+│   ├── __init__.py                ✅ Created
+│   ├── base.py                    ⚪ Pending
+│   ├── builtwith.py               ⚪ Pending
+│   ├── similarweb.py              ⚪ Pending
+│   └── yahoo_finance.py           ⚪ Pending
+├── models/
+│   ├── __init__.py                ✅ Created
+│   └── source.py                  ⚪ Pending (SourceCitation)
+├── modules/
+│   └── __init__.py                ✅ Created
+└── validators/
+    └── __init__.py                ✅ Created
+```
+
+### Key Design Decisions (v3.0)
+
+| Decision | Rationale |
+|----------|-----------|
+| Snapshot-based versioning | Never overwrite data - append snapshots, detect changes |
+| Significance-based notifications | CRITICAL → immediate, LOW → weekly digest |
+| Role-based data redaction | SDR can't see financials, only names (no LinkedIn) |
+| Per-call cost tracking | Budget alerts before $5K surprise bills |
+| Prometheus + Grafana | Industry standard observability stack |
+| Circuit breaker per adapter | Prevent cascade failures when APIs go down |
+| Token bucket rate limiting | Respect API rate limits, queue requests |
