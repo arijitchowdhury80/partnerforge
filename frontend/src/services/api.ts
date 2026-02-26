@@ -82,12 +82,17 @@ export async function getStats(): Promise<DashboardStats> {
 
   if (!data) {
     return {
-      total_targets: 0,
-      by_status: { hot: 0, warm: 0, cool: 0, cold: 0 },
+      total_companies: 0,
+      enriched_companies: 0,
+      hot_leads: 0,
+      warm_leads: 0,
+      cool_leads: 0,
+      cold_leads: 0,
+      modules_active: 2,
+      waves_configured: 1,
       by_partner: {},
       by_vertical: {},
       avg_icp_score: 0,
-      enriched_count: 0,
     };
   }
 
