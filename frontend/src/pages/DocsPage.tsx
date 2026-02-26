@@ -141,13 +141,12 @@ const docSections: DocSection[] = [
 ];
 
 // =============================================================================
-// Mermaid Diagram Renderer using Kroki.io
+// Mermaid Diagram Renderer using mermaid.ink
 // =============================================================================
 
 /**
- * Encode diagram for kroki.io service using deflate + base64url
- * Since we can't use pako in browser easily, we'll use a simpler approach
- * with the kroki.io GET endpoint that accepts plain base64
+ * Renders Mermaid diagrams using the mermaid.ink service
+ * Simple format: https://mermaid.ink/img/{base64-encoded-diagram}
  */
 function MermaidDiagram({ code, index }: { code: string; index: number }) {
   const [error, setError] = useState(false);
@@ -156,14 +155,10 @@ function MermaidDiagram({ code, index }: { code: string; index: number }) {
   // Clean up the mermaid code
   const cleanCode = code.trim();
 
-  // Use kroki.io with base64 encoding (simpler, no compression needed for small diagrams)
-  // kroki.io accepts base64url encoded diagram source
-  const base64 = btoa(unescape(encodeURIComponent(cleanCode)))
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '');
-
-  const imageUrl = `https://kroki.io/mermaid/svg/${base64}`;
+  // Simple base64 encoding of the raw mermaid code
+  // Using TextEncoder for proper UTF-8 handling
+  const base64 = btoa(cleanCode);
+  const imageUrl = `https://mermaid.ink/img/${base64}`;
 
   if (error) {
     // Fallback to showing code if image fails to load
@@ -201,7 +196,7 @@ function MermaidDiagram({ code, index }: { code: string; index: number }) {
     >
       <Group justify="space-between" mb="sm">
         <Badge size="sm" color="blue" variant="light">
-          {loading ? 'Loading diagram...' : 'Mermaid Diagram'}
+          {loading ? 'Loading...' : 'Mermaid Diagram'}
         </Badge>
         <Anchor
           href={imageUrl}
@@ -222,7 +217,6 @@ function MermaidDiagram({ code, index }: { code: string; index: number }) {
           maxWidth: '100%',
           height: 'auto',
           borderRadius: 'var(--mantine-radius-sm)',
-          filter: 'invert(1) hue-rotate(180deg)', // Invert colors for dark theme
         }}
         onLoad={() => setLoading(false)}
         onError={() => setError(true)}
