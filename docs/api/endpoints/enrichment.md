@@ -1,23 +1,35 @@
 # Enrichment API
 
-The Enrichment API manages data enrichment jobs that populate target records with intelligence from external data sources (BuiltWith, SimilarWeb, Yahoo Finance).
+> **Architecture Change (February 2026):** With the migration from Railway to Supabase, enrichment is now handled **client-side** by the frontend's `api.ts` service. There is no separate backend enrichment server.
 
-**Base Path:** `/api/v1/enrich`
+The frontend directly calls external APIs and updates Supabase with the results.
 
 ---
 
-## Endpoints
+## How Enrichment Works Now
 
-| Method | Path | Description | Auth |
-|--------|------|-------------|------|
-| GET | `/enrich` | List enrichment jobs | Yes |
-| POST | `/enrich/{domain}` | Start enrichment job | Yes |
-| GET | `/enrich/{domain}/status` | Check job progress | Yes |
-| GET | `/enrich/{domain}/results` | Get enrichment data | Yes |
-| POST | `/enrich/batch` | Batch enrich multiple | Yes |
-| POST | `/enrich/{domain}/cancel` | Cancel running job | Yes |
-| POST | `/enrich/{domain}/retry` | Retry failed modules | Yes |
-| GET | `/enrich/{domain}/cache` | Check cache freshness | Yes |
+1. **Frontend triggers enrichment** via the "Refresh Data" button
+2. **Frontend calls external APIs** directly:
+   - BuiltWith API for technology detection
+   - SimilarWeb API for traffic data
+   - Yahoo Finance API for financial data
+3. **Frontend updates Supabase** with collected data via PATCH request
+
+---
+
+## No Server-Side Endpoints
+
+The following endpoints from the old Railway API are **no longer available**:
+
+| Old Endpoint | Status |
+|--------------|--------|
+| `POST /enrich/{domain}` | Removed |
+| `GET /enrich/{domain}/status` | Removed |
+| `GET /enrich/{domain}/results` | Removed |
+| `POST /enrich/batch` | Removed |
+| `POST /enrich/{domain}/cancel` | Removed |
+| `POST /enrich/{domain}/retry` | Removed |
+| `GET /enrich/{domain}/cache` | Removed |
 
 ---
 
@@ -58,294 +70,175 @@ Jobs are organized into **4 waves** of **15 modules**:
 
 ---
 
-## Start Enrichment Job
+## Client-Side Enrichment Flow
 
-Start an enrichment job for a single domain.
+The frontend's `api.ts` service handles enrichment. Here's how to replicate it:
 
-```http
-POST /api/v1/enrich/{domain}
+### Step 1: Call BuiltWith API
+
+```javascript
+const response = await fetch(
+  `https://api.builtwith.com/v21/api.json?KEY=${BUILTWITH_KEY}&LOOKUP=${domain}`
+);
+const techData = await response.json();
 ```
 
-### Path Parameters
+### Step 2: Call SimilarWeb API
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `domain` | string | Company domain |
-
-### Request Body (optional)
-
-```json
-{
-  "modules": ["m01_company_context", "m02_tech_stack"],
-  "waves": [1],
-  "force": false,
-  "priority": "normal"
-}
+```javascript
+const response = await fetch(
+  `https://api.similarweb.com/v1/website/${domain}/total-traffic-and-engagement/visits?api_key=${SIMILARWEB_KEY}`
+);
+const trafficData = await response.json();
 ```
 
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `modules` | array | all | Specific modules to run |
-| `waves` | array | [1,2,3,4] | Specific waves to run |
-| `force` | bool | false | Bypass cache |
-| `priority` | string | "normal" | "low", "normal", "high" |
-
-### Response
-
-```json
-{
-  "job_id": "enrich_costco_com_20260226103500_abc12345",
-  "domain": "costco.com",
-  "status": "queued",
-  "modules": ["m01_company_context", "m02_tech_stack"],
-  "waves": [1],
-  "priority": "normal",
-  "force": false,
-  "estimated_time_seconds": 6,
-  "created_at": "2026-02-26T10:35:00"
-}
-```
-
-### Example
+### Step 3: Update Supabase
 
 ```bash
-# Start full enrichment
-curl -X POST "https://partnerforge-production.up.railway.app/api/v1/enrich/costco.com" \
-  -H "Authorization: Bearer TOKEN"
-
-# Start only wave 1
-curl -X POST "https://partnerforge-production.up.railway.app/api/v1/enrich/costco.com" \
-  -H "Authorization: Bearer TOKEN" \
+curl -X PATCH "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?domain=eq.costco.com" \
+  -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhiaXRxZWVqc2dxbnd2eGxuanJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwODU1NDAsImV4cCI6MjA4NzY2MTU0MH0.XoEOx8rHo_1EyCF4yJ3g2S3tXUX_XepQu9PSfUWvyIg" \
   -H "Content-Type: application/json" \
-  -d '{"waves": [1]}'
-
-# Force re-enrichment with high priority
-curl -X POST "https://partnerforge-production.up.railway.app/api/v1/enrich/costco.com" \
-  -H "Authorization: Bearer TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"force": true, "priority": "high"}'
+  -H "Prefer: return=representation" \
+  -d '{
+    "sw_monthly_visits": 15000000,
+    "sw_bounce_rate": 45.2,
+    "tech_spend": 50000000,
+    "last_enriched": "2026-02-26T10:35:00"
+  }'
 ```
 
 ---
 
-## Get Job Status
+## Check Enrichment Status
 
-Check the progress of an enrichment job.
+Since enrichment is client-side, there's no job queue. Check the `last_enriched` timestamp:
 
-```http
-GET /api/v1/enrich/{domain}/status
+```bash
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?domain=eq.costco.com&select=domain,last_enriched,enrichment_level" \
+  -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhiaXRxZWVqc2dxbnd2eGxuanJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwODU1NDAsImV4cCI6MjA4NzY2MTU0MH0.XoEOx8rHo_1EyCF4yJ3g2S3tXUX_XepQu9PSfUWvyIg"
 ```
-
-### Query Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `job_id` | string | latest | Specific job ID |
 
 ### Response
 
 ```json
-{
-  "job_id": "enrich_costco_com_20260226103500_abc12345",
-  "domain": "costco.com",
-  "status": "running",
-  "progress_percent": 45.5,
-  "current_wave": 1,
-  "current_module": "m02_tech_stack",
-  "modules_total": 15,
-  "modules_completed": 7,
-  "modules_failed": 0,
-  "waves": [
-    {
-      "wave_number": 1,
-      "status": "running",
-      "modules": [
-        {
-          "module_id": "m01_company_context",
-          "status": "completed",
-          "duration_seconds": 3.2,
-          "data_points_collected": 10,
-          "source_url": "https://builtwith.com"
-        },
-        {
-          "module_id": "m02_tech_stack",
-          "status": "running",
-          "duration_seconds": null,
-          "data_points_collected": null
-        }
-      ],
-      "started_at": "2026-02-26T10:35:01",
-      "completed_at": null
-    }
-  ],
-  "created_at": "2026-02-26T10:35:00",
-  "started_at": "2026-02-26T10:35:01",
-  "completed_at": null,
-  "duration_seconds": null
-}
+[
+  {
+    "domain": "costco.com",
+    "last_enriched": "2026-02-26T10:35:00",
+    "enrichment_level": "full"
+  }
+]
 ```
 
-### Job Statuses
+### Enrichment Levels
 
-| Status | Description |
-|--------|-------------|
-| `queued` | Job waiting to start |
-| `running` | Job in progress |
-| `completed` | Job finished successfully |
-| `failed` | Job failed (check errors) |
-| `cancelled` | Job cancelled by user |
+| Level | Description |
+|-------|-------------|
+| `basic` | Only BuiltWith data |
+| `standard` | BuiltWith + SimilarWeb |
+| `full` | All sources including Yahoo Finance |
+| `null` | Not enriched |
 
 ---
 
 ## Get Enrichment Results
 
-Retrieve the data collected by an enrichment job.
+Enrichment data is stored directly in the `displacement_targets` table. Query it:
 
-```http
-GET /api/v1/enrich/{domain}/results
+```bash
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?domain=eq.costco.com&select=*" \
+  -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhiaXRxZWVqc2dxbnd2eGxuanJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwODU1NDAsImV4cCI6MjA4NzY2MTU0MH0.XoEOx8rHo_1EyCF4yJ3g2S3tXUX_XepQu9PSfUWvyIg"
 ```
 
-### Query Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `job_id` | string | latest completed | Specific job ID |
-| `modules` | string | all | Comma-separated module IDs |
-
-### Response
+### Response (All Enriched Fields)
 
 ```json
-{
-  "domain": "costco.com",
-  "job_id": "enrich_costco_com_20260226103500_abc12345",
-  "status": "completed",
-  "completed_at": "2026-02-26T10:36:00",
-  "results": {
-    "m01_company_context": {
-      "company_name": "Costco Wholesale",
-      "founded": 1983,
-      "hq": "Issaquah, WA",
-      "employees": 289000
-    },
-    "m02_tech_stack": {
-      "technologies": [
-        {"name": "Adobe AEM", "category": "CMS"},
-        {"name": "React", "category": "Frontend"},
-        {"name": "Elasticsearch", "category": "Search"}
-      ]
-    },
-    "m03_traffic": {
-      "monthly_visits": 15000000,
-      "bounce_rate": 45.2,
-      "pages_per_visit": 3.2
-    }
-  },
-  "module_statuses": {
-    "m01_company_context": {
-      "status": "completed",
-      "duration_ms": 3200,
-      "cached": false,
-      "data_points": 10
-    }
-  },
-  "cached_modules": [],
-  "failed_modules": [],
-  "source_citations": {
-    "m03_traffic": [
-      {
-        "url": "https://similarweb.com",
-        "title": "SimilarWeb Traffic Analysis"
-      }
-    ]
+[
+  {
+    "domain": "costco.com",
+    "company_name": "Costco Wholesale",
+
+    "sw_monthly_visits": 15000000,
+    "sw_bounce_rate": 45.2,
+    "sw_pages_per_visit": 3.2,
+    "sw_avg_duration": 180,
+    "sw_search_traffic_pct": 25.5,
+    "sw_rank_global": 245,
+
+    "tech_spend": 50000000,
+    "partner_tech": "Adobe AEM",
+
+    "ticker": "COST",
+    "is_public": true,
+    "revenue": 242300000000,
+    "gross_margin": 11.2,
+
+    "last_enriched": "2026-02-26T10:35:00",
+    "enrichment_level": "full"
   }
-}
+]
+```
+
+### Select Specific Fields
+
+```bash
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?domain=eq.costco.com&select=domain,sw_monthly_visits,revenue,last_enriched" \
+  -H "apikey: YOUR_ANON_KEY"
 ```
 
 ---
 
 ## Batch Enrichment
 
-Start enrichment jobs for multiple domains.
+Batch enrichment is handled client-side by iterating through domains. There's no server-side batch endpoint.
 
-```http
-POST /api/v1/enrich/batch
-```
+### Client-Side Batch Pattern
 
-### Request Body
+```javascript
+// In api.ts
+async function batchEnrich(domains: string[]) {
+  const results = [];
 
-```json
-{
-  "domains": [
-    "costco.com",
-    "walmart.com",
-    "target.com"
-  ],
-  "modules": null,
-  "waves": null,
-  "force": false,
-  "priority": "normal",
-  "concurrency": 5
-}
-```
+  for (const domain of domains) {
+    try {
+      // 1. Fetch from external APIs
+      const [builtwith, similarweb] = await Promise.all([
+        fetchBuiltWith(domain),
+        fetchSimilarWeb(domain)
+      ]);
 
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `domains` | array | required | List of domains |
-| `modules` | array | all | Modules to run |
-| `waves` | array | all | Waves to run |
-| `force` | bool | false | Bypass cache |
-| `priority` | string | "normal" | Job priority |
-| `concurrency` | int | 5 | Max parallel jobs |
+      // 2. Update Supabase
+      const { data, error } = await supabase
+        .from('displacement_targets')
+        .update({
+          sw_monthly_visits: similarweb.visits,
+          tech_spend: builtwith.spend,
+          last_enriched: new Date().toISOString()
+        })
+        .eq('domain', domain);
 
-### Response
-
-```json
-{
-  "batch_id": "batch_20260226103500_abc12345",
-  "status": "queued",
-  "total_domains": 3,
-  "queued_count": 3,
-  "skipped_count": 0,
-  "jobs": [
-    {
-      "job_id": "enrich_costco_com_...",
-      "domain": "costco.com",
-      "status": "queued"
-    },
-    {
-      "job_id": "enrich_walmart_com_...",
-      "domain": "walmart.com",
-      "status": "queued"
-    },
-    {
-      "job_id": "enrich_target_com_...",
-      "domain": "target.com",
-      "status": "queued"
+      results.push({ domain, success: true });
+    } catch (err) {
+      results.push({ domain, success: false, error: err.message });
     }
-  ],
-  "estimated_time_seconds": 27,
-  "created_at": "2026-02-26T10:35:00"
+  }
+
+  return results;
 }
 ```
 
-### Example
+### Find Targets Needing Enrichment
+
+Query for stale or unenriched targets:
 
 ```bash
-# Batch enrich top 10 hot leads
-curl -X POST "https://partnerforge-production.up.railway.app/api/v1/enrich/batch" \
-  -H "Authorization: Bearer TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "domains": [
-      "mercedes-benz.com",
-      "marks.com",
-      "infiniti.com",
-      "allianz.com",
-      "chevrolet.com.mx"
-    ],
-    "priority": "high",
-    "concurrency": 3
-  }'
+# Targets never enriched
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=domain&last_enriched=is.null&limit=10" \
+  -H "apikey: YOUR_ANON_KEY"
+
+# Targets enriched more than 7 days ago
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=domain,last_enriched&last_enriched=lt.2026-02-19&limit=10" \
+  -H "apikey: YOUR_ANON_KEY"
 ```
 
 ---

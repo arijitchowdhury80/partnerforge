@@ -188,12 +188,16 @@ COLD = Score < 50 OR negative signals
 - **Mobile responsive** design
 - **Competitive advantage section** highlighting why Algolia wins
 
-## Deployment (Live Feb 25, 2026)
-- **GitHub:** https://github.com/arijitchowdhury80/partnerforge
-- **Vercel:** https://partnerforge.vercel.app
-- **Status:** ✅ Live, auto-deploys on git push
-- **Dashboard:** Full-page detail view with dark theme + tabbed intelligence
-- **Entry point:** `index.html` (static HTML + embedded JSON data)
+## Deployment (Updated Feb 26, 2026)
+
+| Service | URL | Status |
+|---------|-----|--------|
+| Frontend | https://partnerforge.vercel.app | ✅ Live |
+| Database | https://xbitqeejsgqnwvxlnjra.supabase.co | ✅ Supabase |
+| Backend (Railway) | N/A | ❌ REMOVED |
+| GitHub | https://github.com/arijitchowdhury80/partnerforge | ✅ Active |
+
+> **Architecture Change (Feb 26, 2026):** Railway backend has been removed. Frontend now communicates directly with Supabase REST API via `frontend/src/services/api.ts`. No separate backend server required.
 
 ## API Keys
 - **BuiltWith:** Set via `BUILTWITH_API_KEY` environment variable
@@ -489,16 +493,19 @@ Allowed origins in `api/config.py`:
 - `https://partnerforge.vercel.app`
 - Additional via `CORS_EXTRA_ORIGINS` env var
 
-### Backend Deployment Options
+### Backend Architecture (Updated Feb 26, 2026)
 
-The FastAPI backend needs separate hosting from Vercel (which only serves static HTML):
+> **IMPORTANT:** The FastAPI backend and Railway deployment have been **removed** from the architecture.
 
-| Option | Pros | Cons |
-|--------|------|------|
-| **Railway** | Easy deploy, free tier, auto-scaling | Limited free hours |
-| **Render** | Free tier, auto-deploy from GitHub | Cold starts on free tier |
-| **Fly.io** | Global edge, low latency | More complex setup |
-| **Vercel Serverless** | Same platform as frontend | Requires function conversion |
+The frontend now communicates directly with Supabase:
+- **Database:** Supabase PostgreSQL (project: `xbitqeejsgqnwvxlnjra`)
+- **API:** Supabase auto-generated REST API (PostgREST)
+- **Client:** `frontend/src/services/api.ts` handles all data fetching
+
+This simplifies the architecture to a 2-tier model:
+```
+Vercel (Frontend) → Supabase (Database + REST API)
+```
 
 ---
 
@@ -519,13 +526,13 @@ The FastAPI backend needs separate hosting from Vercel (which only serves static
 
 ---
 
-## Next Steps (Updated Feb 25, 2026)
+## Next Steps (Updated Feb 26, 2026)
 1. ✅ Build enhanced dashboard with detail view + glassmorphism (DONE)
 2. ✅ Add Excel-style column filtering (DONE)
 3. ✅ Create `/partnerforge` skill for on-demand analysis (DONE)
 4. ✅ Build FastAPI backend for on-demand enrichment (DONE)
-5. **NEXT: Deploy FastAPI backend** (Railway/Render/Fly.io)
-6. Run batch enrichment on top 100 targets
+5. ✅ Migrate to Supabase (Railway removed) (DONE - Feb 26, 2026)
+6. **NEXT:** Run batch enrichment on top 100 targets
 7. Add Shopify pipeline (needs BuiltWith credits)
 8. Implement predictive scoring (ML model for optimal timing)
 9. Add Salesforce integration (direct lead sync)

@@ -2,59 +2,63 @@
 
 The Targets API provides access to displacement target companies — organizations using partner technologies (Adobe AEM, Shopify, etc.) that are not currently Algolia customers.
 
-**Base Path:** `/api/v1/targets`
+**Base URL:** `https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1`
+**Table:** `displacement_targets`
 
 ---
 
-## Endpoints
+## Architecture Note
 
-| Method | Path | Description | Auth |
-|--------|------|-------------|------|
-| GET | `/targets` | List targets | No |
-| GET | `/targets/stats` | Get statistics | No |
-| GET | `/targets/{domain}` | Get target details | No |
-| POST | `/targets/search` | Bulk domain lookup | No |
-| PUT | `/targets/{domain}/status` | Update ICP score | Yes |
-| DELETE | `/targets/{domain}` | Delete target | Yes |
-| POST | `/targets/{domain}/enrich` | Trigger enrichment | Yes |
+With the migration from Railway to Supabase, all target data is accessed directly via Supabase's REST API (PostgREST). The frontend's `api.ts` service handles all queries client-side.
+
+---
+
+## Common Operations
+
+| Operation | Method | URL Pattern |
+|-----------|--------|-------------|
+| List targets | GET | `/displacement_targets?select=*` |
+| Get by domain | GET | `/displacement_targets?domain=eq.{domain}` |
+| Filter by score | GET | `/displacement_targets?icp_score=gte.{score}` |
+| Get count | GET | `/displacement_targets?select=count` |
+
+**Required Header:**
+```http
+apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhiaXRxZWVqc2dxbnd2eGxuanJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwODU1NDAsImV4cCI6MjA4NzY2MTU0MH0.XoEOx8rHo_1EyCF4yJ3g2S3tXUX_XepQu9PSfUWvyIg
+```
 
 ---
 
 ## List Targets
 
-Retrieve a paginated list of displacement targets with optional filtering and sorting.
+Retrieve displacement targets with optional filtering and sorting.
 
 ```http
-GET /api/v1/targets
+GET /displacement_targets?select=*
 ```
 
-### Query Parameters
+### Query Parameters (PostgREST Syntax)
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `page` | int | 1 | Page number (min: 1) |
-| `page_size` | int | 50 | Items per page (max: 100) |
-| `status` | string | - | Filter by ICP tier: `hot`, `warm`, `cool`, `cold`, `unscored` |
-| `vertical` | string | - | Filter by vertical (case-insensitive) |
-| `partner_tech` | string | - | Filter by technology (e.g., "Adobe AEM") |
-| `country` | string | - | Filter by country (case-insensitive) |
-| `min_score` | int | - | Minimum ICP score (0-100) |
-| `max_score` | int | - | Maximum ICP score (0-100) |
-| `min_traffic` | int | - | Minimum monthly visits |
-| `is_public` | bool | - | Filter public companies only |
-| `enrichment_level` | string | - | Filter: `basic`, `standard`, `full` |
-| `search` | string | - | Search in domain/company_name |
-| `sort_by` | string | `icp_score` | Sort field |
-| `sort_order` | string | `desc` | Sort direction: `asc`, `desc` |
+| Parameter | Example | Description |
+|-----------|---------|-------------|
+| `select` | `select=*` or `select=domain,icp_score` | Columns to return |
+| `limit` | `limit=50` | Items per page |
+| `offset` | `offset=50` | Skip items for pagination |
+| `order` | `order=icp_score.desc` | Sort field and direction |
+| `icp_score` | `icp_score=gte.80` | Filter by score |
+| `icp_tier_name` | `icp_tier_name=eq.hot` | Filter by tier: hot, warm, cool, cold |
+| `vertical` | `vertical=ilike.%commerce%` | Filter by vertical (case-insensitive) |
+| `partner_tech` | `partner_tech=eq.Adobe AEM` | Filter by technology |
+| `country` | `country=eq.United States` | Filter by country |
+| `domain` | `domain=ilike.%costco%` | Search in domain |
 
-### Sortable Fields
-- `icp_score` (default)
-- `company_name`
-- `domain`
-- `sw_monthly_visits`
-- `revenue`
-- `created_at`
-- `last_enriched`
+### PostgREST Operators
+- `eq` — Equals
+- `neq` — Not equals
+- `gt`, `gte` — Greater than (or equal)
+- `lt`, `lte` — Less than (or equal)
+- `like`, `ilike` — Pattern match (case-sensitive/insensitive)
+- `in` — In list: `icp_tier_name=in.(hot,warm)`
 
 ### Response
 
@@ -104,74 +108,54 @@ GET /api/v1/targets
 ### Examples
 
 ```bash
-# Get all hot leads
-curl "https://partnerforge-production.up.railway.app/api/v1/targets?status=hot"
+# Get all hot leads (score >= 80)
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=*&icp_score=gte.80&order=icp_score.desc" \
+  -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhiaXRxZWVqc2dxbnd2eGxuanJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwODU1NDAsImV4cCI6MjA4NzY2MTU0MH0.XoEOx8rHo_1EyCF4yJ3g2S3tXUX_XepQu9PSfUWvyIg"
 
-# Get warm leads in Commerce vertical
-curl "https://partnerforge-production.up.railway.app/api/v1/targets?status=warm&vertical=Commerce"
+# Get warm leads (60-79) in Commerce vertical
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=*&icp_score=gte.60&icp_score=lt.80&vertical=ilike.%25commerce%25" \
+  -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhiaXRxZWVqc2dxbnd2eGxuanJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwODU1NDAsImV4cCI6MjA4NzY2MTU0MH0.XoEOx8rHo_1EyCF4yJ3g2S3tXUX_XepQu9PSfUWvyIg"
 
 # Get public companies with high traffic, sorted by revenue
-curl "https://partnerforge-production.up.railway.app/api/v1/targets?is_public=true&min_traffic=1000000&sort_by=revenue&sort_order=desc"
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=*&is_public=eq.true&sw_monthly_visits=gte.1000000&order=revenue.desc" \
+  -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhiaXRxZWVqc2dxbnd2eGxuanJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwODU1NDAsImV4cCI6MjA4NzY2MTU0MH0.XoEOx8rHo_1EyCF4yJ3g2S3tXUX_XepQu9PSfUWvyIg"
 
-# Search for specific company
-curl "https://partnerforge-production.up.railway.app/api/v1/targets?search=costco"
+# Search for company by domain
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=*&domain=ilike.%25costco%25" \
+  -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhiaXRxZWVqc2dxbnd2eGxuanJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwODU1NDAsImV4cCI6MjA4NzY2MTU0MH0.XoEOx8rHo_1EyCF4yJ3g2S3tXUX_XepQu9PSfUWvyIg"
 ```
 
 ---
 
 ## Get Target Statistics
 
-Retrieve aggregate statistics across all targets.
+With Supabase, aggregate statistics are computed using count queries or handled client-side.
 
-```http
-GET /api/v1/targets/stats
-```
-
-### Response
-
-```json
-{
-  "total": 2687,
-  "by_status": {
-    "hot": 9,
-    "warm": 49,
-    "cool": 150,
-    "cold": 200,
-    "unscored": 2279
-  },
-  "by_vertical": [
-    {
-      "vertical": "Commerce",
-      "count": 850,
-      "avg_icp_score": 52.3
-    },
-    {
-      "vertical": "Media & Publishing",
-      "count": 620,
-      "avg_icp_score": 48.1
-    }
-  ],
-  "by_partner_tech": [
-    {
-      "partner_tech": "Adobe AEM",
-      "count": 2687,
-      "avg_icp_score": 51.2
-    }
-  ],
-  "avg_icp_score": 51.2,
-  "avg_monthly_visits": 1234567,
-  "total_pipeline_value": 12345678901.5,
-  "enriched_count": 408,
-  "public_count": 156,
-  "calculated_at": "2026-02-26T10:35:00"
-}
-```
-
-### Example
+### Total Count
 
 ```bash
-curl "https://partnerforge-production.up.railway.app/api/v1/targets/stats"
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=count" \
+  -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhiaXRxZWVqc2dxbnd2eGxuanJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwODU1NDAsImV4cCI6MjA4NzY2MTU0MH0.XoEOx8rHo_1EyCF4yJ3g2S3tXUX_XepQu9PSfUWvyIg" \
+  -H "Prefer: count=exact"
 ```
+
+### Count by Tier
+
+```bash
+# Count hot leads
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=count&icp_score=gte.80" \
+  -H "apikey: YOUR_ANON_KEY" \
+  -H "Prefer: count=exact"
+
+# Count warm leads
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=count&icp_score=gte.60&icp_score=lt.80" \
+  -H "apikey: YOUR_ANON_KEY" \
+  -H "Prefer: count=exact"
+```
+
+### Note
+
+Complex aggregations (average scores, pipeline value) are computed in the frontend's `api.ts` service after fetching the data. Supabase's REST API does not support SQL aggregate functions directly - you would need to use Supabase Edge Functions or RPC calls for server-side aggregation.
 
 ---
 
@@ -180,14 +164,15 @@ curl "https://partnerforge-production.up.railway.app/api/v1/targets/stats"
 Retrieve full details for a single target by domain.
 
 ```http
-GET /api/v1/targets/{domain}
+GET /displacement_targets?domain=eq.{domain}
 ```
 
-### Path Parameters
+### Query Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `domain` | string | Company domain (auto-normalized) |
+| Parameter | Value | Description |
+|-----------|-------|-------------|
+| `domain` | `eq.costco.com` | Exact domain match |
+| `select` | `*` | All columns (default) |
 
 ### Response
 
@@ -249,27 +234,40 @@ GET /api/v1/targets/{domain}
 }
 ```
 
-### Domain Normalization
+### Domain Format
 
-All these inputs resolve to the same target:
-- `costco.com`
-- `www.costco.com`
-- `COSTCO.COM`
-- `https://costco.com/`
+Domains are stored normalized (lowercase, no protocol, no www):
+- Stored as: `costco.com`
+- Query with: `domain=eq.costco.com`
 
 ### Example
 
 ```bash
-curl "https://partnerforge-production.up.railway.app/api/v1/targets/costco.com"
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?domain=eq.costco.com" \
+  -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhiaXRxZWVqc2dxbnd2eGxuanJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwODU1NDAsImV4cCI6MjA4NzY2MTU0MH0.XoEOx8rHo_1EyCF4yJ3g2S3tXUX_XepQu9PSfUWvyIg"
 ```
 
-### Error Response (404)
+### Empty Result (No Match)
+
+If the domain is not found, Supabase returns an empty array:
 
 ```json
+[]
+```
+
+To get an error instead, add the object header:
+
+```bash
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?domain=eq.nonexistent.com" \
+  -H "apikey: YOUR_ANON_KEY" \
+  -H "Accept: application/vnd.pgrst.object+json"
+```
+
+Returns 406 with:
+```json
 {
-  "success": false,
-  "error": "Target not found: amazon.com",
-  "status_code": 404
+  "code": "PGRST116",
+  "message": "The result contains 0 rows"
 }
 ```
 
@@ -277,62 +275,40 @@ curl "https://partnerforge-production.up.railway.app/api/v1/targets/costco.com"
 
 ## Bulk Search Targets
 
-Look up multiple domains at once.
+Look up multiple domains at once using the `in` operator.
 
 ```http
-POST /api/v1/targets/search
-```
-
-### Request Body
-
-```json
-{
-  "domains": [
-    "costco.com",
-    "walmart.com",
-    "amazon.com",
-    "bestbuy.com"
-  ]
-}
-```
-
-### Response
-
-```json
-{
-  "found": [
-    {
-      "id": 123,
-      "domain": "costco.com",
-      "company_name": "Costco Wholesale",
-      "partner_tech": "Adobe AEM",
-      "vertical": "Commerce",
-      "country": "United States",
-      "icp_score": 75,
-      "icp_tier_name": "warm",
-      "sw_monthly_visits": 15000000,
-      "revenue": 242300000000,
-      "current_search": "internal search analysis",
-      "enrichment_level": "full",
-      "last_enriched": "2026-02-26T10:30:00",
-      "created_at": "2026-02-20T08:00:00"
-    }
-  ],
-  "not_found": ["amazon.com", "bestbuy.com", "walmart.com"],
-  "total_searched": 4,
-  "total_found": 1
-}
+GET /displacement_targets?domain=in.(domain1,domain2,domain3)
 ```
 
 ### Example
 
 ```bash
-curl -X POST "https://partnerforge-production.up.railway.app/api/v1/targets/search" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "domains": ["costco.com", "walmart.com", "amazon.com"]
-  }'
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=*&domain=in.(costco.com,walmart.com,amazon.com,bestbuy.com)" \
+  -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhiaXRxZWVqc2dxbnd2eGxuanJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwODU1NDAsImV4cCI6MjA4NzY2MTU0MH0.XoEOx8rHo_1EyCF4yJ3g2S3tXUX_XepQu9PSfUWvyIg"
 ```
+
+### Response
+
+Returns only the domains that exist in the database:
+
+```json
+[
+  {
+    "id": 123,
+    "domain": "costco.com",
+    "company_name": "Costco Wholesale",
+    "partner_tech": "Adobe AEM",
+    "vertical": "Commerce",
+    "country": "United States",
+    "icp_score": 75,
+    "icp_tier_name": "warm",
+    ...
+  }
+]
+```
+
+**Note:** Unlike the old API, Supabase does not return a `not_found` list. The client must compute which domains were not found by comparing the request list to the response.
 
 ---
 
@@ -341,16 +317,10 @@ curl -X POST "https://partnerforge-production.up.railway.app/api/v1/targets/sear
 Manually override ICP score and tier (sales team adjustment).
 
 ```http
-PUT /api/v1/targets/{domain}/status
+PATCH /displacement_targets?domain=eq.{domain}
 ```
 
-**Authentication Required**
-
-### Path Parameters
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `domain` | string | Company domain |
+**Note:** Write operations require the service role key (not the anon key) or appropriate RLS policies.
 
 ### Request Body
 
@@ -358,39 +328,35 @@ PUT /api/v1/targets/{domain}/status
 {
   "icp_score": 85,
   "icp_tier_name": "hot",
-  "score_reasons": {
-    "reason_1": "High traffic",
-    "reason_2": "Public company",
-    "reason_3": "Tech investment signals"
-  }
-}
-```
-
-### Response
-
-```json
-{
-  "id": 123,
-  "domain": "costco.com",
-  "icp_score": 85,
-  "icp_tier_name": "hot",
-  "status": "hot",
-  "updated_at": "2026-02-26T10:35:00",
-  "message": "Target updated: icp_score=85, tier=hot, reasons updated"
+  "score_reasons": "Sales team override: High traffic, public company"
 }
 ```
 
 ### Example
 
 ```bash
-curl -X PUT "https://partnerforge-production.up.railway.app/api/v1/targets/costco.com/status" \
+curl -X PATCH "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?domain=eq.costco.com" \
+  -H "apikey: YOUR_SERVICE_ROLE_KEY" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer TOKEN" \
+  -H "Prefer: return=representation" \
   -d '{
     "icp_score": 85,
-    "icp_tier_name": "hot",
-    "score_reasons": {"reason": "Sales team override"}
+    "icp_tier_name": "hot"
   }'
+```
+
+### Response (with `Prefer: return=representation`)
+
+```json
+[
+  {
+    "id": 123,
+    "domain": "costco.com",
+    "icp_score": 85,
+    "icp_tier_name": "hot",
+    ...
+  }
+]
 ```
 
 ---
@@ -400,80 +366,60 @@ curl -X PUT "https://partnerforge-production.up.railway.app/api/v1/targets/costc
 Remove a target from the database.
 
 ```http
-DELETE /api/v1/targets/{domain}
+DELETE /displacement_targets?domain=eq.{domain}
 ```
 
-**Authentication Required**
+**Note:** Write operations require the service role key or appropriate RLS policies.
 
-### Response
+### Example
+
+```bash
+curl -X DELETE "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?domain=eq.example.com" \
+  -H "apikey: YOUR_SERVICE_ROLE_KEY" \
+  -H "Prefer: return=representation"
+```
+
+### Response (with `Prefer: return=representation`)
+
+Returns the deleted row(s):
 
 ```json
-{
-  "id": 123,
-  "domain": "costco.com",
-  "company_name": "Costco Wholesale",
-  "deleted": true,
-  "message": "Target 'costco.com' deleted successfully"
-}
+[
+  {
+    "id": 123,
+    "domain": "example.com",
+    "company_name": "Example Corp",
+    ...
+  }
+]
 ```
 
 ---
 
 ## Trigger Target Enrichment
 
-Start an enrichment job for a specific target.
+> **Architecture Change:** Enrichment is now handled client-side by the frontend's `api.ts` service. There is no server-side enrichment endpoint.
 
-```http
-POST /api/v1/targets/{domain}/enrich
-```
+The frontend directly calls:
+- **BuiltWith API** for technology detection
+- **SimilarWeb API** for traffic data
+- **Yahoo Finance API** for financial data
 
-**Authentication Required**
-
-### Query Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `modules` | string | all | Comma-separated module IDs |
-| `waves` | string | all | Comma-separated wave numbers (1-4) |
-| `force` | bool | false | Force re-enrichment even if cached |
-
-### Response
-
-```json
-{
-  "job_id": "enrich_costco_com_20260226103500_abc12345",
-  "domain": "costco.com",
-  "target_id": 123,
-  "status": "queued",
-  "modules": [
-    "m01_company_context",
-    "m02_tech_stack",
-    "m03_traffic",
-    "m04_financials"
-  ],
-  "waves": [1, 2, 3, 4],
-  "force": false,
-  "estimated_time_seconds": 45,
-  "triggered_by": "user@example.com",
-  "created_at": "2026-02-26T10:35:00"
-}
-```
-
-### Example
+After collecting data, the frontend updates Supabase:
 
 ```bash
-# Enrich all modules
-curl -X POST "https://partnerforge-production.up.railway.app/api/v1/targets/costco.com/enrich" \
-  -H "Authorization: Bearer TOKEN"
-
-# Enrich only wave 1
-curl -X POST "https://partnerforge-production.up.railway.app/api/v1/targets/costco.com/enrich?waves=1" \
-  -H "Authorization: Bearer TOKEN"
-
-# Force re-enrichment
-curl -X POST "https://partnerforge-production.up.railway.app/api/v1/targets/costco.com/enrich?force=true" \
-  -H "Authorization: Bearer TOKEN"
+curl -X PATCH "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?domain=eq.costco.com" \
+  -H "apikey: YOUR_SERVICE_ROLE_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "sw_monthly_visits": 15000000,
+    "sw_bounce_rate": 45.2,
+    "revenue": 242300000000,
+    "last_enriched": "2026-02-26T10:35:00"
+  }'
 ```
+
+See [Enrichment Documentation](enrichment.md) for details on the client-side enrichment flow.
 
 ---
 

@@ -15,42 +15,24 @@ flowchart TB
         Leadership[Leadership]
     end
 
-    subgraph Frontend["🖥️ FRONTEND (React + Vite)"]
+    subgraph Frontend["🖥️ FRONTEND (Vercel)"]
         Dashboard[Dashboard]
         Companies[Companies]
         Analytics[Analytics]
         Docs[Documentation]
     end
 
-    subgraph API["⚡ API LAYER (FastAPI)"]
-        TargetsAPI["/api/v1/targets"]
-        EnrichAPI["/api/v1/enrich"]
-        HealthAPI["/health"]
+    subgraph Supabase["⚡ SUPABASE"]
+        RestAPI[PostgREST API]
+        DB[(PostgreSQL)]
+        RestAPI --> DB
     end
 
-    subgraph Orchestrator["🎯 ORCHESTRATOR"]
-        Wave1[Wave 1: Foundation]
-        Wave2[Wave 2: Competitive]
-        Wave3[Wave 3: Buying Signals]
-        Wave4[Wave 4: Synthesis]
-    end
-
-    subgraph Modules["📦 15 INTELLIGENCE MODULES"]
-        M01[M01: Company Context]
-        M02[M02: Tech Stack]
-        M03[M03: Traffic]
-        M04[M04: Financial]
-        M05[M05: Competitor]
-        M06[M06: Hiring]
-        M07[M07: Strategic]
-        M08[M08: Investor]
-        M09[M09: Executive]
-        M10[M10: Buying Committee]
-        M11[M11: Displacement]
-        M12[M12: Case Study]
-        M13[M13: ICP Mapping]
-        M14[M14: Signal Scoring]
-        M15[M15: Strategic Brief]
+    subgraph Enrichment["📦 ENRICHMENT (MCP / Scripts)"]
+        M01[Company Context]
+        M02[Tech Stack]
+        M03[Traffic]
+        M04[Financial]
     end
 
     subgraph DataSources["🔌 DATA SOURCES"]
@@ -60,17 +42,11 @@ flowchart TB
         WS[WebSearch]
     end
 
-    subgraph Database["💾 DATABASE"]
-        Supabase[(Supabase PostgreSQL)]
-    end
-
     Users --> Frontend
-    Frontend --> API
-    API --> Orchestrator
-    Orchestrator --> Modules
-    Modules --> DataSources
-    Modules --> Database
-    DataSources --> Database
+    Frontend -->|Direct HTTPS| Supabase
+    Enrichment --> DataSources
+    Enrichment --> DB
+    DataSources --> DB
 ```
 
 ---
@@ -410,32 +386,42 @@ flowchart TD
 ```mermaid
 sequenceDiagram
     participant U as User
-    participant F as Frontend
-    participant A as API (FastAPI)
-    participant O as Orchestrator
-    participant M as Modules
-    participant D as Database
-    participant E as External APIs
+    participant F as Frontend (Vercel)
+    participant S as Supabase REST API
+    participant D as PostgreSQL
 
-    U->>F: Click "Enrich"
-    F->>A: POST /api/v1/enrich/{domain}
-    A->>D: Check cache freshness
-    D-->>A: Cache status
-
-    alt Cache Fresh
-        A-->>F: Return cached data
-    else Cache Stale
-        A->>O: Create enrichment job
-        O->>M: Execute Wave 1 (parallel)
-        M->>E: Call BuiltWith, SimilarWeb, etc.
-        E-->>M: API responses
-        M->>D: Store results
-        O->>M: Execute Wave 2-4
-        O-->>A: Job complete
-        A-->>F: Return enriched data
-    end
-
+    U->>F: View Targets
+    F->>S: GET /rest/v1/displacement_targets
+    S->>D: SELECT query
+    D-->>S: Results
+    S-->>F: JSON response
     F-->>U: Display results
+
+    Note over F,S: All queries go directly to Supabase
+    Note over F,S: No intermediate backend server
+```
+
+---
+
+## Enrichment Flow (Offline/MCP)
+
+```mermaid
+sequenceDiagram
+    participant C as Claude/MCP
+    participant E as External APIs
+    participant D as Supabase DB
+
+    C->>E: Call BuiltWith API
+    E-->>C: Tech stack data
+    C->>E: Call SimilarWeb API
+    E-->>C: Traffic data
+    C->>E: Call Yahoo Finance API
+    E-->>C: Financial data
+    C->>D: INSERT/UPDATE via REST API
+    D-->>C: Confirmation
+
+    Note over C,D: Enrichment runs via MCP tools
+    Note over C,D: or local Python scripts
 ```
 
 ---
@@ -452,11 +438,8 @@ flowchart TB
         FE[Frontend<br/>React + Vite]
     end
 
-    subgraph Railway["🚂 Railway"]
-        BE[Backend<br/>FastAPI]
-    end
-
     subgraph Supabase["⚡ Supabase"]
+        RestAPI[PostgREST API]
         DB[(PostgreSQL)]
         Auth[Auth]
         Storage[Storage]
@@ -469,14 +452,13 @@ flowchart TB
     end
 
     Repo -->|Auto-deploy| Vercel
-    Repo -->|Auto-deploy| Railway
 
-    FE -->|API calls| BE
-    BE -->|Query| DB
-    BE -->|Fetch| External
+    FE -->|Direct REST calls| RestAPI
+    RestAPI --> DB
+
+    External -.->|Enrichment scripts| DB
 
     style Vercel fill:#000,color:#fff
-    style Railway fill:#0B0D0E,color:#fff
     style Supabase fill:#3ECF8E,color:#000
 ```
 

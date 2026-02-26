@@ -30,7 +30,7 @@ Displacement Targets = Companies Using Partner Tech − Existing Algolia Custome
 | **Architecture Docs** | 24 documents |
 | **Database Tables** | 51+ |
 | **Frontend Components** | 20+ |
-| **Deployment** | Railway (Backend + Frontend) |
+| **Deployment** | Vercel (Frontend) + Supabase (Database) |
 
 ---
 
@@ -40,11 +40,13 @@ Displacement Targets = Companies Using Partner Tech − Existing Algolia Custome
 
 | Layer | Technology |
 |-------|------------|
-| **Backend** | FastAPI + SQLAlchemy 2.0 + PostgreSQL |
 | **Frontend** | React 18 + TypeScript + Vite + Mantine |
-| **Queue** | Redis + Celery |
+| **Database** | Supabase (PostgreSQL + PostgREST) |
+| **API** | Supabase REST API (auto-generated) |
+| **Hosting** | Vercel (Frontend) |
 | **Testing** | pytest-asyncio (1,142 tests) |
-| **Deployment** | Railway |
+
+> **Note (Feb 26, 2026):** Railway backend has been removed. Frontend communicates directly with Supabase REST API via `frontend/src/services/api.ts`.
 
 ### Intelligence Module Waves
 
@@ -328,7 +330,8 @@ PartnerForge/
 | CompanyView | ✅ |
 | AlertCenter | ✅ |
 | ChangeTimeline | ✅ |
-| Railway Deploy | ✅ |
+| Supabase Migration | ✅ |
+| Vercel Deploy | ✅ |
 
 ---
 

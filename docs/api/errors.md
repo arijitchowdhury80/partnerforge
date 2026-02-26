@@ -1,32 +1,34 @@
 # Error Handling
 
-This document describes error responses, status codes, and how to handle errors in the PartnerForge API.
+This document describes error responses, status codes, and how to handle errors when using the Supabase REST API for PartnerForge.
+
+---
+
+## Architecture Note
+
+With the migration from Railway to Supabase, error handling now follows the **PostgREST** error format used by Supabase's auto-generated REST API.
 
 ---
 
 ## Error Response Format
 
-All errors follow a consistent JSON structure:
+Supabase REST API errors follow this structure:
 
 ```json
 {
-  "success": false,
-  "error": "Error title",
-  "detail": "Detailed error message",
-  "status_code": 404,
-  "request_id": "req_abc123",
-  "timestamp": "2026-02-26T10:35:00Z"
+  "code": "PGRST116",
+  "details": null,
+  "hint": null,
+  "message": "The result contains 0 rows"
 }
 ```
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `success` | boolean | Always `false` for errors |
-| `error` | string | Short error title |
-| `detail` | string | Detailed explanation |
-| `status_code` | number | HTTP status code |
-| `request_id` | string | Unique request identifier (for support) |
-| `timestamp` | string | ISO 8601 timestamp |
+| `code` | string | PostgREST error code |
+| `details` | string/null | Additional details |
+| `hint` | string/null | Suggestion for fixing |
+| `message` | string | Human-readable error message |
 
 ---
 
@@ -87,30 +89,29 @@ Invalid query parameters or request body.
 
 **Example:**
 ```bash
-# Invalid: min_score > 100
-curl "https://partnerforge-production.up.railway.app/api/v1/targets?min_score=150"
+# Invalid operator syntax
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?icp_score=invalid.80" \
+  -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhiaXRxZWVqc2dxbnd2eGxuanJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwODU1NDAsImV4cCI6MjA4NzY2MTU0MH0.XoEOx8rHo_1EyCF4yJ3g2S3tXUX_XepQu9PSfUWvyIg"
 ```
 
 ---
 
 ### 401 Unauthorized
 
-Authentication required but not provided.
+Missing or invalid API key.
 
 ```json
 {
-  "success": false,
-  "error": "Unauthorized",
-  "detail": "Authentication required. Provide a valid Bearer token.",
-  "status_code": 401
+  "code": "401",
+  "message": "Invalid API key"
 }
 ```
 
 **Solution:**
 ```bash
-# Add Authorization header
-curl -H "Authorization: Bearer YOUR_TOKEN" \
-  "https://partnerforge-production.up.railway.app/api/v1/enrich/costco.com"
+# Add apikey header
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=*" \
+  -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhiaXRxZWVqc2dxbnd2eGxuanJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwODU1NDAsImV4cCI6MjA4NzY2MTU0MH0.XoEOx8rHo_1EyCF4yJ3g2S3tXUX_XepQu9PSfUWvyIg"
 ```
 
 ---
@@ -130,23 +131,36 @@ Valid authentication but insufficient permissions.
 
 ---
 
-### 404 Not Found
+### 404 Not Found / Empty Result
 
-Requested resource doesn't exist.
+With Supabase, a query that matches no rows returns an **empty array** (200 status), not a 404:
 
 ```json
+[]
+```
+
+If you need single-row queries to error on no match, use the `Accept: application/vnd.pgrst.object+json` header:
+
+```bash
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?domain=eq.nonexistent.com" \
+  -H "apikey: YOUR_ANON_KEY" \
+  -H "Accept: application/vnd.pgrst.object+json"
+```
+
+Returns:
+```json
 {
-  "success": false,
-  "error": "Target not found: amazon.com",
-  "detail": "No displacement target exists with domain 'amazon.com'",
-  "status_code": 404
+  "code": "PGRST116",
+  "details": null,
+  "hint": null,
+  "message": "The result contains 0 rows"
 }
 ```
 
 **Common Causes:**
 - Domain not in database
-- Job ID doesn't exist
-- Resource was deleted
+- Typo in domain name
+- Incorrect filter syntax
 
 ---
 
@@ -406,32 +420,37 @@ if response.status_code >= 500:
 
 ## Debugging Tips
 
-### 1. Check Health First
+### 1. Check Supabase Status
+
+Visit [status.supabase.com](https://status.supabase.com) to check if Supabase is operational.
+
+### 2. Verify API Key
+
+Ensure the `apikey` header is included:
 
 ```bash
-curl "https://partnerforge-production.up.railway.app/health"
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=*&limit=1" \
+  -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhiaXRxZWVqc2dxbnd2eGxuanJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwODU1NDAsImV4cCI6MjA4NzY2MTU0MH0.XoEOx8rHo_1EyCF4yJ3g2S3tXUX_XepQu9PSfUWvyIg"
 ```
 
-If unhealthy, wait and retry.
+### 3. Verify Domain Format
 
-### 2. Verify Domain Format
+Domains should be stored in lowercase without protocol:
+- Correct: `costco.com`
+- Incorrect: `https://costco.com`, `COSTCO.COM`
 
-Domains are auto-normalized, but ensure:
-- No protocol (remove `https://`)
-- No trailing slash
-- Valid TLD
+### 4. Check Filter Syntax
 
-### 3. Check Rate Limits
+Supabase uses PostgREST operators. Common mistakes:
+- Wrong: `?icp_score>=80`
+- Right: `?icp_score=gte.80`
+
+### 5. Test Simple Query First
 
 ```bash
-curl -I "https://partnerforge-production.up.railway.app/api/v1/targets"
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=domain,icp_score&limit=5" \
+  -H "apikey: YOUR_ANON_KEY"
 ```
-
-Look for `X-RateLimit-*` headers.
-
-### 4. Use Request ID
-
-Always include `request_id` when reporting issues to support.
 
 ---
 

@@ -24,30 +24,26 @@ PartnerForge is an ABM (Account-Based Marketing) platform that identifies displa
 │  │ Heatmap  │  │  List    │  │  Charts  │  │ Intelligence     │ │
 │  └──────────┘  └──────────┘  └──────────┘  └──────────────────┘ │
 └────────────────────────────┬────────────────────────────────────┘
-                             │ HTTPS
+                             │ HTTPS (Direct)
 ┌────────────────────────────▼────────────────────────────────────┐
-│                      BACKEND API                                 │
-│                FastAPI + SQLAlchemy                              │
-│     https://partnerforge-production.up.railway.app               │
-│                                                                  │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────────────┐ │
-│  │ Targets  │  │Enrichment│  │  Health  │  │  ICP Scoring     │ │
-│  │  CRUD    │  │  Jobs    │  │  Probes  │  │  Engine          │ │
-│  └──────────┘  └──────────┘  └──────────┘  └──────────────────┘ │
-└─────────────────┬─────────────────────┬─────────────────────────┘
-                  │                     │
-┌─────────────────▼─────────────────────▼─────────────────────────┐
-│                      DATABASE                                    │
-│              PostgreSQL / SQLite                                 │
+│                      SUPABASE                                    │
+│            PostgreSQL + REST API + Auth                          │
+│         https://xbitqeejsgqnwvxlnjra.supabase.co                 │
 │                                                                  │
 │  ┌──────────────────┐  ┌────────────────┐  ┌─────────────────┐  │
 │  │displacement_targets│  │  companies     │  │ case_studies   │  │
-│  │    (2,687)        │  │    (400)       │  │    (161)       │  │
+│  │    (2,737)        │  │    (400)       │  │    (161)       │  │
 │  └──────────────────┘  └────────────────┘  └─────────────────┘  │
+│                                                                  │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │  REST API: PostgREST auto-generated from schema          │   │
+│  │  Filtering, sorting, pagination via query params         │   │
+│  └──────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘
                   │
 ┌─────────────────▼───────────────────────────────────────────────┐
 │                   EXTERNAL DATA SOURCES                          │
+│                   (via MCP / manual enrichment)                  │
 │                                                                  │
 │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────────────┐ │
 │  │BuiltWith │  │SimilarWeb│  │  Yahoo   │  │    WebSearch     │ │
@@ -80,32 +76,25 @@ PartnerForge is an ABM (Account-Based Marketing) platform that identifies displa
 - TanStack Query (data fetching)
 - Framer Motion (animations)
 
-### 2. Backend API (FastAPI)
+### 2. Database & API (Supabase)
 
-**Location:** `backend/` (full) or `api/` (simple)
-**Deployment:** Railway
-**URL:** https://partnerforge-production.up.railway.app
+**Location:** Cloud-hosted (no local backend needed)
+**Deployment:** Supabase
+**URL:** https://xbitqeejsgqnwvxlnjra.supabase.co
 
 **Key Features:**
-- RESTful API with OpenAPI docs
-- Async SQLAlchemy for database
-- Enrichment job management
-- Health checks for orchestration
+- PostgreSQL database with auto-generated REST API
+- PostgREST provides filtering, sorting, pagination
+- Row-level security (RLS) available
+- Real-time subscriptions (optional)
 
-**Tech Stack:**
-- Python 3.11+
-- FastAPI
-- SQLAlchemy (async)
-- Pydantic (validation)
-- uvicorn (ASGI server)
-
-### 3. Database (PostgreSQL/SQLite)
-
-**Location:** `data/partnerforge.db` (dev) or PostgreSQL (prod)
-**Tables:** 17 tables
+**Architecture:**
+- Frontend calls Supabase REST API directly
+- No intermediate backend server required
+- API key authentication via anon key
 
 **Core Tables:**
-- `displacement_targets` — Primary target data (2,687 records)
+- `displacement_targets` — Primary target data (2,737 records)
 - `companies` — Existing Algolia customers (400 records)
 - `case_studies` — Success stories for matching (161 records)
 
@@ -238,27 +227,37 @@ POST /enrich/{domain}
 │                          GITHUB                                  │
 │              github.com/arijitchowdhury80/partnerforge          │
 │                                                                  │
-│  ┌──────────────────┐              ┌──────────────────┐         │
-│  │   main branch    │              │   main branch    │         │
-│  │   (frontend/)    │              │   (backend/)     │         │
-│  └────────┬─────────┘              └────────┬─────────┘         │
-└───────────┼──────────────────────────────────┼──────────────────┘
-            │                                  │
-            │ Auto-deploy                      │ Auto-deploy
-            ▼                                  ▼
-┌───────────────────────┐          ┌───────────────────────┐
-│       VERCEL          │          │       RAILWAY         │
-│                       │          │                       │
-│  ┌─────────────────┐  │          │  ┌─────────────────┐  │
-│  │ Static hosting  │  │          │  │ Container       │  │
-│  │ CDN edge        │  │          │  │ PostgreSQL      │  │
-│  │ Auto SSL        │  │          │  │ Health checks   │  │
-│  └─────────────────┘  │          │  └─────────────────┘  │
-│                       │          │                       │
-│  partnerforge.        │          │  partnerforge-        │
-│  vercel.app           │          │  production.up.       │
-│                       │          │  railway.app          │
-└───────────────────────┘          └───────────────────────┘
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │   main branch (frontend/)                                 │   │
+│  └────────────────────────────┬─────────────────────────────┘   │
+└───────────────────────────────┼─────────────────────────────────┘
+                                │ Auto-deploy
+                                ▼
+┌───────────────────────────────────────────────────────────────┐
+│                         VERCEL                                  │
+│                                                                 │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │ React + Vite Static Site                                 │   │
+│  │ CDN Edge Delivery                                        │   │
+│  │ Auto SSL                                                 │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                                                                 │
+│  partnerforge.vercel.app                                        │
+└────────────────────────────────┬────────────────────────────────┘
+                                 │ Direct API calls
+                                 │ (HTTPS + anon key)
+                                 ▼
+┌───────────────────────────────────────────────────────────────┐
+│                        SUPABASE                                 │
+│                                                                 │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │ PostgreSQL Database                                      │   │
+│  │ PostgREST Auto-Generated API                             │   │
+│  │ Row-Level Security                                       │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                                                                 │
+│  xbitqeejsgqnwvxlnjra.supabase.co                              │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -266,19 +265,23 @@ POST /enrich/{domain}
 ## Security
 
 ### Authentication
-- Public endpoints: No auth required (read-only)
-- Protected endpoints: Bearer token required
+- Supabase anon key for read-only access
+- Service role key for admin operations (server-side only)
+- Row-Level Security (RLS) available for fine-grained access control
 
 ### CORS
-Allowed origins:
+Supabase handles CORS automatically for configured domains:
 - `https://partnerforge.vercel.app`
-- `http://localhost:3000` (dev)
+- `http://localhost:*` (dev)
 
 ### API Keys
-Stored as environment variables:
+Stored in frontend environment:
+- `SUPABASE_URL` — Project URL
+- `SUPABASE_ANON_KEY` — Public anonymous key
+
+External API keys (for enrichment scripts):
 - `BUILTWITH_API_KEY`
 - `SIMILARWEB_API_KEY`
-- `DATABASE_URL`
 
 ### Data Privacy
 - No PII stored beyond public business information
@@ -304,31 +307,30 @@ Stored as environment variables:
 
 ## Monitoring
 
-### Health Endpoints
-- `/health` — Basic health
-- `/ready` — Readiness probe
-- `/health/detailed` — Full diagnostics
-- `/metrics` — Runtime metrics
+### Supabase Dashboard
+- Database metrics and query performance
+- API request logs
+- Storage usage
+- Real-time connection monitoring
 
 ### Logging
-- Structured JSON logs
-- Request ID tracking
-- Error stack traces
+- Supabase provides built-in request logging
+- Frontend errors logged to browser console
+- External monitoring via Vercel Analytics (optional)
 
 ### Alerts
-- Uptime monitoring via external service
-- Database connection alerts
-- API rate limit warnings
+- Supabase dashboard alerts for database issues
+- Vercel deployment notifications
 
 ---
 
 ## Future Architecture
 
 ### Planned Enhancements
-1. **Redis Cache** — Response caching, job queue
-2. **Webhook Events** — Notify on enrichment completion
-3. **Batch Processing** — Large-scale data imports
-4. **Multi-tenancy** — Team-based access control
+1. **Supabase Edge Functions** — Server-side enrichment logic
+2. **Real-time Subscriptions** — Live updates when data changes
+3. **Batch Processing** — Large-scale data imports via Edge Functions
+4. **Multi-tenancy** — Team-based access control via RLS policies
 
 ### Partner Technology Expansion
 - Shopify Plus (in progress)

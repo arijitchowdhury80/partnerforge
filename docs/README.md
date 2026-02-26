@@ -20,7 +20,7 @@ Displacement Targets = Companies Using Partner Tech − Existing Algolia Custome
 | Service | URL | Status |
 |---------|-----|--------|
 | Frontend | https://partnerforge.vercel.app | ✅ Live |
-| Backend API | https://partnerforge-production.up.railway.app | ✅ Live |
+| Backend API | Supabase (Direct) | ✅ Live |
 | GitHub | https://github.com/arijitchowdhury80/partnerforge | Main branch |
 
 ---
@@ -71,10 +71,9 @@ Displacement Targets = Companies Using Partner Tech − Existing Algolia Custome
 - Deployed on Vercel
 
 ### Backend
-- FastAPI (Python 3.11+)
-- SQLAlchemy (async)
-- PostgreSQL / SQLite
-- Deployed on Railway
+- Supabase (PostgreSQL + PostgREST)
+- Direct REST API from frontend
+- No intermediate backend server
 
 ### Data Sources
 - **BuiltWith** — Technology detection
