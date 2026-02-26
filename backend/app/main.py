@@ -11,14 +11,19 @@ Health Endpoints:
 - /health/detailed - Full component status
 """
 
-from fastapi import FastAPI, HTTPException, Depends, Query, BackgroundTasks
+from fastapi import FastAPI, HTTPException, Depends, Query, BackgroundTasks, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.middleware.base import BaseHTTPMiddleware
 from contextlib import asynccontextmanager
 from datetime import datetime
 from typing import Optional
 import logging
+import time
+import uuid
+import json
+import sys
 
 from .config import get_settings, ENRICHMENT_WAVES
 from .database import get_session, init_db, close_db
@@ -36,11 +41,58 @@ from .api.routes import seed as seed_router
 from .api.routes import functional_test as test_router
 from .api.routes import discover as discover_router
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
+# Configure structured logging for Railway
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s | %(levelname)s | %(name)s | %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
+    stream=sys.stdout,
+    force=True,
+)
 logger = logging.getLogger(__name__)
 
 settings = get_settings()
+
+
+# =============================================================================
+# Request Tracing Middleware
+# =============================================================================
+
+class RequestTracingMiddleware(BaseHTTPMiddleware):
+    """Middleware to log all requests with timing and trace IDs."""
+
+    async def dispatch(self, request: Request, call_next):
+        # Generate trace ID
+        trace_id = str(uuid.uuid4())[:8]
+        start_time = time.time()
+
+        # Log request
+        logger.info(
+            f"[{trace_id}] --> {request.method} {request.url.path} "
+            f"query={dict(request.query_params)}"
+        )
+
+        try:
+            response = await call_next(request)
+            duration_ms = (time.time() - start_time) * 1000
+
+            # Log response
+            logger.info(
+                f"[{trace_id}] <-- {response.status_code} "
+                f"({duration_ms:.1f}ms)"
+            )
+
+            # Add trace ID to response headers
+            response.headers["X-Trace-ID"] = trace_id
+            return response
+
+        except Exception as e:
+            duration_ms = (time.time() - start_time) * 1000
+            logger.error(
+                f"[{trace_id}] !!! ERROR: {type(e).__name__}: {str(e)} "
+                f"({duration_ms:.1f}ms)"
+            )
+            raise
 
 
 # =============================================================================
@@ -92,6 +144,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Request tracing middleware
+app.add_middleware(RequestTracingMiddleware)
 
 
 # =============================================================================
