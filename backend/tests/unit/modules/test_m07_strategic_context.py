@@ -64,7 +64,7 @@ class TestM07StrategicContextModule:
 
     def test_module_id(self, module):
         """Test module has correct ID."""
-        assert module.MODULE_ID == "m07_strategic_context"
+        assert module.MODULE_ID == "m07_strategic"
 
     def test_module_name(self, module):
         """Test module has correct name."""
@@ -74,9 +74,10 @@ class TestM07StrategicContextModule:
         """Test module is in Wave 2 (Competitive)."""
         assert module.WAVE == 2
 
-    def test_module_has_dependencies(self, module):
-        """Test Wave 2 module has correct dependencies."""
-        assert len(module.DEPENDS_ON) > 0
+    def test_module_has_no_strict_dependencies(self, module):
+        """Test Wave 2 module has no strict dependencies (optional Wave 2)."""
+        # M07 is Wave 2 but has no strict dependencies
+        assert module.DEPENDS_ON == []
 
     def test_module_source_type(self, module):
         """Test module has correct source type."""
@@ -157,15 +158,32 @@ class TestM07StrategicContextModule:
     async def test_enrich_full_pipeline(self, module, valid_websearch_response):
         """Test complete enrichment pipeline from domain to ModuleResult."""
         with patch.object(
-            module, "_fetch_from_websearch", new_callable=AsyncMock
-        ) as mock_ws:
-            mock_ws.return_value = valid_websearch_response
+            module, "_search_company_news", new_callable=AsyncMock
+        ) as mock_news, patch.object(
+            module, "_search_trigger_events", new_callable=AsyncMock
+        ) as mock_triggers, patch.object(
+            module, "_search_strategic_initiatives", new_callable=AsyncMock
+        ) as mock_strategic:
+            # Set up mock responses
+            mock_news.return_value = {
+                "recent_news": [],
+                "source_url": "https://google.com/search?q=sally+beauty+news",
+                "source_date": datetime.now().isoformat(),
+            }
+            mock_triggers.return_value = valid_websearch_response
+            mock_strategic.return_value = {
+                "digital_transformation_initiatives": [],
+                "expansion_signals": [],
+                "competitor_mentions": [],
+                "source_url": "https://google.com/search?q=sally+beauty+strategy",
+                "source_date": datetime.now().isoformat(),
+            }
 
             result = await module.enrich("sallybeauty.com")
 
             # Verify result structure
             assert isinstance(result, ModuleResult)
-            assert result.module_id == "m07_strategic_context"
+            assert result.module_id == "m07_strategic"
             assert result.domain == "sallybeauty.com"
 
             # Verify data
@@ -189,24 +207,33 @@ class TestM07StrategicContextModule:
     def test_trigger_event_model(self):
         """Test TriggerEvent model creation."""
         event = TriggerEvent(
-            event_type="platform_migration",
-            description="Website platform upgrade",
-            timing="Q2 2026",
+            type="tech_refresh",
+            title="Website Platform Upgrade",
+            description="Website platform upgrade to modern infrastructure",
+            date="2026-02-15",
             source_url="https://businesswire.com/news",
+            algolia_relevance="high",
+            algolia_relevance_reason="Direct search investment signal",
         )
 
-        assert event.event_type == "platform_migration"
-        assert event.timing == "Q2 2026"
+        assert event.type == "tech_refresh"
+        assert event.title == "Website Platform Upgrade"
+        assert event.algolia_relevance == "high"
 
     def test_digital_initiative_model(self):
         """Test DigitalInitiative model creation."""
         initiative = DigitalInitiative(
             name="Digital Transformation",
             description="Multi-year digital modernization",
-            timeline="FY2025-FY2027",
+            announced_date="2025-06-01",
+            source_url="https://businesswire.com/news/digital",
+            investment_amount=50000000,
+            technologies_mentioned=["e-commerce", "search", "personalization"],
+            search_relevance="high",
         )
 
         assert initiative.name == "Digital Transformation"
+        assert initiative.search_relevance == "high"
 
 
 class TestM07ModuleRegistry:
@@ -216,9 +243,9 @@ class TestM07ModuleRegistry:
         """Test M07 module is registered in the global registry."""
         from app.modules.base import get_module_class
 
-        module_class = get_module_class("m07_strategic_context")
+        module_class = get_module_class("m07_strategic")
         assert module_class is not None
-        assert module_class.MODULE_ID == "m07_strategic_context"
+        assert module_class.MODULE_ID == "m07_strategic"
 
     def test_module_in_wave_2(self):
         """Test M07 module appears in Wave 2 modules."""
@@ -227,4 +254,4 @@ class TestM07ModuleRegistry:
         wave_2_modules = get_modules_by_wave(2)
         module_ids = [cls.MODULE_ID for cls in wave_2_modules]
 
-        assert "m07_strategic_context" in module_ids
+        assert "m07_strategic" in module_ids

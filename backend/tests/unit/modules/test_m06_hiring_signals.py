@@ -168,7 +168,7 @@ class TestM06HiringSignalsModule:
 
             # Verify result structure
             assert isinstance(result, ModuleResult)
-            assert result.module_id == "m06_hiring_signals"
+            assert result.module_id == "m06_hiring"
             assert result.domain == "sallybeauty.com"
 
             # Verify data
@@ -208,9 +208,9 @@ class TestM06ModuleRegistry:
         """Test M06 module is registered in the global registry."""
         from app.modules.base import get_module_class
 
-        module_class = get_module_class("m06_hiring_signals")
+        module_class = get_module_class("m06_hiring")
         assert module_class is not None
-        assert module_class.MODULE_ID == "m06_hiring_signals"
+        assert module_class.MODULE_ID == "m06_hiring"
 
     def test_module_in_wave_2(self):
         """Test M06 module appears in Wave 2 modules."""
@@ -219,4 +219,4 @@ class TestM06ModuleRegistry:
         wave_2_modules = get_modules_by_wave(2)
         module_ids = [cls.MODULE_ID for cls in wave_2_modules]
 
-        assert "m06_hiring_signals" in module_ids
+        assert "m06_hiring" in module_ids

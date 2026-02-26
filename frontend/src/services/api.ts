@@ -61,18 +61,32 @@ export async function getStats(): Promise<DashboardStats> {
 }
 
 // =============================================================================
-// Companies
+// Companies / Targets
 // =============================================================================
 
 export async function getCompanies(
   filters: FilterState & { page?: number; limit?: number }
 ): Promise<PaginatedResponse<Company>> {
-  const { data } = await apiClient.get('/companies', { params: filters });
-  return data;
+  // Use the v1/targets endpoint which has the actual data
+  const params = {
+    page: filters.page || 1,
+    per_page: filters.limit || 50,
+    status: filters.status,
+    partner: filters.partner,
+    min_score: filters.min_score,
+    sort_by: filters.sort_by || 'icp_score',
+    sort_order: filters.sort_order || 'desc',
+  };
+  const { data } = await apiClient.get('/v1/targets', { params });
+  // Transform response from targets format to PaginatedResponse format
+  return {
+    data: data.targets || [],
+    pagination: data.pagination || { page: 1, limit: 50, total: 0, total_pages: 0 },
+  };
 }
 
 export async function getCompany(domain: string): Promise<Company> {
-  const { data } = await apiClient.get(`/companies/${domain}`);
+  const { data } = await apiClient.get(`/v1/targets/${domain}`);
   return data;
 }
 

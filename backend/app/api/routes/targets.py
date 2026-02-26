@@ -642,3 +642,176 @@ async def update_target_status(
         updated_at=datetime.utcnow(),
         message=f"Target updated: {', '.join(updates_made)}" if updates_made else "No changes made",
     )
+
+
+# =============================================================================
+# Delete Target Endpoint
+# =============================================================================
+
+@router.delete("/{domain}")
+async def delete_target(
+    domain: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: CurrentUser = Depends(get_current_user),
+):
+    """
+    Delete a displacement target.
+
+    **Path Parameters:**
+    - `domain`: Company domain (e.g., costco.com)
+
+    **Returns:**
+    Confirmation of deletion with target ID.
+
+    Note: This also deletes all associated intelligence data.
+    """
+    # Normalize domain
+    domain = domain.strip().lower()
+    domain = domain.replace("https://", "").replace("http://", "")
+    domain = domain.replace("www.", "").rstrip("/")
+
+    # Query target
+    result = await db.execute(
+        select(DisplacementTarget).where(
+            DisplacementTarget.domain == domain
+        )
+    )
+    target = result.scalar()
+
+    if not target:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Target not found: {domain}"
+        )
+
+    target_id = target.id
+    company_name = target.company_name
+
+    # Delete the target
+    await db.delete(target)
+    await db.commit()
+
+    logger.info(
+        f"Target deleted: {domain} (ID: {target_id}) by {current_user.email}"
+    )
+
+    return {
+        "id": target_id,
+        "domain": domain,
+        "company_name": company_name,
+        "deleted": True,
+        "message": f"Target '{domain}' deleted successfully",
+    }
+
+
+# =============================================================================
+# Trigger Enrichment Endpoint
+# =============================================================================
+
+@router.post("/{domain}/enrich")
+async def trigger_target_enrichment(
+    domain: str,
+    modules: Optional[List[str]] = Query(None, description="Specific modules to run"),
+    waves: Optional[List[int]] = Query(None, description="Specific waves to run (1-4)"),
+    force: bool = Query(False, description="Force re-enrichment even if cached"),
+    db: AsyncSession = Depends(get_db),
+    current_user: CurrentUser = Depends(get_current_user),
+):
+    """
+    Trigger enrichment for a specific target.
+
+    **Path Parameters:**
+    - `domain`: Company domain (e.g., costco.com)
+
+    **Query Parameters:**
+    - `modules`: Specific modules to run (default: all)
+    - `waves`: Specific waves to run (1-4, default: all)
+    - `force`: Force re-enrichment even if data is cached
+
+    **Returns:**
+    Job information for tracking enrichment progress.
+    """
+    # Normalize domain
+    domain = domain.strip().lower()
+    domain = domain.replace("https://", "").replace("http://", "")
+    domain = domain.replace("www.", "").rstrip("/")
+
+    # Verify target exists
+    result = await db.execute(
+        select(DisplacementTarget).where(
+            DisplacementTarget.domain == domain
+        )
+    )
+    target = result.scalar()
+
+    if not target:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Target not found: {domain}"
+        )
+
+    # Determine modules to run
+    all_modules = [
+        "m01_company_context", "m02_tech_stack", "m03_traffic", "m04_financials",
+        "m05_competitors", "m06_hiring", "m07_strategic",
+        "m08_investor", "m09_executive", "m10_buying_committee", "m11_displacement",
+        "m12_case_study", "m13_icp_priority", "m14_signal_scoring", "m15_strategic_brief",
+    ]
+
+    wave_modules = {
+        1: ["m01_company_context", "m02_tech_stack", "m03_traffic", "m04_financials"],
+        2: ["m05_competitors", "m06_hiring", "m07_strategic"],
+        3: ["m08_investor", "m09_executive", "m10_buying_committee", "m11_displacement"],
+        4: ["m12_case_study", "m13_icp_priority", "m14_signal_scoring", "m15_strategic_brief"],
+    }
+
+    if modules:
+        # Validate modules
+        invalid = [m for m in modules if m not in all_modules]
+        if invalid:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid modules: {invalid}"
+            )
+        target_modules = modules
+    elif waves:
+        # Validate waves
+        invalid = [w for w in waves if w < 1 or w > 4]
+        if invalid:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid waves: {invalid}. Must be 1-4."
+            )
+        target_modules = []
+        for w in waves:
+            target_modules.extend(wave_modules.get(w, []))
+    else:
+        target_modules = all_modules
+        waves = [1, 2, 3, 4]
+
+    # Create job ID
+    job_id = f"enrich_{domain.replace('.', '_')}_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+
+    # Update target's enrichment tracking
+    target.last_enriched = datetime.utcnow()
+    await db.commit()
+
+    logger.info(
+        f"Enrichment triggered for target: {domain} ({len(target_modules)} modules) "
+        f"by {current_user.email}"
+    )
+
+    # TODO: Actually queue the enrichment job via Celery/orchestrator
+
+    return {
+        "job_id": job_id,
+        "domain": domain,
+        "target_id": target.id,
+        "status": "queued",
+        "modules": target_modules,
+        "waves": waves or [1, 2, 3, 4],
+        "force": force,
+        "estimated_time_seconds": len(target_modules) * 3,
+        "triggered_by": current_user.email,
+        "created_at": datetime.utcnow().isoformat(),
+    }

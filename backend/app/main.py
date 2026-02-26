@@ -30,6 +30,8 @@ from .api.routes import targets as targets_router
 from .api.routes import enrich as enrich_router
 from .api.routes import alerts as alerts_router
 from .api.routes import changes as changes_router
+from .api.routes import intelligence as intelligence_router
+from .api.routes import jobs as jobs_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -110,6 +112,12 @@ app.include_router(alerts_router.router, prefix="/api/v1")
 
 # Changes endpoints (API v1)
 app.include_router(changes_router.router, prefix="/api/v1")
+
+# Intelligence endpoints (API v1) - 15 modules
+app.include_router(intelligence_router.router, prefix="/api/v1")
+
+# Jobs endpoints (API v1) - Job management
+app.include_router(jobs_router.router, prefix="/api/v1")
 
 
 # =============================================================================
