@@ -29,16 +29,10 @@ import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { getCompanies } from '@/services/api';
-import { TargetList } from '@/components/targets/TargetList';
-
-// Type for column filters
-interface ColumnFilter {
-  column: string;
-  values: string[];
-}
+import { TargetList, type ColumnFilter } from '@/components/targets/TargetList';
 
 // Version for deployment tracking
-const VERSION = 'v2.3.0-data-transparency';
+const VERSION = 'v2.4.0-excel-filters';
 
 // =============================================================================
 // Companies Page Component
