@@ -312,9 +312,26 @@ function extractDiagrams(markdown: string): DiagramInfo[] {
   return diagrams;
 }
 
+// Glassmorphism card styles
+const glassCardStyle = {
+  background: 'linear-gradient(135deg, rgba(0,61,255,0.08) 0%, rgba(84,104,255,0.04) 100%)',
+  backdropFilter: 'blur(12px)',
+  border: '1px solid rgba(84,104,255,0.2)',
+  boxShadow: '0 8px 32px rgba(0,61,255,0.15), inset 0 1px 0 rgba(255,255,255,0.05)',
+  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+  cursor: 'pointer',
+};
+
+const glassCardHoverStyle = {
+  transform: 'translateY(-4px) scale(1.02)',
+  boxShadow: '0 20px 60px rgba(0,61,255,0.3), 0 0 40px rgba(84,104,255,0.2), inset 0 1px 0 rgba(255,255,255,0.1)',
+  border: '1px solid rgba(84,104,255,0.4)',
+};
+
 function DiagramGallery({ markdown }: { markdown: string }) {
   const [activeTab, setActiveTab] = useState<string>('architecture');
   const [selectedDiagram, setSelectedDiagram] = useState<DiagramInfo | null>(null);
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
   const diagrams = extractDiagrams(markdown);
   const categorized = diagrams.reduce((acc, d) => {
@@ -327,12 +344,31 @@ function DiagramGallery({ markdown }: { markdown: string }) {
     return (
       <Box>
         <Group mb="md">
-          <ActionIcon variant="subtle" onClick={() => setSelectedDiagram(null)}>
+          <ActionIcon
+            variant="light"
+            color="blue"
+            size="lg"
+            radius="xl"
+            onClick={() => setSelectedDiagram(null)}
+            style={{
+              boxShadow: '0 4px 20px rgba(0,61,255,0.3)',
+            }}
+          >
             ←
           </ActionIcon>
-          <Title order={3}>{selectedDiagram.title}</Title>
+          <Title order={3} style={{ color: '#fff' }}>{selectedDiagram.title}</Title>
         </Group>
-        <MermaidDiagram code={selectedDiagram.code} index={0} />
+        <Paper
+          p="lg"
+          radius="lg"
+          style={{
+            background: 'linear-gradient(180deg, rgba(0,61,255,0.05) 0%, rgba(26,27,30,0.9) 100%)',
+            border: '1px solid rgba(84,104,255,0.2)',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.4), 0 0 100px rgba(0,61,255,0.1)',
+          }}
+        >
+          <MermaidDiagram code={selectedDiagram.code} index={0} />
+        </Paper>
       </Box>
     );
   }
@@ -350,33 +386,89 @@ function DiagramGallery({ markdown }: { markdown: string }) {
 
   return (
     <Box>
-      <Paper p="md" mb="lg" withBorder style={{ background: 'linear-gradient(135deg, rgba(0,61,255,0.1), rgba(84,104,255,0.05))' }}>
-        <Group justify="space-between">
+      {/* Hero Header with Glow */}
+      <Paper
+        p="xl"
+        mb="xl"
+        radius="lg"
+        style={{
+          background: 'linear-gradient(135deg, rgba(0,61,255,0.15) 0%, rgba(84,104,255,0.08) 50%, rgba(0,61,255,0.05) 100%)',
+          border: '1px solid rgba(84,104,255,0.3)',
+          boxShadow: '0 8px 40px rgba(0,61,255,0.2), inset 0 1px 0 rgba(255,255,255,0.05)',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Glow orb effect */}
+        <Box
+          style={{
+            position: 'absolute',
+            top: -50,
+            right: -50,
+            width: 200,
+            height: 200,
+            background: 'radial-gradient(circle, rgba(0,61,255,0.3) 0%, transparent 70%)',
+            filter: 'blur(40px)',
+            pointerEvents: 'none',
+          }}
+        />
+        <Group justify="space-between" style={{ position: 'relative', zIndex: 1 }}>
           <Group>
-            <ThemeIcon size="lg" radius="md" variant="light" color="blue">
-              <IconChartDots size={20} />
+            <ThemeIcon
+              size={56}
+              radius="xl"
+              variant="gradient"
+              gradient={{ from: '#003dff', to: '#5468ff', deg: 135 }}
+              style={{ boxShadow: '0 8px 24px rgba(0,61,255,0.4)' }}
+            >
+              <IconChartDots size={28} />
             </ThemeIcon>
             <div>
-              <Title order={3} style={{ color: 'var(--mantine-color-blue-4)' }}>
+              <Title order={2} style={{ color: '#fff', textShadow: '0 2px 20px rgba(0,61,255,0.3)' }}>
                 Architecture Diagrams
               </Title>
               <Text size="sm" c="dimmed">
-                {diagrams.length} diagrams organized into {Object.keys(categorized).filter(k => (categorized[k]?.length || 0) > 0).length} categories
+                {diagrams.length} diagrams across {Object.keys(categorized).filter(k => (categorized[k]?.length || 0) > 0).length} categories
               </Text>
             </div>
           </Group>
-          <Badge size="lg" variant="light" color="blue">Gallery View</Badge>
+          <Badge
+            size="xl"
+            variant="gradient"
+            gradient={{ from: '#003dff', to: '#5468ff', deg: 135 }}
+            style={{ boxShadow: '0 4px 20px rgba(0,61,255,0.3)' }}
+          >
+            Gallery View
+          </Badge>
         </Group>
       </Paper>
 
-      <Text c="dimmed" mb="lg" size="sm">
-        Click any diagram card to view full size. Use tabs to filter by category.
-      </Text>
-
+      {/* Tabs with Glow */}
       <Tabs value={activeTab} onChange={(v) => setActiveTab(v || 'architecture')}>
-        <Tabs.List mb="lg">
+        <Tabs.List
+          mb="xl"
+          style={{
+            background: 'rgba(0,0,0,0.3)',
+            borderRadius: 'var(--mantine-radius-lg)',
+            padding: 4,
+            border: '1px solid rgba(84,104,255,0.15)',
+          }}
+        >
           {Object.entries(DIAGRAM_CATEGORIES).map(([key, { label, icon }]) => (
-            <Tabs.Tab key={key} value={key} leftSection={icon}>
+            <Tabs.Tab
+              key={key}
+              value={key}
+              leftSection={<span style={{ fontSize: 18 }}>{icon}</span>}
+              style={{
+                fontWeight: 500,
+                transition: 'all 0.2s',
+                ...(activeTab === key ? {
+                  background: 'linear-gradient(135deg, #003dff, #5468ff)',
+                  boxShadow: '0 4px 20px rgba(0,61,255,0.4)',
+                  color: '#fff',
+                } : {}),
+              }}
+            >
               {label} ({categorized[key]?.length || 0})
             </Tabs.Tab>
           ))}
@@ -384,39 +476,95 @@ function DiagramGallery({ markdown }: { markdown: string }) {
 
         {Object.entries(DIAGRAM_CATEGORIES).map(([key]) => (
           <Tabs.Panel key={key} value={key}>
-            <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">
-              {(categorized[key] || []).map((diagram, idx) => (
-                <Card
-                  key={idx}
-                  shadow="sm"
-                  padding="md"
-                  radius="md"
-                  withBorder
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => setSelectedDiagram(diagram)}
-                >
-                  <Card.Section p="xs" bg="dark.8" style={{ height: 120, overflow: 'hidden', position: 'relative' }}>
-                    <Box style={{ transform: 'scale(0.25)', transformOrigin: 'top left', width: '400%', height: '400%' }}>
-                      <MermaidDiagram code={diagram.code} index={idx} />
-                    </Box>
+            <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="lg">
+              {(categorized[key] || []).map((diagram, idx) => {
+                const globalIdx = `${key}-${idx}`;
+                const isHovered = hoveredIdx === idx;
+                return (
+                  <Card
+                    key={idx}
+                    padding={0}
+                    radius="lg"
+                    style={{
+                      ...glassCardStyle,
+                      ...(isHovered ? glassCardHoverStyle : {}),
+                      overflow: 'hidden',
+                    }}
+                    onMouseEnter={() => setHoveredIdx(idx)}
+                    onMouseLeave={() => setHoveredIdx(null)}
+                    onClick={() => setSelectedDiagram(diagram)}
+                  >
+                    {/* Diagram Preview with Gradient Overlay */}
                     <Box
                       style={{
-                        position: 'absolute',
-                        inset: 0,
-                        background: 'linear-gradient(transparent 60%, rgba(26,27,30,0.9))',
+                        height: 160,
+                        overflow: 'hidden',
+                        position: 'relative',
+                        background: 'linear-gradient(180deg, rgba(0,61,255,0.1) 0%, rgba(26,27,30,0.95) 100%)',
                       }}
-                    />
-                  </Card.Section>
-                  <Group justify="space-between" mt="md">
-                    <Text fw={500} size="sm" lineClamp={1}>
-                      {diagram.title}
-                    </Text>
-                    <Badge size="xs" variant="light">
-                      View
-                    </Badge>
-                  </Group>
-                </Card>
-              ))}
+                    >
+                      <Box
+                        style={{
+                          transform: 'scale(0.3)',
+                          transformOrigin: 'top center',
+                          width: '333%',
+                          marginLeft: '-116.5%',
+                          paddingTop: 20,
+                        }}
+                      >
+                        <MermaidDiagram code={diagram.code} index={idx} />
+                      </Box>
+                      {/* Gradient fade */}
+                      <Box
+                        style={{
+                          position: 'absolute',
+                          inset: 0,
+                          background: 'linear-gradient(180deg, transparent 40%, rgba(26,27,30,0.98) 100%)',
+                          pointerEvents: 'none',
+                        }}
+                      />
+                      {/* Glow effect on hover */}
+                      {isHovered && (
+                        <Box
+                          style={{
+                            position: 'absolute',
+                            inset: 0,
+                            background: 'radial-gradient(ellipse at center, rgba(0,61,255,0.15) 0%, transparent 70%)',
+                            pointerEvents: 'none',
+                          }}
+                        />
+                      )}
+                    </Box>
+                    {/* Card Footer */}
+                    <Box p="md">
+                      <Group justify="space-between" align="center">
+                        <Text
+                          fw={600}
+                          size="sm"
+                          lineClamp={1}
+                          style={{
+                            color: isHovered ? '#fff' : 'var(--mantine-color-gray-3)',
+                            transition: 'color 0.2s',
+                          }}
+                        >
+                          {diagram.title}
+                        </Text>
+                        <Badge
+                          size="sm"
+                          variant={isHovered ? 'gradient' : 'light'}
+                          gradient={{ from: '#003dff', to: '#5468ff' }}
+                          style={{
+                            boxShadow: isHovered ? '0 2px 12px rgba(0,61,255,0.4)' : 'none',
+                            transition: 'all 0.2s',
+                          }}
+                        >
+                          {isHovered ? 'Click to View' : 'View'}
+                        </Badge>
+                      </Group>
+                    </Box>
+                  </Card>
+                );
+              })}
             </SimpleGrid>
           </Tabs.Panel>
         ))}
