@@ -481,21 +481,94 @@ async def get_target(
     domain = domain.replace("https://", "").replace("http://", "")
     domain = domain.replace("www.", "").rstrip("/")
 
+    logger.info(f"GET target: {domain}")
+
     # Query target
-    result = await db.execute(
-        select(DisplacementTarget).where(
-            DisplacementTarget.domain == domain
+    try:
+        result = await db.execute(
+            select(DisplacementTarget).where(
+                DisplacementTarget.domain == domain
+            )
         )
-    )
-    target = result.scalar()
+        target = result.scalar()
+    except Exception as e:
+        logger.error(f"Database query error for {domain}: {type(e).__name__}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Database error: {str(e)}"
+        )
 
     if not target:
+        logger.info(f"Target not found: {domain}")
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Target not found: {domain}"
         )
 
-    return target_to_response(target)
+    logger.info(f"Found target: {domain}, id={target.id}, icp_score={target.icp_score}")
+
+    # Transform to response with detailed error logging
+    try:
+        response = target_to_response(target)
+        logger.info(f"Transformed target: {domain}")
+        return response
+    except Exception as e:
+        logger.error(f"Transform error for {domain}: {type(e).__name__}: {e}")
+        # Log the problematic fields
+        logger.error(f"  id={target.id}, domain={target.domain}")
+        logger.error(f"  created_at={target.created_at}, type={type(target.created_at)}")
+        logger.error(f"  score_breakdown={target.score_breakdown}, type={type(target.score_breakdown)}")
+        logger.error(f"  emails={target.emails}, type={type(target.emails)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Data transformation error: {str(e)}"
+        )
+
+
+# =============================================================================
+# Debug Raw Target Endpoint (for troubleshooting)
+# =============================================================================
+
+@router.get("/{domain}/raw")
+async def get_target_raw(
+    domain: str,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Get raw target data without Pydantic validation (debug endpoint).
+    """
+    domain = domain.strip().lower().replace("https://", "").replace("http://", "").replace("www.", "").rstrip("/")
+
+    result = await db.execute(
+        select(DisplacementTarget).where(DisplacementTarget.domain == domain)
+    )
+    target = result.scalar()
+
+    if not target:
+        raise HTTPException(status_code=404, detail=f"Target not found: {domain}")
+
+    # Return raw data as dict
+    return {
+        "id": target.id,
+        "domain": target.domain,
+        "company_name": target.company_name,
+        "partner_tech": target.partner_tech,
+        "vertical": target.vertical,
+        "country": target.country,
+        "icp_score": target.icp_score,
+        "icp_tier_name": target.icp_tier_name,
+        "created_at": str(target.created_at) if target.created_at else None,
+        "last_enriched": str(target.last_enriched) if target.last_enriched else None,
+        "emails": target.emails,
+        "phones": target.phones,
+        "score_breakdown": target.score_breakdown,
+        "score_reasons": target.score_reasons,
+        "_types": {
+            "created_at": type(target.created_at).__name__,
+            "emails": type(target.emails).__name__,
+            "score_breakdown": type(target.score_breakdown).__name__,
+        }
+    }
 
 
 # =============================================================================
