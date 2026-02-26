@@ -2,7 +2,12 @@
  * TargetList Component
  *
  * Premium data table for displacement targets using TanStack Table.
- * Features Excel-style column filters with counts, sorting, and glassmorphism design.
+ * Features Excel-style column filters with counts, sorting, and DATA SOURCE TRANSPARENCY.
+ *
+ * All data is clickable to verify at source:
+ * - Partner Tech → BuiltWith
+ * - Traffic → SimilarWeb
+ * - Domain → Company website
  */
 
 import { useState, useMemo, useCallback } from 'react';
@@ -34,6 +39,8 @@ import {
   ScrollArea,
   Divider,
   UnstyledButton,
+  Anchor,
+  ThemeIcon,
 } from '@mantine/core';
 import {
   IconEye,
@@ -46,6 +53,9 @@ import {
   IconSelector,
   IconX,
   IconChevronDown,
+  IconDatabase,
+  IconWorld,
+  IconBrandGoogle,
 } from '@tabler/icons-react';
 import type { Company } from '@/types';
 import { StatusBadge } from '@/components/common/StatusBadge';
@@ -77,9 +87,30 @@ interface TargetListProps {
   };
   onPageChange?: (page: number) => void;
   onEnrichCompany?: (domain: string) => void;
-  // Column filter callbacks
   columnFilters?: ColumnFilter[];
   onColumnFilterChange?: (column: string, values: string[]) => void;
+}
+
+// =============================================================================
+// Source Link Helpers - For Data Transparency
+// =============================================================================
+
+/** Get BuiltWith URL for a domain */
+function getBuiltWithUrl(domain: string): string {
+  return `https://builtwith.com/${domain}`;
+}
+
+/** Get SimilarWeb URL for a domain */
+function getSimilarWebUrl(domain: string): string {
+  return `https://www.similarweb.com/website/${domain}/`;
+}
+
+/** Format traffic number */
+function formatTraffic(visits: number | undefined): string {
+  if (!visits) return '---';
+  if (visits >= 1000000) return `${(visits / 1000000).toFixed(1)}M`;
+  if (visits >= 1000) return `${(visits / 1000).toFixed(0)}K`;
+  return visits.toString();
 }
 
 // =============================================================================
@@ -123,14 +154,12 @@ function FilterableHeader({
     onFilterChange(options.map((o) => o.value));
   };
 
-  // Sort options by count (highest first)
   const sortedOptions = useMemo(() => {
     return [...options].sort((a, b) => b.count - a.count);
   }, [options]);
 
   return (
     <Group gap={4} wrap="nowrap">
-      {/* Sort button */}
       <UnstyledButton
         onClick={() => column.toggleSorting()}
         className="flex items-center gap-1 hover:text-white transition-colors"
@@ -144,14 +173,7 @@ function FilterableHeader({
         )}
       </UnstyledButton>
 
-      {/* Filter dropdown */}
-      <Popover
-        opened={opened}
-        onChange={setOpened}
-        position="bottom-start"
-        shadow="lg"
-        width={260}
-      >
+      <Popover opened={opened} onChange={setOpened} position="bottom-start" shadow="lg" width={260}>
         <Popover.Target>
           <ActionIcon
             variant={hasFilter ? 'filled' : 'subtle'}
@@ -182,12 +204,7 @@ function FilterableHeader({
                 Filter by {label}
               </Text>
               {hasFilter && (
-                <ActionIcon
-                  variant="subtle"
-                  size="xs"
-                  onClick={clearFilter}
-                  c="dimmed"
-                >
+                <ActionIcon variant="subtle" size="xs" onClick={clearFilter} c="dimmed">
                   <IconX size={14} />
                 </ActionIcon>
               )}
@@ -196,20 +213,10 @@ function FilterableHeader({
             <Divider color="white/10" />
 
             <Group gap="xs">
-              <Button
-                size="compact-xs"
-                variant="subtle"
-                color="gray"
-                onClick={selectAll}
-              >
+              <Button size="compact-xs" variant="subtle" color="gray" onClick={selectAll}>
                 Select All
               </Button>
-              <Button
-                size="compact-xs"
-                variant="subtle"
-                color="gray"
-                onClick={clearFilter}
-              >
+              <Button size="compact-xs" variant="subtle" color="gray" onClick={clearFilter}>
                 Clear
               </Button>
             </Group>
@@ -231,25 +238,14 @@ function FilterableHeader({
                         gap: 8,
                         padding: '8px 10px',
                         borderRadius: 6,
-                        background: isSelected
-                          ? 'rgba(59, 130, 246, 0.15)'
-                          : 'transparent',
-                        border: isSelected
-                          ? '1px solid rgba(59, 130, 246, 0.3)'
-                          : '1px solid transparent',
+                        background: isSelected ? 'rgba(59, 130, 246, 0.15)' : 'transparent',
+                        border: isSelected ? '1px solid rgba(59, 130, 246, 0.3)' : '1px solid transparent',
                         transition: 'all 0.15s ease',
                       }}
                       className="hover:bg-white/5"
                     >
                       <Group gap="xs">
-                        <Checkbox
-                          checked={isSelected}
-                          onChange={() => {}}
-                          size="xs"
-                          styles={{
-                            input: { cursor: 'pointer' },
-                          }}
-                        />
+                        <Checkbox checked={isSelected} onChange={() => {}} size="xs" styles={{ input: { cursor: 'pointer' } }} />
                         {color ? (
                           <Badge size="sm" color={color} variant="light">
                             {option.value}
@@ -288,12 +284,7 @@ function FilterableHeader({
 // Simple Sort Header (no filter)
 // =============================================================================
 
-interface SortHeaderProps {
-  column: any;
-  label: string;
-}
-
-function SortHeader({ column, label }: SortHeaderProps) {
+function SortHeader({ column, label }: { column: any; label: string }) {
   return (
     <UnstyledButton
       onClick={() => column.toggleSorting()}
@@ -303,31 +294,29 @@ function SortHeader({ column, label }: SortHeaderProps) {
       {{
         asc: <IconArrowUp size={12} />,
         desc: <IconArrowDown size={12} />,
-      }[column.getIsSorted() as string] ?? (
-        <IconSelector size={12} className="opacity-30" />
-      )}
+      }[column.getIsSorted() as string] ?? <IconSelector size={12} className="opacity-30" />}
     </UnstyledButton>
   );
 }
 
 // =============================================================================
-// Partner Tech Cell with Tooltip
+// Partner Tech Cell - CLICKABLE to BuiltWith for verification
 // =============================================================================
 
-function PartnerTechCell({ techs }: { techs: string[] }) {
+function PartnerTechCell({ techs, domain }: { techs: string[]; domain: string }) {
   if (techs.length === 0) {
     return (
-      <Text size="xs" c="dimmed">
-        ---
-      </Text>
-    );
-  }
-
-  if (techs.length === 1) {
-    return (
-      <Badge size="xs" variant="light" color="green">
-        {techs[0]}
-      </Badge>
+      <Tooltip label="No partner tech detected. Click to verify on BuiltWith." withArrow>
+        <Anchor
+          href={getBuiltWithUrl(domain)}
+          target="_blank"
+          size="xs"
+          c="dimmed"
+          onClick={(e) => e.stopPropagation()}
+        >
+          ---
+        </Anchor>
+      </Tooltip>
     );
   }
 
@@ -335,24 +324,122 @@ function PartnerTechCell({ techs }: { techs: string[] }) {
     <Tooltip
       label={
         <Stack gap={4}>
+          <Text size="xs" fw={600}>Source: BuiltWith</Text>
+          <Divider size="xs" />
           {techs.map((tech) => (
-            <Text key={tech} size="xs">
-              {tech}
-            </Text>
+            <Text key={tech} size="xs">{tech}</Text>
           ))}
+          <Divider size="xs" />
+          <Text size="xs" c="dimmed">Click to verify →</Text>
         </Stack>
       }
       withArrow
       multiline
     >
-      <Group gap={4}>
-        <Badge size="xs" variant="light" color="green">
-          {techs[0]}
+      <Anchor
+        href={getBuiltWithUrl(domain)}
+        target="_blank"
+        onClick={(e) => e.stopPropagation()}
+        style={{ textDecoration: 'none' }}
+      >
+        <Group gap={4}>
+          <Badge size="xs" variant="light" color="green" style={{ cursor: 'pointer' }}>
+            {techs[0]}
+          </Badge>
+          {techs.length > 1 && (
+            <Badge size="xs" variant="light" color="gray" style={{ cursor: 'pointer' }}>
+              +{techs.length - 1}
+            </Badge>
+          )}
+          <IconExternalLink size={10} style={{ opacity: 0.5 }} />
+        </Group>
+      </Anchor>
+    </Tooltip>
+  );
+}
+
+// =============================================================================
+// Traffic Cell - CLICKABLE to SimilarWeb for verification
+// =============================================================================
+
+function TrafficCell({ visits, domain }: { visits: number | undefined; domain: string }) {
+  const formatted = formatTraffic(visits);
+
+  return (
+    <Tooltip
+      label={
+        <Stack gap={4}>
+          <Text size="xs" fw={600}>Source: SimilarWeb</Text>
+          <Divider size="xs" />
+          <Text size="xs">Monthly visits: {visits?.toLocaleString() || 'N/A'}</Text>
+          <Text size="xs" c="dimmed">Click to verify →</Text>
+        </Stack>
+      }
+      withArrow
+    >
+      <Anchor
+        href={getSimilarWebUrl(domain)}
+        target="_blank"
+        onClick={(e) => e.stopPropagation()}
+        size="sm"
+        c={visits && visits > 1000000 ? 'green.4' : 'white/70'}
+        fw={500}
+      >
+        {formatted}
+        <IconExternalLink size={10} style={{ marginLeft: 4, opacity: 0.5 }} />
+      </Anchor>
+    </Tooltip>
+  );
+}
+
+// =============================================================================
+// Source Badge - Shows data freshness
+// =============================================================================
+
+function SourceBadge({ lastEnriched }: { lastEnriched: string | undefined }) {
+  if (!lastEnriched) {
+    return (
+      <Tooltip label="Data has not been enriched yet. Click 'Refresh' to fetch fresh data." withArrow>
+        <Badge size="xs" variant="light" color="yellow" style={{ cursor: 'help' }}>
+          Not verified
         </Badge>
-        <Badge size="xs" variant="light" color="gray" style={{ cursor: 'help' }}>
-          +{techs.length - 1}
-        </Badge>
-      </Group>
+      </Tooltip>
+    );
+  }
+
+  const d = new Date(lastEnriched);
+  const daysSince = Math.floor((Date.now() - d.getTime()) / (1000 * 60 * 60 * 24));
+  const isFresh = daysSince <= 7;
+  const isStale = daysSince > 30;
+
+  return (
+    <Tooltip
+      label={
+        <Stack gap={4}>
+          <Text size="xs" fw={600}>Data Sources:</Text>
+          <Group gap={4}>
+            <ThemeIcon size="xs" variant="light" color="blue"><IconDatabase size={10} /></ThemeIcon>
+            <Text size="xs">BuiltWith (Tech)</Text>
+          </Group>
+          <Group gap={4}>
+            <ThemeIcon size="xs" variant="light" color="orange"><IconWorld size={10} /></ThemeIcon>
+            <Text size="xs">SimilarWeb (Traffic)</Text>
+          </Group>
+          <Divider size="xs" />
+          <Text size="xs" c="dimmed">Last updated: {d.toLocaleDateString()}</Text>
+        </Stack>
+      }
+      withArrow
+      multiline
+    >
+      <Badge
+        size="xs"
+        variant="light"
+        color={isFresh ? 'green' : isStale ? 'red' : 'yellow'}
+        style={{ cursor: 'help' }}
+      >
+        {isFresh ? 'Fresh' : isStale ? 'Stale' : `${daysSince}d ago`}
+      </Badge>
     </Tooltip>
   );
 }
@@ -372,13 +459,9 @@ export function TargetList({
 }: TargetListProps) {
   const navigate = useNavigate();
 
-  // Table state
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: 'icp_score', desc: true },
-  ]);
+  const [sorting, setSorting] = useState<SortingState>([{ id: 'icp_score', desc: true }]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
-  // Get filter values for a column
   const getFilterValues = useCallback(
     (column: string) => {
       const filter = columnFilters.find((f) => f.column === column);
@@ -387,7 +470,6 @@ export function TargetList({
     [columnFilters]
   );
 
-  // Handle filter change for a column
   const handleFilterChange = useCallback(
     (column: string, values: string[]) => {
       onColumnFilterChange?.(column, values);
@@ -395,7 +477,7 @@ export function TargetList({
     [onColumnFilterChange]
   );
 
-  // Build filter options with counts from current data
+  // Build filter options with counts
   const statusOptions = useMemo<FilterOption[]>(() => {
     const counts: Record<string, number> = { hot: 0, warm: 0, cold: 0 };
     companies.forEach((c) => {
@@ -411,9 +493,7 @@ export function TargetList({
   const verticalOptions = useMemo<FilterOption[]>(() => {
     const counts: Record<string, number> = {};
     companies.forEach((c) => {
-      if (c.vertical) {
-        counts[c.vertical] = (counts[c.vertical] || 0) + 1;
-      }
+      if (c.vertical) counts[c.vertical] = (counts[c.vertical] || 0) + 1;
     });
     return Object.entries(counts)
       .map(([value, count]) => ({ value, count }))
@@ -432,14 +512,8 @@ export function TargetList({
       .sort((a, b) => b.count - a.count);
   }, [companies]);
 
-  // Status colors
-  const statusColors: Record<string, string> = {
-    hot: 'red',
-    warm: 'orange',
-    cold: 'gray',
-  };
+  const statusColors: Record<string, string> = { hot: 'red', warm: 'orange', cold: 'gray' };
 
-  // Define columns
   const columns = useMemo<ColumnDef<Company>[]>(
     () => [
       {
@@ -457,9 +531,15 @@ export function TargetList({
                   {company.company_name || company.domain}
                 </Text>
                 <Group gap={4} wrap="nowrap">
-                  <Text size="xs" c="dimmed" truncate>
+                  <Anchor
+                    href={`https://${company.domain}`}
+                    target="_blank"
+                    size="xs"
+                    c="dimmed"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     {company.domain}
-                  </Text>
+                  </Anchor>
                   {company.ticker && (
                     <Badge size="xs" variant="outline" color="gray">
                       {company.exchange}:{company.ticker}
@@ -470,7 +550,7 @@ export function TargetList({
             </div>
           );
         },
-        size: 250,
+        size: 220,
       },
       {
         accessorKey: 'icp_score',
@@ -483,7 +563,7 @@ export function TargetList({
             </div>
           );
         },
-        size: 100,
+        size: 90,
       },
       {
         accessorKey: 'status',
@@ -497,11 +577,8 @@ export function TargetList({
             colorMap={statusColors}
           />
         ),
-        cell: ({ getValue }) => {
-          const status = getValue<Company['status']>();
-          return <StatusBadge status={status} size="sm" />;
-        },
-        size: 130,
+        cell: ({ getValue }) => <StatusBadge status={getValue<Company['status']>()} size="sm" />,
+        size: 110,
       },
       {
         accessorKey: 'vertical',
@@ -515,11 +592,11 @@ export function TargetList({
           />
         ),
         cell: ({ getValue }) => (
-          <Text size="sm" c="white/70">
+          <Text size="sm" c="white/70" truncate style={{ maxWidth: 120 }}>
             {getValue<string>() || '---'}
           </Text>
         ),
-        size: 150,
+        size: 130,
       },
       {
         accessorKey: 'partner_tech',
@@ -532,48 +609,23 @@ export function TargetList({
             onFilterChange={(values) => handleFilterChange('partner_tech', values)}
           />
         ),
-        cell: ({ getValue }) => {
-          const techs = getValue<string[]>() || [];
-          return <PartnerTechCell techs={techs} />;
-        },
-        size: 160,
+        cell: ({ row }) => (
+          <PartnerTechCell techs={row.original.partner_tech || []} domain={row.original.domain} />
+        ),
+        size: 140,
       },
       {
-        accessorKey: 'signal_score',
-        header: ({ column }) => <SortHeader column={column} label="Signals" />,
-        cell: ({ getValue }) => {
-          const score = getValue<number>();
-          if (!score) return <Text size="xs" c="dimmed">---</Text>;
-          return (
-            <Text size="sm" fw={500} c={score >= 50 ? 'green.4' : 'white/60'}>
-              {score}
-            </Text>
-          );
-        },
-        size: 80,
+        accessorKey: 'sw_monthly_visits',
+        header: ({ column }) => <SortHeader column={column} label="Traffic" />,
+        cell: ({ row }) => (
+          <TrafficCell visits={row.original.sw_monthly_visits} domain={row.original.domain} />
+        ),
+        size: 90,
       },
       {
         accessorKey: 'last_enriched',
-        header: 'Last Enriched',
-        cell: ({ getValue }) => {
-          const date = getValue<string>();
-          if (!date) {
-            return (
-              <Badge size="xs" variant="light" color="yellow">
-                Not enriched
-              </Badge>
-            );
-          }
-          const d = new Date(date);
-          const daysSince = Math.floor((Date.now() - d.getTime()) / (1000 * 60 * 60 * 24));
-          return (
-            <Tooltip label={d.toLocaleString()}>
-              <Text size="xs" c={daysSince > 7 ? 'yellow.4' : 'dimmed'}>
-                {daysSince === 0 ? 'Today' : daysSince === 1 ? 'Yesterday' : `${daysSince}d ago`}
-              </Text>
-            </Tooltip>
-          );
-        },
+        header: 'Data Source',
+        cell: ({ getValue }) => <SourceBadge lastEnriched={getValue<string>()} />,
         size: 100,
       },
       {
@@ -583,7 +635,7 @@ export function TargetList({
           const company = row.original;
           return (
             <Group gap="xs" justify="flex-end" wrap="nowrap">
-              <Tooltip label="View Intelligence">
+              <Tooltip label="View Full Intelligence Report">
                 <ActionIcon
                   variant="subtle"
                   size="sm"
@@ -595,7 +647,7 @@ export function TargetList({
                   <IconEye size={14} />
                 </ActionIcon>
               </Tooltip>
-              <Tooltip label="Refresh Data">
+              <Tooltip label="Refresh Data from BuiltWith & SimilarWeb">
                 <ActionIcon
                   variant="subtle"
                   size="sm"
@@ -607,7 +659,7 @@ export function TargetList({
                   <IconRefresh size={14} />
                 </ActionIcon>
               </Tooltip>
-              <Tooltip label="Visit Website">
+              <Tooltip label="Visit Company Website">
                 <ActionIcon
                   variant="subtle"
                   size="sm"
@@ -625,25 +677,13 @@ export function TargetList({
         size: 100,
       },
     ],
-    [
-      navigate,
-      onEnrichCompany,
-      getFilterValues,
-      handleFilterChange,
-      statusOptions,
-      verticalOptions,
-      partnerTechOptions,
-    ]
+    [navigate, onEnrichCompany, getFilterValues, handleFilterChange, statusOptions, verticalOptions, partnerTechOptions]
   );
 
-  // Create table instance
   const table = useReactTable({
     data: companies,
     columns,
-    state: {
-      sorting,
-      columnVisibility,
-    },
+    state: { sorting, columnVisibility },
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
@@ -652,27 +692,14 @@ export function TargetList({
     pageCount: pagination?.total_pages || -1,
   });
 
-  const handleRowClick = useCallback(
-    (domain: string) => {
-      navigate(`/company/${domain}`);
-    },
-    [navigate]
-  );
+  const handleRowClick = useCallback((domain: string) => navigate(`/company/${domain}`), [navigate]);
 
-  // Count active filters
-  const activeFilterCount = columnFilters.reduce(
-    (acc, f) => acc + (f.values.length > 0 ? 1 : 0),
-    0
-  );
+  const activeFilterCount = columnFilters.reduce((acc, f) => acc + (f.values.length > 0 ? 1 : 0), 0);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-    >
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
       <Paper radius="lg" className="bg-white/5 border border-white/10 overflow-hidden">
-        {/* Minimal Toolbar - just column visibility and export */}
+        {/* Toolbar */}
         <div className="p-3 border-b border-white/10">
           <Group justify="space-between">
             <Group gap="xs">
@@ -682,12 +709,11 @@ export function TargetList({
                 </Badge>
               )}
               <Text size="xs" c="dimmed">
-                Click column header dropdowns to filter
+                💡 Click column headers to filter • Click badges to verify at source
               </Text>
             </Group>
 
             <Group gap="xs">
-              {/* Column visibility */}
               <Menu shadow="md" width={200}>
                 <Menu.Target>
                   <Tooltip label="Toggle columns">
@@ -702,19 +728,13 @@ export function TargetList({
                     if (column.id === 'actions') return null;
                     return (
                       <Menu.Item key={column.id} onClick={() => column.toggleVisibility()}>
-                        <Checkbox
-                          label={column.id}
-                          checked={column.getIsVisible()}
-                          onChange={() => {}}
-                          size="xs"
-                        />
+                        <Checkbox label={column.id} checked={column.getIsVisible()} onChange={() => {}} size="xs" />
                       </Menu.Item>
                     );
                   })}
                 </Menu.Dropdown>
               </Menu>
 
-              {/* Export */}
               <Tooltip label="Export CSV">
                 <ActionIcon variant="subtle">
                   <IconDownload size={18} />
@@ -727,7 +747,6 @@ export function TargetList({
         {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full">
-            {/* Header */}
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id} className="border-b border-white/10 bg-white/5">
@@ -737,16 +756,13 @@ export function TargetList({
                       className="px-4 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider"
                       style={{ width: header.getSize() }}
                     >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(header.column.columnDef.header, header.getContext())}
+                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </th>
                   ))}
                 </tr>
               ))}
             </thead>
 
-            {/* Body */}
             <tbody>
               {isLoading ? (
                 Array.from({ length: 10 }).map((_, i) => (
@@ -775,11 +791,7 @@ export function TargetList({
                       className="border-b border-white/5 cursor-pointer hover:bg-white/5 transition-colors"
                     >
                       {row.getVisibleCells().map((cell) => (
-                        <td
-                          key={cell.id}
-                          className="px-4 py-3"
-                          style={{ width: cell.column.getSize() }}
-                        >
+                        <td key={cell.id} className="px-4 py-3" style={{ width: cell.column.getSize() }}>
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </td>
                       ))}
@@ -797,8 +809,7 @@ export function TargetList({
             <Group justify="space-between">
               <Text size="sm" c="dimmed">
                 Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
-                {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
-                {pagination.total} results
+                {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} results
               </Text>
               <Pagination
                 value={pagination.page}
@@ -806,13 +817,26 @@ export function TargetList({
                 total={pagination.total_pages}
                 size="sm"
                 withEdges
-                classNames={{
-                  control: 'border-white/10 text-white/70 hover:bg-white/10',
-                }}
+                classNames={{ control: 'border-white/10 text-white/70 hover:bg-white/10' }}
               />
             </Group>
           </div>
         )}
+
+        {/* Data Source Attribution Footer */}
+        <div className="px-4 py-2 border-t border-white/10 bg-white/2">
+          <Group gap="lg" justify="center">
+            <Group gap={4}>
+              <ThemeIcon size="xs" variant="light" color="blue"><IconDatabase size={10} /></ThemeIcon>
+              <Text size="xs" c="dimmed">Tech: BuiltWith</Text>
+            </Group>
+            <Group gap={4}>
+              <ThemeIcon size="xs" variant="light" color="orange"><IconWorld size={10} /></ThemeIcon>
+              <Text size="xs" c="dimmed">Traffic: SimilarWeb</Text>
+            </Group>
+            <Text size="xs" c="dimmed">• Click any data to verify at source</Text>
+          </Group>
+        </div>
       </Paper>
     </motion.div>
   );
