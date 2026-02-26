@@ -81,6 +81,19 @@ def parse_json_field(value: Optional[str]) -> Optional[List]:
         return None
 
 
+def parse_json_dict(value: Optional[str]) -> Optional[dict]:
+    """Parse JSON string field to dict (for score_breakdown etc)."""
+    if value is None:
+        return None
+    if isinstance(value, dict):
+        return value
+    try:
+        result = json.loads(value)
+        return result if isinstance(result, dict) else None
+    except (json.JSONDecodeError, TypeError):
+        return None
+
+
 def target_to_summary(target: DisplacementTarget) -> TargetSummary:
     """Convert DisplacementTarget model to TargetSummary schema."""
     return TargetSummary(
@@ -127,9 +140,9 @@ def target_to_response(target: DisplacementTarget) -> TargetResponse:
         icp_score=target.icp_score,
         icp_tier_name=target.icp_tier_name,
         score_reasons=parse_json_field(target.score_reasons),
-        score_breakdown=json.loads(target.score_breakdown) if target.score_breakdown else None,
+        score_breakdown=parse_json_dict(target.score_breakdown),
         ticker=target.ticker,
-        is_public=target.is_public or False,
+        is_public=target.is_public if target.is_public is not None else False,
         revenue=target.revenue,
         gross_margin=target.gross_margin,
         traffic_growth=target.traffic_growth,
@@ -529,13 +542,14 @@ async def get_target(
 # Debug Raw Target Endpoint (for troubleshooting)
 # =============================================================================
 
-@router.get("/{domain}/raw")
+@router.get("/raw/{domain}")
 async def get_target_raw(
     domain: str,
     db: AsyncSession = Depends(get_db),
 ):
     """
     Get raw target data without Pydantic validation (debug endpoint).
+    URL: GET /api/v1/targets/raw/{domain}
     """
     domain = domain.strip().lower().replace("https://", "").replace("http://", "").replace("www.", "").rstrip("/")
 
