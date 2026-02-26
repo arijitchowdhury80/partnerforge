@@ -34,13 +34,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import { getCompanies } from '@/services/api';
 import { TargetList, type ColumnFilter } from '@/components/targets/TargetList';
-
-// Algolia Brand Colors (Official)
-const ALGOLIA_NEBULA_BLUE = '#003DFF';
-const ALGOLIA_SPACE_GRAY = '#21243D';
-const ALGOLIA_PURPLE = '#5468FF';
-const ALGOLIA_LIGHT_GRAY = '#F5F5F7';
-const ALGOLIA_BORDER = '#E8E8ED';
+import { COLORS } from '@/lib/constants';
 
 // =============================================================================
 // Companies Page Component
@@ -300,7 +294,7 @@ export function CompaniesPage() {
                   fontSize: '14px',
                   padding: '10px 14px',
                   '&[data-selected]': {
-                    backgroundColor: ALGOLIA_NEBULA_BLUE,
+                    backgroundColor: COLORS.ALGOLIA_NEBULA_BLUE,
                     color: '#ffffff',
                   },
                   '&[data-hovered]': {

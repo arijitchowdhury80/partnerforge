@@ -97,13 +97,14 @@ interface CompanyDrawerProps {
   opened: boolean;
   onClose: () => void;
   onEnrich?: (domain: string) => void;
+  onAddToCampaign?: (domain: string, companyName: string) => void;
 }
 
 // =============================================================================
 // Main Component
 // =============================================================================
 
-export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDrawerProps) {
+export function CompanyDrawer({ company, opened, onClose, onEnrich, onAddToCampaign }: CompanyDrawerProps) {
   const [isPinned, setIsPinned] = useState(false);
   // Default to first accordion open, more open when pinned
   const [openAccordions, setOpenAccordions] = useState<string[]>(['traffic']);
@@ -394,6 +395,8 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich }: CompanyDra
             <Button
               variant="filled"
               color="blue"
+              onClick={() => onAddToCampaign?.(company.domain, company.company_name)}
+              disabled={!onAddToCampaign}
             >
               Add to Campaign
             </Button>
