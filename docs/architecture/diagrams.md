@@ -7,6 +7,7 @@ Visual diagrams of PartnerForge system architecture using Mermaid.
 ## System Overview
 
 ```mermaid
+%%{init: {'theme': 'dark'}}%%
 flowchart TB
     subgraph Users["👥 USERS"]
         BDR[BDRs]
@@ -54,6 +55,7 @@ flowchart TB
 ## 4-Wave Parallel Execution Model
 
 ```mermaid
+%%{init: {'theme': 'dark'}}%%
 flowchart LR
     subgraph W1["WAVE 1 - Foundation (Parallel)"]
         direction TB
@@ -102,6 +104,7 @@ flowchart LR
 ## Data Flow Diagram
 
 ```mermaid
+%%{init: {'theme': 'dark'}}%%
 flowchart TD
     subgraph Input["📥 INPUT"]
         Domain[Company Domain]
@@ -153,6 +156,7 @@ flowchart TD
 ## ICP Scoring Flow
 
 ```mermaid
+%%{init: {'theme': 'dark'}}%%
 flowchart LR
     subgraph Inputs[SCORING INPUTS]
         V[Vertical 40%]
@@ -186,6 +190,7 @@ flowchart LR
 ## Module Dependency Graph
 
 ```mermaid
+%%{init: {'theme': 'dark'}}%%
 flowchart TD
     M01[M01: Company Context] --> M05
     M01 --> M06
@@ -244,6 +249,7 @@ flowchart TD
 ## Database Entity Relationship
 
 ```mermaid
+%%{init: {'theme': 'dark'}}%%
 erDiagram
     displacement_targets ||--o{ enrichment_jobs : "has"
     displacement_targets ||--o{ executive_quotes : "has"
@@ -321,6 +327,7 @@ erDiagram
 ## Enrichment Job State Machine
 
 ```mermaid
+%%{init: {'theme': 'dark'}}%%
 stateDiagram-v2
     [*] --> Queued: POST /enrich
     Queued --> Running: Worker picks up
@@ -349,6 +356,7 @@ stateDiagram-v2
 ## Frontend Component Hierarchy
 
 ```mermaid
+%%{init: {'theme': 'dark'}}%%
 flowchart TD
     App[App.tsx]
 
@@ -384,6 +392,7 @@ flowchart TD
 ## API Request Flow
 
 ```mermaid
+%%{init: {'theme': 'dark'}}%%
 sequenceDiagram
     participant U as User
     participant F as Frontend (Vercel)
@@ -406,6 +415,7 @@ sequenceDiagram
 ## Enrichment Flow (Offline/MCP)
 
 ```mermaid
+%%{init: {'theme': 'dark'}}%%
 sequenceDiagram
     participant C as Claude/MCP
     participant E as External APIs
@@ -429,6 +439,7 @@ sequenceDiagram
 ## Deployment Architecture
 
 ```mermaid
+%%{init: {'theme': 'dark'}}%%
 flowchart TB
     subgraph GitHub["📦 GitHub"]
         Repo[partnerforge repo]
@@ -467,6 +478,7 @@ flowchart TB
 ## Circuit Breaker Pattern
 
 ```mermaid
+%%{init: {'theme': 'dark'}}%%
 stateDiagram-v2
     [*] --> Closed
 
@@ -490,6 +502,7 @@ stateDiagram-v2
 ## Build Process - Parallel Agent Strategy
 
 ```mermaid
+%%{init: {'theme': 'dark'}}%%
 flowchart TB
     subgraph Build["🔨 PARALLEL BUILD EXECUTION"]
         direction TB
