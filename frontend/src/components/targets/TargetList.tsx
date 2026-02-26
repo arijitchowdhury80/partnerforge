@@ -116,7 +116,7 @@ interface TargetListProps {
 }
 
 // =============================================================================
-// Excel-Style Filter Header Component
+// Excel-Style Filter Header Component - REDESIGNED FOR VISIBILITY
 // =============================================================================
 
 interface FilterHeaderProps {
@@ -138,10 +138,11 @@ function FilterHeader({
 }: FilterHeaderProps) {
   const [opened, setOpened] = useState(false);
 
-  // Check if filter is active (some but not all selected)
-  const hasFilter = selectedValues.length > 0 && selectedValues.length < options.length;
+  // Check if filter is active
+  const hasFilter = selectedValues.length > 0;
+  const filterCount = selectedValues.length;
 
-  // Sort options by count (highest first) - THIS IS THE KEY SORTING
+  // Sort options by count (highest first)
   const sortedOptions = useMemo(() => {
     return [...options].sort((a, b) => b.count - a.count);
   }, [options]);
@@ -155,7 +156,7 @@ function FilterHeader({
   };
 
   const selectAll = () => {
-    onFilterChange(options.map((o) => o.value));
+    onFilterChange([]);  // Empty = show all (no filter)
   };
 
   const clearAll = () => {
@@ -164,142 +165,145 @@ function FilterHeader({
   };
 
   return (
-    <Group gap={4} wrap="nowrap">
-      {/* Sort button */}
-      <UnstyledButton
-        onClick={() => column.toggleSorting()}
-        style={{ display: 'flex', alignItems: 'center', gap: 4 }}
-      >
-        <Text size="sm" fw={700} c={GRAY_700} tt="uppercase">{label}</Text>
-        {{
-          asc: <IconArrowUp size={12} color={ALGOLIA_BLUE} />,
-          desc: <IconArrowDown size={12} color={ALGOLIA_BLUE} />,
-        }[column.getIsSorted() as string] ?? <IconSelector size={12} color={GRAY_400} />}
-      </UnstyledButton>
-
-      {/* Filter dropdown */}
-      <Popover
-        opened={opened}
-        onChange={setOpened}
-        position="bottom-start"
-        shadow="lg"
-        width={280}
-      >
-        <Popover.Target>
-          <ActionIcon
-            variant={hasFilter ? 'filled' : 'subtle'}
-            size="xs"
-            color={hasFilter ? 'blue' : 'gray'}
-            onClick={() => setOpened(!opened)}
-          >
-            {hasFilter ? (
-              <Badge size="xs" circle variant="filled" color="blue">
-                {selectedValues.length}
-              </Badge>
-            ) : (
-              <IconChevronDown size={12} />
-            )}
-          </ActionIcon>
-        </Popover.Target>
-
-        <Popover.Dropdown
+    <Popover
+      opened={opened}
+      onChange={setOpened}
+      position="bottom-start"
+      shadow="xl"
+      width={300}
+    >
+      <Popover.Target>
+        {/* ENTIRE HEADER IS CLICKABLE - Excel style */}
+        <UnstyledButton
+          onClick={() => setOpened(!opened)}
           style={{
-            background: 'white',
-            border: `1px solid ${GRAY_200}`,
-            boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '6px 10px',
+            borderRadius: 6,
+            background: hasFilter ? 'rgba(0, 61, 255, 0.1)' : 'transparent',
+            border: hasFilter ? '1px solid rgba(0, 61, 255, 0.3)' : '1px solid transparent',
+            transition: 'all 0.15s ease',
           }}
         >
-          <Stack gap="xs">
-            {/* Header */}
-            <Group justify="space-between">
-              <Group gap="xs">
-                <IconFilter size={14} color={ALGOLIA_BLUE} />
-                <Text size="sm" fw={600} c={GRAY_900}>
-                  Filter by {label}
-                </Text>
-              </Group>
-              {hasFilter && (
-                <ActionIcon variant="subtle" size="xs" onClick={clearAll} c="gray">
-                  <IconX size={14} />
-                </ActionIcon>
-              )}
-            </Group>
+          <Text size="sm" fw={700} c={hasFilter ? ALGOLIA_NEBULA_BLUE : GRAY_700} tt="uppercase">
+            {label}
+          </Text>
 
-            <Divider />
+          {/* Filter indicator */}
+          {hasFilter ? (
+            <Badge size="sm" variant="filled" color="blue" style={{ minWidth: 22 }}>
+              {filterCount}
+            </Badge>
+          ) : (
+            <IconChevronDown size={16} color={GRAY_500} style={{ opacity: 0.8 }} />
+          )}
+        </UnstyledButton>
+      </Popover.Target>
 
-            {/* Quick actions */}
+      <Popover.Dropdown
+        style={{
+          background: 'white',
+          border: `1px solid ${GRAY_200}`,
+          boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+          borderRadius: 8,
+        }}
+      >
+        <Stack gap="sm">
+          {/* Header */}
+          <Group justify="space-between">
             <Group gap="xs">
-              <Button size="compact-xs" variant="filled" color="blue" onClick={selectAll}>
-                Select All
-              </Button>
-              <Button size="compact-xs" variant="outline" color="gray" onClick={clearAll}>
-                Clear
-              </Button>
+              <IconFilter size={16} color={ALGOLIA_NEBULA_BLUE} />
+              <Text size="sm" fw={600} c="#1e293b">
+                Filter by {label}
+              </Text>
             </Group>
-
-            {/* Filter options - SORTED BY COUNT */}
-            <ScrollArea.Autosize mah={300}>
-              <Stack gap={4}>
-                {sortedOptions.map((option) => {
-                  const isSelected = selectedValues.length === 0 || selectedValues.includes(option.value);
-                  const badgeColor = colorMap?.[option.value];
-
-                  return (
-                    <UnstyledButton
-                      key={option.value}
-                      onClick={() => toggleValue(option.value)}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: '10px 12px',
-                        borderRadius: 6,
-                        background: isSelected ? '#eff6ff' : 'transparent',
-                        border: isSelected ? '1px solid #bfdbfe' : '1px solid transparent',
-                        transition: 'all 0.15s ease',
-                      }}
-                    >
-                      <Group gap="sm">
-                        <Checkbox
-                          checked={isSelected}
-                          onChange={() => {}}
-                          size="xs"
-                          color="blue"
-                          styles={{ input: { cursor: 'pointer' } }}
-                        />
-                        {badgeColor ? (
-                          <Badge size="sm" color={badgeColor} variant="filled" tt="capitalize">
-                            {option.value}
-                          </Badge>
-                        ) : (
-                          <Text size="sm" fw={500} c={GRAY_900}>
-                            {option.value}
-                          </Text>
-                        )}
-                      </Group>
-                      {/* COUNT BADGE - shows how many companies */}
-                      <Text size="sm" fw={600} c={GRAY_700}>
-                        {option.count}
-                      </Text>
-                    </UnstyledButton>
-                  );
-                })}
-              </Stack>
-            </ScrollArea.Autosize>
-
-            {/* Footer showing selection count */}
             {hasFilter && (
-              <>
-                <Divider />
-                <Text size="xs" c={GRAY_500} ta="center">
-                  {selectedValues.length} of {options.length} selected
-                </Text>
-              </>
+              <ActionIcon variant="subtle" size="sm" onClick={clearAll} color="red">
+                <IconX size={16} />
+              </ActionIcon>
             )}
-          </Stack>
-        </Popover.Dropdown>
-      </Popover>
-    </Group>
+          </Group>
+
+          <Divider />
+
+          {/* Quick actions */}
+          <Group gap="xs">
+            <Button size="compact-sm" variant="light" color="blue" onClick={selectAll}>
+              Show All
+            </Button>
+            {hasFilter && (
+              <Button size="compact-sm" variant="light" color="red" onClick={clearAll}>
+                Clear Filter
+              </Button>
+            )}
+          </Group>
+
+          {/* Filter options - SORTED BY COUNT */}
+          <Text size="xs" c={GRAY_500} fw={500}>
+            Click to filter by specific values:
+          </Text>
+          <ScrollArea.Autosize mah={280}>
+            <Stack gap={6}>
+              {sortedOptions.map((option) => {
+                // When no filter active, nothing is "selected" - all are shown
+                // When filter active, only selected values are checked
+                const isChecked = hasFilter && selectedValues.includes(option.value);
+
+                return (
+                  <UnstyledButton
+                    key={option.value}
+                    onClick={() => toggleValue(option.value)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '10px 14px',
+                      borderRadius: 8,
+                      background: isChecked ? '#dbeafe' : '#f8fafc',
+                      border: isChecked ? '2px solid #3b82f6' : '1px solid #e2e8f0',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    <Group gap="sm">
+                      <Checkbox
+                        checked={isChecked}
+                        onChange={() => {}}
+                        size="sm"
+                        color="blue"
+                        styles={{ input: { cursor: 'pointer' } }}
+                      />
+                      {colorMap?.[option.value] ? (
+                        <Badge size="md" color={colorMap[option.value]} variant="filled" tt="capitalize" styles={{ root: { color: '#fff' } }}>
+                          {option.value}
+                        </Badge>
+                      ) : (
+                        <Text size="sm" fw={500} c="#1e293b">
+                          {option.value || '(empty)'}
+                        </Text>
+                      )}
+                    </Group>
+                    {/* COUNT - shows how many companies */}
+                    <Badge size="md" variant="light" color="gray">
+                      {option.count}
+                    </Badge>
+                  </UnstyledButton>
+                );
+              })}
+            </Stack>
+          </ScrollArea.Autosize>
+
+          {/* Footer */}
+          <Divider />
+          <Text size="xs" c={GRAY_500} ta="center">
+            {hasFilter
+              ? `Showing ${selectedValues.length} of ${options.length} values`
+              : `${options.length} unique values`}
+          </Text>
+        </Stack>
+      </Popover.Dropdown>
+    </Popover>
   );
 }
 
