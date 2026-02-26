@@ -14,6 +14,7 @@ import {
   IconTarget,
   IconBolt,
   IconDatabase,
+  IconBell,
 } from '@tabler/icons-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -30,6 +31,7 @@ interface NavItem {
 const mainNavItems: NavItem[] = [
   { icon: IconDashboard, label: 'Dashboard', path: '/dashboard' },
   { icon: IconBuilding, label: 'Companies', path: '/companies' },
+  { icon: IconBell, label: 'Alerts', path: '/alerts' },
   { icon: IconUpload, label: 'Upload Lists', path: '/lists' },
   { icon: IconChartBar, label: 'Analytics', path: '/analytics' },
 ];

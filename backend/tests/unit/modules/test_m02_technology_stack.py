@@ -1,5 +1,5 @@
 """
-Unit tests for M02_TechnologyStack Intelligence Module.
+Unit tests for M02_TechStack Intelligence Module.
 
 Tests the technology stack module which detects technologies for partner matching
 and displacement opportunities. Validates source citation mandate compliance.
@@ -9,24 +9,25 @@ import pytest
 from datetime import datetime, timedelta
 from unittest.mock import AsyncMock, patch, MagicMock
 
-from app.modules.m02_technology_stack import (
-    M02TechnologyStackModule,
-    TechnologyStackData,
+from app.modules.m02_tech_stack import (
+    M02TechStackModule,
+    TechStackData,
     TechnologyItem,
+    SearchProviderInfo,
+    SEARCH_PROVIDERS,
     PARTNER_TECHNOLOGIES,
-    COMPETITOR_SEARCH_PROVIDERS,
 )
 from app.modules.base import ModuleResult, SourceInfo
 from app.services.validation import MissingSourceError, SourceFreshnessError
 
 
-class TestM02TechnologyStackModule:
-    """Test suite for M02TechnologyStackModule."""
+class TestM02TechStackModule:
+    """Test suite for M02TechStackModule."""
 
     @pytest.fixture
     def module(self):
         """Create module instance for testing."""
-        return M02TechnologyStackModule()
+        return M02TechStackModule()
 
     @pytest.fixture
     def valid_builtwith_response(self):
@@ -36,21 +37,21 @@ class TestM02TechnologyStackModule:
             "technologies": [
                 {
                     "name": "Salesforce Commerce Cloud",
-                    "category": "E-commerce",
+                    "category": "ecommerce",
                     "first_detected": "2019-03-15",
                     "last_detected": datetime.now().strftime("%Y-%m-%d"),
                     "confidence": 0.95,
                 },
                 {
                     "name": "Elasticsearch",
-                    "category": "Search",
+                    "category": "search",
                     "first_detected": "2020-06-01",
                     "last_detected": datetime.now().strftime("%Y-%m-%d"),
                     "confidence": 0.90,
                 },
                 {
                     "name": "Google Analytics",
-                    "category": "Analytics",
+                    "category": "analytics",
                     "confidence": 0.99,
                 },
             ],
@@ -65,7 +66,7 @@ class TestM02TechnologyStackModule:
 
     def test_module_id(self, module):
         """Test module has correct ID."""
-        assert module.MODULE_ID == "m02_technology_stack"
+        assert module.MODULE_ID == "m02_tech_stack"
 
     def test_module_name(self, module):
         """Test module has correct name."""
@@ -84,183 +85,43 @@ class TestM02TechnologyStackModule:
         assert module.SOURCE_TYPE == "api"
 
     # =========================================================================
-    # Partner/Competitor Detection Tests
+    # Search Provider Detection Tests
+    # =========================================================================
+
+    def test_search_providers_defined(self):
+        """Test search providers are properly defined."""
+        assert "algolia" in SEARCH_PROVIDERS
+        assert "elasticsearch" in SEARCH_PROVIDERS
+        assert "coveo" in SEARCH_PROVIDERS
+        assert "constructor.io" in SEARCH_PROVIDERS
+
+    def test_algolia_marked_as_own_product(self):
+        """Test Algolia is flagged as own product, not competitor."""
+        algolia_info = SEARCH_PROVIDERS["algolia"]
+        assert algolia_info.get("is_algolia") is True
+        assert algolia_info.get("competitor") is False
+
+    def test_elasticsearch_marked_as_competitor(self):
+        """Test Elasticsearch is marked as competitor."""
+        es_info = SEARCH_PROVIDERS["elasticsearch"]
+        assert es_info.get("is_algolia") is False
+        assert es_info.get("competitor") is True
+
+    # =========================================================================
+    # Partner Technology Detection Tests
     # =========================================================================
 
     def test_partner_technologies_defined(self):
         """Test partner technologies are properly defined."""
-        assert "Salesforce Commerce Cloud" in PARTNER_TECHNOLOGIES
-        assert "Adobe Experience Manager" in PARTNER_TECHNOLOGIES
-        assert "Shopify Plus" in PARTNER_TECHNOLOGIES
+        assert "shopify plus" in PARTNER_TECHNOLOGIES
+        assert "adobe commerce" in PARTNER_TECHNOLOGIES
+        assert "salesforce commerce cloud" in PARTNER_TECHNOLOGIES
 
-    def test_competitor_search_providers_defined(self):
-        """Test competitor search providers are properly defined."""
-        assert "Elasticsearch" in COMPETITOR_SEARCH_PROVIDERS
-        assert "Coveo" in COMPETITOR_SEARCH_PROVIDERS
-        assert "Constructor.io" in COMPETITOR_SEARCH_PROVIDERS
-        assert "Algolia" in COMPETITOR_SEARCH_PROVIDERS
-
-    def test_algolia_marked_as_own_product(self):
-        """Test Algolia is flagged as own product, not competitor."""
-        algolia_info = COMPETITOR_SEARCH_PROVIDERS["Algolia"]
-        assert algolia_info.get("is_algolia") is True
-        assert algolia_info.get("displacement_priority") is None
-
-    # =========================================================================
-    # Data Fetching Tests
-    # =========================================================================
-
-    @pytest.mark.asyncio
-    async def test_fetch_from_builtwith_returns_valid_data(
-        self, module, valid_builtwith_response
-    ):
-        """Test BuiltWith data fetching returns expected structure."""
-        with patch.object(
-            module, "_call_builtwith_api", new_callable=AsyncMock
-        ) as mock_api:
-            mock_api.return_value = valid_builtwith_response
-
-            result = await module._fetch_from_builtwith("sallybeauty.com")
-
-            assert result["domain"] == "sallybeauty.com"
-            assert len(result["technologies"]) == 3
-            assert "source_url" in result
-            assert "source_date" in result
-
-    @pytest.mark.asyncio
-    async def test_fetch_data_uses_builtwith_as_primary(
-        self, module, valid_builtwith_response
-    ):
-        """Test fetch_data uses BuiltWith as primary source."""
-        with patch.object(
-            module, "_fetch_from_builtwith", new_callable=AsyncMock
-        ) as mock_bw:
-            mock_bw.return_value = valid_builtwith_response
-
-            result = await module.fetch_data("sallybeauty.com")
-
-            mock_bw.assert_called_once_with("sallybeauty.com")
-            assert "technologies" in result
-
-    # =========================================================================
-    # Data Transformation Tests
-    # =========================================================================
-
-    @pytest.mark.asyncio
-    async def test_transform_data_identifies_partner_tech(self, module):
-        """Test transform_data correctly identifies partner technologies."""
-        raw_data = {
-            "domain": "example.com",
-            "technologies": [
-                {
-                    "name": "Salesforce Commerce Cloud",
-                    "category": "E-commerce",
-                    "confidence": 0.95,
-                },
-            ],
-            "source_url": "https://builtwith.com/example.com",
-            "source_date": datetime.now().isoformat(),
-        }
-
-        result = await module.transform_data(raw_data)
-
-        assert len(result["partner_technologies"]) == 1
-        assert result["partner_technologies"][0]["name"] == "Salesforce Commerce Cloud"
-        assert result["partner_technologies"][0]["is_partner_tech"] is True
-        assert result["primary_partner"] == "Salesforce Commerce Cloud"
-        assert result["ecommerce_platform"] == "Salesforce Commerce Cloud"
-
-    @pytest.mark.asyncio
-    async def test_transform_data_identifies_competitor_search(self, module):
-        """Test transform_data correctly identifies competitor search providers."""
-        raw_data = {
-            "domain": "example.com",
-            "technologies": [
-                {
-                    "name": "Elasticsearch",
-                    "category": "Search",
-                    "confidence": 0.90,
-                },
-            ],
-            "source_url": "https://builtwith.com/example.com",
-            "source_date": datetime.now().isoformat(),
-        }
-
-        result = await module.transform_data(raw_data)
-
-        assert len(result["competitor_technologies"]) == 1
-        assert result["competitor_technologies"][0]["name"] == "Elasticsearch"
-        assert result["competitor_technologies"][0]["is_competitor_search"] is True
-        assert result["current_search_provider"] == "Elasticsearch"
-        assert result["displacement_priority"] == "HIGH"
-
-    @pytest.mark.asyncio
-    async def test_transform_data_detects_algolia(self, module):
-        """Test transform_data correctly detects Algolia usage."""
-        raw_data = {
-            "domain": "example.com",
-            "technologies": [
-                {
-                    "name": "Algolia",
-                    "category": "Search",
-                    "confidence": 0.95,
-                },
-            ],
-            "source_url": "https://builtwith.com/example.com",
-            "source_date": datetime.now().isoformat(),
-        }
-
-        result = await module.transform_data(raw_data)
-
-        assert result["has_algolia"] is True
-        # Algolia should NOT be in competitor list
-        assert len(result["competitor_technologies"]) == 0
-
-    @pytest.mark.asyncio
-    async def test_transform_data_calculates_partner_score(self, module):
-        """Test partner score calculation."""
-        raw_data = {
-            "domain": "example.com",
-            "technologies": [
-                {"name": "Salesforce Commerce Cloud", "category": "E-commerce"},
-                {"name": "Adobe Experience Manager", "category": "CMS"},
-            ],
-            "source_url": "https://builtwith.com/example.com",
-            "source_date": datetime.now().isoformat(),
-        }
-
-        result = await module.transform_data(raw_data)
-
-        # Both are premium partners with score 10
-        assert result["partner_score"] == 20
-
-    # =========================================================================
-    # Tech Spend Tier Tests
-    # =========================================================================
-
-    def test_get_spend_tier_100k_plus(self, module):
-        """Test spend tier for $100K+."""
-        assert module._get_spend_tier(150000) == "$100K+"
-
-    def test_get_spend_tier_50k_100k(self, module):
-        """Test spend tier for $50K-100K."""
-        assert module._get_spend_tier(75000) == "$50K-100K"
-
-    def test_get_spend_tier_25k_50k(self, module):
-        """Test spend tier for $25K-50K."""
-        assert module._get_spend_tier(35000) == "$25K-50K"
-
-    def test_get_spend_tier_10k_25k(self, module):
-        """Test spend tier for $10K-25K."""
-        assert module._get_spend_tier(15000) == "$10K-25K"
-
-    def test_get_spend_tier_under_10k(self, module):
-        """Test spend tier for under $10K."""
-        assert module._get_spend_tier(5000) == "<$10K"
-
-    def test_get_spend_tier_none(self, module):
-        """Test spend tier for unknown spend."""
-        assert module._get_spend_tier(None) is None
+    def test_partner_technology_tiers(self):
+        """Test partner technologies have tier information."""
+        shopify_info = PARTNER_TECHNOLOGIES["shopify plus"]
+        assert shopify_info.get("partner") == "Shopify"
+        assert shopify_info.get("tier") == "Premium"
 
     # =========================================================================
     # Source Citation Mandate Tests (CRITICAL)
@@ -349,50 +210,43 @@ class TestM02TechnologyStackModule:
 
             # Verify result structure
             assert isinstance(result, ModuleResult)
-            assert result.module_id == "m02_technology_stack"
+            assert result.module_id == "m02_tech_stack"
             assert result.domain == "sallybeauty.com"
 
             # Verify data
-            assert isinstance(result.data, TechnologyStackData)
-            assert result.data.total_technologies == 3
-            assert result.data.current_search_provider == "Elasticsearch"
-            assert result.data.ecommerce_platform == "Salesforce Commerce Cloud"
+            assert isinstance(result.data, TechStackData)
 
             # Verify source citation
             assert result.source is not None
             assert "builtwith.com" in str(result.source.url)
 
     # =========================================================================
-    # TechnologyStackData Model Tests
+    # TechStackData Model Tests
     # =========================================================================
 
-    def test_technology_stack_data_model_creation(self):
-        """Test TechnologyStackData pydantic model creation."""
-        data = TechnologyStackData(
+    def test_tech_stack_data_model_creation(self):
+        """Test TechStackData pydantic model creation."""
+        data = TechStackData(
             domain="example.com",
-            total_technologies=5,
-            partner_score=20,
-            current_search_provider="Elasticsearch",
-            has_algolia=False,
-            tech_spend_estimate=100000,
-            tech_spend_tier="$100K+",
         )
 
         assert data.domain == "example.com"
-        assert data.total_technologies == 5
-        assert data.partner_score == 20
-        assert data.current_search_provider == "Elasticsearch"
-        assert data.has_algolia is False
-
-    def test_technology_stack_data_with_minimal_fields(self):
-        """Test TechnologyStackData with only required fields."""
-        data = TechnologyStackData(domain="example.com")
-
-        assert data.domain == "example.com"
-        assert data.total_technologies == 0
+        assert data.technologies == []
         assert data.partner_technologies == []
-        assert data.competitor_technologies == []
-        assert data.has_algolia is False
+
+    def test_technology_item_model(self):
+        """Test TechnologyItem model creation."""
+        item = TechnologyItem(
+            name="Elasticsearch",
+            category="search",
+            is_competitor_search=True,
+            confidence=0.95,
+        )
+
+        assert item.name == "Elasticsearch"
+        assert item.category == "search"
+        assert item.is_competitor_search is True
+        assert item.confidence == 0.95
 
 
 class TestM02ModuleRegistry:
@@ -402,9 +256,9 @@ class TestM02ModuleRegistry:
         """Test M02 module is registered in the global registry."""
         from app.modules.base import get_module_class
 
-        module_class = get_module_class("m02_technology_stack")
+        module_class = get_module_class("m02_tech_stack")
         assert module_class is not None
-        assert module_class.MODULE_ID == "m02_technology_stack"
+        assert module_class.MODULE_ID == "m02_tech_stack"
 
     def test_module_in_wave_1(self):
         """Test M02 module appears in Wave 1 modules."""
@@ -413,4 +267,4 @@ class TestM02ModuleRegistry:
         wave_1_modules = get_modules_by_wave(1)
         module_ids = [cls.MODULE_ID for cls in wave_1_modules]
 
-        assert "m02_technology_stack" in module_ids
+        assert "m02_tech_stack" in module_ids

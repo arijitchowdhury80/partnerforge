@@ -54,6 +54,28 @@ from .list_enrichment import (
     ALL_MODULES,
 )
 
+# Phase 2 Services - Backend Infrastructure
+from .change_detection import (
+    ChangeDetectionService,
+    CHANGE_CATEGORIES,
+    SIGNIFICANCE_LEVELS,
+)
+from .alerts import (
+    AlertService,
+    SIGNIFICANCE_HIERARCHY,
+)
+from .budget import (
+    BudgetService,
+    DEFAULT_API_COSTS,
+)
+from .orchestrator import (
+    EnrichmentOrchestrator,
+    MODULE_DEFINITIONS,
+    get_module_info,
+    get_all_modules,
+    get_modules_by_wave,
+)
+
 __all__ = [
     # Source Validation
     "SourceCitation",
@@ -98,4 +120,20 @@ __all__ = [
     "EnrichmentProgress",
     "DEFAULT_MODULES",
     "ALL_MODULES",
+    # Change Detection
+    "ChangeDetectionService",
+    "CHANGE_CATEGORIES",
+    "SIGNIFICANCE_LEVELS",
+    # Alerts
+    "AlertService",
+    "SIGNIFICANCE_HIERARCHY",
+    # Budget
+    "BudgetService",
+    "DEFAULT_API_COSTS",
+    # Orchestrator
+    "EnrichmentOrchestrator",
+    "MODULE_DEFINITIONS",
+    "get_module_info",
+    "get_all_modules",
+    "get_modules_by_wave",
 ]

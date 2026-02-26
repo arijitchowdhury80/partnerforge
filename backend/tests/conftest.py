@@ -45,6 +45,28 @@ async def test_engine():
 
 
 @pytest_asyncio.fixture
+async def test_engine_full():
+    """Create test database engine with all tables.
+
+    Used for integration tests that need the full schema.
+    """
+    from sqlalchemy.ext.asyncio import create_async_engine
+    from app.database import Base
+
+    engine = create_async_engine(
+        "sqlite+aiosqlite:///:memory:",
+        echo=False,
+    )
+
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+    yield engine
+
+    await engine.dispose()
+
+
+@pytest_asyncio.fixture
 async def db_session(test_engine) -> AsyncGenerator:
     """Create test database session with rollback after each test."""
     from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -58,6 +80,56 @@ async def db_session(test_engine) -> AsyncGenerator:
     async with async_session() as session:
         yield session
         await session.rollback()
+
+
+@pytest_asyncio.fixture
+async def db_session_full(test_engine_full) -> AsyncGenerator:
+    """Create test database session with full schema."""
+    from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+    async_session = async_sessionmaker(
+        test_engine_full,
+        class_=AsyncSession,
+        expire_on_commit=False,
+    )
+
+    async with async_session() as session:
+        yield session
+        await session.rollback()
+
+
+# =============================================================================
+# Mock User Fixtures
+# =============================================================================
+
+@pytest.fixture
+def mock_user():
+    """Create a mock current user."""
+    from app.api.deps import CurrentUser
+    return CurrentUser(
+        user_id="test-user-001",
+        email="test@partnerforge.local",
+        name="Test User",
+        role="ae",
+        team_id="test-team-001",
+        is_active=True,
+        is_admin=False,
+    )
+
+
+@pytest.fixture
+def mock_admin_user():
+    """Create a mock admin user."""
+    from app.api.deps import CurrentUser
+    return CurrentUser(
+        user_id="admin-user-001",
+        email="admin@partnerforge.local",
+        name="Admin User",
+        role="admin",
+        team_id="test-team-001",
+        is_active=True,
+        is_admin=True,
+    )
 
 
 # =============================================================================

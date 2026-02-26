@@ -7,3 +7,5 @@ export { TargetDetail } from './TargetDetail';
 export { DashboardPage } from './DashboardPage';
 export { ListsPage } from './ListsPage';
 export { UploadPage } from './UploadPage';
+export { CompanyPage } from './CompanyPage';
+export { AlertsPage } from './AlertsPage';

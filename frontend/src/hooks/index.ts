@@ -83,3 +83,45 @@ export {
   type ColumnDetectionResult,
   type UseColumnDetectionOptions,
 } from './useColumnDetection';
+
+// Company hooks
+export {
+  companyKeys,
+  useCompany,
+  useCompanyExists,
+  usePrefetchCompany,
+  useCompanyIntelligence,
+  useCompanyModule,
+  useAllCompanyModules,
+  useCompanyChanges,
+  useCompanyEnrichmentStatus,
+  useRefreshCompany,
+  useInvalidateCompany,
+  useModuleCompletion,
+  useCompanyScoreColor,
+  useCompanyStatusLabel,
+} from './useCompany';
+
+// Alert hooks
+export {
+  alertKeys,
+  useAlerts,
+  useUnreadAlerts,
+  useUnreadAlertCount,
+  useAlertDigest,
+  useAlertsByDomain,
+  useAlertRules,
+  useAlertRule,
+  useActiveRulesCount,
+  useMarkRead,
+  useMarkAllRead,
+  useDismissAlerts,
+  useCreateRule,
+  useUpdateRule,
+  useDeleteRule,
+  useToggleRule,
+  useInvalidateAlerts,
+  usePrefetchDomainAlerts,
+  type AlertFilters,
+  type AlertDigest,
+} from './useAlerts';

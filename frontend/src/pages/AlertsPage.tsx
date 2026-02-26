@@ -221,7 +221,7 @@ const generateMockRules = (): AlertRule[] => [
     description: 'Alert when bounce rate exceeds 50% or time on site drops',
     domains: 'all',
     modules: ['m03_traffic'],
-    change_types: ['threshold_crossed'],
+    change_types: ['value_change'],
     priority: 'any',
     thresholds: [
       { field: 'bounce_rate', operator: 'gt', value: 50 },
