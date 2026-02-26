@@ -2,7 +2,7 @@
  * CompaniesPage - Focused Company List View
  *
  * A dedicated page for browsing displacement targets with Excel-style
- * column filtering. All filters are in the table headers.
+ * column filtering. All filters are in the table column headers.
  */
 
 import { useState, useCallback, useMemo } from 'react';
@@ -28,11 +28,11 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 
-import { getCompanies, getDistribution } from '@/services/api';
+import { getCompanies } from '@/services/api';
 import { TargetList, type ColumnFilter } from '@/components/targets/TargetList';
 
 // Version for deployment tracking
-const VERSION = 'v2.1.0-column-filters';
+const VERSION = 'v2.2.0-excel-filters';
 
 // =============================================================================
 // Companies Page Component
@@ -61,7 +61,7 @@ export function CompaniesPage() {
       sort_by: 'icp_score',
       sort_order: 'desc',
       page: currentPage,
-      limit: 25,
+      limit: 50, // Fetch more for local filtering
     };
 
     // Add search filter
@@ -96,32 +96,6 @@ export function CompaniesPage() {
     queryFn: () => getCompanies(apiFilters),
   });
 
-  // Fetch distribution data to get all available verticals
-  const { data: distributionData } = useQuery({
-    queryKey: ['distribution'],
-    queryFn: getDistribution,
-  });
-
-  // Get available filter options from distribution data
-  const availableVerticals = useMemo(() => {
-    if (!distributionData?.allVerticals) return [];
-    return distributionData.allVerticals.map((v) => v.name);
-  }, [distributionData]);
-
-  // Static partner tech options (these come from BuiltWith)
-  const availablePartnerTechs = useMemo(() => {
-    return [
-      'Adobe AEM',
-      'Shopify',
-      'Salesforce Commerce',
-      'BigCommerce',
-      'Magento',
-      'SAP Hybris',
-      'Contentful',
-      'Sitecore',
-    ];
-  }, []);
-
   // Apply local filtering for multi-select scenarios (API only supports single values)
   const filteredCompanies = useMemo(() => {
     if (!companiesData?.data) return [];
@@ -144,7 +118,7 @@ export function CompaniesPage() {
 
     // Apply multi-partner filter locally
     const partnerFilter = columnFilters.find((f) => f.column === 'partner_tech');
-    if (partnerFilter && partnerFilter.values.length > 1) {
+    if (partnerFilter && partnerFilter.values.length > 0) {
       result = result.filter((c) =>
         c.partner_tech?.some((t) => partnerFilter.values.includes(t))
       );
@@ -239,7 +213,7 @@ export function CompaniesPage() {
               </Badge>
             </Group>
             <Text c="dimmed" size="sm" mt={4}>
-              Browse and filter displacement targets - Use column header dropdowns to filter
+              Click column header dropdowns (Status, Vertical, Partner Tech) to filter like Excel
             </Text>
           </div>
           <Button
@@ -376,24 +350,6 @@ export function CompaniesPage() {
         </Group>
       </motion.div>
 
-      {/* Hint about column filters */}
-      {!hasActiveFilters && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3, delay: 0.3 }}
-        >
-          <Text size="xs" c="dimmed" mb="sm">
-            <IconFilter
-              size={12}
-              style={{ marginRight: 4, verticalAlign: 'middle' }}
-            />
-            Tip: Click the dropdown arrow on column headers (Status, Vertical,
-            Partner Tech) to filter like Excel
-          </Text>
-        </motion.div>
-      )}
-
       {/* Company Table */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -408,8 +364,6 @@ export function CompaniesPage() {
           onEnrichCompany={handleEnrichCompany}
           columnFilters={columnFilters}
           onColumnFilterChange={handleColumnFilterChange}
-          availableVerticals={availableVerticals}
-          availablePartnerTechs={availablePartnerTechs}
         />
       </motion.div>
     </Container>

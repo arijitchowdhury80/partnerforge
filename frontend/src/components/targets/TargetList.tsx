@@ -2,22 +2,19 @@
  * TargetList Component
  *
  * Premium data table for displacement targets using TanStack Table.
- * Features Excel-style column filters, sorting, and glassmorphism design.
+ * Features Excel-style column filters with counts, sorting, and glassmorphism design.
  */
 
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   useReactTable,
   getCoreRowModel,
   getSortedRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
   flexRender,
   type ColumnDef,
   type SortingState,
-  type ColumnFiltersState,
   type VisibilityState,
 } from '@tanstack/react-table';
 import {
@@ -47,10 +44,8 @@ import {
   IconArrowUp,
   IconArrowDown,
   IconSelector,
-  IconFilter,
   IconX,
   IconChevronDown,
-  IconCheck,
 } from '@tabler/icons-react';
 import type { Company } from '@/types';
 import { StatusBadge } from '@/components/common/StatusBadge';
@@ -64,6 +59,11 @@ import { TableRowSkeleton } from '@/components/common/LoadingSpinner';
 export interface ColumnFilter {
   column: string;
   values: string[];
+}
+
+export interface FilterOption {
+  value: string;
+  count: number;
 }
 
 interface TargetListProps {
@@ -80,20 +80,16 @@ interface TargetListProps {
   // Column filter callbacks
   columnFilters?: ColumnFilter[];
   onColumnFilterChange?: (column: string, values: string[]) => void;
-  // Available filter options (derived from all data, not just current page)
-  availableVerticals?: string[];
-  availablePartnerTechs?: string[];
 }
 
 // =============================================================================
-// Column Filter Header Component
+// Excel-Style Column Filter Header Component
 // =============================================================================
 
 interface FilterableHeaderProps {
   column: any;
   label: string;
-  filterKey: string;
-  options: string[];
+  options: FilterOption[];
   selectedValues: string[];
   onFilterChange: (values: string[]) => void;
   colorMap?: Record<string, string>;
@@ -102,14 +98,13 @@ interface FilterableHeaderProps {
 function FilterableHeader({
   column,
   label,
-  filterKey,
   options,
   selectedValues,
   onFilterChange,
   colorMap,
 }: FilterableHeaderProps) {
   const [opened, setOpened] = useState(false);
-  const hasFilter = selectedValues.length > 0;
+  const hasFilter = selectedValues.length > 0 && selectedValues.length < options.length;
 
   const toggleValue = (value: string) => {
     if (selectedValues.includes(value)) {
@@ -125,8 +120,13 @@ function FilterableHeader({
   };
 
   const selectAll = () => {
-    onFilterChange([...options]);
+    onFilterChange(options.map((o) => o.value));
   };
+
+  // Sort options by count (highest first)
+  const sortedOptions = useMemo(() => {
+    return [...options].sort((a, b) => b.count - a.count);
+  }, [options]);
 
   return (
     <Group gap={4} wrap="nowrap">
@@ -150,7 +150,7 @@ function FilterableHeader({
         onChange={setOpened}
         position="bottom-start"
         shadow="lg"
-        width={220}
+        width={260}
       >
         <Popover.Target>
           <ActionIcon
@@ -171,14 +171,14 @@ function FilterableHeader({
 
         <Popover.Dropdown
           style={{
-            background: 'rgba(30, 30, 40, 0.98)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            background: 'rgba(20, 20, 30, 0.98)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
             backdropFilter: 'blur(12px)',
           }}
         >
           <Stack gap="xs">
             <Group justify="space-between">
-              <Text size="xs" fw={600} c="white">
+              <Text size="sm" fw={600} c="white">
                 Filter by {label}
               </Text>
               {hasFilter && (
@@ -188,7 +188,7 @@ function FilterableHeader({
                   onClick={clearFilter}
                   c="dimmed"
                 >
-                  <IconX size={12} />
+                  <IconX size={14} />
                 </ActionIcon>
               )}
             </Group>
@@ -214,56 +214,69 @@ function FilterableHeader({
               </Button>
             </Group>
 
-            <ScrollArea.Autosize mah={200}>
-              <Stack gap={4}>
-                {options.map((option) => {
-                  const isSelected = selectedValues.includes(option);
-                  const color = colorMap?.[option];
+            <ScrollArea.Autosize mah={280}>
+              <Stack gap={2}>
+                {sortedOptions.map((option) => {
+                  const isSelected = selectedValues.length === 0 || selectedValues.includes(option.value);
+                  const color = colorMap?.[option.value];
 
                   return (
                     <UnstyledButton
-                      key={option}
-                      onClick={() => toggleValue(option)}
+                      key={option.value}
+                      onClick={() => toggleValue(option.value)}
                       style={{
                         display: 'flex',
                         alignItems: 'center',
+                        justifyContent: 'space-between',
                         gap: 8,
-                        padding: '6px 8px',
-                        borderRadius: 4,
+                        padding: '8px 10px',
+                        borderRadius: 6,
                         background: isSelected
-                          ? 'rgba(59, 130, 246, 0.2)'
+                          ? 'rgba(59, 130, 246, 0.15)'
                           : 'transparent',
                         border: isSelected
-                          ? '1px solid rgba(59, 130, 246, 0.4)'
+                          ? '1px solid rgba(59, 130, 246, 0.3)'
                           : '1px solid transparent',
                         transition: 'all 0.15s ease',
                       }}
                       className="hover:bg-white/5"
                     >
-                      <Checkbox
-                        checked={isSelected}
-                        onChange={() => {}}
-                        size="xs"
-                        styles={{
-                          input: {
-                            cursor: 'pointer',
-                          },
-                        }}
-                      />
-                      {color ? (
-                        <Badge size="xs" color={color} variant="light">
-                          {option}
-                        </Badge>
-                      ) : (
-                        <Text size="xs" c="white/80">
-                          {option}
-                        </Text>
-                      )}
+                      <Group gap="xs">
+                        <Checkbox
+                          checked={isSelected}
+                          onChange={() => {}}
+                          size="xs"
+                          styles={{
+                            input: { cursor: 'pointer' },
+                          }}
+                        />
+                        {color ? (
+                          <Badge size="sm" color={color} variant="light">
+                            {option.value}
+                          </Badge>
+                        ) : (
+                          <Text size="sm" c="white/90">
+                            {option.value}
+                          </Text>
+                        )}
+                      </Group>
+                      <Badge size="xs" variant="light" color="gray">
+                        {option.count}
+                      </Badge>
                     </UnstyledButton>
                   );
                 })}
               </Stack>
             </ScrollArea.Autosize>
+
+            {hasFilter && (
+              <>
+                <Divider color="white/10" />
+                <Text size="xs" c="dimmed" ta="center">
+                  {selectedValues.length} of {options.length} selected
+                </Text>
+              </>
+            )}
           </Stack>
         </Popover.Dropdown>
       </Popover>
@@ -336,12 +349,7 @@ function PartnerTechCell({ techs }: { techs: string[] }) {
         <Badge size="xs" variant="light" color="green">
           {techs[0]}
         </Badge>
-        <Badge
-          size="xs"
-          variant="light"
-          color="gray"
-          style={{ cursor: 'help' }}
-        >
+        <Badge size="xs" variant="light" color="gray" style={{ cursor: 'help' }}>
           +{techs.length - 1}
         </Badge>
       </Group>
@@ -361,8 +369,6 @@ export function TargetList({
   onEnrichCompany,
   columnFilters = [],
   onColumnFilterChange,
-  availableVerticals = [],
-  availablePartnerTechs = [],
 }: TargetListProps) {
   const navigate = useNavigate();
 
@@ -389,27 +395,44 @@ export function TargetList({
     [onColumnFilterChange]
   );
 
-  // Extract unique values from current data for fallback
-  const uniqueVerticals = useMemo(() => {
-    if (availableVerticals.length > 0) return availableVerticals;
-    const set = new Set<string>();
+  // Build filter options with counts from current data
+  const statusOptions = useMemo<FilterOption[]>(() => {
+    const counts: Record<string, number> = { hot: 0, warm: 0, cold: 0 };
     companies.forEach((c) => {
-      if (c.vertical) set.add(c.vertical);
+      if (c.status) counts[c.status] = (counts[c.status] || 0) + 1;
     });
-    return Array.from(set).sort();
-  }, [companies, availableVerticals]);
+    return [
+      { value: 'hot', count: counts.hot },
+      { value: 'warm', count: counts.warm },
+      { value: 'cold', count: counts.cold },
+    ].filter((o) => o.count > 0);
+  }, [companies]);
 
-  const uniquePartnerTechs = useMemo(() => {
-    if (availablePartnerTechs.length > 0) return availablePartnerTechs;
-    const set = new Set<string>();
+  const verticalOptions = useMemo<FilterOption[]>(() => {
+    const counts: Record<string, number> = {};
     companies.forEach((c) => {
-      c.partner_tech?.forEach((t) => set.add(t));
+      if (c.vertical) {
+        counts[c.vertical] = (counts[c.vertical] || 0) + 1;
+      }
     });
-    return Array.from(set).sort();
-  }, [companies, availablePartnerTechs]);
+    return Object.entries(counts)
+      .map(([value, count]) => ({ value, count }))
+      .sort((a, b) => b.count - a.count);
+  }, [companies]);
 
-  // Status options with colors
-  const statusOptions = ['hot', 'warm', 'cold'];
+  const partnerTechOptions = useMemo<FilterOption[]>(() => {
+    const counts: Record<string, number> = {};
+    companies.forEach((c) => {
+      c.partner_tech?.forEach((tech) => {
+        counts[tech] = (counts[tech] || 0) + 1;
+      });
+    });
+    return Object.entries(counts)
+      .map(([value, count]) => ({ value, count }))
+      .sort((a, b) => b.count - a.count);
+  }, [companies]);
+
+  // Status colors
   const statusColors: Record<string, string> = {
     hot: 'red',
     warm: 'orange',
@@ -426,15 +449,8 @@ export function TargetList({
           const company = row.original;
           return (
             <div className="flex items-center gap-3">
-              <Avatar
-                size="sm"
-                radius="md"
-                color="blue"
-                className="flex-shrink-0"
-              >
-                {(company.company_name || company.domain)
-                  .charAt(0)
-                  .toUpperCase()}
+              <Avatar size="sm" radius="md" color="blue" className="flex-shrink-0">
+                {(company.company_name || company.domain).charAt(0).toUpperCase()}
               </Avatar>
               <div className="min-w-0">
                 <Text size="sm" fw={500} c="white" truncate>
@@ -458,9 +474,7 @@ export function TargetList({
       },
       {
         accessorKey: 'icp_score',
-        header: ({ column }) => (
-          <SortHeader column={column} label="ICP Score" />
-        ),
+        header: ({ column }) => <SortHeader column={column} label="ICP Score" />,
         cell: ({ getValue }) => {
           const score = getValue<number>() || 0;
           return (
@@ -477,7 +491,6 @@ export function TargetList({
           <FilterableHeader
             column={column}
             label="Status"
-            filterKey="status"
             options={statusOptions}
             selectedValues={getFilterValues('status')}
             onFilterChange={(values) => handleFilterChange('status', values)}
@@ -488,7 +501,7 @@ export function TargetList({
           const status = getValue<Company['status']>();
           return <StatusBadge status={status} size="sm" />;
         },
-        size: 120,
+        size: 130,
       },
       {
         accessorKey: 'vertical',
@@ -496,8 +509,7 @@ export function TargetList({
           <FilterableHeader
             column={column}
             label="Vertical"
-            filterKey="vertical"
-            options={uniqueVerticals}
+            options={verticalOptions}
             selectedValues={getFilterValues('vertical')}
             onFilterChange={(values) => handleFilterChange('vertical', values)}
           />
@@ -507,7 +519,7 @@ export function TargetList({
             {getValue<string>() || '---'}
           </Text>
         ),
-        size: 140,
+        size: 150,
       },
       {
         accessorKey: 'partner_tech',
@@ -515,33 +527,23 @@ export function TargetList({
           <FilterableHeader
             column={column}
             label="Partner Tech"
-            filterKey="partner_tech"
-            options={uniquePartnerTechs}
+            options={partnerTechOptions}
             selectedValues={getFilterValues('partner_tech')}
-            onFilterChange={(values) =>
-              handleFilterChange('partner_tech', values)
-            }
+            onFilterChange={(values) => handleFilterChange('partner_tech', values)}
           />
         ),
         cell: ({ getValue }) => {
           const techs = getValue<string[]>() || [];
           return <PartnerTechCell techs={techs} />;
         },
-        size: 150,
+        size: 160,
       },
       {
         accessorKey: 'signal_score',
-        header: ({ column }) => (
-          <SortHeader column={column} label="Signals" />
-        ),
+        header: ({ column }) => <SortHeader column={column} label="Signals" />,
         cell: ({ getValue }) => {
           const score = getValue<number>();
-          if (!score)
-            return (
-              <Text size="xs" c="dimmed">
-                ---
-              </Text>
-            );
+          if (!score) return <Text size="xs" c="dimmed">---</Text>;
           return (
             <Text size="sm" fw={500} c={score >= 50 ? 'green.4' : 'white/60'}>
               {score}
@@ -563,17 +565,11 @@ export function TargetList({
             );
           }
           const d = new Date(date);
-          const daysSince = Math.floor(
-            (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24)
-          );
+          const daysSince = Math.floor((Date.now() - d.getTime()) / (1000 * 60 * 60 * 24));
           return (
             <Tooltip label={d.toLocaleString()}>
               <Text size="xs" c={daysSince > 7 ? 'yellow.4' : 'dimmed'}>
-                {daysSince === 0
-                  ? 'Today'
-                  : daysSince === 1
-                  ? 'Yesterday'
-                  : `${daysSince}d ago`}
+                {daysSince === 0 ? 'Today' : daysSince === 1 ? 'Yesterday' : `${daysSince}d ago`}
               </Text>
             </Tooltip>
           );
@@ -634,8 +630,9 @@ export function TargetList({
       onEnrichCompany,
       getFilterValues,
       handleFilterChange,
-      uniqueVerticals,
-      uniquePartnerTechs,
+      statusOptions,
+      verticalOptions,
+      partnerTechOptions,
     ]
   );
 
@@ -674,20 +671,19 @@ export function TargetList({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      <Paper
-        radius="lg"
-        className="bg-white/5 border border-white/10 overflow-hidden"
-      >
+      <Paper radius="lg" className="bg-white/5 border border-white/10 overflow-hidden">
         {/* Minimal Toolbar - just column visibility and export */}
         <div className="p-3 border-b border-white/10">
           <Group justify="space-between">
             <Group gap="xs">
               {activeFilterCount > 0 && (
                 <Badge variant="light" color="blue" size="sm">
-                  {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''}{' '}
-                  active
+                  {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''} active
                 </Badge>
               )}
+              <Text size="xs" c="dimmed">
+                Click column header dropdowns to filter
+              </Text>
             </Group>
 
             <Group gap="xs">
@@ -705,10 +701,7 @@ export function TargetList({
                   {table.getAllLeafColumns().map((column) => {
                     if (column.id === 'actions') return null;
                     return (
-                      <Menu.Item
-                        key={column.id}
-                        onClick={() => column.toggleVisibility()}
-                      >
+                      <Menu.Item key={column.id} onClick={() => column.toggleVisibility()}>
                         <Checkbox
                           label={column.id}
                           checked={column.getIsVisible()}
@@ -737,10 +730,7 @@ export function TargetList({
             {/* Header */}
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
-                <tr
-                  key={headerGroup.id}
-                  className="border-b border-white/10 bg-white/5"
-                >
+                <tr key={headerGroup.id} className="border-b border-white/10 bg-white/5">
                   {headerGroup.headers.map((header) => (
                     <th
                       key={header.id}
@@ -749,10 +739,7 @@ export function TargetList({
                     >
                       {header.isPlaceholder
                         ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                        : flexRender(header.column.columnDef.header, header.getContext())}
                     </th>
                   ))}
                 </tr>
@@ -762,7 +749,6 @@ export function TargetList({
             {/* Body */}
             <tbody>
               {isLoading ? (
-                // Loading skeletons
                 Array.from({ length: 10 }).map((_, i) => (
                   <tr key={i}>
                     <td colSpan={columns.length} className="p-0">
@@ -771,17 +757,12 @@ export function TargetList({
                   </tr>
                 ))
               ) : table.getRowModel().rows.length === 0 ? (
-                // Empty state
                 <tr>
-                  <td
-                    colSpan={columns.length}
-                    className="px-4 py-12 text-center"
-                  >
+                  <td colSpan={columns.length} className="px-4 py-12 text-center">
                     <Text c="dimmed">No companies found</Text>
                   </td>
                 </tr>
               ) : (
-                // Data rows
                 <AnimatePresence>
                   {table.getRowModel().rows.map((row, index) => (
                     <motion.tr
@@ -791,10 +772,7 @@ export function TargetList({
                       exit={{ opacity: 0, x: 10 }}
                       transition={{ delay: index * 0.02 }}
                       onClick={() => handleRowClick(row.original.domain)}
-                      className="
-                        border-b border-white/5 cursor-pointer
-                        hover:bg-white/5 transition-colors
-                      "
+                      className="border-b border-white/5 cursor-pointer hover:bg-white/5 transition-colors"
                     >
                       {row.getVisibleCells().map((cell) => (
                         <td
@@ -802,10 +780,7 @@ export function TargetList({
                           className="px-4 py-3"
                           style={{ width: cell.column.getSize() }}
                         >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </td>
                       ))}
                     </motion.tr>
@@ -822,8 +797,8 @@ export function TargetList({
             <Group justify="space-between">
               <Text size="sm" c="dimmed">
                 Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
-                {Math.min(pagination.page * pagination.limit, pagination.total)}{' '}
-                of {pagination.total} results
+                {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
+                {pagination.total} results
               </Text>
               <Pagination
                 value={pagination.page}
