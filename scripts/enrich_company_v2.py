@@ -524,7 +524,8 @@ def get_top_leads(n: int = 100, partner: Optional[str] = None, sort_by: str = "t
         print(f"   Found {len(data)} targets (skipping already enriched)")
         if data and len(data) > 0:
             top = data[0]
-            print(f"   Top target: {top.get('company_name', top['domain'])} ({top.get('sw_monthly_visits', 0):,} visits)")
+            traffic = top.get('sw_monthly_visits') or 0
+            print(f"   Top target: {top.get('company_name', top['domain'])} ({traffic:,} visits)")
 
     return data or []
 

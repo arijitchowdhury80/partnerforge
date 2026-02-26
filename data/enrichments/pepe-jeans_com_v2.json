@@ -1,0 +1,61 @@
+{
+  "domain": "pepe-jeans.com",
+  "enriched_at": "2026-02-26T06:10:04.495304",
+  "version": "2.0",
+  "builtwith": {
+    "tech_count": 28,
+    "all_techs": [
+      "AWS Global Accelerator",
+      "Sav",
+      "Global Site Tag",
+      "React",
+      "Google Adsense for Domains",
+      "U.S. Server Location",
+      "SSL by Default",
+      "Afternic",
+      "Bodis",
+      "Outbrain Pixel",
+      "IPhone / Mobile Compatible",
+      "Google Adsense",
+      "OpenResty",
+      "GoDaddy CDN",
+      "AdBlock Acceptable Ads",
+      "Viewport Meta",
+      "Google Font API",
+      "Bodis DNS",
+      "core-js",
+      "Amazon",
+      "Blockthrough",
+      "SPF",
+      "Namefind",
+      "GoDaddy Parking",
+      "Content Delivery Network",
+      "GoDaddy SSL",
+      "LetsEncrypt",
+      "GoDaddy DNS"
+    ],
+    "search_providers": [],
+    "has_algolia": false
+  },
+  "similarweb": {
+    "monthly_visits": null,
+    "global_rank": null,
+    "competitors": []
+  },
+  "financials": {
+    "is_public": false,
+    "ticker": null
+  },
+  "hiring": {
+    "has_careers_page": false,
+    "hiring_signals": []
+  },
+  "competitors": {},
+  "opportunity_score": {
+    "score": 30,
+    "factors": [
+      "No Algolia (greenfield)"
+    ],
+    "recommendation": "COLD"
+  }
+}

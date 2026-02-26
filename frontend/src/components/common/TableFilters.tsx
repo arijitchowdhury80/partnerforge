@@ -103,9 +103,13 @@ export function FilterHeader({
   const [opened, setOpened] = useState(false);
   const [pendingValues, setPendingValues] = useState<string[]>([]);
 
-  const handleOpen = () => {
-    setPendingValues([...selectedValues]);
-    setOpened(true);
+  // Toggle handler - properly opens/closes and initializes pending values
+  const handleToggle = () => {
+    if (!opened) {
+      // Opening: initialize pending values
+      setPendingValues([...selectedValues]);
+    }
+    setOpened(!opened);
   };
 
   const hasAppliedFilter = selectedValues.length > 0;
@@ -144,16 +148,24 @@ export function FilterHeader({
     <Popover
       opened={opened}
       onChange={(isOpen) => {
-        if (!isOpen) setPendingValues([...selectedValues]);
-        setOpened(isOpen);
+        // Only handle external closes (clicking outside)
+        // The target button handles toggle via onClick
+        if (!isOpen && opened) {
+          setPendingValues([...selectedValues]);
+          setOpened(false);
+        }
       }}
       position="bottom-start"
       shadow="xl"
       width={320}
+      closeOnClickOutside
     >
       <Popover.Target>
         <UnstyledButton
-          onClick={handleOpen}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleToggle();
+          }}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -178,7 +190,15 @@ export function FilterHeader({
               {filterCount}
             </Badge>
           ) : (
-            <IconChevronDown size={16} color={COLORS.ALGOLIA_SPACE_GRAY} strokeWidth={2.5} />
+            <IconChevronDown
+              size={16}
+              color={opened ? COLORS.ALGOLIA_NEBULA_BLUE : COLORS.ALGOLIA_SPACE_GRAY}
+              strokeWidth={2.5}
+              style={{
+                transform: opened ? 'rotate(180deg)' : 'rotate(0)',
+                transition: 'transform 0.2s ease',
+              }}
+            />
           )}
         </UnstyledButton>
       </Popover.Target>
@@ -395,14 +415,23 @@ export function NumericFilterHeader({
   return (
     <Popover
       opened={opened}
-      onChange={setOpened}
+      onChange={(isOpen) => {
+        // Only handle external closes (clicking outside)
+        if (!isOpen && opened) {
+          setOpened(false);
+        }
+      }}
       position="bottom-start"
       shadow="xl"
       width={280}
+      closeOnClickOutside
     >
       <Popover.Target>
         <UnstyledButton
-          onClick={() => setOpened(!opened)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setOpened(!opened);
+          }}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -430,7 +459,15 @@ export function NumericFilterHeader({
             </Badge>
           )}
           {!hasAppliedFilter && !sortDirection && (
-            <IconChevronDown size={16} color={COLORS.ALGOLIA_SPACE_GRAY} strokeWidth={2.5} />
+            <IconChevronDown
+              size={16}
+              color={opened ? COLORS.ALGOLIA_NEBULA_BLUE : COLORS.ALGOLIA_SPACE_GRAY}
+              strokeWidth={2.5}
+              style={{
+                transform: opened ? 'rotate(180deg)' : 'rotate(0)',
+                transition: 'transform 0.2s ease',
+              }}
+            />
           )}
         </UnstyledButton>
       </Popover.Target>

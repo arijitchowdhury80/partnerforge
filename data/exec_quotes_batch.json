@@ -1,0 +1,130 @@
+{
+  "mercedes-benz.com": {
+    "exec_name": "Ola Kallenius",
+    "exec_title": "Chairman of the Board of Management & CEO",
+    "exec_quote": "With MB.OS, a Mercedes will actually improve with age. Regarding software, we have entered the era of software-defined cars with MB.OS.",
+    "quote_source": "Q3 2025 Earnings Call (MarketScreener)",
+    "displacement_angle": "SAP/Solr cannot handle real-time inventory across 6,000+ dealer locations with configurator integration",
+    "competitors_using_algolia": "BMW, Audi, Porsche"
+  },
+  "nab.com.au": {
+    "exec_name": "Andrew Irvine",
+    "exec_title": "Managing Director & Group CEO",
+    "exec_quote": "Digital, data and AI are critical enablers for the delivery of our strategic ambition of customer-centricity. AI will continue to transform the way we work and how well and fast we do it.",
+    "quote_source": "NAB Leadership Announcement June 2025",
+    "displacement_angle": "LucidWorks requires dedicated search engineering team; Algolia offers API-first simplicity for banking app",
+    "competitors_using_algolia": "Stripe, Square (financial services)"
+  },
+  "huawei.com": {
+    "exec_name": "Eric Xu (Xu Zhijun)",
+    "exec_title": "Rotating Chairman",
+    "exec_quote": "The key challenge lies in whether telcos can engineer user-centric digital transformation offering users a ROADS experience (Real-time, On-demand, All-online, Do-it-yourself, and Social).",
+    "quote_source": "MWC Shanghai 2025 Keynote",
+    "displacement_angle": "Strategic self-sufficiency due to US sanctions; uses internal Huawei Cloud CSS",
+    "competitors_using_algolia": null
+  },
+  "spglobal.com": {
+    "exec_name": "Martina Cheung",
+    "exec_title": "President & CEO",
+    "exec_quote": "2025 was truly a leap forward for AI, with new AI products and features launched in every division. Our customers need our leading benchmarks, differentiated data, and workflows.",
+    "quote_source": "Q4 2025 Earnings Call February 2026",
+    "displacement_angle": "Financial data platform with massive search volume; SparkAIR shows appetite for AI search",
+    "competitors_using_algolia": "Bloomberg (competitor)"
+  },
+  "bms.com": {
+    "exec_name": "Chris Boerner, PhD",
+    "exec_title": "Board Chair & CEO",
+    "exec_quote": "Advances in technology, like AI and machine learning, can increase the pace of innovation even more dramatically. It's exciting to think what the future could hold.",
+    "quote_source": "Washington University Interview 2024",
+    "displacement_angle": "Elasticsearch self-managed; pharma portal search with complex medical terminology needs",
+    "competitors_using_algolia": null
+  },
+  "marks.com": {
+    "exec_name": "Greg Hicks",
+    "exec_title": "President and CEO, Canadian Tire Corporation",
+    "exec_quote": "Our ongoing True North strategy is a modernization agenda. MOSaiC will help our teams make better decisions about what to offer, when, and where, by connecting Triangle Rewards insights and local context at scale.",
+    "quote_source": "Canadian Tire Microsoft Partnership Feb 2026",
+    "displacement_angle": "BloomReach displacement; AI search initiative shows tech appetite; e-commerce growing 2x brick-and-mortar",
+    "competitors_using_algolia": null
+  },
+  "caremark.com": {
+    "exec_name": "David Joyner",
+    "exec_title": "President and CEO, CVS Health",
+    "exec_quote": "Health care today is fragmented and difficult to navigate. Our focus is on creating a simpler, more connected experience, and technology is central to that effort.",
+    "quote_source": "Digital Commerce 360 Jan 2026",
+    "displacement_angle": "Healthcare portal search with pharmacy/benefits discovery; HIPAA-compliant search needed",
+    "competitors_using_algolia": null
+  },
+  "infinitiusa.com": {
+    "exec_name": "Tiago Castro",
+    "exec_title": "Vice President, INFINITI Americas",
+    "exec_quote": "How can we delight them? How can we make them say, 'Wow, I can't even think about another brand because they're taking so much care of me.'",
+    "quote_source": "CarBuzz Future of Infiniti 2025",
+    "displacement_angle": "LucidWorks displacement; luxury auto configurator and dealer search needs",
+    "competitors_using_algolia": null
+  },
+  "fiat.com": {
+    "exec_name": "Antonio Filosa",
+    "exec_title": "CEO, Stellantis",
+    "exec_quote": "The reset we have announced today is part of the decisive process to once again make our customers and their preferences our guiding star.",
+    "quote_source": "Stellantis Press Release Feb 2026",
+    "displacement_angle": "Multi-brand auto group (14 brands); configurator standardization opportunity",
+    "competitors_using_algolia": null
+  },
+  "johnlewis.com": {
+    "exec_name": "Jason Tarry",
+    "exec_title": "Chairman, John Lewis Partnership",
+    "exec_quote": "We know our transformation is ongoing and there's a lot more to do, but with two incredible brands that have clear headroom for growth, we are confident our strategy is the right one.",
+    "quote_source": "Marketing Week 2025",
+    "displacement_angle": "Self-managed Elasticsearch since 2018; engineering burden could be compelling displacement story",
+    "competitors_using_algolia": "JD Sports, Gymshark (UK retail)"
+  },
+  "moodys.com": {
+    "exec_name": "Rob Fauber",
+    "exec_title": "President & Chief Executive Officer",
+    "exec_quote": "For over a century, our customers have looked to Moody's for premium data, trusted insights, and cutting-edge solutions. AI is supercharging the speed and precision at which we can help our customers understand risk.",
+    "quote_source": "Moody's Agentic Solutions Press Release Feb 2026",
+    "displacement_angle": "590M entity database with agentic AI search; enterprise data discovery opportunity",
+    "competitors_using_algolia": "S&P Global (competitor)"
+  },
+  "juniper.net": {
+    "exec_name": "Rami Rahim",
+    "exec_title": "President & GM, HPE Networking (formerly CEO, Juniper)",
+    "exec_quote": "HPE and Juniper have a unique opportunity to disrupt the networking industry. Together, we'll provide customers with a secure network that is purpose-built with AI and for AI.",
+    "quote_source": "HPE-Juniper Integration 2025",
+    "displacement_angle": "Elasticsearch self-managed; tech documentation and support portal search",
+    "competitors_using_algolia": "Cisco (competitor)"
+  },
+  "f5.com": {
+    "exec_name": "François Locoh-Donou",
+    "exec_title": "President & Chief Executive Officer",
+    "exec_quote": "AI is accelerating innovation, but also intensifying the high costs, crushing complexity, and escalating cyber risks. F5 stands alone in its ability to address the challenges of hybrid multicloud architectures.",
+    "quote_source": "F5 Platform Launch Feb 2025",
+    "displacement_angle": "Coveo displacement; tech documentation and support knowledge base search",
+    "competitors_using_algolia": null
+  },
+  "allianz.fr": {
+    "exec_name": "Oliver Bäte",
+    "exec_title": "Chairman of the Board of Management (CEO)",
+    "exec_quote": "We launched efforts under our Heritage and Renewal program, many revolving around digitizing our business to provide the best service possible to our customers. A service that meets them where they are, whenever they want.",
+    "quote_source": "MDS Group CEO Interview",
+    "displacement_angle": "Insurance product catalog and agent portal search; multi-country standardization opportunity",
+    "competitors_using_algolia": null
+  },
+  "bever.nl": {
+    "exec_name": "Albert Scholte",
+    "exec_title": "Chief Executive Officer",
+    "exec_quote": "We want to offer our customers more options and freedom in how they engage with our products. Retailers shouldn't try to copy platforms — instead focus on things that make you special.",
+    "quote_source": "Twinkle Magazine 2024",
+    "displacement_angle": "Dutch outdoor retailer; product discovery with rental/circular model needs faceted search",
+    "competitors_using_algolia": "Decathlon (competitor using Algolia)"
+  },
+  "gap.com": {
+    "exec_name": "Richard Dickson",
+    "exec_title": "President & CEO",
+    "exec_quote": "We are transforming Gap Inc. with a focus on relevance, culture, and customer connection. Digital innovation is central to meeting customers where they are.",
+    "quote_source": "Gap Inc. Strategy Update 2025",
+    "displacement_angle": "SFCC native search has limited NLP; multi-brand portfolio (Gap, Old Navy, Banana Republic, Athleta)",
+    "competitors_using_algolia": "Under Armour (+35% conversions), Lacoste (2x sales), Gymshark"
+  }
+}

@@ -1,0 +1,352 @@
+{
+  "generated_date": "2026-02-26",
+  "source": "Strategic research for top 10 Spryker customers",
+  "companies": [
+    {
+      "company_name": "Ricoh",
+      "domain": "ricoh.com",
+      "hiring_signals": [
+        "205 open positions globally including Business Process Consultant, Client Executive, Digital Printer Operator, and Sales Consultant roles",
+        "Actively hiring for digitalization and automation technologies roles",
+        "Global workforce transformation positions available across multiple regions"
+      ],
+      "trigger_events": [
+        "Feb 2026: Acquired ValueTech (Chile) - process automation and document management technology company",
+        "Feb 2026: Acquired ET Group (Canada) - workplace technology and collaboration integrator",
+        "Jan 2026: Acquired Presentation Products, Inc. (New York) - AV integrator, expanding digital services portfolio",
+        "Launched RICOH Global Security Operation Center in Jan 2025 for managed security services",
+        "Deploying AI agents using multimodal LLM through natif.ai acquisition (April 2024)"
+      ],
+      "competitive_intel": [
+        "Uses Sitecore for digital asset management (implemented April 2021, went live Dec 2021 with 80,000 assets)",
+        "First multinational to implement S/4HANA at large scale - SAP reference customer",
+        "Industry leader in IoT and cloud computing",
+        "Search technology provider: Not publicly disclosed"
+      ],
+      "pain_points": [
+        "Digital asset management: Needed enhanced searchability, security, and accessibility",
+        "Complex document management workflows requiring automation",
+        "Need to transform from hardware-centric to digital services business model"
+      ]
+    },
+    {
+      "company_name": "Aldi Sud",
+      "domain": "aldi-sued.de",
+      "hiring_signals": [
+        "8,000+ open positions globally on LinkedIn",
+        "E-Commerce team actively hiring within Customer Interaction division",
+        "Digital transformation roles: Developers, IT Project Managers, Service & Operations Specialists, Test & Quality Assurance Specialists",
+        "ALDI DX division focused on agile transformation in retail"
+      ],
+      "trigger_events": [
+        "Multi-year partnership with Genpact announced July 2024 for AI and digital transformation",
+        "TCS partnership extended Nov 2025 for AI-enabled Cloud Operations and infrastructure modernization",
+        "AHEAD project: Global IT transformation adapting systems for digital world",
+        "Testing digital loyalty programme in app (following Aldi Nord)",
+        "$9 billion investment over 5 years for expansion (330 stores by 2028)",
+        "Feb 2025: Divested ~170 Winn-Dixie and Harvey stores back to Southeastern Grocers"
+      ],
+      "competitive_intel": [
+        "Uses Spryker for e-commerce platform development",
+        "Adobe and Salesforce systems for Customer Interaction",
+        "Actindo for Digital Operations Platform (PIM)",
+        "SAP S/4HANA, Ariba, Blackline, ServiceNow deployed",
+        "Search technology: Native Spryker search with new search bar and sorting capabilities"
+      ],
+      "pain_points": [
+        "E-commerce historically unprofitable for hard discounters due to efficiency-focused model",
+        "Smaller store footprints make e-commerce fulfillment space challenging",
+        "Labor model doesn't support dedicated e-commerce shopping staff",
+        "Previous site lacked search bar - major customer pain point (now addressed)",
+        "Limited online presence compared to competitors in increasingly digital retail landscape"
+      ]
+    },
+    {
+      "company_name": "Hilti",
+      "domain": "hilti.com",
+      "hiring_signals": [
+        "~950 matching jobs available globally",
+        "Digital Marketing & E-Commerce Specialist position open in Seoul, Korea",
+        "Actively hiring for IT and digital transformation roles",
+        "Technology positions focused on IoT, cloud computing, and construction digitalization"
+      ],
+      "trigger_events": [
+        "Hilti Venture investing in robotics, AI, IoT, modular construction, and sustainability startups",
+        "Recent investment in Outbuild (scheduling and field planning software)",
+        "July 2023: Acquired 4PS (most recent acquisition)",
+        "Fieldwire acquisition (2021) - construction management platform",
+        "Significant R&D investment continuing for construction industry digital transformation"
+      ],
+      "competitive_intel": [
+        "Sitecore Content Hub for digital asset management (implemented 2021)",
+        "E-procurement integration with 50+ eMarketplaces and EDI platforms",
+        "First multinational with S/4HANA implementation at scale",
+        "Industry leader in IoT and cloud computing for construction",
+        "Search technology: Internal website search with product availability and stock checking"
+      ],
+      "pain_points": [
+        "Digital asset management: Poor user experience, inadequate searchability, complex taxonomy updates",
+        "Data quality and adoption challenges with previous DAM system",
+        "Software updates were complex and lengthy, affecting system performance",
+        "B2B e-commerce features gaps: delivery tracking, comprehensive product descriptions, intuitive checkout, order history access"
+      ]
+    },
+    {
+      "company_name": "Bosch",
+      "domain": "bosch.com",
+      "hiring_signals": [
+        "10,000+ employees at Bosch Digital division globally",
+        "E-Commerce Project Manager position open in Pune, India for Headless Salesforce Commerce Cloud implementation",
+        "Manager - Digitalization positions available (multiple)",
+        "Hiring consultants, cloud software developers, digital marketers, UX designers, solution architects"
+      ],
+      "trigger_events": [
+        "Jan 2026: Unified global building technologies under 'Bosch Building Technologies' brand",
+        "Acquired Paladin Technologies Inc. (Vancouver) for North America integrator business",
+        "Acquiring HVAC solutions business from Johnson Controls (York, Coleman brands) - closing 2025",
+        "Johnson Controls-Hitachi Air Conditioning acquisition closed July 2025",
+        "Sept 2025: Expanded strategic partnership with Alibaba Group for AI and cloud innovation",
+        "$1.5 billion investment in Roseville, California wafer fab for silicon carbide chips (operational 2026)",
+        "$6 billion announced for US-based acquisitions since 2023"
+      ],
+      "competitive_intel": [
+        "Bloomreach Commerce Experience Cloud integrated with SAP Commerce Cloud",
+        "Headless commerce architecture for global operations",
+        "Bosch Experience World: virtual department store initiative",
+        "Uses Salesforce Commerce Cloud for some digital properties",
+        "Search technology: Bloomreach for search and personalization"
+      ],
+      "pain_points": [
+        "Global complexity: Operating multiple sites with different customer expectations across countries",
+        "Needed to keep pace with Amazon and industry giants",
+        "Challenge of offering unique country-level experiences while maintaining global alignment",
+        "Required flexible frontend changes without disrupting entire system"
+      ]
+    },
+    {
+      "company_name": "Siemens",
+      "domain": "siemens.com",
+      "hiring_signals": [
+        "Digital Transformation Expert positions available",
+        "Platform migration and cloud-based digital technology roles",
+        "Complex analytics, AI, Machine Learning, and automation solution development positions",
+        "Siemens Digital Industries Software division actively hiring"
+      ],
+      "trigger_events": [
+        "March 2025: Acquired Altair Engineering Inc. for ~$10 billion (industrial simulation and AI)",
+        "July 2025: Acquired Dotmatics for $5.1 billion (AI-powered PLM for Life Sciences)",
+        "Jan 2026: Acquired Canopus AI (semiconductor metrology solutions)",
+        "Acquired ASTER Technologies (PCBA test verification software)",
+        "2025: Partnership with Accenture forming 7,000-professional business group",
+        "Mid-2026: Digital Twin Composer release planned",
+        "Feb 2026: Siemens Energy committed $1 billion for US manufacturing expansion",
+        "Partnerships with Microsoft (Industrial Copilot), NVIDIA (industrial metaverse), Google Cloud (factory AI), IFS (grid management)"
+      ],
+      "competitive_intel": [
+        "Siemens Xcelerator Marketplace built on Salesforce Commerce Cloud",
+        "Transformation to 'ONE Tech Company' strategy",
+        "Advanced industrial AI, software-defined automation, digital twin technology leader",
+        "Search technology: Salesforce Commerce Cloud native search capabilities"
+      ],
+      "pain_points": [
+        "Previously siloed offerings needed consolidation",
+        "Customer marketplace experience modernization required",
+        "Needed seamless hardware and software purchase management without sales rep interaction",
+        "Digital transformation acceleration to enhance customer engagement"
+      ]
+    },
+    {
+      "company_name": "ZF Group",
+      "domain": "zf.com",
+      "hiring_signals": [
+        "Business Process & Transformation Manager positions open",
+        "ERP-driven digital transformation roles (next.GenERP implementation)",
+        "E-Mobility division transformation and digitalization roles",
+        "Platform as a Service solutions team hiring in Ireland",
+        "Launched largest Digital Development Hub outside Europe in Bengaluru, India"
+      ],
+      "trigger_events": [
+        "Selling ADAS business to HARMAN International for EUR 1.5 billion (closing H2 2026)",
+        "~3,750 employees transitioning to HARMAN",
+        "Mass production of ProAI platform with Horizon Robotics scheduled for 2026",
+        "Partnership with Kodiak AI on steering for driverless trucks",
+        "Evaluating options for Electronics and ADAS division through partnerships or strategic alliances"
+      ],
+      "competitive_intel": [
+        "SupplyOn platform for supplier collaboration (third-party)",
+        "Microsoft Power Platform deployed to 25,000+ apps internally",
+        "ProAI automotive-grade computing platform for vehicles",
+        "Digital Manufacturing Platform (DMP) for production digitization",
+        "Search technology: Not publicly disclosed, uses SupplyOn for B2B"
+      ],
+      "pain_points": [
+        "IT resource constraints: Never enough resources to meet technology demand",
+        "Needed to 'democratize' IT - make data available to business users on managed platforms",
+        "Fluctuating demand and strained supply chains require quick production adaptation",
+        "Global disruptions and shifting market demands requiring agile supply chain resilience"
+      ]
+    },
+    {
+      "company_name": "Metro AG",
+      "domain": "metro.digital",
+      "hiring_signals": [
+        "Senior Project Manager for digital transformation portfolio",
+        "METRO/MAKRO App development lead for B2B wholesale (start date 01.01.2026)",
+        "Platform architecture strategy and roadmap positions",
+        "Cloud-native applications roles (GCP, Docker, Kubernetes)",
+        "Search and Discover Team actively hiring"
+      ],
+      "trigger_events": [
+        "April 2025: Acquired by EP Global Commerce GmbH",
+        "Digital revenue share increased from 6% to 16% following sCore strategy",
+        "FSD (Food Service Distribution) share rose to 28% of total sales",
+        "Target: FSD depot acquisitions in Western and Southern Europe FY2025-FY2026",
+        "Integration of Aviludo (Portugal), Pro à Pro investments (France, Spain)",
+        "FY2025/26: Expected 3-6% sales growth, EUR 50-150 million EBITDA increase"
+      ],
+      "competitive_intel": [
+        "Spryker for e-commerce frontend (API-first approach)",
+        "M-Shop developed in-house by METRO-NOM",
+        "Uses Python, TensorFlow, Kubeflow, Google Cloud Platform, Google Analytics 360",
+        "Search and Discover Team focused on product findability",
+        "Individualized pricing models based on quantity purchased"
+      ],
+      "pain_points": [
+        "Previous 'fast order entry' platform couldn't handle B2B complexity (bulk orders, custom pricing, logistics integration)",
+        "Orders historically fragmented across fax, email, phone, old webshop",
+        "Multiple webshop solutions in each METRO country created inefficiency",
+        "Required globally available, scalable platform with unified employee management",
+        "Customer profiling complexity for multi-role customer base"
+      ]
+    },
+    {
+      "company_name": "Jungheinrich",
+      "domain": "jungheinrich.com",
+      "hiring_signals": [
+        "8 Jungheinrich jobs currently available ($40k-$118k range)",
+        "79 positions on jobborse.de including internships and apprenticeships",
+        "Digital Marketing Analyst position open",
+        "Digital Factory team in Hamburg hiring",
+        "Jungheinrich Digital Solutions in Madrid - IT positions with startup atmosphere"
+      ],
+      "trigger_events": [
+        "Strategy 2030+: Targeting EUR 10 billion revenue and 10% EBIT ROS by 2030 (organic)",
+        "Acquired Invar (US warehouse and order fulfilment specialist) via Storage Solutions subsidiary",
+        "Completed acquisitions of arculus and Magazino (software and robotics)",
+        "5 million euro investment in Merantix Capital's AI fund (AI partnership)",
+        "Partnership with Volkswagen Group Australia for Melbourne network expansion",
+        "Mid-to-high three-digit million euro budget earmarked for acquisitions and partnerships"
+      ],
+      "competitive_intel": [
+        "PROFISHOP: Leader in in-house transport e-commerce (launched 2006)",
+        "100,000+ articles in PROFISHOP catalog",
+        "CoreMedia platform for web content management (implemented 2017)",
+        "Technologies: CATIA, Google Remarketing, Venda, Optimizely",
+        "Shop Floor Connectivity (SFC) for machine connectivity (AWS-based)",
+        "Competitors: KION Group, Toyota Material Handling"
+      ],
+      "pain_points": [
+        "Fierce competition in large-scale automation for e-commerce and logistics",
+        "Ever shorter delivery times and growing price pressure in logistics industry",
+        "Increasingly complex distribution requirements",
+        "Need for near real-time visibility, equipment insights, and predictive analytics"
+      ]
+    },
+    {
+      "company_name": "Toyota Material Handling",
+      "domain": "toyotaforklift.com",
+      "hiring_signals": [
+        "21+ Toyota Material Handling jobs on Indeed",
+        "45 positions ranging from $16-$48/hr",
+        "Quality assurance and testing roles for digital customer experience platforms",
+        "Digital marketing positions available",
+        "Sales, marketing, customer service, and technical roles"
+      ],
+      "trigger_events": [
+        "April 2025: Toyota Material Handling and Raymond Corporation integrated into Toyota Material Handling North America (TMHNA)",
+        "Oct 2025: Strategic investment in Advanced Charging Technologies (ACT)",
+        "New 295,000 sq-ft factory opening 2026 in Columbus for electric products",
+        "$50 million investment in Greene, NY and Muscatine, IA manufacturing",
+        "Sept 2024: Energy Solutions Manufacturing Center of Excellence opened",
+        "Digital twin pilot with NVIDIA and SoftServe for forklift simulation"
+      ],
+      "competitive_intel": [
+        "Mirakl Marketplace Platform for MyToyotaStore (B2B parts marketplace, 600,000+ parts)",
+        "Optimizely for e-commerce (Content Management, Commerce Management, Search & Personalization) - TMHE",
+        "Website developed by Deloitte Digital (backend) and Blackstone Media (UI)",
+        "Dealer network as primary fulfillment partners",
+        "Competitors: Jungheinrich, KION Group"
+      ],
+      "pain_points": [
+        "Initial dealer reservations about digital platforms reducing store footfall",
+        "Organization lacked people, processes, and technology for high-performing digital applications (TMHE)",
+        "Mature organizations slow to adopt new digital ways of business",
+        "Integration challenges between dealer network and digital platforms"
+      ]
+    },
+    {
+      "company_name": "Swiss Krono",
+      "domain": "swisskrono.com",
+      "hiring_signals": [
+        "15 open jobs globally",
+        "7 SWISS KRONO positions listed on Glassdoor",
+        "5,100 employees worldwide across 10 production sites",
+        "Hiring across manufacturing and corporate functions"
+      ],
+      "trigger_events": [
+        "2024: Acquired Argolite AG for business growth",
+        "Licensing contract with Unilin Technologies for digital printing",
+        "$341 million investment in Germany plant expansion",
+        "Interzum 2025: Unveiling forward-thinking concepts for resource-saving solutions",
+        "300+ customers onboarded across three markets to Customer Portal"
+      ],
+      "competitive_intel": [
+        "Spryker Cloud Commerce OS for online shop",
+        "Akaneo PIM system for product information management",
+        "Tech stack: Power BI, Varnish, Ansible, Microsoft Active Directory, C#, VMware, Siteimprove, Nginx",
+        "Hybrid mobile app architecture across platforms",
+        "Customer Portal for self-service ordering"
+      ],
+      "pain_points": [
+        "Decentralized B2B business model: Eight independently operated companies with varying processes",
+        "Wide range of stakeholder needs with dispersed budgets",
+        "Varying levels of digital maturity across countries made unified roadmap difficult",
+        "Product diversity management while ensuring country-specific maneuverability",
+        "Need to speed up order process compared to traditional channels"
+      ]
+    }
+  ],
+  "summary": {
+    "total_companies_researched": 10,
+    "common_patterns": {
+      "spryker_usage": ["Aldi Sud", "Metro AG", "Swiss Krono"],
+      "major_acquisitions_2025_2026": ["Ricoh (3+ acquisitions)", "Siemens (4 acquisitions, $15B+)", "Bosch (multiple)", "Jungheinrich (Invar)", "Swiss Krono (Argolite AG)"],
+      "search_technology_gaps": ["Most companies use native commerce platform search", "Few use advanced search providers like Algolia", "Metro AG and Jungheinrich have dedicated Search teams"],
+      "common_pain_points": [
+        "Global complexity with country-specific requirements",
+        "Digital asset management and searchability",
+        "B2B e-commerce complexity (pricing, bulk orders)",
+        "Integration of dealer/partner networks with digital",
+        "Resource constraints for digital transformation"
+      ]
+    },
+    "algolia_opportunities": {
+      "high_priority": [
+        "Metro AG - Has dedicated Search and Discover Team, using Spryker, B2B complexity",
+        "Aldi Sud - Major e-commerce investment, Spryker platform, addressing search pain points",
+        "Swiss Krono - Spryker platform, global search challenges across countries"
+      ],
+      "medium_priority": [
+        "Toyota Material Handling - Using Optimizely Search, dealer network complexity",
+        "Jungheinrich - PROFISHOP with 100,000+ articles, CoreMedia/Optimizely stack",
+        "Hilti - Documented searchability pain points in DAM, e-procurement integration"
+      ],
+      "context_only": [
+        "Ricoh - Strong Sitecore investment",
+        "Bosch - Bloomreach Commerce deployment",
+        "Siemens - Salesforce Commerce Cloud native",
+        "ZF Group - B2B supplier focus, SupplyOn platform"
+      ]
+    }
+  }
+}

@@ -1,0 +1,430 @@
+{
+  "generated_date": "2026-02-26",
+  "data_source": "Yahoo Finance, Financial News, Web Search",
+  "companies": [
+    {
+      "company_name": "Siemens AG",
+      "domain": "siemens.com",
+      "ticker": "SIEGY",
+      "exchange": "OTC (ADR for XETRA:SIE)",
+      "financial_data": {
+        "stock_price": {
+          "value": 144.37,
+          "currency": "USD",
+          "as_of": "2026-02-20"
+        },
+        "market_cap": {
+          "value": 238.74,
+          "unit": "billion",
+          "currency": "USD",
+          "as_of": "2026-02-20"
+        },
+        "revenue_ttm": {
+          "value": 22.70,
+          "unit": "billion",
+          "currency": "USD",
+          "note": "Q1 2026 quarterly revenue; TTM ~$85B EUR annually"
+        },
+        "net_income": {
+          "eps": 1.50,
+          "currency": "USD",
+          "period": "Q1 2026",
+          "beat_estimate_by": 0.23
+        },
+        "pe_ratio": {
+          "trailing": 26.41,
+          "forward": 17.61
+        },
+        "analyst_recommendations": {
+          "consensus": "Hold",
+          "total_analysts": 11,
+          "buy": 4,
+          "hold": 5,
+          "sell": 2,
+          "recent_ratings": [
+            {"firm": "Citigroup", "rating": "Buy", "date": "2026-02-13"},
+            {"firm": "Evercore", "rating": "Outperform", "date": "2026-02"}
+          ]
+        }
+      },
+      "digital_transformation_news": {
+        "headline": "Siemens unveils technologies to accelerate industrial AI revolution at CES 2026",
+        "key_initiatives": [
+          "Digital Twin Composer launched at CES 2026 - builds Industrial Metaverse environments",
+          "Acquired Canopus AI (AI-driven metrology) - closed January 12, 2026",
+          "Acquired Dotmatics (Life Sciences) - closing H1 FY2026",
+          "Acquired ASTER Technologies (Design for Test functionality)",
+          "Acquired Altair Engineering (industrial software and AI)"
+        ],
+        "investment": "€1 billion+ over next 3 years in AI offerings",
+        "ai_headcount": "1,500 AI experts",
+        "fy2026_outlook": "Digital Industries expects 5-10% comparable revenue growth",
+        "sources": [
+          "https://press.siemens.com/global/en/pressrelease/siemens-unveils-technologies-accelerate-industrial-ai-revolution-ces-2026",
+          "https://news.siemens.com/en-us/digital-twin-composer-ces-2026/"
+        ]
+      }
+    },
+    {
+      "company_name": "Siemens Healthineers AG",
+      "domain": "siemens-healthineers.com",
+      "ticker": "SMMNY",
+      "exchange": "OTC (ADR for XETRA:SHL)",
+      "financial_data": {
+        "stock_price": {
+          "value": 26.96,
+          "currency": "USD",
+          "as_of": "2026-02"
+        },
+        "market_cap": {
+          "value": 63.3,
+          "unit": "billion",
+          "currency": "USD"
+        },
+        "revenue_ttm": {
+          "value": 23.375,
+          "unit": "billion",
+          "currency": "EUR"
+        },
+        "net_income": {
+          "operating_income_ttm": 3.164,
+          "unit": "billion",
+          "currency": "EUR"
+        },
+        "pe_ratio": {
+          "trailing": 23.09
+        },
+        "analyst_recommendations": {
+          "consensus": "Buy",
+          "total_analysts": 7
+        }
+      },
+      "digital_transformation_news": {
+        "headline": "Strong Q1 2026 with 6% imaging growth and Atellica franchise up 20%",
+        "key_initiatives": [
+          "AI-Rad Companion solutions for radiology",
+          "Bengaluru hub for AI, big data, cloud, IoT, robotics",
+          "Moody's strong investment-grade rating received",
+          "Precision Therapy segment showing strong operational margin expansion"
+        ],
+        "investment": "$1.4 billion annual ICT spending; €160M over 5 years for Strategy 2025",
+        "hiring_plan": "1,800+ digital talents over 10 years",
+        "focus_areas": ["AI", "Big Data", "Cloud", "IoT", "Robotics", "Cybersecurity"],
+        "sources": [
+          "https://www.siemens-healthineers.com/en-us/insights/news/digital-transformation-in-healthcare",
+          "https://finance.yahoo.com/news/siemens-healthineers-ag-smmny-q1-010504426.html"
+        ]
+      }
+    },
+    {
+      "company_name": "Daimler Truck Holding AG",
+      "domain": "daimlertruck.com",
+      "ticker": "DTRUY",
+      "exchange": "OTC (ADR for XETRA:DTG)",
+      "financial_data": {
+        "stock_price": {
+          "value": 25.60,
+          "currency": "USD",
+          "as_of": "2026-02-13"
+        },
+        "market_cap": {
+          "value": 79.282,
+          "unit": "billion",
+          "currency": "USD",
+          "note": "Market cap varies by source (33.6B-79.3B)"
+        },
+        "revenue_ttm": {
+          "value": 50.84,
+          "unit": "billion",
+          "currency": "EUR",
+          "fy2024": 54.08
+        },
+        "net_income": {
+          "eps_ttm": 3.15,
+          "currency": "USD"
+        },
+        "pe_ratio": {
+          "trailing": 16.3
+        },
+        "analyst_recommendations": {
+          "recent_targets": [
+            {"firm": "RBC Capital", "target": 44, "currency": "EUR"},
+            {"firm": "Morgan Stanley", "target": 47, "currency": "EUR"}
+          ],
+          "next_earnings": "2026-03-19"
+        }
+      },
+      "digital_transformation_news": {
+        "headline": "Joint venture with Volvo Group for software-defined vehicle platform",
+        "key_initiatives": [
+          "JV with Volvo for software-defined heavy-duty vehicle platform",
+          "Collaboration with Siemens for cloud-based digital engineering platform",
+          "Partnership with Class8 for connected services (Freightliner) - January 2026",
+          "Tech & Data Hub expansion in Lisbon",
+          "Graph technology implementation for IT estate management"
+        ],
+        "autonomous_target": "SAE Level 4 trucks in US by 2027 (hub-to-hub)",
+        "sources": [
+          "https://www.daimlertruck.com/en/newsroom/pressrelease/daimler-truck-and-volvo-group-intend-to-form-a-joint-venture-for-a-software-defined-vehicle-platform-to-amplify-digital-transformation-52716671",
+          "https://www.daimlertruck.com/en/newsroom/pressrelease/daimler-truck-collaborates-with-siemens-to-build-an-integrated-digital-engineering-platform-52189668"
+        ]
+      }
+    },
+    {
+      "company_name": "Ricoh Company, Ltd.",
+      "domain": "ricoh.com",
+      "ticker": "RICOY",
+      "exchange": "OTC (ADR for TSE:7752)",
+      "financial_data": {
+        "stock_price": {
+          "value": 9.53,
+          "currency": "USD",
+          "as_of": "2026-02-19"
+        },
+        "market_cap": {
+          "value": 6.11,
+          "unit": "billion",
+          "currency": "USD",
+          "as_of": "2026-02-20"
+        },
+        "revenue_ttm": {
+          "value": 17.1,
+          "unit": "billion",
+          "currency": "USD"
+        },
+        "net_income": {
+          "quarterly": 14922,
+          "unit": "million",
+          "currency": "JPY"
+        },
+        "pe_ratio": {
+          "forward": 12.75
+        },
+        "analyst_recommendations": {
+          "consensus": "Buy",
+          "total_analysts": 12,
+          "price_target_avg": 9.74,
+          "price_target_low": 7.51,
+          "price_target_high": 13.31,
+          "currency": "USD"
+        }
+      },
+      "digital_transformation_news": {
+        "headline": "Ricoh named Clarivate Top 100 Global Innovator 2026; multiple acquisitions expand digital services",
+        "key_initiatives": [
+          "Acquired ValueTech (Chile) - process automation, document management, AI, forensic auditing",
+          "Acquired ET Group (Canada) - workplace technology and collaboration",
+          "Acquired Presentation Products Inc (USA) - AV integration and managed services",
+          "ISE 2026 showcase: IoT, AI, and workplace technology integration"
+        ],
+        "strategic_focus": "Workplace Experience as key growth area; transformation into digital services company",
+        "partners": ["LG", "NEAT", "Logitech", "Microsoft"],
+        "recognition": "Clarivate Top 100 Global Innovator 2026",
+        "sources": [
+          "https://www.ricoh.com/release/2026/0213_1",
+          "https://www.ricoh.com/info/2026/0122_1"
+        ]
+      }
+    },
+    {
+      "company_name": "Metro AG",
+      "domain": "metro.de",
+      "ticker": "MTTRY / B4B",
+      "exchange": "OTC / Hamburg (B4B)",
+      "note": "MTTRY is Ceconomy AG ADR; Metro AG trades as B4B on German exchanges",
+      "financial_data": {
+        "stock_price": {
+          "value": 6.28,
+          "currency": "EUR",
+          "as_of": "2026-02-20",
+          "note": "B4B on Hamburg exchange"
+        },
+        "market_cap": {
+          "value": 2.17,
+          "unit": "billion",
+          "currency": "USD",
+          "as_of": "2025-05"
+        },
+        "revenue_ttm": {
+          "value": 33.90,
+          "unit": "billion",
+          "currency": "USD",
+          "as_of": "2026-01"
+        },
+        "net_income": {
+          "eps_forecast": 0.04,
+          "currency": "EUR",
+          "period": "Next FY"
+        },
+        "pe_ratio": {
+          "trailing": 29.71
+        },
+        "analyst_recommendations": {
+          "consensus": "Hold",
+          "target_price": 5.10,
+          "currency": "EUR",
+          "vs_current": "-4.32%"
+        }
+      },
+      "digital_transformation_news": {
+        "headline": "Metro AG targets 40% digital sales by 2030; AI-driven demand forecasting priority",
+        "key_initiatives": [
+          "Target: 40% of sales through digital channels by 2030",
+          "AI-driven demand forecasting to reduce stockouts",
+          "Dynamic assortment by micro-market (personalized SKUs per store)",
+          "Core systems moving to cloud and API-first architectures",
+          "METRO Markets expansion to double GMV over 24-30 months"
+        ],
+        "investment": "Cash investments up to 2.5% of sales annually (2024-2025), reducing to 1.5% long-term",
+        "digital_platform": "METRO MARKETS - online marketplace for food service products",
+        "ai_partner": "Infosys - taking AI to the next level",
+        "sources": [
+          "https://metro.digital/",
+          "https://www.infosys.com/industries/retail/case-studies/metro-ag-ai-next-level.html"
+        ]
+      }
+    },
+    {
+      "company_name": "Jungheinrich AG",
+      "domain": "jungheinrich.com",
+      "ticker": "JGHHY",
+      "exchange": "OTC (ADR for XETRA:JUN3)",
+      "financial_data": {
+        "stock_price": {
+          "value": 35.44,
+          "currency": "EUR",
+          "as_of": "2026-02-25"
+        },
+        "market_cap": {
+          "value": 3.66,
+          "unit": "billion",
+          "currency": "EUR"
+        },
+        "revenue_ttm": {
+          "note": "Not disclosed in search results; analyst estimates available"
+        },
+        "net_income": {
+          "note": "Not disclosed in search results"
+        },
+        "pe_ratio": {
+          "trailing": 13.66,
+          "forward": 13.14
+        },
+        "analyst_recommendations": {
+          "note": "Coverage available on Jungheinrich IR website and MarketScreener"
+        }
+      },
+      "digital_transformation_news": {
+        "headline": "Jungheinrich acquires Invar for US warehouse automation expansion; launches EAC 212a mobile robot H2 2026",
+        "key_initiatives": [
+          "Acquired Invar (Atlanta) - expanding US warehouse automation footprint",
+          "New Mobile Robot EAC 212a launch H2 2026 - AI-based 3D pallet detection",
+          "Automated system for Fontanafredda winery - go-live June 2026",
+          "Automated logistics center for Deutsche Aircraft at Leipzig/Halle",
+          "Mobile robots deployed at DURABLE"
+        ],
+        "strategy": "Strategy 2030+ - targeted investments in automation and North American expansion",
+        "product_specs": {
+          "EAC_212a": {
+            "transfer_height": "1,200mm",
+            "load_capacity": "1,200kg",
+            "features": "AI-based 3D pallet detection"
+          }
+        },
+        "focus_areas": ["Mobile Robots", "Automated Warehouse Systems", "Software"],
+        "sources": [
+          "https://www.dcvelocity.com/supply-chain/other-services/systems-integration-services/jungheinrich-acquires-atlanta-based-invar-to-grow-u-s-footprint",
+          "https://www.jungheinrich.com/en/newsroom/intelligent-automation-for-high-lift-applications-2296092"
+        ]
+      }
+    },
+    {
+      "company_name": "Toyota Industries Corporation",
+      "domain": "toyotamaterial.com",
+      "ticker": "TYIDY",
+      "exchange": "OTC (ADR for TSE:6201)",
+      "financial_data": {
+        "stock_price": {
+          "value": 131.15,
+          "currency": "USD",
+          "as_of": "2026-02-24"
+        },
+        "market_cap": {
+          "value": 39.22,
+          "unit": "billion",
+          "currency": "USD"
+        },
+        "revenue_ttm": {
+          "fy2024": 4.08,
+          "unit": "trillion",
+          "currency": "JPY",
+          "growth": "+6.57% YoY",
+          "q3_fy26": 1.11,
+          "q3_unit": "trillion"
+        },
+        "net_income": {
+          "note": "Available on TradingView; not disclosed in search results"
+        },
+        "pe_ratio": {
+          "trailing": 25.26,
+          "historical_10yr_avg": 13.86
+        },
+        "analyst_recommendations": {
+          "note": "Not disclosed in search results"
+        },
+        "52_week_range": {
+          "low": 73.47,
+          "high": 136.11,
+          "currency": "USD"
+        }
+      },
+      "digital_transformation_news": {
+        "headline": "Toyota Automated Logistics (TAL) launching April 2026 - combines Bastian Solutions, Vanderlande, viastore",
+        "key_initiatives": [
+          "Toyota Automated Logistics Group launch April 2026",
+          "Combines Bastian Solutions, Vanderlande warehousing, and viastore",
+          "Acquired Siemens Logistics (November 2024) for $326M - parcel and airport logistics",
+          "Strategic investment in Gideon for vision-based automated vehicle solutions",
+          "Participating at LogiMat 2026"
+        ],
+        "focus_areas": [
+          "Autonomous logistics equipment",
+          "Logistics management software",
+          "Environmentally friendly powertrains",
+          "Scalable warehouse automation systems"
+        ],
+        "privatization_news": "Toyota Group accelerating collaboration through privatization of Toyota Industries Corporation",
+        "sources": [
+          "https://toyota-automated-logistics.com/",
+          "https://www.dcvelocity.com/logistics/warehousing/toyota-to-reorganize-its-three-warehouse-automation-arms",
+          "https://global.toyota/en/newsroom/corporate/42882940.html"
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "total_companies": 7,
+    "total_market_cap_usd": "~$472 billion",
+    "sectors": [
+      "Industrial Conglomerate (Siemens)",
+      "Healthcare Technology (Siemens Healthineers)",
+      "Commercial Vehicles (Daimler Truck)",
+      "Office Technology/Digital Services (Ricoh)",
+      "Wholesale/Food Service (Metro AG)",
+      "Intralogistics/Material Handling (Jungheinrich, Toyota Industries)"
+    ],
+    "common_themes": [
+      "AI and automation investments",
+      "Digital transformation initiatives",
+      "Cloud-first architectures",
+      "Warehouse/logistics automation",
+      "Strategic acquisitions for technology capabilities"
+    ]
+  },
+  "data_quality_notes": [
+    "Market cap figures may vary by source due to currency conversion and timing",
+    "MTTRY ticker is actually Ceconomy AG (spun off from Metro); Metro AG trades as B4B",
+    "Some companies have limited analyst coverage on US OTC markets",
+    "TTM figures may span different fiscal year end dates"
+  ]
+}

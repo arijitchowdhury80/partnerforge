@@ -55,6 +55,7 @@ import {
   SignalsAccordion,
   StrategicAccordion,
 } from './IntelligenceAccordions';
+import { CompetitorAccordion } from './CompetitorAccordion';
 import { COLORS } from '@/lib/constants';
 
 // =============================================================================
@@ -119,7 +120,7 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich, onAddToCampa
     setIsPinned(newPinned);
     // When pinned, open multiple sections for research
     if (newPinned) {
-      setOpenAccordions(['traffic', 'financials', 'techstack']);
+      setOpenAccordions(['traffic', 'competitors', 'techstack']);
     }
   };
 
@@ -135,6 +136,11 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich, onAddToCampa
       withOverlay={!isPinned}
       lockScroll={!isPinned}
       trapFocus={!isPinned}
+      transitionProps={{
+        transition: 'slide-left',
+        duration: 300,
+        timingFunction: 'ease-out',
+      }}
       styles={{
         content: {
           background: COLORS.GRAY_50,
@@ -263,6 +269,32 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich, onAddToCampa
           <QuickStat icon={IconUsers} label="Employees" value={formatNumber(company.employee_count)} />
           <QuickStat icon={IconCalendar} label="Founded" value={company.founded_year?.toString() || 'N/A'} />
         </SimpleGrid>
+
+        {/* Prominent Enrich Button - Always visible in header */}
+        {onEnrich && (
+          <Button
+            fullWidth
+            mt="md"
+            size="md"
+            variant="gradient"
+            gradient={{ from: COLORS.ALGOLIA_NEBULA_BLUE, to: '#5468ff', deg: 135 }}
+            leftSection={<IconRefresh size={18} />}
+            onClick={() => onEnrich(company.domain)}
+            styles={{
+              root: {
+                fontWeight: 600,
+                boxShadow: '0 4px 12px rgba(0, 61, 255, 0.25)',
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  transform: 'translateY(-1px)',
+                  boxShadow: '0 6px 16px rgba(0, 61, 255, 0.35)',
+                },
+              },
+            }}
+          >
+            {company.enrichment_level === 'full' ? 'Re-Enrich Data' : 'Enrich Now'}
+          </Button>
+        )}
       </div>
 
       {/* Scrollable Accordion Content */}
@@ -311,6 +343,12 @@ export function CompanyDrawer({ company, opened, onClose, onEnrich, onAddToCampa
             data={company.tech_stack_data}
             partnerTech={company.partner_tech}
             currentSearch={company.current_search}
+          />
+
+          {/* Competitor Intelligence - THE MOST IMPORTANT PART */}
+          <CompetitorAccordion
+            domain={company.domain}
+            cachedCompetitors={company.competitor_data ? JSON.stringify(company.competitor_data.competitors) : undefined}
           />
 
           {/* Buying Signals */}

@@ -1,0 +1,182 @@
+{
+  "domain": "idealindustries.com",
+  "enriched_at": "2026-02-26T05:48:03.370646",
+  "version": "2.0",
+  "builtwith": {
+    "tech_count": 283,
+    "all_techs": [
+      "AWS Cloudfront Warsaw Edge",
+      "AWS Cloudfront Ashburn VA Edge",
+      "Instagram",
+      "WebEx Panel",
+      "AWS Cloudfront Hamburg Edge",
+      "jQuery 3.5.1",
+      "Amazon Route 53",
+      "AWS Cloudfront Toronto ON Edge",
+      "SPF",
+      "Apache Tomcat Coyote",
+      "Amazon SES",
+      "JBoss",
+      "DNSSEC",
+      "Hawk Host",
+      "React",
+      "IIS",
+      "ATT DNS",
+      "Facebook SDK",
+      "yepnope",
+      "Azure Active Directory",
+      "Symantec VeriSign",
+      "mod_ssl",
+      "AWS Cloudfront Seattle WA Edge",
+      "Review Schema",
+      "ADP Workforce Now",
+      "Dmarcian",
+      "Webpack",
+      "Passive Localization",
+      "Rating Schema",
+      "Omniture Adobe Test and Target",
+      "Adobe Target Standard",
+      "Adobe Audience Manager",
+      "jQuery 1.11.1",
+      "AWS Cloudfront London Edge",
+      "AWS Cloudfront Taipei TW Edge",
+      "My Salesforce",
+      "JavaScript Modules",
+      "YourAdChoices.com",
+      "Red Hat Enterprise Linux",
+      "es6 promise",
+      "eSSENTIAL Accessibility",
+      "Magnific Popup",
+      "Adobe Launch",
+      "Adobe PageMill",
+      "Amazon S3",
+      "Google Adsense for Domains",
+      "AWS Cloudfront Amsterdam Edge",
+      "Apache Tomcat JK",
+      "Apache",
+      "Office 365 Mail",
+      "CDN JS",
+      "Pikaday",
+      "Pre Year 2000",
+      "AWS Cloudfront Mumbai Edge",
+      "Microsoft Azure DNS",
+      "New Relic",
+      "Cloudflare CDN",
+      "Amazon Virginia Region",
+      "CloudFront",
+      "Cloudflare Radar Top 500k",
+      "OpenSSL 0.9.8",
+      "GoDaddy SSL",
+      "Facebook for Websites",
+      "Mailgun",
+      "AWS Cloudfront Stockholm Edge",
+      "Indonesian - Inferred",
+      "Win32 Header",
+      "Google Analytics",
+      "Entrust EV",
+      "CrUX Top 10m",
+      "AWS Cloudfront Newark NJ Edge",
+      "TikTok",
+      "Apache 2.4",
+      "Service Worker",
+      "DemDex",
+      "Cloudflare Radar Top 200k",
+      "Mimecast",
+      "Adobe Analytics",
+      "Facebook Custom Audiences",
+      "Bootstrap.js",
+      "Browse Happy",
+      "Coveo",
+      "Apple iCloud Mail",
+      "Wikipedia",
+      "AWS Cloudfront Marseille Edge",
+      "Outbrain Pixel",
+      "Apache 2.2",
+      "Shopify Conversions",
+      "McAfee SaaS Email",
+      "Apple Whitelist",
+      "AggregateRating Schema",
+      "SoftwareApplication Schema",
+      "ATT",
+      "Amazon CloudFront",
+      "Handlebars",
+      "Pound Sterling",
+      "Common Name Invalid",
+      "Shopify Account",
+      "Marketo",
+      "GitHub"
+    ],
+    "search_providers": [
+      "Coveo",
+      "Amazon Elastic Load Balancing Sticky Session"
+    ],
+    "has_algolia": false
+  },
+  "similarweb": {
+    "monthly_visits": 10548,
+    "global_rank": [
+      {
+        "date": "2026-02",
+        "global_rank": 1877645
+      }
+    ],
+    "competitors": [
+      "greenlee.com",
+      "kleintools.com",
+      "idealind.com",
+      "aifittings.com",
+      "electricsmarts.com",
+      "gardnerbender.com",
+      "lhdottie.com",
+      "hubbell-wiring.com",
+      "delviroledlighting.ca",
+      "burndy.com"
+    ]
+  },
+  "financials": {
+    "is_public": false,
+    "ticker": null
+  },
+  "hiring": {
+    "has_careers_page": false,
+    "hiring_signals": []
+  },
+  "competitors": {
+    "competitor_tech": {
+      "greenlee.com": {
+        "search_providers": [],
+        "has_algolia": false
+      },
+      "kleintools.com": {
+        "search_providers": [
+          "Amazon Elastic Load Balancing Sticky Session"
+        ],
+        "has_algolia": false
+      },
+      "idealind.com": {
+        "search_providers": [
+          "Coveo",
+          "Amazon Elastic Load Balancing Sticky Session"
+        ],
+        "has_algolia": false
+      },
+      "aifittings.com": {
+        "search_providers": [],
+        "has_algolia": false
+      },
+      "electricsmarts.com": {
+        "search_providers": [],
+        "has_algolia": false
+      }
+    },
+    "algolia_competitors": []
+  },
+  "opportunity_score": {
+    "score": 45,
+    "factors": [
+      "No Algolia (greenfield)",
+      "Displacement opportunity (Coveo)"
+    ],
+    "recommendation": "WARM"
+  }
+}

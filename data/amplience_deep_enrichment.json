@@ -1,0 +1,386 @@
+[
+  {
+    "domain": "southwest.com",
+    "company_name": "Southwest Airlines",
+    "enriched_at": "2026-02-26T05:40:02.326952",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 45755505.82747403,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "jdsports.com",
+    "company_name": "JD Sports",
+    "enriched_at": "2026-02-26T05:40:04.580679",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 7083090.636955259,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "asda.com",
+    "company_name": "ASDA",
+    "enriched_at": "2026-02-26T05:40:06.626763",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 28556381.738098666,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "johnlewis.com",
+    "company_name": "John Lewis",
+    "enriched_at": "2026-02-26T05:40:08.573322",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 30087276.57004118,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "ulta.com",
+    "company_name": "Ulta Beauty",
+    "enriched_at": "2026-02-26T05:40:10.353794",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 47691437.736573726,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "boots.com",
+    "company_name": "Boots",
+    "enriched_at": "2026-02-26T05:40:12.110396",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 31332526.198380858,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "canon-europe.com",
+    "company_name": "Canon Europe",
+    "enriched_at": "2026-02-26T05:40:13.864597",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 1859313.100754369,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "katespade.com",
+    "company_name": "Kate Spade",
+    "enriched_at": "2026-02-26T05:40:15.829138",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 2145165.889733368,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "xcelenergy.com",
+    "company_name": "Xcel Energy",
+    "enriched_at": "2026-02-26T05:40:17.618519",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 2682772.8099898407,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "columbia.com",
+    "company_name": "Columbia Sportswear",
+    "enriched_at": "2026-02-26T05:40:19.383075",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 7026926.895207855,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "coach.com",
+    "company_name": "Coach",
+    "enriched_at": "2026-02-26T05:40:21.258803",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 15600420.623538885,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "converse.com",
+    "company_name": "Converse",
+    "enriched_at": "2026-02-26T05:40:23.191476",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 6556007.774941204,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "primark.com",
+    "company_name": "Primark",
+    "enriched_at": "2026-02-26T05:40:25.025730",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 13820110.452581711,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "gap.com",
+    "company_name": "GAP",
+    "enriched_at": "2026-02-26T05:40:26.891984",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 68825909.79916027,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "very.co.uk",
+    "company_name": "The Very Group",
+    "enriched_at": "2026-02-26T05:40:28.649647",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 14318139.798563983,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "tapestry.com",
+    "company_name": "Tapestry",
+    "enriched_at": "2026-02-26T05:40:30.549881",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 339841.68501040176,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "riverisland.com",
+    "company_name": "River Island",
+    "enriched_at": "2026-02-26T05:40:32.429072",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 6460747.873151379,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "otto.de",
+    "company_name": "Otto Group",
+    "enriched_at": "2026-02-26T05:40:34.144118",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 52901078.70825228,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "jcrew.com",
+    "company_name": "J.Crew",
+    "enriched_at": "2026-02-26T05:40:35.951429",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 14240315.190160237,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "shoecarnival.com",
+    "company_name": "Shoe Carnival",
+    "enriched_at": "2026-02-26T05:40:37.776685",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 4013351.70798886,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "clarks.com",
+    "company_name": "Clarks",
+    "enriched_at": "2026-02-26T05:40:39.546955",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 6846272.564820489,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "prettylittlething.com",
+    "company_name": "PrettyLittleThing",
+    "enriched_at": "2026-02-26T05:40:41.341064",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 4425906.920375524,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "dfs.co.uk",
+    "company_name": "DFS",
+    "enriched_at": "2026-02-26T05:40:43.162377",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 4026605.7701714393,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "boohoo.com",
+    "company_name": "Boohoo",
+    "enriched_at": "2026-02-26T05:40:44.951385",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 7823554.638887785,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "mulberry.com",
+    "company_name": "Mulberry",
+    "enriched_at": "2026-02-26T05:40:46.667650",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 779083.2285444434,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "crateandbarrel.com",
+    "company_name": "Crate & Barrel",
+    "enriched_at": "2026-02-26T05:40:48.390349",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 12513617.181473795,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "missguided.com",
+    "company_name": "Missguided",
+    "enriched_at": "2026-02-26T05:40:50.250270",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 1126137.7488345953,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "next.co.uk",
+    "company_name": "Next",
+    "enriched_at": "2026-02-26T05:40:52.075284",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 35054796.932806596,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "traeger.com",
+    "company_name": "Traeger Grills",
+    "enriched_at": "2026-02-26T05:40:53.901465",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 1036039.3069606422,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "armani.com",
+    "company_name": "Armani",
+    "enriched_at": "2026-02-26T05:40:55.676550",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 3487376.9014723655,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "underarmour.com",
+    "company_name": "Under Armour",
+    "enriched_at": "2026-02-26T05:40:57.450196",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 9476542.392026618,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  },
+  {
+    "domain": "landmarkgroup.com",
+    "company_name": "Landmark Group",
+    "enriched_at": "2026-02-26T05:40:59.213251",
+    "tech_stack": {},
+    "traffic_data": {
+      "total_visits": 423061.40435338236,
+      "traffic_sources": {},
+      "top_countries": [],
+      "engagement": {}
+    }
+  }
+]

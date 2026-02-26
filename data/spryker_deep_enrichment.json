@@ -1,0 +1,2009 @@
+[
+  {
+    "domain": "daimler-truck.com",
+    "company_name": "Daimler Truck",
+    "vertical": "Manufacturing",
+    "enriched_at": "2026-02-26T05:47:25.746940",
+    "similarweb": {
+      "total_visits": 0.0,
+      "engagement": {},
+      "traffic_sources": {},
+      "geography": [],
+      "audience_interests": [],
+      "top_keywords": [],
+      "top_referrals": [],
+      "similar_sites": [],
+      "rankings": {},
+      "popular_pages": []
+    },
+    "builtwith": {
+      "cms": [],
+      "ecommerce": [],
+      "search": [],
+      "analytics": [],
+      "cdn": [],
+      "payment": [],
+      "marketing": [],
+      "javascript": [],
+      "hosting": [],
+      "other": [],
+      "total_technologies": 0
+    },
+    "yahoo_finance": null,
+    "competitors": [
+      "bosch.com",
+      "siemens.com",
+      "abb.com",
+      "honeywell.com"
+    ],
+    "current_search": null,
+    "icp_score": 30,
+    "icp_tier": "cold",
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 0,
+      "public_bonus": 0,
+      "search_adjustment": 0
+    },
+    "displacement_analysis": {
+      "priority": "medium",
+      "displacement_angle": "GREENFIELD_OR_NATIVE",
+      "key_talking_points": [
+        "Replace native/basic site search",
+        "AI-powered product discovery",
+        "Increase conversion rates"
+      ],
+      "potential_use_cases": [
+        "Product catalog search",
+        "Part finder",
+        "Documentation search",
+        "Distributor locator"
+      ]
+    }
+  },
+  {
+    "domain": "bosch.com",
+    "company_name": "BOSCH",
+    "vertical": "Manufacturing",
+    "enriched_at": "2026-02-26T05:47:29.878788",
+    "similarweb": {
+      "total_visits": 924440.3797634689,
+      "engagement": {},
+      "traffic_sources": {},
+      "geography": [
+        {
+          "country": 276,
+          "share": 29.6
+        },
+        {
+          "country": 840,
+          "share": 12.8
+        },
+        {
+          "country": 620,
+          "share": 5.6
+        },
+        {
+          "country": 156,
+          "share": 5.0
+        },
+        {
+          "country": 616,
+          "share": 4.6
+        }
+      ],
+      "audience_interests": [],
+      "top_keywords": [],
+      "top_referrals": [],
+      "similar_sites": [],
+      "rankings": {
+        "global_rank": [
+          {
+            "date": "2026-02",
+            "global_rank": 47218
+          }
+        ]
+      },
+      "popular_pages": []
+    },
+    "builtwith": {
+      "cms": [],
+      "ecommerce": [],
+      "search": [],
+      "analytics": [],
+      "cdn": [],
+      "payment": [],
+      "marketing": [],
+      "javascript": [],
+      "hosting": [],
+      "other": [],
+      "total_technologies": 0
+    },
+    "yahoo_finance": null,
+    "competitors": [
+      "siemens.com",
+      "abb.com",
+      "honeywell.com"
+    ],
+    "current_search": null,
+    "icp_score": 70,
+    "icp_tier": "warm",
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 10,
+      "revenue_pts": 30,
+      "public_bonus": 0,
+      "search_adjustment": 0
+    },
+    "displacement_analysis": {
+      "priority": "low",
+      "displacement_angle": "GREENFIELD_OR_NATIVE",
+      "key_talking_points": [
+        "Replace native/basic site search",
+        "AI-powered product discovery",
+        "Increase conversion rates"
+      ],
+      "potential_use_cases": [
+        "Product catalog search",
+        "Part finder",
+        "Documentation search",
+        "Distributor locator"
+      ]
+    }
+  },
+  {
+    "domain": "ricoh.com",
+    "company_name": "Ricoh",
+    "vertical": "Manufacturing",
+    "enriched_at": "2026-02-26T05:47:33.983294",
+    "similarweb": {
+      "total_visits": 10442677.20093322,
+      "engagement": {},
+      "traffic_sources": {},
+      "geography": [
+        {
+          "country": 392,
+          "share": 86.9
+        },
+        {
+          "country": 840,
+          "share": 4.5
+        },
+        {
+          "country": 276,
+          "share": 1.2
+        },
+        {
+          "country": 484,
+          "share": 0.5
+        },
+        {
+          "country": 124,
+          "share": 0.4
+        }
+      ],
+      "audience_interests": [],
+      "top_keywords": [],
+      "top_referrals": [],
+      "similar_sites": [],
+      "rankings": {
+        "global_rank": [
+          {
+            "date": "2026-02",
+            "global_rank": 4358
+          }
+        ]
+      },
+      "popular_pages": []
+    },
+    "builtwith": {
+      "cms": [],
+      "ecommerce": [],
+      "search": [],
+      "analytics": [],
+      "cdn": [],
+      "payment": [],
+      "marketing": [],
+      "javascript": [],
+      "hosting": [],
+      "other": [],
+      "total_technologies": 0
+    },
+    "yahoo_finance": {
+      "ticker": "RICOY",
+      "is_public": true
+    },
+    "competitors": [
+      "bosch.com",
+      "siemens.com",
+      "abb.com",
+      "honeywell.com"
+    ],
+    "current_search": null,
+    "icp_score": 100,
+    "icp_tier": "hot",
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 30,
+      "revenue_pts": 30,
+      "public_bonus": 10,
+      "search_adjustment": 0
+    },
+    "displacement_analysis": {
+      "priority": "high",
+      "displacement_angle": "GREENFIELD_OR_NATIVE",
+      "key_talking_points": [
+        "Replace native/basic site search",
+        "AI-powered product discovery",
+        "Increase conversion rates"
+      ],
+      "potential_use_cases": [
+        "Product catalog search",
+        "Part finder",
+        "Documentation search",
+        "Distributor locator"
+      ]
+    }
+  },
+  {
+    "domain": "aldi.com",
+    "company_name": "ALDI",
+    "vertical": "Retail",
+    "enriched_at": "2026-02-26T05:47:38.198457",
+    "similarweb": {
+      "total_visits": 311640.9431935594,
+      "engagement": {},
+      "traffic_sources": {},
+      "geography": [
+        {
+          "country": 840,
+          "share": 93.0
+        },
+        {
+          "country": 276,
+          "share": 2.6
+        },
+        {
+          "country": 56,
+          "share": 2.2
+        },
+        {
+          "country": 826,
+          "share": 1.2
+        },
+        {
+          "country": 40,
+          "share": 0.3
+        }
+      ],
+      "audience_interests": [],
+      "top_keywords": [],
+      "top_referrals": [],
+      "similar_sites": [],
+      "rankings": {
+        "global_rank": [
+          {
+            "date": "2026-02",
+            "global_rank": 189567
+          }
+        ]
+      },
+      "popular_pages": []
+    },
+    "builtwith": {
+      "cms": [],
+      "ecommerce": [],
+      "search": [],
+      "analytics": [],
+      "cdn": [],
+      "payment": [],
+      "marketing": [],
+      "javascript": [],
+      "hosting": [],
+      "other": [],
+      "total_technologies": 0
+    },
+    "yahoo_finance": null,
+    "competitors": [
+      "walmart.com",
+      "amazon.com",
+      "target.com",
+      "costco.com"
+    ],
+    "current_search": null,
+    "icp_score": 70,
+    "icp_tier": "warm",
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 10,
+      "revenue_pts": 30,
+      "public_bonus": 0,
+      "search_adjustment": 0
+    },
+    "displacement_analysis": {
+      "priority": "low",
+      "displacement_angle": "GREENFIELD_OR_NATIVE",
+      "key_talking_points": [
+        "Replace native/basic site search",
+        "AI-powered product discovery",
+        "Increase conversion rates"
+      ],
+      "potential_use_cases": [
+        "Product search",
+        "Merchandising",
+        "Recommendations",
+        "Browse"
+      ]
+    }
+  },
+  {
+    "domain": "pferd.com",
+    "company_name": "PFERD",
+    "vertical": "Manufacturing",
+    "enriched_at": "2026-02-26T05:47:42.162411",
+    "similarweb": {
+      "total_visits": 146332.74518966812,
+      "engagement": {},
+      "traffic_sources": {},
+      "geography": [
+        {
+          "country": 276,
+          "share": 26.1
+        },
+        {
+          "country": 752,
+          "share": 10.3
+        },
+        {
+          "country": 840,
+          "share": 5.2
+        },
+        {
+          "country": 40,
+          "share": 4.3
+        },
+        {
+          "country": 792,
+          "share": 3.9
+        }
+      ],
+      "audience_interests": [],
+      "top_keywords": [],
+      "top_referrals": [],
+      "similar_sites": [],
+      "rankings": {
+        "global_rank": [
+          {
+            "date": "2026-02",
+            "global_rank": 264414
+          }
+        ]
+      },
+      "popular_pages": []
+    },
+    "builtwith": {
+      "cms": [],
+      "ecommerce": [],
+      "search": [],
+      "analytics": [],
+      "cdn": [],
+      "payment": [],
+      "marketing": [],
+      "javascript": [],
+      "hosting": [],
+      "other": [],
+      "total_technologies": 0
+    },
+    "yahoo_finance": null,
+    "competitors": [
+      "bosch.com",
+      "siemens.com",
+      "abb.com",
+      "honeywell.com"
+    ],
+    "current_search": null,
+    "icp_score": 60,
+    "icp_tier": "warm",
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 10,
+      "revenue_pts": 20,
+      "public_bonus": 0,
+      "search_adjustment": 0
+    },
+    "displacement_analysis": {
+      "priority": "low",
+      "displacement_angle": "GREENFIELD_OR_NATIVE",
+      "key_talking_points": [
+        "Replace native/basic site search",
+        "AI-powered product discovery",
+        "Increase conversion rates"
+      ],
+      "potential_use_cases": [
+        "Product catalog search",
+        "Part finder",
+        "Documentation search",
+        "Distributor locator"
+      ]
+    }
+  },
+  {
+    "domain": "hilti.com",
+    "company_name": "Hilti",
+    "vertical": "Manufacturing",
+    "enriched_at": "2026-02-26T05:47:46.187819",
+    "similarweb": {
+      "total_visits": 1267155.2881077302,
+      "engagement": {},
+      "traffic_sources": {},
+      "geography": [
+        {
+          "country": 840,
+          "share": 37.4
+        },
+        {
+          "country": 807,
+          "share": 10.1
+        },
+        {
+          "country": 276,
+          "share": 6.5
+        },
+        {
+          "country": 36,
+          "share": 6.1
+        },
+        {
+          "country": 380,
+          "share": 4.0
+        }
+      ],
+      "audience_interests": [],
+      "top_keywords": [],
+      "top_referrals": [],
+      "similar_sites": [],
+      "rankings": {
+        "global_rank": [
+          {
+            "date": "2026-02",
+            "global_rank": 28787
+          }
+        ]
+      },
+      "popular_pages": []
+    },
+    "builtwith": {
+      "cms": [],
+      "ecommerce": [],
+      "search": [],
+      "analytics": [],
+      "cdn": [],
+      "payment": [],
+      "marketing": [],
+      "javascript": [],
+      "hosting": [],
+      "other": [],
+      "total_technologies": 0
+    },
+    "yahoo_finance": null,
+    "competitors": [
+      "bosch.com",
+      "siemens.com",
+      "abb.com",
+      "honeywell.com"
+    ],
+    "current_search": null,
+    "icp_score": 80,
+    "icp_tier": "hot",
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 20,
+      "revenue_pts": 30,
+      "public_bonus": 0,
+      "search_adjustment": 0
+    },
+    "displacement_analysis": {
+      "priority": "medium",
+      "displacement_angle": "GREENFIELD_OR_NATIVE",
+      "key_talking_points": [
+        "Replace native/basic site search",
+        "AI-powered product discovery",
+        "Increase conversion rates"
+      ],
+      "potential_use_cases": [
+        "Product catalog search",
+        "Part finder",
+        "Documentation search",
+        "Distributor locator"
+      ]
+    }
+  },
+  {
+    "domain": "prym.com",
+    "company_name": "Prym",
+    "vertical": "Crafts/Sewing",
+    "enriched_at": "2026-02-26T05:47:50.220335",
+    "similarweb": {
+      "total_visits": 66259.54844563235,
+      "engagement": {},
+      "traffic_sources": {},
+      "geography": [
+        {
+          "country": 276,
+          "share": 25.3
+        },
+        {
+          "country": 250,
+          "share": 10.6
+        },
+        {
+          "country": 380,
+          "share": 8.5
+        },
+        {
+          "country": 840,
+          "share": 8.4
+        },
+        {
+          "country": 826,
+          "share": 7.3
+        }
+      ],
+      "audience_interests": [],
+      "top_keywords": [],
+      "top_referrals": [],
+      "similar_sites": [],
+      "rankings": {
+        "global_rank": [
+          {
+            "date": "2026-02",
+            "global_rank": 493768
+          }
+        ]
+      },
+      "popular_pages": []
+    },
+    "builtwith": {
+      "cms": [],
+      "ecommerce": [],
+      "search": [],
+      "analytics": [],
+      "cdn": [],
+      "payment": [],
+      "marketing": [],
+      "javascript": [],
+      "hosting": [],
+      "other": [],
+      "total_technologies": 0
+    },
+    "yahoo_finance": null,
+    "competitors": [],
+    "current_search": null,
+    "icp_score": 50,
+    "icp_tier": "warm",
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 20,
+      "public_bonus": 0,
+      "search_adjustment": 0
+    },
+    "displacement_analysis": {
+      "priority": "low",
+      "displacement_angle": "GREENFIELD_OR_NATIVE",
+      "key_talking_points": [
+        "Replace native/basic site search",
+        "AI-powered product discovery",
+        "Increase conversion rates"
+      ],
+      "potential_use_cases": [
+        "Site search",
+        "Product discovery",
+        "Content search"
+      ]
+    }
+  },
+  {
+    "domain": "koczer.com",
+    "company_name": "Ko\u00e7Zer",
+    "vertical": "Retail",
+    "enriched_at": "2026-02-26T05:47:54.594840",
+    "similarweb": {
+      "total_visits": 10783.846303241944,
+      "engagement": {},
+      "traffic_sources": {},
+      "geography": [
+        {
+          "country": 792,
+          "share": 95.1
+        },
+        {
+          "country": 276,
+          "share": 4.9
+        }
+      ],
+      "audience_interests": [],
+      "top_keywords": [],
+      "top_referrals": [],
+      "similar_sites": [],
+      "rankings": {
+        "global_rank": [
+          {
+            "date": "2026-02",
+            "global_rank": 1376097
+          }
+        ]
+      },
+      "popular_pages": []
+    },
+    "builtwith": {
+      "cms": [],
+      "ecommerce": [],
+      "search": [],
+      "analytics": [],
+      "cdn": [],
+      "payment": [],
+      "marketing": [],
+      "javascript": [],
+      "hosting": [],
+      "other": [],
+      "total_technologies": 0
+    },
+    "yahoo_finance": null,
+    "competitors": [
+      "walmart.com",
+      "amazon.com",
+      "target.com",
+      "costco.com"
+    ],
+    "current_search": null,
+    "icp_score": 40,
+    "icp_tier": "warm",
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 10,
+      "public_bonus": 0,
+      "search_adjustment": 0
+    },
+    "displacement_analysis": {
+      "priority": "low",
+      "displacement_angle": "GREENFIELD_OR_NATIVE",
+      "key_talking_points": [
+        "Replace native/basic site search",
+        "AI-powered product discovery",
+        "Increase conversion rates"
+      ],
+      "potential_use_cases": [
+        "Product search",
+        "Merchandising",
+        "Recommendations",
+        "Browse"
+      ]
+    }
+  },
+  {
+    "domain": "hardeck.de",
+    "company_name": "HARDECK",
+    "vertical": "Furniture",
+    "enriched_at": "2026-02-26T05:47:58.585256",
+    "similarweb": {
+      "total_visits": 270267.92180756293,
+      "engagement": {},
+      "traffic_sources": {},
+      "geography": [
+        {
+          "country": 276,
+          "share": 96.0
+        },
+        {
+          "country": 840,
+          "share": 1.0
+        },
+        {
+          "country": 756,
+          "share": 1.0
+        },
+        {
+          "country": 40,
+          "share": 0.8
+        },
+        {
+          "country": 724,
+          "share": 0.3
+        }
+      ],
+      "audience_interests": [],
+      "top_keywords": [],
+      "top_referrals": [],
+      "similar_sites": [],
+      "rankings": {
+        "global_rank": [
+          {
+            "date": "2026-02",
+            "global_rank": 101643
+          }
+        ]
+      },
+      "popular_pages": []
+    },
+    "builtwith": {
+      "cms": [],
+      "ecommerce": [],
+      "search": [],
+      "analytics": [],
+      "cdn": [],
+      "payment": [],
+      "marketing": [],
+      "javascript": [],
+      "hosting": [],
+      "other": [],
+      "total_technologies": 0
+    },
+    "yahoo_finance": null,
+    "competitors": [],
+    "current_search": null,
+    "icp_score": 60,
+    "icp_tier": "warm",
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 10,
+      "revenue_pts": 20,
+      "public_bonus": 0,
+      "search_adjustment": 0
+    },
+    "displacement_analysis": {
+      "priority": "low",
+      "displacement_angle": "GREENFIELD_OR_NATIVE",
+      "key_talking_points": [
+        "Replace native/basic site search",
+        "AI-powered product discovery",
+        "Increase conversion rates"
+      ],
+      "potential_use_cases": [
+        "Site search",
+        "Product discovery",
+        "Content search"
+      ]
+    }
+  },
+  {
+    "domain": "lumas.com",
+    "company_name": "Lumas",
+    "vertical": "Art/Photography",
+    "enriched_at": "2026-02-26T05:48:02.600045",
+    "similarweb": {
+      "total_visits": 149332.111717059,
+      "engagement": {},
+      "traffic_sources": {},
+      "geography": [
+        {
+          "country": 840,
+          "share": 29.1
+        },
+        {
+          "country": 250,
+          "share": 6.9
+        },
+        {
+          "country": 826,
+          "share": 6.4
+        },
+        {
+          "country": 40,
+          "share": 4.9
+        },
+        {
+          "country": 756,
+          "share": 4.8
+        }
+      ],
+      "audience_interests": [],
+      "top_keywords": [],
+      "top_referrals": [],
+      "similar_sites": [],
+      "rankings": {
+        "global_rank": [
+          {
+            "date": "2026-02",
+            "global_rank": 248413
+          }
+        ]
+      },
+      "popular_pages": []
+    },
+    "builtwith": {
+      "cms": [],
+      "ecommerce": [],
+      "search": [],
+      "analytics": [],
+      "cdn": [],
+      "payment": [],
+      "marketing": [],
+      "javascript": [],
+      "hosting": [],
+      "other": [],
+      "total_technologies": 0
+    },
+    "yahoo_finance": null,
+    "competitors": [],
+    "current_search": null,
+    "icp_score": 40,
+    "icp_tier": "warm",
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 10,
+      "revenue_pts": 0,
+      "public_bonus": 0,
+      "search_adjustment": 0
+    },
+    "displacement_analysis": {
+      "priority": "low",
+      "displacement_angle": "GREENFIELD_OR_NATIVE",
+      "key_talking_points": [
+        "Replace native/basic site search",
+        "AI-powered product discovery",
+        "Increase conversion rates"
+      ],
+      "potential_use_cases": [
+        "Site search",
+        "Product discovery",
+        "Content search"
+      ]
+    }
+  },
+  {
+    "domain": "stauff.com",
+    "company_name": "STAUFF",
+    "vertical": "Industrial Components",
+    "enriched_at": "2026-02-26T05:48:06.578453",
+    "similarweb": {
+      "total_visits": 88571.19843559424,
+      "engagement": {},
+      "traffic_sources": {},
+      "geography": [],
+      "audience_interests": [],
+      "top_keywords": [],
+      "top_referrals": [],
+      "similar_sites": [],
+      "rankings": {
+        "global_rank": [
+          {
+            "date": "2026-02",
+            "global_rank": 401355
+          }
+        ]
+      },
+      "popular_pages": []
+    },
+    "builtwith": {
+      "cms": [],
+      "ecommerce": [],
+      "search": [],
+      "analytics": [],
+      "cdn": [],
+      "payment": [],
+      "marketing": [],
+      "javascript": [],
+      "hosting": [],
+      "other": [],
+      "total_technologies": 0
+    },
+    "yahoo_finance": null,
+    "competitors": [],
+    "current_search": null,
+    "icp_score": 50,
+    "icp_tier": "warm",
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 20,
+      "public_bonus": 0,
+      "search_adjustment": 0
+    },
+    "displacement_analysis": {
+      "priority": "low",
+      "displacement_angle": "GREENFIELD_OR_NATIVE",
+      "key_talking_points": [
+        "Replace native/basic site search",
+        "AI-powered product discovery",
+        "Increase conversion rates"
+      ],
+      "potential_use_cases": [
+        "Product catalog search",
+        "Part finder",
+        "Documentation search",
+        "Distributor locator"
+      ]
+    }
+  },
+  {
+    "domain": "aldi-sued.de",
+    "company_name": "Aldi S\u00fcd",
+    "vertical": "Retail/Grocery",
+    "enriched_at": "2026-02-26T05:48:10.448920",
+    "similarweb": {
+      "total_visits": 7628421.522359181,
+      "engagement": {},
+      "traffic_sources": {},
+      "geography": [],
+      "audience_interests": [],
+      "top_keywords": [],
+      "top_referrals": [],
+      "similar_sites": [],
+      "rankings": {
+        "global_rank": [
+          {
+            "date": "2026-02",
+            "global_rank": 5236
+          }
+        ]
+      },
+      "popular_pages": []
+    },
+    "builtwith": {
+      "cms": [],
+      "ecommerce": [],
+      "search": [],
+      "analytics": [],
+      "cdn": [],
+      "payment": [],
+      "marketing": [],
+      "javascript": [],
+      "hosting": [],
+      "other": [],
+      "total_technologies": 0
+    },
+    "yahoo_finance": null,
+    "competitors": [
+      "walmart.com",
+      "amazon.com",
+      "target.com",
+      "costco.com"
+    ],
+    "current_search": null,
+    "icp_score": 90,
+    "icp_tier": "hot",
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 30,
+      "revenue_pts": 30,
+      "public_bonus": 0,
+      "search_adjustment": 0
+    },
+    "displacement_analysis": {
+      "priority": "high",
+      "displacement_angle": "GREENFIELD_OR_NATIVE",
+      "key_talking_points": [
+        "Replace native/basic site search",
+        "AI-powered product discovery",
+        "Increase conversion rates"
+      ],
+      "potential_use_cases": [
+        "Product search",
+        "Merchandising",
+        "Recommendations",
+        "Browse"
+      ]
+    }
+  },
+  {
+    "domain": "siemens-healthineers.com",
+    "company_name": "Siemens Healthineers",
+    "vertical": "Healthcare",
+    "enriched_at": "2026-02-26T05:48:14.492157",
+    "similarweb": {
+      "total_visits": null,
+      "engagement": {},
+      "traffic_sources": {},
+      "geography": [],
+      "audience_interests": [],
+      "top_keywords": [],
+      "top_referrals": [],
+      "similar_sites": [],
+      "rankings": {
+        "global_rank": [
+          {
+            "date": "2026-02",
+            "global_rank": 38463
+          }
+        ]
+      },
+      "popular_pages": []
+    },
+    "builtwith": {
+      "cms": [],
+      "ecommerce": [],
+      "search": [],
+      "analytics": [],
+      "cdn": [],
+      "payment": [],
+      "marketing": [],
+      "javascript": [],
+      "hosting": [],
+      "other": [],
+      "total_technologies": 0
+    },
+    "yahoo_finance": {
+      "ticker": "SMMNY",
+      "is_public": true
+    },
+    "competitors": [
+      "philips.com",
+      "ge.com",
+      "medtronic.com"
+    ],
+    "current_search": null,
+    "icp_score": 70,
+    "icp_tier": "warm",
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 30,
+      "public_bonus": 10,
+      "search_adjustment": 0
+    },
+    "displacement_analysis": {
+      "priority": "medium",
+      "displacement_angle": "GREENFIELD_OR_NATIVE",
+      "key_talking_points": [
+        "Replace native/basic site search",
+        "AI-powered product discovery",
+        "Increase conversion rates"
+      ],
+      "potential_use_cases": [
+        "Site search",
+        "Product discovery",
+        "Content search"
+      ]
+    }
+  },
+  {
+    "domain": "daimlertruck.com",
+    "company_name": "Daimler Truck",
+    "vertical": "Automotive",
+    "enriched_at": "2026-02-26T05:48:18.721461",
+    "similarweb": {
+      "total_visits": null,
+      "engagement": {},
+      "traffic_sources": {},
+      "geography": [],
+      "audience_interests": [],
+      "top_keywords": [],
+      "top_referrals": [],
+      "similar_sites": [],
+      "rankings": {
+        "global_rank": [
+          {
+            "date": "2026-02",
+            "global_rank": 56317
+          }
+        ]
+      },
+      "popular_pages": []
+    },
+    "builtwith": {
+      "cms": [],
+      "ecommerce": [],
+      "search": [],
+      "analytics": [],
+      "cdn": [],
+      "payment": [],
+      "marketing": [],
+      "javascript": [],
+      "hosting": [],
+      "other": [],
+      "total_technologies": 0
+    },
+    "yahoo_finance": {
+      "ticker": "DTRUY",
+      "is_public": true
+    },
+    "competitors": [
+      "continental.com",
+      "denso.com",
+      "magna.com"
+    ],
+    "current_search": null,
+    "icp_score": 70,
+    "icp_tier": "warm",
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 30,
+      "public_bonus": 10,
+      "search_adjustment": 0
+    },
+    "displacement_analysis": {
+      "priority": "medium",
+      "displacement_angle": "GREENFIELD_OR_NATIVE",
+      "key_talking_points": [
+        "Replace native/basic site search",
+        "AI-powered product discovery",
+        "Increase conversion rates"
+      ],
+      "potential_use_cases": [
+        "Parts search",
+        "Vehicle fitment",
+        "Dealer locator",
+        "Documentation"
+      ]
+    }
+  },
+  {
+    "domain": "koempf24.de",
+    "company_name": "K\u00f6mpf",
+    "vertical": "Home/Garden",
+    "enriched_at": "2026-02-26T05:48:22.936689",
+    "similarweb": {
+      "total_visits": null,
+      "engagement": {},
+      "traffic_sources": {},
+      "geography": [],
+      "audience_interests": [],
+      "top_keywords": [],
+      "top_referrals": [],
+      "similar_sites": [],
+      "rankings": {
+        "global_rank": [
+          {
+            "date": "2026-02",
+            "global_rank": 166806
+          }
+        ]
+      },
+      "popular_pages": []
+    },
+    "builtwith": {
+      "cms": [],
+      "ecommerce": [],
+      "search": [],
+      "analytics": [],
+      "cdn": [],
+      "payment": [],
+      "marketing": [],
+      "javascript": [],
+      "hosting": [],
+      "other": [],
+      "total_technologies": 0
+    },
+    "yahoo_finance": null,
+    "competitors": [],
+    "current_search": null,
+    "icp_score": 40,
+    "icp_tier": "warm",
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 10,
+      "public_bonus": 0,
+      "search_adjustment": 0
+    },
+    "displacement_analysis": {
+      "priority": "medium",
+      "displacement_angle": "GREENFIELD_OR_NATIVE",
+      "key_talking_points": [
+        "Replace native/basic site search",
+        "AI-powered product discovery",
+        "Increase conversion rates"
+      ],
+      "potential_use_cases": [
+        "Site search",
+        "Product discovery",
+        "Content search"
+      ]
+    }
+  },
+  {
+    "domain": "metro.de",
+    "company_name": "Metro",
+    "vertical": "Wholesale",
+    "enriched_at": "2026-02-26T05:48:27.007685",
+    "similarweb": {
+      "total_visits": null,
+      "engagement": {},
+      "traffic_sources": {},
+      "geography": [],
+      "audience_interests": [],
+      "top_keywords": [],
+      "top_referrals": [],
+      "similar_sites": [],
+      "rankings": {
+        "global_rank": [
+          {
+            "date": "2026-02",
+            "global_rank": 17566
+          }
+        ]
+      },
+      "popular_pages": []
+    },
+    "builtwith": {
+      "cms": [],
+      "ecommerce": [],
+      "search": [],
+      "analytics": [],
+      "cdn": [],
+      "payment": [],
+      "marketing": [],
+      "javascript": [],
+      "hosting": [],
+      "other": [],
+      "total_technologies": 0
+    },
+    "yahoo_finance": {
+      "ticker": "MTTRY",
+      "is_public": true
+    },
+    "competitors": [
+      "sysco.com",
+      "grainger.com",
+      "fastenal.com"
+    ],
+    "current_search": null,
+    "icp_score": 70,
+    "icp_tier": "warm",
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 30,
+      "public_bonus": 10,
+      "search_adjustment": 0
+    },
+    "displacement_analysis": {
+      "priority": "medium",
+      "displacement_angle": "GREENFIELD_OR_NATIVE",
+      "key_talking_points": [
+        "Replace native/basic site search",
+        "AI-powered product discovery",
+        "Increase conversion rates"
+      ],
+      "potential_use_cases": [
+        "B2B catalog search",
+        "Quick order",
+        "Customer-specific pricing",
+        "Inventory search"
+      ]
+    }
+  },
+  {
+    "domain": "pferdusa.com",
+    "company_name": "PFERD",
+    "vertical": "Industrial Tools",
+    "enriched_at": "2026-02-26T05:48:31.064218",
+    "similarweb": {
+      "total_visits": 0.0,
+      "engagement": {},
+      "traffic_sources": {},
+      "geography": [],
+      "audience_interests": [],
+      "top_keywords": [],
+      "top_referrals": [],
+      "similar_sites": [],
+      "rankings": {},
+      "popular_pages": []
+    },
+    "builtwith": {
+      "cms": [],
+      "ecommerce": [],
+      "search": [],
+      "analytics": [],
+      "cdn": [],
+      "payment": [],
+      "marketing": [],
+      "javascript": [],
+      "hosting": [],
+      "other": [],
+      "total_technologies": 0
+    },
+    "yahoo_finance": null,
+    "competitors": [],
+    "current_search": null,
+    "icp_score": 50,
+    "icp_tier": "warm",
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 20,
+      "public_bonus": 0,
+      "search_adjustment": 0
+    },
+    "displacement_analysis": {
+      "priority": "medium",
+      "displacement_angle": "GREENFIELD_OR_NATIVE",
+      "key_talking_points": [
+        "Replace native/basic site search",
+        "AI-powered product discovery",
+        "Increase conversion rates"
+      ],
+      "potential_use_cases": [
+        "Product catalog search",
+        "Part finder",
+        "Documentation search",
+        "Distributor locator"
+      ]
+    }
+  },
+  {
+    "domain": "meusburger.com",
+    "company_name": "Meusburger",
+    "vertical": "Industrial/Manufacturing",
+    "enriched_at": "2026-02-26T05:48:35.042491",
+    "similarweb": {
+      "total_visits": null,
+      "engagement": {},
+      "traffic_sources": {},
+      "geography": [],
+      "audience_interests": [],
+      "top_keywords": [],
+      "top_referrals": [],
+      "similar_sites": [],
+      "rankings": {},
+      "popular_pages": []
+    },
+    "builtwith": {
+      "cms": [],
+      "ecommerce": [],
+      "search": [],
+      "analytics": [],
+      "cdn": [],
+      "payment": [],
+      "marketing": [],
+      "javascript": [],
+      "hosting": [],
+      "other": [],
+      "total_technologies": 0
+    },
+    "yahoo_finance": null,
+    "competitors": [
+      "bosch.com",
+      "siemens.com",
+      "abb.com",
+      "honeywell.com"
+    ],
+    "current_search": null,
+    "icp_score": 50,
+    "icp_tier": "warm",
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 20,
+      "public_bonus": 0,
+      "search_adjustment": 0
+    },
+    "displacement_analysis": {
+      "priority": "medium",
+      "displacement_angle": "GREENFIELD_OR_NATIVE",
+      "key_talking_points": [
+        "Replace native/basic site search",
+        "AI-powered product discovery",
+        "Increase conversion rates"
+      ],
+      "potential_use_cases": [
+        "Product catalog search",
+        "Part finder",
+        "Documentation search",
+        "Distributor locator"
+      ]
+    }
+  },
+  {
+    "domain": "swisskrono.com",
+    "company_name": "SWISS KRONO",
+    "vertical": "Manufacturing",
+    "enriched_at": "2026-02-26T05:48:39.018857",
+    "similarweb": {
+      "total_visits": null,
+      "engagement": {},
+      "traffic_sources": {},
+      "geography": [],
+      "audience_interests": [],
+      "top_keywords": [],
+      "top_referrals": [],
+      "similar_sites": [],
+      "rankings": {},
+      "popular_pages": []
+    },
+    "builtwith": {
+      "cms": [],
+      "ecommerce": [],
+      "search": [],
+      "analytics": [],
+      "cdn": [],
+      "payment": [],
+      "marketing": [],
+      "javascript": [],
+      "hosting": [],
+      "other": [],
+      "total_technologies": 0
+    },
+    "yahoo_finance": null,
+    "competitors": [
+      "bosch.com",
+      "siemens.com",
+      "abb.com",
+      "honeywell.com"
+    ],
+    "current_search": null,
+    "icp_score": 60,
+    "icp_tier": "warm",
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 30,
+      "public_bonus": 0,
+      "search_adjustment": 0
+    },
+    "displacement_analysis": {
+      "priority": "medium",
+      "displacement_angle": "GREENFIELD_OR_NATIVE",
+      "key_talking_points": [
+        "Replace native/basic site search",
+        "AI-powered product discovery",
+        "Increase conversion rates"
+      ],
+      "potential_use_cases": [
+        "Product catalog search",
+        "Part finder",
+        "Documentation search",
+        "Distributor locator"
+      ]
+    }
+  },
+  {
+    "domain": "toyotamaterial.com",
+    "company_name": "Toyota Material Handling",
+    "vertical": "Industrial Equipment",
+    "enriched_at": "2026-02-26T05:48:42.838601",
+    "similarweb": {
+      "total_visits": null,
+      "engagement": {},
+      "traffic_sources": {},
+      "geography": [],
+      "audience_interests": [],
+      "top_keywords": [],
+      "top_referrals": [],
+      "similar_sites": [],
+      "rankings": {},
+      "popular_pages": []
+    },
+    "builtwith": {
+      "cms": [],
+      "ecommerce": [],
+      "search": [],
+      "analytics": [],
+      "cdn": [],
+      "payment": [],
+      "marketing": [],
+      "javascript": [],
+      "hosting": [],
+      "other": [],
+      "total_technologies": 0
+    },
+    "yahoo_finance": {
+      "ticker": "TYIDY",
+      "is_public": true
+    },
+    "competitors": [
+      "caterpillar.com",
+      "komatsu.com",
+      "deere.com"
+    ],
+    "current_search": null,
+    "icp_score": 70,
+    "icp_tier": "warm",
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 30,
+      "public_bonus": 10,
+      "search_adjustment": 0
+    },
+    "displacement_analysis": {
+      "priority": "medium",
+      "displacement_angle": "GREENFIELD_OR_NATIVE",
+      "key_talking_points": [
+        "Replace native/basic site search",
+        "AI-powered product discovery",
+        "Increase conversion rates"
+      ],
+      "potential_use_cases": [
+        "Product catalog search",
+        "Part finder",
+        "Documentation search",
+        "Distributor locator"
+      ]
+    }
+  },
+  {
+    "domain": "slv.de",
+    "company_name": "SLV",
+    "vertical": "Lighting",
+    "enriched_at": "2026-02-26T05:48:46.678025",
+    "similarweb": {
+      "total_visits": null,
+      "engagement": {},
+      "traffic_sources": {},
+      "geography": [],
+      "audience_interests": [],
+      "top_keywords": [],
+      "top_referrals": [],
+      "similar_sites": [],
+      "rankings": {},
+      "popular_pages": []
+    },
+    "builtwith": {
+      "cms": [],
+      "ecommerce": [],
+      "search": [],
+      "analytics": [],
+      "cdn": [],
+      "payment": [],
+      "marketing": [],
+      "javascript": [],
+      "hosting": [],
+      "other": [],
+      "total_technologies": 0
+    },
+    "yahoo_finance": null,
+    "competitors": [],
+    "current_search": null,
+    "icp_score": 40,
+    "icp_tier": "warm",
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 10,
+      "public_bonus": 0,
+      "search_adjustment": 0
+    },
+    "displacement_analysis": {
+      "priority": "medium",
+      "displacement_angle": "GREENFIELD_OR_NATIVE",
+      "key_talking_points": [
+        "Replace native/basic site search",
+        "AI-powered product discovery",
+        "Increase conversion rates"
+      ],
+      "potential_use_cases": [
+        "Site search",
+        "Product discovery",
+        "Content search"
+      ]
+    }
+  },
+  {
+    "domain": "optibelt.com",
+    "company_name": "Optibelt",
+    "vertical": "Manufacturing",
+    "enriched_at": "2026-02-26T05:48:50.581255",
+    "similarweb": {
+      "total_visits": null,
+      "engagement": {},
+      "traffic_sources": {},
+      "geography": [],
+      "audience_interests": [],
+      "top_keywords": [],
+      "top_referrals": [],
+      "similar_sites": [],
+      "rankings": {},
+      "popular_pages": []
+    },
+    "builtwith": {
+      "cms": [],
+      "ecommerce": [],
+      "search": [],
+      "analytics": [],
+      "cdn": [],
+      "payment": [],
+      "marketing": [],
+      "javascript": [],
+      "hosting": [],
+      "other": [],
+      "total_technologies": 0
+    },
+    "yahoo_finance": null,
+    "competitors": [
+      "bosch.com",
+      "siemens.com",
+      "abb.com",
+      "honeywell.com"
+    ],
+    "current_search": null,
+    "icp_score": 50,
+    "icp_tier": "warm",
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 20,
+      "public_bonus": 0,
+      "search_adjustment": 0
+    },
+    "displacement_analysis": {
+      "priority": "medium",
+      "displacement_angle": "GREENFIELD_OR_NATIVE",
+      "key_talking_points": [
+        "Replace native/basic site search",
+        "AI-powered product discovery",
+        "Increase conversion rates"
+      ],
+      "potential_use_cases": [
+        "Product catalog search",
+        "Part finder",
+        "Documentation search",
+        "Distributor locator"
+      ]
+    }
+  },
+  {
+    "domain": "loeffelhardt.de",
+    "company_name": "Emil L\u00f6ffelhardt",
+    "vertical": "Industrial Supplies",
+    "enriched_at": "2026-02-26T05:48:54.632466",
+    "similarweb": {
+      "total_visits": null,
+      "engagement": {},
+      "traffic_sources": {},
+      "geography": [],
+      "audience_interests": [],
+      "top_keywords": [],
+      "top_referrals": [],
+      "similar_sites": [],
+      "rankings": {},
+      "popular_pages": []
+    },
+    "builtwith": {
+      "cms": [],
+      "ecommerce": [],
+      "search": [],
+      "analytics": [],
+      "cdn": [],
+      "payment": [],
+      "marketing": [],
+      "javascript": [],
+      "hosting": [],
+      "other": [],
+      "total_technologies": 0
+    },
+    "yahoo_finance": null,
+    "competitors": [],
+    "current_search": null,
+    "icp_score": 50,
+    "icp_tier": "warm",
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 20,
+      "public_bonus": 0,
+      "search_adjustment": 0
+    },
+    "displacement_analysis": {
+      "priority": "medium",
+      "displacement_angle": "GREENFIELD_OR_NATIVE",
+      "key_talking_points": [
+        "Replace native/basic site search",
+        "AI-powered product discovery",
+        "Increase conversion rates"
+      ],
+      "potential_use_cases": [
+        "Product catalog search",
+        "Part finder",
+        "Documentation search",
+        "Distributor locator"
+      ]
+    }
+  },
+  {
+    "domain": "rosebikes.com",
+    "company_name": "ROSE Bikes",
+    "vertical": "Sports/Cycling",
+    "enriched_at": "2026-02-26T05:48:58.666537",
+    "similarweb": {
+      "total_visits": null,
+      "engagement": {},
+      "traffic_sources": {},
+      "geography": [],
+      "audience_interests": [],
+      "top_keywords": [],
+      "top_referrals": [],
+      "similar_sites": [],
+      "rankings": {},
+      "popular_pages": []
+    },
+    "builtwith": {
+      "cms": [],
+      "ecommerce": [],
+      "search": [],
+      "analytics": [],
+      "cdn": [],
+      "payment": [],
+      "marketing": [],
+      "javascript": [],
+      "hosting": [],
+      "other": [],
+      "total_technologies": 0
+    },
+    "yahoo_finance": null,
+    "competitors": [],
+    "current_search": null,
+    "icp_score": 50,
+    "icp_tier": "warm",
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 20,
+      "public_bonus": 0,
+      "search_adjustment": 0
+    },
+    "displacement_analysis": {
+      "priority": "medium",
+      "displacement_angle": "GREENFIELD_OR_NATIVE",
+      "key_talking_points": [
+        "Replace native/basic site search",
+        "AI-powered product discovery",
+        "Increase conversion rates"
+      ],
+      "potential_use_cases": [
+        "Site search",
+        "Product discovery",
+        "Content search"
+      ]
+    }
+  },
+  {
+    "domain": "siemens.com",
+    "company_name": "Siemens",
+    "vertical": "Manufacturing",
+    "enriched_at": "2026-02-26T05:49:02.858299",
+    "similarweb": {
+      "total_visits": null,
+      "engagement": {},
+      "traffic_sources": {},
+      "geography": [],
+      "audience_interests": [],
+      "top_keywords": [],
+      "top_referrals": [],
+      "similar_sites": [],
+      "rankings": {},
+      "popular_pages": []
+    },
+    "builtwith": {
+      "cms": [],
+      "ecommerce": [],
+      "search": [],
+      "analytics": [],
+      "cdn": [],
+      "payment": [],
+      "marketing": [],
+      "javascript": [],
+      "hosting": [],
+      "other": [],
+      "total_technologies": 0
+    },
+    "yahoo_finance": {
+      "ticker": "SIEGY",
+      "is_public": true
+    },
+    "competitors": [
+      "bosch.com",
+      "abb.com",
+      "honeywell.com"
+    ],
+    "current_search": null,
+    "icp_score": 70,
+    "icp_tier": "warm",
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 30,
+      "public_bonus": 10,
+      "search_adjustment": 0
+    },
+    "displacement_analysis": {
+      "priority": "medium",
+      "displacement_angle": "GREENFIELD_OR_NATIVE",
+      "key_talking_points": [
+        "Replace native/basic site search",
+        "AI-powered product discovery",
+        "Increase conversion rates"
+      ],
+      "potential_use_cases": [
+        "Product catalog search",
+        "Part finder",
+        "Documentation search",
+        "Distributor locator"
+      ]
+    }
+  },
+  {
+    "domain": "jungheinrich.com",
+    "company_name": "Jungheinrich",
+    "vertical": "Industrial Equipment",
+    "enriched_at": "2026-02-26T05:49:07.080046",
+    "similarweb": {
+      "total_visits": null,
+      "engagement": {},
+      "traffic_sources": {},
+      "geography": [],
+      "audience_interests": [],
+      "top_keywords": [],
+      "top_referrals": [],
+      "similar_sites": [],
+      "rankings": {},
+      "popular_pages": []
+    },
+    "builtwith": {
+      "cms": [],
+      "ecommerce": [],
+      "search": [],
+      "analytics": [],
+      "cdn": [],
+      "payment": [],
+      "marketing": [],
+      "javascript": [],
+      "hosting": [],
+      "other": [],
+      "total_technologies": 0
+    },
+    "yahoo_finance": {
+      "ticker": "JGHHY",
+      "is_public": true
+    },
+    "competitors": [
+      "caterpillar.com",
+      "komatsu.com",
+      "deere.com"
+    ],
+    "current_search": null,
+    "icp_score": 70,
+    "icp_tier": "warm",
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 30,
+      "public_bonus": 10,
+      "search_adjustment": 0
+    },
+    "displacement_analysis": {
+      "priority": "medium",
+      "displacement_angle": "GREENFIELD_OR_NATIVE",
+      "key_talking_points": [
+        "Replace native/basic site search",
+        "AI-powered product discovery",
+        "Increase conversion rates"
+      ],
+      "potential_use_cases": [
+        "Product catalog search",
+        "Part finder",
+        "Documentation search",
+        "Distributor locator"
+      ]
+    }
+  },
+  {
+    "domain": "zf.com",
+    "company_name": "ZF Group",
+    "vertical": "Manufacturing",
+    "enriched_at": "2026-02-26T05:49:10.991785",
+    "similarweb": {
+      "total_visits": null,
+      "engagement": {},
+      "traffic_sources": {},
+      "geography": [],
+      "audience_interests": [],
+      "top_keywords": [],
+      "top_referrals": [],
+      "similar_sites": [],
+      "rankings": {},
+      "popular_pages": []
+    },
+    "builtwith": {
+      "cms": [],
+      "ecommerce": [],
+      "search": [],
+      "analytics": [],
+      "cdn": [],
+      "payment": [],
+      "marketing": [],
+      "javascript": [],
+      "hosting": [],
+      "other": [],
+      "total_technologies": 0
+    },
+    "yahoo_finance": null,
+    "competitors": [
+      "bosch.com",
+      "siemens.com",
+      "abb.com",
+      "honeywell.com"
+    ],
+    "current_search": null,
+    "icp_score": 60,
+    "icp_tier": "warm",
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 30,
+      "public_bonus": 0,
+      "search_adjustment": 0
+    },
+    "displacement_analysis": {
+      "priority": "medium",
+      "displacement_angle": "GREENFIELD_OR_NATIVE",
+      "key_talking_points": [
+        "Replace native/basic site search",
+        "AI-powered product discovery",
+        "Increase conversion rates"
+      ],
+      "potential_use_cases": [
+        "Product catalog search",
+        "Part finder",
+        "Documentation search",
+        "Distributor locator"
+      ]
+    }
+  },
+  {
+    "domain": "lekkerland.com",
+    "company_name": "Lekkerland",
+    "vertical": "Wholesale/Distribution",
+    "enriched_at": "2026-02-26T05:49:15.023790",
+    "similarweb": {
+      "total_visits": null,
+      "engagement": {},
+      "traffic_sources": {},
+      "geography": [],
+      "audience_interests": [],
+      "top_keywords": [],
+      "top_referrals": [],
+      "similar_sites": [],
+      "rankings": {},
+      "popular_pages": []
+    },
+    "builtwith": {
+      "cms": [],
+      "ecommerce": [],
+      "search": [],
+      "analytics": [],
+      "cdn": [],
+      "payment": [],
+      "marketing": [],
+      "javascript": [],
+      "hosting": [],
+      "other": [],
+      "total_technologies": 0
+    },
+    "yahoo_finance": null,
+    "competitors": [
+      "sysco.com",
+      "grainger.com",
+      "fastenal.com"
+    ],
+    "current_search": null,
+    "icp_score": 60,
+    "icp_tier": "warm",
+    "icp_breakdown": {
+      "base": 30,
+      "traffic_pts": 0,
+      "revenue_pts": 30,
+      "public_bonus": 0,
+      "search_adjustment": 0
+    },
+    "displacement_analysis": {
+      "priority": "medium",
+      "displacement_angle": "GREENFIELD_OR_NATIVE",
+      "key_talking_points": [
+        "Replace native/basic site search",
+        "AI-powered product discovery",
+        "Increase conversion rates"
+      ],
+      "potential_use_cases": [
+        "B2B catalog search",
+        "Quick order",
+        "Customer-specific pricing",
+        "Inventory search"
+      ]
+    }
+  }
+]

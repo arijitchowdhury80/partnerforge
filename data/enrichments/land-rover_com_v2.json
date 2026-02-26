@@ -1,0 +1,34 @@
+{
+  "domain": "land-rover.com",
+  "enriched_at": "2026-02-26T06:11:02.895567",
+  "version": "2.0",
+  "builtwith": {
+    "tech_count": 1,
+    "all_techs": [
+      "Domain Not Resolving"
+    ],
+    "search_providers": [],
+    "has_algolia": false
+  },
+  "similarweb": {
+    "monthly_visits": null,
+    "global_rank": null,
+    "competitors": []
+  },
+  "financials": {
+    "is_public": false,
+    "ticker": null
+  },
+  "hiring": {
+    "has_careers_page": false,
+    "hiring_signals": []
+  },
+  "competitors": {},
+  "opportunity_score": {
+    "score": 30,
+    "factors": [
+      "No Algolia (greenfield)"
+    ],
+    "recommendation": "COLD"
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "domain": "paul-smith.com",
+  "enriched_at": "2026-02-26T06:11:31.189257",
+  "version": "2.0",
+  "builtwith": {
+    "tech_count": 39,
+    "all_techs": [
+      "Intersection Observer",
+      "Starfield Technologies",
+      "ASP.NET 4.0",
+      "AWS Global Accelerator",
+      "React",
+      "Google Adsense for Domains",
+      "U.S. Server Location",
+      "IIS",
+      "Google Cloud Global Multi-Region",
+      "SSL by Default",
+      "WordPress Stats",
+      "CloudFront",
+      "Common Crawl",
+      "IPhone / Mobile Compatible",
+      "Google Cloud CDN",
+      "Google Adsense",
+      "OpenResty",
+      "GoDaddy CDN",
+      "AdBlock Acceptable Ads",
+      "IIS 7",
+      "Mobile Non Scaleable Content",
+      "JCarousel Lite",
+      "core-js",
+      "Amazon",
+      "Blockthrough",
+      "Flowplayer",
+      "123-Reg Parked",
+      "GoDaddy",
+      "CommonCrawl Top 100m",
+      "cuf\u00f3n",
+      "ASP.NET",
+      "GoDaddy Parking",
+      "Google Cloud",
+      "Google",
+      "GoDaddy DNS",
+      "Some Robots Disallow",
+      "GoDaddy SSL",
+      "CommonCrawl Top 50m",
+      "Viewport Meta"
+    ],
+    "search_providers": [],
+    "has_algolia": false
+  },
+  "similarweb": {
+    "monthly_visits": null,
+    "global_rank": null,
+    "competitors": []
+  },
+  "financials": {
+    "is_public": false,
+    "ticker": null
+  },
+  "hiring": {
+    "has_careers_page": false,
+    "hiring_signals": []
+  },
+  "competitors": {},
+  "opportunity_score": {
+    "score": 30,
+    "factors": [
+      "No Algolia (greenfield)"
+    ],
+    "recommendation": "COLD"
+  }
+}

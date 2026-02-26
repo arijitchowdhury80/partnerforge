@@ -1,0 +1,490 @@
+{
+  "research_date": "2026-02-26",
+  "methodology": "Web research using WebSearch queries including BuiltWith, Wappalyzer, StackShare, Spryker case studies, and company technology announcements",
+  "companies": [
+    {
+      "domain": "ricoh.com",
+      "company_name": "Ricoh",
+      "industry": "Business Technology & Services",
+      "headquarters": "Tokyo, Japan",
+      "ecommerce_platform": {
+        "primary": "Spryker",
+        "notes": "Ricoh built a digital renewal platform for B2B customers using Spryker Commerce OS",
+        "source": "https://spryker.com/customer-stories"
+      },
+      "search_provider": {
+        "detected": "Unknown",
+        "confidence": "Low",
+        "notes": "No specific search provider detected in web research. Likely using native Spryker search capabilities or custom implementation."
+      },
+      "cms": {
+        "detected": "Unknown",
+        "confidence": "Low",
+        "notes": "Corporate website CMS not identified in research"
+      },
+      "analytics": {
+        "detected": ["Google Analytics"],
+        "confidence": "Medium",
+        "notes": "Standard enterprise analytics stack assumed"
+      },
+      "personalization": {
+        "detected": "Unknown",
+        "notes": "No personalization tools specifically identified"
+      },
+      "javascript_frameworks": {
+        "detected": [],
+        "notes": "Not identified in research"
+      },
+      "other_technologies": [],
+      "spryker_customer": true,
+      "spryker_use_case": "Digital renewal platform for B2B customers, D2C space expansion",
+      "spryker_quote": "Spryker works with what we already own and operate alongside anticipating where Ricoh sees itself in the D2C space for the future. - Carin O'Doherty, Director Digital Marketing & Strategy, Ricoh USA",
+      "algolia_detected": false,
+      "displacement_opportunity": "HIGH - Confirmed Spryker customer without Algolia detected"
+    },
+    {
+      "domain": "hilti.com",
+      "company_name": "Hilti",
+      "industry": "Construction Tools & Equipment",
+      "headquarters": "Schaan, Liechtenstein",
+      "ecommerce_platform": {
+        "primary": "Spryker",
+        "notes": "Hilti uses Spryker Commerce OS for B2B Suite, implemented multi-store for Africa (Ghana, Kenya, Nigeria)",
+        "source": "https://spryker.com/customers/hilti/"
+      },
+      "search_provider": {
+        "detected": "Unknown",
+        "confidence": "Low",
+        "notes": "No specific search provider detected. Using Spryker native search or custom implementation."
+      },
+      "cms": {
+        "detected": "Adobe Experience Manager",
+        "confidence": "High",
+        "notes": "Adobe AEM identified via StackShare and technology profiles",
+        "source": "https://stackshare.io/hilti/hilti-com"
+      },
+      "analytics": {
+        "detected": ["Google Analytics", "Google Tag Manager"],
+        "confidence": "High",
+        "source": "StackShare technology profile"
+      },
+      "personalization": {
+        "detected": ["Salesforce Interaction Studio"],
+        "confidence": "Medium",
+        "notes": "Regional deployments use Salesforce for CRM and personalization",
+        "source": "LeadIQ technology profile"
+      },
+      "javascript_frameworks": {
+        "detected": ["jQuery UI"],
+        "notes": "Identified in regional technology profiles"
+      },
+      "other_technologies": [
+        "Java",
+        "Apache HTTP Server",
+        "Akamai CDN",
+        "SAP Sales and Distribution",
+        "MATLAB",
+        "Medallia",
+        "Microsoft 365"
+      ],
+      "spryker_customer": true,
+      "spryker_use_case": "Multinational, multilingual online store with multi-currency support for African markets",
+      "spryker_quote": "Hilti became the world market leader of power tools in the professional construction industry, and the Spryker Commerce OS supports Hilti expanding in a fast and cost-effective manner.",
+      "algolia_detected": false,
+      "displacement_opportunity": "HIGH - Confirmed Spryker customer without Algolia, using Adobe AEM CMS"
+    },
+    {
+      "domain": "aldi-sued.de",
+      "company_name": "ALDI SUD",
+      "industry": "Retail / Grocery",
+      "headquarters": "Mulheim an der Ruhr, Germany",
+      "ecommerce_platform": {
+        "primary": "Spryker",
+        "secondary": "SAP Commerce",
+        "notes": "Spryker Commerce OS for Shop&Go app; SAP Commerce for broader e-commerce operations",
+        "source": "https://spryker.com/press-releases/aldi-and-spryker-develop-digital-commerce-platform"
+      },
+      "search_provider": {
+        "detected": "Unknown",
+        "confidence": "Low",
+        "notes": "No specific site search provider detected. Using SAP Commerce or Spryker native capabilities."
+      },
+      "cms": {
+        "detected": "Adobe Experience Manager",
+        "confidence": "High",
+        "notes": "AEM as a blueprint for global communication for ALDI websites",
+        "source": "Crunchbase technology profile"
+      },
+      "analytics": {
+        "detected": ["Google Analytics"],
+        "confidence": "Medium",
+        "notes": "Standard analytics assumed based on 50 technologies installed"
+      },
+      "personalization": {
+        "detected": "Unknown",
+        "notes": "No specific personalization tools identified"
+      },
+      "javascript_frameworks": {
+        "detected": [],
+        "notes": "Not specifically identified"
+      },
+      "other_technologies": [
+        "SAP Commerce",
+        "SAP Ariba",
+        "TCS (Tata Consultancy Services) for infrastructure"
+      ],
+      "spryker_customer": true,
+      "spryker_use_case": "Digital commerce platform for US market (grocery delivery/curbside pickup) and Shop&Go autonomous store app",
+      "algolia_detected": false,
+      "displacement_opportunity": "MEDIUM - Using SAP Commerce search capabilities, potential for Algolia enhancement"
+    },
+    {
+      "domain": "bosch.com",
+      "company_name": "Bosch",
+      "industry": "Technology & Engineering",
+      "headquarters": "Gerlingen, Germany",
+      "ecommerce_platform": {
+        "primary": "Spryker",
+        "secondary": "Virto Commerce (for specific use cases)",
+        "notes": "Spryker used by Bosch Digital Platforms India for Mobility marketplace; Virto Commerce for B2B loyalty portal",
+        "source": "LinkedIn Spryker posts, Virto Commerce case study"
+      },
+      "search_provider": {
+        "detected": "Unknown",
+        "confidence": "Low",
+        "notes": "No specific site search provider detected. Enterprise likely using SAP-integrated search."
+      },
+      "cms": {
+        "detected": "Unknown",
+        "confidence": "Low",
+        "notes": "Corporate CMS not specifically identified; uses Adobe Creative Cloud for design"
+      },
+      "analytics": {
+        "detected": ["SAP Datasphere", "Microsoft Power BI"],
+        "confidence": "High",
+        "notes": "SAP analytics stack with Microsoft collaboration",
+        "source": "SAP Bosch Data Analytics Day"
+      },
+      "personalization": {
+        "detected": "Unknown",
+        "notes": "Enterprise-grade personalization assumed but not specifically identified"
+      },
+      "javascript_frameworks": {
+        "detected": ["Microsoft .NET"],
+        "notes": "Identified via RocketReach technology profile"
+      },
+      "other_technologies": [
+        "Adobe Creative Cloud",
+        "Adobe Enterprise",
+        "Microsoft Excel",
+        "Microsoft Power BI",
+        "SAP Datasphere",
+        "Google Cloud (collaboration with Microsoft)",
+        "AWS (collaboration mentioned)"
+      ],
+      "spryker_customer": true,
+      "spryker_use_case": "Digital marketplace for Mobility division via Bosch Digital Platforms India",
+      "algolia_detected": false,
+      "displacement_opportunity": "HIGH - Large enterprise with Spryker, no Algolia detected"
+    },
+    {
+      "domain": "siemens.com",
+      "company_name": "Siemens AG",
+      "industry": "Industrial Technology & Manufacturing",
+      "headquarters": "Munich, Germany",
+      "ecommerce_platform": {
+        "primary": "Spryker",
+        "notes": "Siemens Healthineers division uses Spryker for spare parts shop and digital commerce",
+        "source": "https://spryker.com/customers/siemens-healthineers/"
+      },
+      "search_provider": {
+        "detected": "AWS-powered Generative AI Search",
+        "confidence": "High",
+        "notes": "Custom AI-powered search using AWS Lambda, Amazon Bedrock, combining 15+ data sources for personalized responses",
+        "source": "https://aws.amazon.com/blogs/industries/transforming-siemens-global-search-with-generative-ai-powered-by-aws/"
+      },
+      "cms": {
+        "detected": "Bynder DAM",
+        "confidence": "Medium",
+        "notes": "Bynder serves as central connector with CMS and intranet solutions",
+        "source": "Bynder case study"
+      },
+      "analytics": {
+        "detected": ["AWS Analytics"],
+        "confidence": "Medium",
+        "notes": "AWS infrastructure suggests AWS-based analytics"
+      },
+      "personalization": {
+        "detected": "Unknown",
+        "notes": "Generative AI search provides personalization capabilities"
+      },
+      "javascript_frameworks": {
+        "detected": ["jQuery UI", "Foundation", ".NET"],
+        "source": "Enlyft technology profile"
+      },
+      "other_technologies": [
+        "Amazon EC2",
+        "Microsoft IIS",
+        "AWS Lambda",
+        "Amazon Bedrock",
+        "ServiceNow",
+        "Microsoft integrations",
+        "Genesys"
+      ],
+      "spryker_customer": true,
+      "spryker_use_case": "Siemens Healthineers spare parts shop and B2B digital commerce, went live in Brazil in less than 3 months",
+      "spryker_quote": "Spryker proved that it was able to fulfill over 90% of Siemens' complex use cases.",
+      "algolia_detected": false,
+      "displacement_opportunity": "LOW - Already has sophisticated AI-powered search via AWS Bedrock"
+    },
+    {
+      "domain": "metro.de",
+      "company_name": "METRO AG",
+      "industry": "Wholesale / Retail",
+      "headquarters": "Dusseldorf, Germany",
+      "ecommerce_platform": {
+        "primary": "Spryker",
+        "notes": "METRO and Spryker partnership for B2B online shop targeting traders (small retailers, kiosks)",
+        "source": "https://spryker.com/customers/metro/"
+      },
+      "search_provider": {
+        "detected": "Ecosia (internal)",
+        "confidence": "Medium",
+        "notes": "Ecosia is the standard internal search engine for METRO AG and METRO-NOM since June 2018. Site search provider unknown.",
+        "source": "METRO AG news release"
+      },
+      "cms": {
+        "detected": "Unknown",
+        "confidence": "Low",
+        "notes": "33 technologies detected by BuiltWith but specific CMS not identified"
+      },
+      "analytics": {
+        "detected": ["Google Cloud"],
+        "confidence": "Medium",
+        "source": "Google Cloud customer case study reference"
+      },
+      "personalization": {
+        "detected": "Unknown",
+        "notes": "No specific personalization tools identified"
+      },
+      "javascript_frameworks": {
+        "detected": [],
+        "notes": "Not specifically identified"
+      },
+      "other_technologies": [
+        "Apple Mobile Web Clips Icon",
+        "Viewport Meta",
+        "IPhone/Mobile Compatible"
+      ],
+      "spryker_customer": true,
+      "spryker_use_case": "B2B online platform for small retailers/traders in East Europe, API-first standardized backend",
+      "spryker_features": ["Corporate Account for hierarchical structures", "Sales Assistant for customer support"],
+      "algolia_detected": false,
+      "displacement_opportunity": "HIGH - Confirmed Spryker customer, no advanced site search detected"
+    },
+    {
+      "domain": "jungheinrich.com",
+      "company_name": "Jungheinrich AG",
+      "industry": "Material Handling / Intralogistics",
+      "headquarters": "Hamburg, Germany",
+      "ecommerce_platform": {
+        "primary": "Spryker",
+        "notes": "Jungheinrich Parts Shop with 800,000+ spare parts across 40 countries using Spryker Commerce OS B2B Suite",
+        "source": "https://spryker.com/customers/jungheinrich/"
+      },
+      "search_provider": {
+        "detected": "Elasticsearch",
+        "confidence": "High",
+        "notes": "Elastic Search native integration into Spryker for tailored search function",
+        "source": "https://spryker.com/customer-stories/jungheinrich"
+      },
+      "cms": {
+        "detected": "Unknown",
+        "confidence": "Low",
+        "notes": "Corporate CMS not specifically identified"
+      },
+      "analytics": {
+        "detected": ["Google Analytics"],
+        "confidence": "Medium",
+        "notes": "Standard analytics assumed"
+      },
+      "personalization": {
+        "detected": "SAP ERP Integration",
+        "notes": "Real-time pricing based on customer and country via SAP ERP integration",
+        "source": "Spryker case study"
+      },
+      "javascript_frameworks": {
+        "detected": ["TypeScript", "Babel", "basket.js"],
+        "source": "LeadIQ technology profile"
+      },
+      "other_technologies": [
+        "CATIA",
+        "Cloudflare",
+        "Cookiebot",
+        "Siemens (industrial)",
+        "Adobe XD",
+        "SAP ERP"
+      ],
+      "spryker_customer": true,
+      "spryker_use_case": "Spare parts shop with 41 storefronts in 40 countries, vehicle fleet integration for compatible parts selection",
+      "spryker_quote": "The optimized service for B2B end customers is already proving fruitful with a marked increase in sales.",
+      "algolia_detected": false,
+      "displacement_opportunity": "MEDIUM - Already using Elasticsearch via Spryker, but could benefit from Algolia's advanced features"
+    },
+    {
+      "domain": "zf.com",
+      "company_name": "ZF Friedrichshafen AG",
+      "industry": "Automotive Technology",
+      "headquarters": "Friedrichshafen, Germany",
+      "ecommerce_platform": {
+        "primary": "Spryker",
+        "notes": "ZF partnered with Spryker and diva-e for global aftermarket (auto parts) platform",
+        "source": "LinkedIn Spryker posts, German news"
+      },
+      "search_provider": {
+        "detected": "Unknown",
+        "confidence": "Low",
+        "notes": "No specific search provider detected"
+      },
+      "cms": {
+        "detected": "Unknown",
+        "confidence": "Low",
+        "notes": "Corporate CMS not specifically identified"
+      },
+      "analytics": {
+        "detected": ["Google Analytics"],
+        "confidence": "Low",
+        "notes": "Standard analytics assumed"
+      },
+      "personalization": {
+        "detected": "Unknown",
+        "notes": "No personalization tools specifically identified"
+      },
+      "javascript_frameworks": {
+        "detected": [],
+        "notes": "Not specifically identified"
+      },
+      "other_technologies": [
+        "OData",
+        "Google Cloud",
+        "Help Scout",
+        "GraphQL",
+        "LabVIEW",
+        "Microsoft Power Platform (25,000+ internal apps)",
+        "Microsoft 365"
+      ],
+      "spryker_customer": true,
+      "spryker_use_case": "Global aftermarket platform - unified one-stop-shop customer portal for auto parts",
+      "algolia_detected": false,
+      "displacement_opportunity": "HIGH - Confirmed Spryker customer, no advanced search detected"
+    },
+    {
+      "domain": "toyotamaterial.com",
+      "company_name": "Toyota Material Handling",
+      "industry": "Material Handling / Industrial Equipment",
+      "headquarters": "Columbus, Indiana, USA",
+      "ecommerce_platform": {
+        "primary": "Mirakl",
+        "notes": "MyToyotaStore B2B parts marketplace built on Mirakl Marketplace Platform (NOT Spryker)",
+        "source": "https://www.mhlnews.com/technology-automation/article/21136733/toyota-material-handlings-e-commerce-strategy-paying-off"
+      },
+      "search_provider": {
+        "detected": "Unknown",
+        "confidence": "Low",
+        "notes": "No specific search provider detected. Likely using Mirakl native search."
+      },
+      "cms": {
+        "detected": "Unknown",
+        "confidence": "Low",
+        "notes": "Corporate CMS not specifically identified"
+      },
+      "analytics": {
+        "detected": ["Google Analytics"],
+        "confidence": "Low",
+        "notes": "Standard analytics assumed"
+      },
+      "personalization": {
+        "detected": "Unknown",
+        "notes": "No personalization tools specifically identified"
+      },
+      "javascript_frameworks": {
+        "detected": [],
+        "notes": "Not specifically identified"
+      },
+      "other_technologies": [],
+      "spryker_customer": false,
+      "spryker_note": "Toyota Material Handling uses Mirakl, NOT Spryker. Toyota Deutschland GmbH (different entity) uses Spryker for automotive retail.",
+      "algolia_detected": false,
+      "displacement_opportunity": "MEDIUM - Not a Spryker customer (uses Mirakl), potential for search enhancement"
+    },
+    {
+      "domain": "swisskrono.com",
+      "company_name": "SWISS KRONO Group",
+      "industry": "Wood-based Materials Manufacturing",
+      "headquarters": "Lucerne, Switzerland",
+      "ecommerce_platform": {
+        "primary": "Spryker",
+        "notes": "B2B Customer Portal across 3 countries (expanding), live in 3 markets with 300+ customers onboarded",
+        "source": "https://spryker.com/customer-stories/swiss-krono"
+      },
+      "search_provider": {
+        "detected": "Unknown",
+        "confidence": "Low",
+        "notes": "No specific search provider detected. Using Spryker native search capabilities."
+      },
+      "cms": {
+        "detected": "Unknown",
+        "confidence": "Low",
+        "notes": "Corporate CMS not specifically identified"
+      },
+      "analytics": {
+        "detected": ["Power BI", "Google Universal Analytics"],
+        "confidence": "Medium",
+        "source": "LeadIQ/ZoomInfo technology profiles"
+      },
+      "personalization": {
+        "detected": "Unknown",
+        "notes": "B2B Customer Portal provides account-relevant information (form of personalization)"
+      },
+      "javascript_frameworks": {
+        "detected": ["PHP"],
+        "notes": "Identified in technology profiles"
+      },
+      "other_technologies": [
+        "Varnish",
+        "Ansible",
+        "Microsoft Active Directory",
+        "C#",
+        "VMware",
+        "Siteimprove",
+        "Nginx",
+        "goo.gl"
+      ],
+      "spryker_customer": true,
+      "spryker_use_case": "B2B Customer Portal consolidating 8 independently operated companies across 10 production sites globally",
+      "spryker_quote": "Customers in one market ordering every 5 minutes on average.",
+      "algolia_detected": false,
+      "displacement_opportunity": "HIGH - Confirmed Spryker customer, active B2B commerce, no advanced search detected"
+    }
+  ],
+  "summary": {
+    "total_companies_analyzed": 10,
+    "confirmed_spryker_customers": 9,
+    "non_spryker_customers": 1,
+    "algolia_detected": 0,
+    "high_displacement_opportunity": 6,
+    "medium_displacement_opportunity": 3,
+    "low_displacement_opportunity": 1,
+    "search_providers_detected": {
+      "elasticsearch": 1,
+      "aws_ai_search": 1,
+      "unknown": 8
+    },
+    "cms_detected": {
+      "adobe_aem": 2,
+      "bynder_dam": 1,
+      "unknown": 7
+    },
+    "notes": "Most companies are using Spryker native search or have unknown search implementations, presenting significant Algolia co-sell opportunities. Siemens is the exception with advanced AWS Bedrock AI search. Jungheinrich explicitly uses Elasticsearch via Spryker integration."
+  }
+}

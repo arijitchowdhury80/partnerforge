@@ -1,0 +1,36 @@
+{
+  "domain": "rural-king.com",
+  "enriched_at": "2026-02-26T06:09:59.407222",
+  "version": "2.0",
+  "builtwith": {
+    "tech_count": 3,
+    "all_techs": [
+      "Domain Not Resolving",
+      "Cloudflare DNS",
+      "Cloudflare Registrar"
+    ],
+    "search_providers": [],
+    "has_algolia": false
+  },
+  "similarweb": {
+    "monthly_visits": null,
+    "global_rank": null,
+    "competitors": []
+  },
+  "financials": {
+    "is_public": false,
+    "ticker": null
+  },
+  "hiring": {
+    "has_careers_page": false,
+    "hiring_signals": []
+  },
+  "competitors": {},
+  "opportunity_score": {
+    "score": 30,
+    "factors": [
+      "No Algolia (greenfield)"
+    ],
+    "recommendation": "COLD"
+  }
+}
