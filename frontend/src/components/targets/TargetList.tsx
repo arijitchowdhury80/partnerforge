@@ -457,13 +457,18 @@ export function TargetList({
                 size="sm"
                 radius="md"
               />
-              <Text size="md" fw={600} c={ALGOLIA_NEBULA_BLUE} lineClamp={1} style={{ cursor: 'pointer' }}>
-                {company.company_name || company.domain}
-              </Text>
+              <div>
+                <Text size="sm" fw={600} c="#1e293b" lineClamp={1}>
+                  {company.company_name || company.domain}
+                </Text>
+                <Text size="xs" c="#64748b">
+                  {company.domain}
+                </Text>
+              </div>
             </Group>
           );
         },
-        size: 200,
+        size: 220,
       },
       {
         accessorKey: 'icp_score',
@@ -498,7 +503,7 @@ export function TargetList({
           />
         ),
         cell: ({ getValue }) => (
-          <Text size="md" c={GRAY_700} lineClamp={1}>
+          <Text size="sm" c="#475569" lineClamp={1}>
             {getValue<string>() || '—'}
           </Text>
         ),

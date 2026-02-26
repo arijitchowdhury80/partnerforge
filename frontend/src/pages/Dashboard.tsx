@@ -38,6 +38,7 @@ import {
   IconWorld,
 } from '@tabler/icons-react';
 
+import { DonutChart, BarList } from '@tremor/react';
 import { getStats, getCompanies, getDistribution, type DistributionData } from '@/services/api';
 import { getTargets, type DisplacementTarget } from '@/services/supabase';
 import { TargetList } from '@/components/targets/TargetList';
@@ -253,6 +254,131 @@ export function Dashboard() {
           </SimpleGrid>
         </motion.div>
 
+        {/* Visual Storytelling - Charts Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.15 }}
+        >
+          <SimpleGrid cols={{ base: 1, md: 3 }} spacing="lg" mb="xl">
+            {/* ICP Tier Donut Chart */}
+            <Paper
+              p="lg"
+              radius="lg"
+              style={{
+                background: 'white',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                border: `1px solid ${GRAY_200}`,
+              }}
+            >
+              <Text fw={600} c={GRAY_900} size="md" mb="md">ICP Tier Distribution</Text>
+              <DonutChart
+                data={[
+                  { name: 'Hot', value: hotCount, color: '#dc2626' },
+                  { name: 'Warm', value: warmCount, color: '#ea580c' },
+                  { name: 'Cold', value: coldCount, color: '#64748b' },
+                ].filter(d => d.value > 0)}
+                category="value"
+                index="name"
+                colors={['#dc2626', '#ea580c', '#64748b']}
+                showAnimation
+                showLabel
+                valueFormatter={(val) => val.toLocaleString()}
+                className="h-40"
+              />
+              <Group justify="center" mt="md" gap="lg">
+                <Group gap={6}>
+                  <div style={{ width: 12, height: 12, borderRadius: 3, background: '#dc2626' }} />
+                  <Text size="sm" c={GRAY_700}>Hot</Text>
+                </Group>
+                <Group gap={6}>
+                  <div style={{ width: 12, height: 12, borderRadius: 3, background: '#ea580c' }} />
+                  <Text size="sm" c={GRAY_700}>Warm</Text>
+                </Group>
+                <Group gap={6}>
+                  <div style={{ width: 12, height: 12, borderRadius: 3, background: '#64748b' }} />
+                  <Text size="sm" c={GRAY_700}>Cold</Text>
+                </Group>
+              </Group>
+            </Paper>
+
+            {/* Top Verticals Bar Chart */}
+            <Paper
+              p="lg"
+              radius="lg"
+              style={{
+                background: 'white',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                border: `1px solid ${GRAY_200}`,
+              }}
+            >
+              <Text fw={600} c={GRAY_900} size="md" mb="md">Top Verticals</Text>
+              <BarList
+                data={
+                  allTargetsData
+                    ? Object.entries(
+                        allTargetsData.reduce((acc, t) => {
+                          const v = t.vertical || 'Unknown';
+                          acc[v] = (acc[v] || 0) + 1;
+                          return acc;
+                        }, {} as Record<string, number>)
+                      )
+                        .filter(([name]) => name !== 'Unknown')
+                        .sort((a, b) => b[1] - a[1])
+                        .slice(0, 5)
+                        .map(([name, value]) => ({
+                          name: name.replace(/ And /g, ' & ').replace(/Business & Industrial/g, 'Business'),
+                          value,
+                        }))
+                    : []
+                }
+                color="blue"
+                showAnimation
+                valueFormatter={(val: number) => val.toLocaleString()}
+                className="mt-2"
+              />
+            </Paper>
+
+            {/* Partner Tech Bar Chart */}
+            <Paper
+              p="lg"
+              radius="lg"
+              style={{
+                background: 'white',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                border: `1px solid ${GRAY_200}`,
+              }}
+            >
+              <Text fw={600} c={GRAY_900} size="md" mb="md">Partner Technologies</Text>
+              <BarList
+                data={
+                  allTargetsData
+                    ? Object.entries(
+                        allTargetsData.reduce((acc, t) => {
+                          const tech = t.partner_tech || 'Unknown';
+                          acc[tech] = (acc[tech] || 0) + 1;
+                          return acc;
+                        }, {} as Record<string, number>)
+                      )
+                        .filter(([name]) => name !== 'Unknown' && name !== '')
+                        .sort((a, b) => b[1] - a[1])
+                        .slice(0, 5)
+                        .map(([name, value]) => ({
+                          name: name.replace('Adobe Experience Manager', 'Adobe AEM'),
+                          value,
+                          color: name.includes('Adobe') ? '#dc2626' : name.includes('Amplience') ? '#003DFF' : name.includes('Spryker') ? '#14b8a6' : '#5468FF',
+                        }))
+                    : []
+                }
+                color="indigo"
+                showAnimation
+                valueFormatter={(val: number) => val.toLocaleString()}
+                className="mt-2"
+              />
+            </Paper>
+          </SimpleGrid>
+        </motion.div>
+
         {/* Distribution Section - Multi-Dimensional Grid */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -368,7 +494,7 @@ function FormulaDisplay({ partnerName, partnerKey }: FormulaDisplayProps) {
         <Text size="sm" fw={500} c={GRAY_700}>Algolia Customers</Text>
       </Group>
       <IconEqual size={14} style={{ color: GRAY_500 }} />
-      <Badge color="blue" variant="light" size="sm">Targets</Badge>
+      <Badge color="blue" variant="filled" size="sm" styles={{ root: { color: '#fff' } }}>TARGETS</Badge>
     </Group>
   );
 }
