@@ -98,14 +98,17 @@ PartnerForge is an ABM (Account-Based Marketing) platform that identifies displa
 - `companies` — Existing Algolia customers (400 records)
 - `case_studies` — Success stories for matching (161 records)
 
-### 4. External Data Sources
+### 4. External Data Sources (5 total)
 
-| Source | Purpose | API Endpoints Used |
-|--------|---------|-------------------|
-| **BuiltWith** | Technology detection | domain-lookup, relationships, keywords |
-| **SimilarWeb** | Traffic analytics | traffic, engagement, keywords, competitors |
-| **Yahoo Finance** | Financial data | stock-info, financials, recommendations |
-| **WebSearch** | General intelligence | Hiring signals, exec quotes, triggers |
+| Source | Purpose | API Endpoints |
+|--------|---------|---------------|
+| **Yahoo Finance** | Market data, financials, analyst sentiment | 10 endpoints via `yahoo-finance2` library |
+| **SEC EDGAR** | Official filings, risk factors, digital signals | 3 endpoints (free public API) |
+| **SimilarWeb** | Traffic, engagement, keywords, competitors | 14 endpoints |
+| **BuiltWith** | Tech stack, search providers, relationships | 7 endpoints |
+| **WebSearch** | Hiring signals, exec quotes, strategic context | 4 query categories |
+
+See [ENRICHMENT_PIPELINE.md](../ENRICHMENT_PIPELINE.md) for full API documentation.
 
 ---
 
@@ -148,75 +151,88 @@ POST /enrich/{domain}
           │
           ▼
 ┌───────────────────────────────────────────────────┐
-│                  WAVE 1                            │
+│                  WAVE 1 - Foundation              │
 │  ┌─────────────┐  ┌─────────────┐                 │
-│  │ m01_company │  │ m02_tech    │                 │
-│  │ _context    │  │ _stack      │                 │
-│  │ (BuiltWith) │  │ (BuiltWith) │                 │
+│  │ Tech Stack  │  │ Relationships│                │
+│  │ (BuiltWith) │  │ (BuiltWith)  │                │
 │  └─────────────┘  └─────────────┘                 │
 └───────────────────────┬───────────────────────────┘
                         │
                         ▼
 ┌───────────────────────────────────────────────────┐
-│                  WAVE 2                            │
+│                  WAVE 2 - Traffic                 │
 │  ┌─────────────┐  ┌─────────────┐  ┌───────────┐ │
-│  │ m03_traffic │  │ m04_sources │  │ m05_comps │ │
+│  │   Traffic   │  │  Sources    │  │Competitors│ │
 │  │(SimilarWeb) │  │(SimilarWeb) │  │(Similar.) │ │
 │  └─────────────┘  └─────────────┘  └───────────┘ │
 └───────────────────────┬───────────────────────────┘
                         │
                         ▼
 ┌───────────────────────────────────────────────────┐
-│                  WAVE 3                            │
+│                  WAVE 3 - Financials              │
 │  ┌─────────────┐  ┌─────────────┐  ┌───────────┐ │
-│  │m07_financials│  │ m08_stock  │  │m09_analyst│ │
-│  │(Yahoo Fin.) │  │(Yahoo Fin.) │  │(Yahoo F.) │ │
+│  │ Financials  │  │ Stock Info  │  │Risk Factors│ │
+│  │(Yahoo Fin.) │  │(Yahoo Fin.) │  │(SEC EDGAR)│ │
 │  └─────────────┘  └─────────────┘  └───────────┘ │
 └───────────────────────┬───────────────────────────┘
                         │
                         ▼
 ┌───────────────────────────────────────────────────┐
-│                  WAVE 4                            │
+│                  WAVE 4 - Signals                 │
 │  ┌─────────────┐  ┌─────────────┐  ┌───────────┐ │
-│  │ m10_hiring  │  │ m11_quotes  │  │m14_scoring│ │
-│  │ (WebSearch) │  │ (WebSearch) │  │ (Internal)│ │
+│  │   Hiring    │  │ Exec Quotes │  │  Scoring  │ │
+│  │  (JobSpy)   │  │ (WebSearch) │  │(Composite)│ │
 │  └─────────────┘  └─────────────┘  └───────────┘ │
 └───────────────────────┬───────────────────────────┘
                         │
                         ▼
 ┌───────────────────────────────────────────────────┐
 │ Update displacement_targets with enriched data    │
-│ Calculate ICP score, update tier                  │
+│ Calculate composite score (Fit/Intent/Value/Disp) │
+│ Update status: Hot (70+) | Warm (40-69) | Cold    │
 └───────────────────────────────────────────────────┘
 ```
 
-### 3. ICP Scoring
+See [HIRING_SIGNALS.md](../HIRING_SIGNALS.md) for hiring signal scoring details.
+
+### 3. Composite Scoring
+
+PartnerForge uses a **4-factor composite scoring system** (25% weight each):
 
 ```
 ┌─────────────────────────────────────────────────┐
-│                 ICP SCORING ENGINE               │
+│              COMPOSITE SCORING ENGINE            │
 │                                                  │
-│  ┌──────────────┐  Weight: 40%                  │
-│  │   Vertical   │  Commerce=40, Content=25      │
+│  ┌──────────────┐  Weight: 25%                  │
+│  │     FIT      │  Vertical, size, geography,  │
+│  │              │  public vs private           │
 │  └──────────────┘                               │
 │                                                  │
-│  ┌──────────────┐  Weight: 30%                  │
-│  │   Traffic    │  50M+=30, 10M+=25, 1M+=15    │
+│  ┌──────────────┐  Weight: 25%                  │
+│  │    INTENT    │  Traffic, weak search        │
+│  │              │  platform, tech complexity,  │
+│  │              │  exec quotes                 │
 │  └──────────────┘                               │
 │                                                  │
-│  ┌──────────────┐  Weight: 20%                  │
-│  │  Tech Spend  │  $100K+=20, $50K+=15         │
+│  ┌──────────────┐  Weight: 25%                  │
+│  │    VALUE     │  Revenue, traffic volume,    │
+│  │              │  store count, growth stage   │
 │  └──────────────┘                               │
 │                                                  │
-│  ┌──────────────┐  Weight: 10%                  │
-│  │ Partner Tech │  Adobe=10, Shopify=7         │
+│  ┌──────────────┐  Weight: 25%                  │
+│  │ DISPLACEMENT │  Current search provider,    │
+│  │              │  partner tech strength,      │
+│  │              │  competitor Algolia adoption │
 │  └──────────────┘                               │
 │                                                  │
 │  ═══════════════════════════════════            │
 │  Total Score: 0-100                             │
-│  Tier: hot (80+) | warm (60-79) | cool | cold  │
+│  Status: Hot (70+) | Warm (40-69) | Cold (<40) │
+│  Confidence: High (≥70%) | Medium | Low (<40%) │
 └─────────────────────────────────────────────────┘
 ```
+
+Implementation: `frontend/src/services/scoring.ts`
 
 ---
 

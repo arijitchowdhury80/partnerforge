@@ -1,6 +1,6 @@
 # PartnerForge Documentation
 
-**Version:** 4.0
+**Version:** 5.0
 **Last Updated:** 2026-02-26
 **Status:** Production
 
@@ -8,7 +8,7 @@
 
 ## Overview
 
-PartnerForge is a Partner Intelligence Platform for Algolia Sales. It identifies **displacement opportunities** — companies using partner technologies (Adobe AEM, Shopify, Amplience, Spryker) who are NOT using Algolia.
+PartnerForge is a Partner Intelligence Platform for Algolia Sales. It identifies **displacement opportunities** — companies using partner technologies (Adobe AEM, Adobe Commerce, Amplience, Spryker) who are NOT using Algolia.
 
 ### Core Formula
 ```
@@ -56,6 +56,14 @@ Displacement Targets = Companies Using Partner Tech − Existing Algolia Custome
 
 ---
 
+## Scoring & Enrichment
+
+| Document | Purpose |
+|----------|---------|
+| [COMPOSITE_SCORING.md](./COMPOSITE_SCORING.md) | **4-factor scoring** - Fit/Intent/Value/Displacement with visual diagram |
+| [ENRICHMENT_PIPELINE.md](./ENRICHMENT_PIPELINE.md) | **5 data sources** - Yahoo Finance, SEC EDGAR, SimilarWeb, BuiltWith, WebSearch |
+| [HIRING_SIGNALS.md](./HIRING_SIGNALS.md) | **Hiring signal enrichment** - JobSpy integration, persona scoring |
+
 ## Architecture Documents (Advanced)
 
 These documents provide deep technical specifications for enterprise features:
@@ -79,19 +87,46 @@ These documents provide deep technical specifications for enterprise features:
 
 | Metric | Count |
 |--------|-------|
-| Total Displacement Targets | 2,737 |
-| Hot Leads (ICP 80+) | 9 |
-| Warm Leads (ICP 60-79) | 49 |
+| Total Displacement Targets | ~2,760 |
+| Hot Leads (Composite 70+) | ~30 |
+| Warm Leads (Composite 40-69) | ~150 |
 | Partners Tracked | 4 |
 
 ### Partner Breakdown
 
 | Partner | Targets |
 |---------|---------|
-| Adobe Experience Manager | 2,687 |
-| Adobe Commerce | 18 |
-| Amplience | 20 |
-| Spryker | 12 |
+| Adobe Experience Manager | ~2,700 |
+| Adobe Commerce | ~18 |
+| Amplience | ~32 |
+| Spryker | ~28 |
+
+## Scoring System
+
+PartnerForge uses a **Composite Scoring System** with 4 factors (25% each):
+
+| Factor | What It Measures |
+|--------|-----------------|
+| **Fit** | ICP match (vertical, size, geography) |
+| **Intent** | Buying signals (traffic, weak search platform, exec quotes) |
+| **Value** | Deal potential (revenue, traffic volume, store count) |
+| **Displacement** | Ease of conversion (current provider, competitor Algolia adoption) |
+
+### Score Thresholds
+
+| Score | Status | Meaning |
+|-------|--------|---------|
+| 70-100 | **Hot** | High priority, ready for outreach |
+| 40-69 | **Warm** | Nurture pipeline |
+| 0-39 | **Cold** | Low priority |
+
+### Confidence Levels
+
+| Level | Data Completeness |
+|-------|------------------|
+| High | ≥70% of data fields populated |
+| Medium | 40-69% |
+| Low | <40% |
 
 ---
 
@@ -106,12 +141,19 @@ These documents provide deep technical specifications for enterprise features:
 ### Backend
 - Supabase PostgreSQL
 - PostgREST (auto-generated REST API)
-- No intermediate backend server
+- Python services for hiring signals
 
-### Data Sources
-- **BuiltWith** — Technology detection
-- **SimilarWeb** — Traffic analytics
-- **Yahoo Finance** — Financial data (public companies)
+### Data Sources (5 total)
+
+| Source | Purpose | Auth |
+|--------|---------|------|
+| **Yahoo Finance** | Market data, financials, analyst sentiment | None (library) |
+| **SEC EDGAR** | Official filings, risk factors, digital signals | None (free) |
+| **SimilarWeb** | Traffic, engagement, keywords, competitors | API Key |
+| **BuiltWith** | Tech stack, search providers | API Key |
+| **WebSearch** | Hiring signals, exec quotes, strategic context | Backend |
+
+See [ENRICHMENT_PIPELINE.md](./ENRICHMENT_PIPELINE.md) for full API documentation.
 
 ---
 

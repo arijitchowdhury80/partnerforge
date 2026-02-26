@@ -6,7 +6,7 @@ Get started with the PartnerForge API in 5 minutes.
 
 ## Overview
 
-PartnerForge identifies **displacement opportunities** — companies using partner technologies (Adobe AEM, Shopify) that are NOT using Algolia. Use this API to:
+PartnerForge identifies **displacement opportunities** — companies using partner technologies (Adobe AEM, Adobe Commerce, Amplience, Spryker) that are NOT using Algolia. Use this API to:
 
 - Browse and filter displacement targets
 - Get detailed company intelligence
@@ -70,20 +70,19 @@ content-range: 0-0/2737
 ```
 
 **Current data:**
-- **Total:** 2,737 displacement targets
-- **Hot (80-100):** 9
-- **Warm (60-79):** 49
-- **Cool (40-59):** 394
-- **Cold (0-39):** 2,285
+- **Total:** ~2,760 displacement targets
+- **Hot (70-100):** ~30
+- **Warm (40-69):** ~150
+- **Cold (0-39):** ~2,580
 
 ---
 
 ## Step 3: List Hot Leads
 
-Get the highest-scored displacement targets (ICP score >= 80):
+Get the highest-scored displacement targets (composite score >= 70):
 
 ```bash
-curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=domain,company_name,icp_score,icp_tier_name,vertical,sw_monthly_visits,revenue&icp_score=gte.80&order=icp_score.desc&limit=10" \
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=domain,company_name,icp_score,icp_tier_name,vertical,sw_monthly_visits,revenue&icp_score=gte.70&order=icp_score.desc&limit=10" \
   -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhiaXRxZWVqc2dxbnd2eGxuanJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwODU1NDAsImV4cCI6MjA4NzY2MTU0MH0.XoEOx8rHo_1EyCF4yJ3g2S3tXUX_XepQu9PSfUWvyIg"
 ```
 
@@ -140,16 +139,16 @@ curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?sele
 
 **Available PostgREST operators:**
 - `eq`: equals (e.g., `vertical=eq.Commerce`)
-- `gte`: greater than or equal (e.g., `icp_score=gte.80`)
-- `lte`: less than or equal (e.g., `icp_score=lte.50`)
+- `gte`: greater than or equal (e.g., `icp_score=gte.70`)
+- `lte`: less than or equal (e.g., `icp_score=lte.40`)
 - `like`: pattern match (e.g., `domain=like.*amazon*`)
 - `ilike`: case-insensitive pattern match
 - `order`: sorting (e.g., `order=icp_score.desc`)
 
 **Filterable columns:**
-- `icp_tier_name`: hot, warm, cool, cold
+- `icp_tier_name`: hot, warm, cold
 - `vertical`: Commerce, Media, Financial, Healthcare
-- `partner_technology`: Adobe AEM, Shopify Plus
+- `partner_technology`: Adobe AEM, Adobe Commerce, Amplience, Spryker
 - `icp_score`: 0-100
 - `sw_monthly_visits`: Monthly traffic
 - `is_public`: true/false
@@ -188,10 +187,10 @@ SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# Get hot leads (ICP score >= 80)
+# Get hot leads (composite score >= 70)
 response = supabase.table("displacement_targets") \
     .select("domain, company_name, icp_score, revenue") \
-    .gte("icp_score", 80) \
+    .gte("icp_score", 70) \
     .order("icp_score", desc=True) \
     .limit(10) \
     .execute()
@@ -217,7 +216,7 @@ response = requests.get(
     headers=HEADERS,
     params={
         "select": "domain,company_name,icp_score,revenue",
-        "icp_score": "gte.80",
+        "icp_score": "gte.70",
         "order": "icp_score.desc",
         "limit": 10
     }
@@ -250,12 +249,12 @@ const supabase = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhiaXRxZWVqc2dxbnd2eGxuanJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwODU1NDAsImV4cCI6MjA4NzY2MTU0MH0.XoEOx8rHo_1EyCF4yJ3g2S3tXUX_XepQu9PSfUWvyIg'
 );
 
-// Get hot leads (ICP score >= 80)
+// Get hot leads (composite score >= 70)
 async function getHotLeads() {
   const { data, error } = await supabase
     .from('displacement_targets')
     .select('domain, company_name, icp_score, revenue')
-    .gte('icp_score', 80)
+    .gte('icp_score', 70)
     .order('icp_score', { ascending: false })
     .limit(10);
 
@@ -277,7 +276,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 async function getHotLeads() {
   const response = await fetch(
-    `${SUPABASE_URL}/displacement_targets?select=domain,company_name,icp_score&icp_score=gte.80&order=icp_score.desc&limit=10`,
+    `${SUPABASE_URL}/displacement_targets?select=domain,company_name,icp_score&icp_score=gte.70&order=icp_score.desc&limit=10`,
     {
       headers: { 'apikey': SUPABASE_KEY }
     }
@@ -294,13 +293,14 @@ getHotLeads();
 
 ---
 
-## ICP Score Reference
+## Composite Score Reference
+
+PartnerForge uses a 4-factor composite scoring system (Fit, Intent, Value, Displacement - 25% each).
 
 | Tier | Score | Description |
 |------|-------|-------------|
-| Hot | 80-100 | Ready for outreach |
-| Warm | 60-79 | Strong potential |
-| Cool | 40-59 | Nurture required |
+| Hot | 70-100 | Ready for outreach |
+| Warm | 40-69 | Nurture pipeline |
 | Cold | 0-39 | Low priority |
 
 ---

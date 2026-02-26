@@ -1,6 +1,6 @@
 # Targets API
 
-The Targets API provides access to displacement target companies — organizations using partner technologies (Adobe AEM, Shopify, etc.) that are not currently Algolia customers.
+The Targets API provides access to displacement target companies — organizations using partner technologies (Adobe AEM, Adobe Commerce, Amplience, Spryker) that are not currently Algolia customers.
 
 **Base URL:** `https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1`
 **Table:** `displacement_targets`
@@ -46,7 +46,7 @@ GET /displacement_targets?select=*
 | `offset` | `offset=50` | Skip items for pagination |
 | `order` | `order=icp_score.desc` | Sort field and direction |
 | `icp_score` | `icp_score=gte.80` | Filter by score |
-| `icp_tier_name` | `icp_tier_name=eq.hot` | Filter by tier: hot, warm, cool, cold |
+| `icp_tier_name` | `icp_tier_name=eq.hot` | Filter by tier: hot, warm, cold |
 | `vertical` | `vertical=ilike.%commerce%` | Filter by vertical (case-insensitive) |
 | `partner_tech` | `partner_tech=eq.Adobe AEM` | Filter by technology |
 | `country` | `country=eq.United States` | Filter by country |
@@ -108,12 +108,12 @@ GET /displacement_targets?select=*
 ### Examples
 
 ```bash
-# Get all hot leads (score >= 80)
-curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=*&icp_score=gte.80&order=icp_score.desc" \
+# Get all hot leads (composite score >= 70)
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=*&icp_score=gte.70&order=icp_score.desc" \
   -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhiaXRxZWVqc2dxbnd2eGxuanJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwODU1NDAsImV4cCI6MjA4NzY2MTU0MH0.XoEOx8rHo_1EyCF4yJ3g2S3tXUX_XepQu9PSfUWvyIg"
 
-# Get warm leads (60-79) in Commerce vertical
-curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=*&icp_score=gte.60&icp_score=lt.80&vertical=ilike.%25commerce%25" \
+# Get warm leads (40-69) in Commerce vertical
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=*&icp_score=gte.40&icp_score=lt.70&vertical=ilike.%25commerce%25" \
   -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhiaXRxZWVqc2dxbnd2eGxuanJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwODU1NDAsImV4cCI6MjA4NzY2MTU0MH0.XoEOx8rHo_1EyCF4yJ3g2S3tXUX_XepQu9PSfUWvyIg"
 
 # Get public companies with high traffic, sorted by revenue
@@ -142,13 +142,13 @@ curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?sele
 ### Count by Tier
 
 ```bash
-# Count hot leads
-curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=count&icp_score=gte.80" \
+# Count hot leads (composite score >= 70)
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=count&icp_score=gte.70" \
   -H "apikey: YOUR_ANON_KEY" \
   -H "Prefer: count=exact"
 
-# Count warm leads
-curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=count&icp_score=gte.60&icp_score=lt.80" \
+# Count warm leads (composite score 40-69)
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=count&icp_score=gte.40&icp_score=lt.70" \
   -H "apikey: YOUR_ANON_KEY" \
   -H "Prefer: count=exact"
 ```
@@ -423,23 +423,32 @@ See [Enrichment Documentation](enrichment.md) for details on the client-side enr
 
 ---
 
-## ICP Scoring Reference
+## Composite Scoring Reference
+
+PartnerForge uses a **4-factor composite scoring system** (25% weight each):
+
+| Factor | Weight | What It Measures |
+|--------|--------|-----------------|
+| **Fit** | 25% | Vertical, company size, geography, public vs private |
+| **Intent** | 25% | Traffic, weak search platform, tech complexity, exec quotes |
+| **Value** | 25% | Revenue, traffic volume, store count, growth stage |
+| **Displacement** | 25% | Current search provider, partner tech strength, competitor Algolia adoption |
+
+### Score Thresholds
 
 | Tier | Score Range | Label | Color |
 |------|-------------|-------|-------|
-| 1 | 80-100 | Hot | `#ef4444` (Red) |
-| 2 | 60-79 | Warm | `#f97316` (Orange) |
-| 3 | 40-59 | Cool | `#5468FF` (Purple) |
-| 4 | 0-39 | Cold | `#6b7280` (Gray) |
+| 1 | 70-100 | Hot | `#ef4444` (Red) |
+| 2 | 40-69 | Warm | `#f97316` (Orange) |
+| 3 | 0-39 | Cold | `#6b7280` (Gray) |
 
-### Score Calculation
+### Confidence Levels
 
-| Component | Weight | Logic |
-|-----------|--------|-------|
-| Vertical | 40% | Commerce=40, Content=25, Support=15 |
-| Traffic | 30% | 50M+=30, 10M+=25, 1M+=15 |
-| Tech Spend | 20% | $100K+=20, $50K+=15 |
-| Partner Tech | 10% | Adobe=10, Shopify=7 |
+| Level | Data Completeness |
+|-------|------------------|
+| High | ≥70% of data fields populated |
+| Medium | 40-69% |
+| Low | <40% |
 
 ---
 

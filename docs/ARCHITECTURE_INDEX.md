@@ -1,9 +1,9 @@
 # PartnerForge Architecture Documentation Index
 
-**Version:** 2.0
-**Last Updated:** 2026-02-25
+**Version:** 3.0
+**Last Updated:** 2026-02-26
 **Status:** Canonical Reference
-**Documents:** 23 architecture docs (~22,600 lines)
+**Documents:** 25 architecture docs (~23,500 lines)
 
 ---
 
@@ -14,6 +14,9 @@
 | Overall system design | [ENTERPRISE-ARCHITECTURE.md](./ENTERPRISE-ARCHITECTURE.md) |
 | 15 intelligence modules | [INTELLIGENCE_MODULES_SPEC.md](./INTELLIGENCE_MODULES_SPEC.md) |
 | Database tables & schema | [DATABASE_SCHEMA_V2.md](./DATABASE_SCHEMA_V2.md) |
+| **Composite scoring system** | [COMPOSITE_SCORING.md](./COMPOSITE_SCORING.md) |
+| **5 data sources (API docs)** | [ENRICHMENT_PIPELINE.md](./ENRICHMENT_PIPELINE.md) |
+| **Hiring signals & personas** | [HIRING_SIGNALS.md](./HIRING_SIGNALS.md) |
 | Parallel execution model | [PARALLEL_EXECUTION_ARCHITECTURE.md](./PARALLEL_EXECUTION_ARCHITECTURE.md) |
 | Source citation rules | [SOURCE_CITATION_MANDATE.md](./SOURCE_CITATION_MANDATE.md) |
 | Orchestrator design | [ORCHESTRATOR_DESIGN.md](./ORCHESTRATOR_DESIGN.md) |
@@ -133,6 +136,13 @@
 | **ENTERPRISE-ARCHITECTURE.md** | ~1,340 | Master architecture document. System design, module boundaries, API contracts, deployment model. |
 | **INTELLIGENCE_MODULES_SPEC.md** | ~1,100 | Complete specification for all 15 modules. JSON schemas, data sources, validation rules. |
 | **DATABASE_SCHEMA_V2.md** | ~850 | PostgreSQL schema. 30+ tables across 5 namespaces. Includes migration scripts. |
+
+### Data Sources & Enrichment (NEW)
+
+| Document | Lines | Description |
+|----------|-------|-------------|
+| **ENRICHMENT_PIPELINE.md** | ~140 | Quick reference for all 5 data sources: Yahoo Finance (10 endpoints), SEC EDGAR (3), SimilarWeb (14), BuiltWith (7), WebSearch (4 categories). |
+| **HIRING_SIGNALS.md** | ~180 | Hiring signal enrichment via JobSpy. 119 target personas from customer evidence. Tier-based scoring (Decision Makers/Influencers/Implementers). |
 
 ### Execution & Orchestration
 
@@ -399,9 +409,9 @@ partnerforge/
 
 ---
 
-*Document Version: 2.0*
+*Document Version: 3.0*
 *Created: 2026-02-25*
-*Updated: 2026-02-25*
+*Updated: 2026-02-26*
 *Thread: 3 (Enterprise Architecture)*
 
 ---
@@ -411,6 +421,7 @@ partnerforge/
 | Category | Documents | Total Lines |
 |----------|-----------|-------------|
 | Core Architecture | 3 | ~3,290 |
+| **Data Sources & Enrichment** | 2 | ~320 |
 | Execution & Orchestration | 3 | ~2,450 |
 | Design Principles | 2 | ~750 |
 | **Enterprise Systems** | 4 | ~3,650 |
@@ -418,4 +429,4 @@ partnerforge/
 | Reference Materials | 3 | ~1,450 |
 | **Testing & Quality (P0)** | 1 | ~1,800 |
 | **Data Ingestion (P0)** | 1 | ~1,245 |
-| **TOTAL** | **19 documents** | **~16,245 lines** |
+| **TOTAL** | **21 documents** | **~16,555 lines** |

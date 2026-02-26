@@ -161,8 +161,8 @@ curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?sele
 Supabase uses PostgREST operators for filtering:
 
 ```bash
-# Filter by ICP score >= 80 (hot leads)
-curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=*&icp_score=gte.80" \
+# Filter by composite score >= 70 (hot leads)
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=*&icp_score=gte.70" \
   -H "apikey: YOUR_ANON_KEY"
 
 # Filter by vertical
@@ -208,7 +208,7 @@ With Supabase, you query the table directly:
 |-----------|--------|---------|
 | List targets | GET | `/displacement_targets?select=*` |
 | Get by domain | GET | `/displacement_targets?domain=eq.costco.com` |
-| Filter hot leads | GET | `/displacement_targets?icp_score=gte.80` |
+| Filter hot leads | GET | `/displacement_targets?icp_score=gte.70` |
 | Count targets | GET | `/displacement_targets?select=count` |
 
 [→ Full Targets Documentation](endpoints/targets.md)
@@ -243,7 +243,7 @@ Supabase REST API is auto-generated from your database schema. There is no expli
 
 ### curl
 ```bash
-curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=*&icp_score=gte.80&order=icp_score.desc" \
+curl "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=*&icp_score=gte.70&order=icp_score.desc" \
   -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhiaXRxZWVqc2dxbnd2eGxuanJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwODU1NDAsImV4cCI6MjA4NzY2MTU0MH0.XoEOx8rHo_1EyCF4yJ3g2S3tXUX_XepQu9PSfUWvyIg"
 ```
 
@@ -256,7 +256,7 @@ ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 
 response = requests.get(
     f"{SUPABASE_URL}/displacement_targets",
-    params={"select": "*", "icp_score": "gte.80", "order": "icp_score.desc"},
+    params={"select": "*", "icp_score": "gte.70", "order": "icp_score.desc"},
     headers={"apikey": ANON_KEY}
 )
 targets = response.json()
@@ -274,14 +274,14 @@ const supabase = createClient(
 const { data: targets, error } = await supabase
   .from('displacement_targets')
   .select('*')
-  .gte('icp_score', 80)
+  .gte('icp_score', 70)
   .order('icp_score', { ascending: false });
 ```
 
 ### JavaScript (Fetch)
 ```javascript
 const response = await fetch(
-  "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=*&icp_score=gte.80",
+  "https://xbitqeejsgqnwvxlnjra.supabase.co/rest/v1/displacement_targets?select=*&icp_score=gte.70",
   {
     headers: {
       apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."

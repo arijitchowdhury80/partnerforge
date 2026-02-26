@@ -153,36 +153,44 @@ flowchart TD
 
 ---
 
-## ICP Scoring Flow
+## Composite Scoring Flow
 
 ```mermaid
 %%{init: {'theme': 'dark'}}%%
 flowchart LR
-    subgraph Inputs[SCORING INPUTS]
-        V[Vertical 40%]
-        T[Traffic 30%]
-        TS[Tech Spend 20%]
-        PT[Partner Tech 10%]
+    subgraph Inputs[4 SCORING FACTORS - 25% each]
+        F[FIT<br/>Vertical, Size, Geography]
+        I[INTENT<br/>Traffic, Search Pain, Quotes]
+        V[VALUE<br/>Revenue, Traffic, Stores]
+        D[DISPLACEMENT<br/>Current Provider, Competitor Intel]
     end
 
     subgraph Calculation[CALCULATION]
-        Calc[Score = V*0.4 + T*0.3 + TS*0.2 + PT*0.1]
+        Calc[Composite Score = F*0.25 + I*0.25 + V*0.25 + D*0.25]
     end
 
-    subgraph Tiers[ICP TIERS]
-        Hot[Hot 80-100]
-        Warm[Warm 60-79]
-        Cool[Cool 40-59]
+    subgraph Tiers[STATUS TIERS]
+        Hot[Hot 70-100]
+        Warm[Warm 40-69]
         Cold[Cold 0-39]
+    end
+
+    subgraph Confidence[CONFIDENCE]
+        High[High ≥70% data]
+        Med[Medium 40-69%]
+        Low[Low <40%]
     end
 
     Inputs --> Calculation
     Calculation --> Tiers
+    Calculation --> Confidence
 
     style Hot fill:#ef4444,color:#fff
     style Warm fill:#f97316,color:#fff
-    style Cool fill:#5468ff,color:#fff
     style Cold fill:#6b7280,color:#fff
+    style High fill:#10b981,color:#fff
+    style Med fill:#f59e0b,color:#000
+    style Low fill:#ef4444,color:#fff
 ```
 
 ---

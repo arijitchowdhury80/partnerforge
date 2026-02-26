@@ -19,7 +19,7 @@ interface TargetSummary {
   vertical: string;
   country: string;
   icp_score: number | null;
-  icp_tier_name: string | null;  // "hot" | "warm" | "cool" | "cold"
+  icp_tier_name: string | null;  // "hot" | "warm" | "cold"
   sw_monthly_visits: number | null;
   revenue: number | null;
   current_search: string | null;
@@ -136,7 +136,7 @@ Request body for updating target status.
 ```typescript
 interface TargetStatusUpdate {
   icp_score?: number;  // 0-100
-  icp_tier_name?: string;  // "hot" | "warm" | "cool" | "cold"
+  icp_tier_name?: string;  // "hot" | "warm" | "cold"
   score_reasons?: Record<string, string>;
 }
 ```
@@ -153,10 +153,9 @@ Response from stats endpoint.
 interface TargetStats {
   total: number;
   by_status: {
-    hot: number;
-    warm: number;
-    cool: number;
-    cold: number;
+    hot: number;    // 70-100
+    warm: number;   // 40-69
+    cold: number;   // 0-39
     unscored: number;
   };
   by_vertical: VerticalStat[];
@@ -473,20 +472,21 @@ interface ValidationDetail {
 ### ICP Tier
 
 ```typescript
-type ICPTier = "hot" | "warm" | "cool" | "cold" | "unscored";
+type ICPTier = "hot" | "warm" | "cold" | "unscored";
+
+// Composite Scoring System - 4 factors at 25% each:
+// Fit, Intent, Value, Displacement
 
 const ICPTierScores = {
-  hot: [80, 100],
-  warm: [60, 79],
-  cool: [40, 59],
-  cold: [0, 39],
+  hot: [70, 100],   // High priority, ready for outreach
+  warm: [40, 69],   // Nurture pipeline
+  cold: [0, 39],    // Low priority
   unscored: null
 };
 
 const ICPTierColors = {
   hot: "#ef4444",     // Red
   warm: "#f97316",    // Orange
-  cool: "#5468FF",    // Purple (Algolia)
   cold: "#6b7280"     // Gray
 };
 ```
@@ -508,11 +508,9 @@ const EnrichmentLevelDescription = {
 ```typescript
 type PartnerTech =
   | "Adobe AEM"
-  | "Amplience"
   | "Adobe Commerce"
-  | "Spryker"
-  | "Shopify Plus"
-  | "Salesforce Commerce Cloud";
+  | "Amplience"
+  | "Spryker";
 ```
 
 ### Verticals
