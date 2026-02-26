@@ -33,7 +33,7 @@ import {
   IconRefresh,
 } from '@tabler/icons-react';
 
-import { getCompanies } from '@/services/api';
+// Note: getCompanies removed - now using allTargetsData for full client-side filtering
 import { enrichCompany, type EnrichmentProgress } from '@/services/enrichment';
 import { getTargets, type DisplacementTarget } from '@/services/supabase';
 import { TargetList } from '@/components/targets/TargetList';
@@ -41,7 +41,7 @@ import { ViewModeToggle, DistributionGrid, AccountDrillDown, type ViewMode } fro
 import { usePartner, getSelectionTechName } from '@/contexts/PartnerContext';
 import { AlgoliaLogo } from '@/components/common/AlgoliaLogo';
 import { getPartnerLogo } from '@/components/common/PartnerLogos';
-import type { FilterState } from '@/types';
+import type { Company } from '@/types';
 import { COLORS } from '@/lib/constants';
 
 // Column filter type for TargetList
@@ -53,10 +53,6 @@ interface ColumnFilter {
 export function Dashboard() {
   const { selectedPartner, selection, selectPartner, selectProduct, partners } = usePartner();
   const queryClient = useQueryClient();
-  const [filters, setFilters] = useState<FilterState>({
-    sort_by: 'icp_score',
-    sort_order: 'desc',
-  });
   const [page, setPage] = useState(1);
   const [columnFilters, setColumnFilters] = useState<ColumnFilter[]>([]);
 
@@ -113,19 +109,6 @@ export function Dashboard() {
     setPage(1);
   };
 
-  // PERFORMANCE: Fetch companies - only when partner selected, with caching
-  const { data: companies, isLoading: companiesLoading } = useQuery({
-    queryKey: ['companies', filters, page, partnerTechName],
-    queryFn: () => getCompanies({
-      ...filters,
-      page,
-      limit: 20,
-      partner: partnerTechName,
-    }),
-    enabled: hasPartnerSelected, // Only fetch when partner is selected
-    staleTime: 1000 * 60 * 2, // Cache for 2 minutes
-  });
-
   // Calculate stats from filtered allTargetsData (not global stats)
   const filteredStats = useMemo(() => {
     if (!allTargetsData) return { total: 0, hot: 0, warm: 0, cold: 0 };
@@ -141,30 +124,80 @@ export function Dashboard() {
 
   const { total, hot: hotCount, warm: warmCount, cold: coldCount } = filteredStats;
 
-  // Apply client-side filtering based on column filters
+  // Convert DisplacementTarget to Company format for TargetList
+  const allCompaniesFromTargets = useMemo((): Company[] => {
+    if (!allTargetsData) return [];
+    return allTargetsData.map(t => {
+      const icpScore = t.icp_score || 0;
+      return {
+        domain: t.domain,
+        company_name: t.company_name || t.domain,
+        ticker: t.ticker || undefined,
+        is_public: t.is_public || false,
+        headquarters: {
+          city: '',
+          state: '',
+          country: t.country || '',
+        },
+        industry: t.vertical || '', // Use vertical as industry
+        vertical: t.vertical || '',
+        icp_score: icpScore,
+        signal_score: icpScore, // Default to ICP score
+        priority_score: icpScore, // Default to ICP score
+        status: icpScore >= 80 ? 'hot' : icpScore >= 40 ? 'warm' : 'cold',
+        partner_tech: t.partner_tech ? [t.partner_tech] : [],
+        last_enriched: t.last_enriched || undefined,
+        sw_monthly_visits: t.sw_monthly_visits || undefined,
+        revenue: t.revenue || undefined,
+        current_search: t.current_search || undefined,
+        enrichment_level: t.enrichment_level || undefined,
+      };
+    });
+  }, [allTargetsData]);
+
+  // Apply client-side filtering based on column filters - ON ALL DATA
   const filteredCompanies = useMemo(() => {
-    if (!companies?.data || columnFilters.length === 0) {
-      return companies?.data || [];
+    if (!allCompaniesFromTargets.length) return [];
+
+    let filtered = allCompaniesFromTargets;
+
+    // Apply column filters
+    if (columnFilters.length > 0) {
+      filtered = filtered.filter(company => {
+        return columnFilters.every(filter => {
+          if (filter.values.length === 0) return true;
+
+          if (filter.column === 'status') {
+            return filter.values.includes(company.status);
+          }
+          if (filter.column === 'vertical') {
+            return filter.values.includes(company.vertical || '');
+          }
+          if (filter.column === 'partner_tech') {
+            // Match if any of the company's techs are in the filter
+            return company.partner_tech?.some(tech => filter.values.includes(tech)) || false;
+          }
+          return true;
+        });
+      });
     }
 
-    return companies.data.filter(company => {
-      return columnFilters.every(filter => {
-        if (filter.values.length === 0) return true;
+    return filtered;
+  }, [allCompaniesFromTargets, columnFilters]);
 
-        if (filter.column === 'status') {
-          return filter.values.includes(company.status);
-        }
-        if (filter.column === 'vertical') {
-          return filter.values.includes(company.vertical || '');
-        }
-        if (filter.column === 'partner_tech') {
-          // Match if any of the company's techs are in the filter
-          return company.partner_tech?.some(tech => filter.values.includes(tech)) || false;
-        }
-        return true;
-      });
-    });
-  }, [companies?.data, columnFilters]);
+  // Client-side pagination
+  const PAGE_SIZE = 50;
+  const paginatedCompanies = useMemo(() => {
+    const start = (page - 1) * PAGE_SIZE;
+    return filteredCompanies.slice(start, start + PAGE_SIZE);
+  }, [filteredCompanies, page]);
+
+  const clientPagination = useMemo(() => ({
+    page,
+    limit: PAGE_SIZE,
+    total: filteredCompanies.length,
+    total_pages: Math.ceil(filteredCompanies.length / PAGE_SIZE),
+  }), [filteredCompanies.length, page]);
 
   // Handle grid cell click - opens drill-down drawer
   const handleGridCellClick = (rowKey: string, colKey: string, targets: DisplacementTarget[]) => {
@@ -490,10 +523,10 @@ export function Dashboard() {
               </Group>
 
               <TargetList
-                companies={filteredCompanies}
-                allCompanies={companies?.data || []}
-                isLoading={companiesLoading}
-                pagination={companies?.pagination}
+                companies={paginatedCompanies}
+                allCompanies={allCompaniesFromTargets}
+                isLoading={targetsLoading}
+                pagination={clientPagination}
                 onPageChange={setPage}
                 columnFilters={columnFilters}
                 onColumnFilterChange={handleColumnFilterChange}
