@@ -225,13 +225,13 @@ function FilterHeader({
             {label}
           </Text>
 
-          {/* Filter indicator */}
+          {/* Filter indicator - always visible dropdown arrow */}
           {hasAppliedFilter ? (
             <Badge size="sm" variant="filled" color="blue" style={{ minWidth: 22 }}>
               {filterCount}
             </Badge>
           ) : (
-            <IconChevronDown size={16} color={GRAY_500} style={{ opacity: 0.8 }} />
+            <IconChevronDown size={16} color={ALGOLIA_SPACE_GRAY} strokeWidth={2.5} />
           )}
         </UnstyledButton>
       </Popover.Target>
@@ -352,16 +352,28 @@ function FilterHeader({
 // =============================================================================
 
 function SortHeader({ column, label }: { column: any; label: string }) {
+  const isSorted = column.getIsSorted();
   return (
     <UnstyledButton
       onClick={() => column.toggleSorting()}
-      style={{ display: 'flex', alignItems: 'center', gap: 4 }}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+        padding: '6px 10px',
+        borderRadius: 6,
+        background: isSorted ? 'rgba(0, 61, 255, 0.1)' : 'transparent',
+        border: isSorted ? '1px solid rgba(0, 61, 255, 0.3)' : '1px solid transparent',
+        transition: 'all 0.15s ease',
+      }}
     >
-      <Text size="sm" fw={700} c={GRAY_700} tt="uppercase">{label}</Text>
+      <Text size="sm" fw={700} c={isSorted ? ALGOLIA_NEBULA_BLUE : ALGOLIA_SPACE_GRAY} tt="uppercase">
+        {label}
+      </Text>
       {{
-        asc: <IconArrowUp size={12} color={ALGOLIA_BLUE} />,
-        desc: <IconArrowDown size={12} color={ALGOLIA_BLUE} />,
-      }[column.getIsSorted() as string] ?? <IconSelector size={12} color={GRAY_400} />}
+        asc: <IconArrowUp size={16} color={ALGOLIA_NEBULA_BLUE} strokeWidth={2.5} />,
+        desc: <IconArrowDown size={16} color={ALGOLIA_NEBULA_BLUE} strokeWidth={2.5} />,
+      }[isSorted as string] ?? <IconSelector size={16} color={ALGOLIA_SPACE_GRAY} strokeWidth={2} />}
     </UnstyledButton>
   );
 }
