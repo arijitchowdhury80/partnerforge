@@ -1,17 +1,22 @@
 /**
- * Enrichment Service v2.0
+ * Enrichment Service v2.2
  *
  * Multi-source enrichment pipeline:
  * 1. SimilarWeb - Traffic, engagement, competitors (similar-sites)
  * 2. BuiltWith - Full tech stack detection
  * 3. Algolia Customer Cross-Reference - Which competitors use Algolia
  * 4. Case Study Matching - Reference implementations by vertical
+ * 5. Hiring Signals - Job postings analysis via JSearch API (RapidAPI)
  */
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY;
 const SIMILARWEB_API_KEY = import.meta.env.VITE_SIMILARWEB_API_KEY;
 const BUILTWITH_API_KEY = import.meta.env.VITE_BUILTWITH_API_KEY;
+
+// JSearch API (RapidAPI) - Job postings for hiring signals
+// FREE TIER: 2,000 requests/month — included in selective enrichment
+const JSEARCH_API_KEY = import.meta.env.VITE_JSEARCH_API_KEY;
 
 // =============================================================================
 // Types
@@ -60,6 +65,16 @@ export interface EnrichedCompanyData {
   // Case Studies
   case_studies_json?: string;
   reference_implementation?: string;
+
+  // Hiring Signals (from Python backend)
+  hiring_signal_score?: number;
+  hiring_signal_strength?: 'strong' | 'moderate' | 'weak' | 'none';
+  hiring_total_jobs?: number;
+  hiring_relevant_jobs?: number;
+  hiring_tier_breakdown?: { tier_1: number; tier_2: number; tier_3: number };
+  hiring_category_breakdown?: Record<string, number>;
+  hiring_top_jobs?: Array<{ title: string; tier: number; categories: string[] }>;
+  hiring_fetched_at?: string;
 }
 
 export interface Competitor {
@@ -349,6 +364,342 @@ function findCaseStudiesForVertical(vertical: string | undefined): CaseStudy[] {
 }
 
 // =============================================================================
+// Hiring Signals API (JSearch via RapidAPI)
+// =============================================================================
+
+// Tier patterns for classifying job titles
+const TIER_1_PATTERNS = [
+  /\b(vp|vice president)\b/i,
+  /\b(cto|cio|cdo|cmo|cco|coo|ceo)\b/i,
+  /\bchief\s+\w+\s+officer\b/i,
+  /\bhead\s+of\b/i,
+  /\bsvp|senior\s+vice\s+president\b/i,
+  /\bdirector\b/i,
+  /\bprincipal\b/i,
+  /\bco-?founder\b/i,
+];
+
+const TIER_2_PATTERNS = [
+  /\bsenior\s+manager\b/i,
+  /\bmanager\b/i,
+  /\blead\b/i,
+  /\barchitect\b/i,
+  /\bsenior\s+product\b/i,
+  /\bproduct\s+manager\b/i,
+  /\bproduct\s+owner\b/i,
+];
+
+// Categories relevant to Algolia sales
+const RELEVANT_CATEGORIES: Record<string, string[]> = {
+  'search': ['search', 'discovery', 'relevance', 'findability', 'browse', 'catalog', 'autocomplete', 'typeahead', 'query'],
+  'e-commerce': ['ecommerce', 'e-commerce', 'commerce', 'merchandis', 'online store', 'digital commerce', 'retail tech'],
+  'product': ['product manager', 'product owner', 'product lead', 'product director'],
+  'engineering': ['engineer', 'developer', 'architect', 'devops', 'software', 'sre', 'platform', 'infrastructure'],
+  'data': ['data scientist', 'data engineer', 'analytics', 'ai', 'ml', 'machine learning', 'nlp', 'personalization'],
+  'digital-cx': ['customer experience', 'cx', 'ux', 'user experience', 'digital experience', 'conversion', 'optimization'],
+  'merchandising': ['merchandis', 'category manager', 'assortment', 'pricing', 'site merchandis'],
+};
+
+interface JSearchJob {
+  job_id: string;
+  job_title: string;
+  employer_name: string;
+  job_employment_type?: string;
+  job_location?: string;
+  job_posted_at_datetime_utc?: string;
+  job_apply_link?: string;
+}
+
+interface JSearchResponse {
+  status: string;
+  data: JSearchJob[];
+  error?: string;
+}
+
+export interface HiringSignalResponse {
+  company_name: string;
+  signal_score: number;
+  signal_strength: 'strong' | 'moderate' | 'weak' | 'none';
+  total_jobs_found: number;
+  relevant_jobs: number;
+  tier_breakdown: { tier_1: number; tier_2: number; tier_3: number };
+  category_breakdown: Record<string, number>;
+  top_jobs: Array<{ title: string; tier: number; categories: string[] }>;
+}
+
+/**
+ * Classify a job title into tier 1, 2, or 3
+ */
+function classifyJobTier(title: string): number {
+  for (const pattern of TIER_1_PATTERNS) {
+    if (pattern.test(title)) return 1;
+  }
+  for (const pattern of TIER_2_PATTERNS) {
+    if (pattern.test(title)) return 2;
+  }
+  return 3;
+}
+
+/**
+ * Identify which categories a job title belongs to
+ */
+function classifyJobCategories(title: string): string[] {
+  const titleLower = title.toLowerCase();
+  const categories: string[] = [];
+
+  for (const [category, keywords] of Object.entries(RELEVANT_CATEGORIES)) {
+    if (keywords.some(kw => titleLower.includes(kw))) {
+      categories.push(category);
+    }
+  }
+
+  return categories;
+}
+
+/**
+ * Calculate hiring signal score (0-100)
+ *
+ * Scoring:
+ * - Tier 1 roles: 30 points each (max 60)
+ * - Tier 2 roles: 15 points each (max 45)
+ * - Tier 3 roles: 5 points each (max 20)
+ * - Search-related roles bonus: 25 points
+ * - E-commerce roles bonus: 15 points
+ * - Merchandising roles bonus: 10 points
+ */
+function calculateSignalScore(
+  tierBreakdown: { tier_1: number; tier_2: number; tier_3: number },
+  categoryBreakdown: Record<string, number>
+): number {
+  let score = 0;
+
+  // Tier scoring
+  score += Math.min(60, tierBreakdown.tier_1 * 30);
+  score += Math.min(45, tierBreakdown.tier_2 * 15);
+  score += Math.min(20, tierBreakdown.tier_3 * 5);
+
+  // Category bonuses
+  if ((categoryBreakdown['search'] || 0) > 0) score += 25;
+  if ((categoryBreakdown['e-commerce'] || 0) > 0) score += 15;
+  if ((categoryBreakdown['merchandising'] || 0) > 0) score += 10;
+
+  return Math.min(100, score);
+}
+
+/**
+ * Convert score to signal strength label
+ */
+function getSignalStrength(score: number): 'strong' | 'moderate' | 'weak' | 'none' {
+  if (score >= 70) return 'strong';
+  if (score >= 40) return 'moderate';
+  if (score >= 15) return 'weak';
+  return 'none';
+}
+
+/**
+ * Fetch job postings from JSearch API and analyze hiring signals.
+ * JSearch aggregates job data from Google for Jobs and the web.
+ *
+ * @param companyName - Company name to search for (e.g., "Costco", "Target")
+ * @returns Hiring signal data or null if API unavailable
+ */
+async function fetchHiringSignals(companyName: string): Promise<HiringSignalResponse | null> {
+  if (!JSEARCH_API_KEY) {
+    console.warn('[Enrichment] No JSearch API key configured');
+    return null;
+  }
+
+  try {
+    // Search for jobs at this company
+    const query = encodeURIComponent(`${companyName} jobs`);
+    const url = `https://jsearch.p.rapidapi.com/search?query=${query}&num_pages=2`;
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'X-RapidAPI-Key': JSEARCH_API_KEY,
+        'X-RapidAPI-Host': 'jsearch.p.rapidapi.com',
+      },
+      signal: AbortSignal.timeout(15000),
+    });
+
+    if (!response.ok) {
+      console.warn(`[Enrichment] JSearch API ${response.status}`);
+      return null;
+    }
+
+    const data: JSearchResponse = await response.json();
+
+    if (data.status !== 'OK' || !data.data) {
+      console.warn('[Enrichment] JSearch API returned no data');
+      return null;
+    }
+
+    // Filter jobs to only this company (case-insensitive partial match)
+    const companyLower = companyName.toLowerCase();
+    const companyJobs = data.data.filter(job =>
+      job.employer_name?.toLowerCase().includes(companyLower)
+    );
+
+    if (companyJobs.length === 0) {
+      return {
+        company_name: companyName,
+        signal_score: 0,
+        signal_strength: 'none',
+        total_jobs_found: 0,
+        relevant_jobs: 0,
+        tier_breakdown: { tier_1: 0, tier_2: 0, tier_3: 0 },
+        category_breakdown: {},
+        top_jobs: [],
+      };
+    }
+
+    // Analyze each job
+    const tierBreakdown = { tier_1: 0, tier_2: 0, tier_3: 0 };
+    const categoryBreakdown: Record<string, number> = {};
+    const matchedJobs: Array<{ title: string; tier: number; categories: string[] }> = [];
+
+    for (const job of companyJobs) {
+      const title = job.job_title;
+      if (!title) continue;
+
+      const tier = classifyJobTier(title);
+      const categories = classifyJobCategories(title);
+
+      // Only count jobs with relevant categories
+      if (categories.length > 0) {
+        tierBreakdown[`tier_${tier}` as keyof typeof tierBreakdown]++;
+
+        for (const cat of categories) {
+          categoryBreakdown[cat] = (categoryBreakdown[cat] || 0) + 1;
+        }
+
+        matchedJobs.push({ title, tier, categories });
+      }
+    }
+
+    // Sort by tier (decision makers first)
+    matchedJobs.sort((a, b) => a.tier - b.tier);
+
+    // Calculate score
+    const signalScore = calculateSignalScore(tierBreakdown, categoryBreakdown);
+    const signalStrength = getSignalStrength(signalScore);
+
+    return {
+      company_name: companyName,
+      signal_score: signalScore,
+      signal_strength: signalStrength,
+      total_jobs_found: companyJobs.length,
+      relevant_jobs: matchedJobs.length,
+      tier_breakdown: tierBreakdown,
+      category_breakdown: categoryBreakdown,
+      top_jobs: matchedJobs.slice(0, 20), // Top 20 jobs
+    };
+  } catch (err) {
+    if (err instanceof Error && err.name === 'AbortError') {
+      console.warn('[Enrichment] JSearch API timeout');
+    } else {
+      console.warn('[Enrichment] JSearch API error:', err);
+    }
+    return null;
+  }
+}
+
+/**
+ * Check if the hiring service (JSearch API) is available
+ */
+export async function checkHiringServiceHealth(): Promise<boolean> {
+  return !!JSEARCH_API_KEY;
+}
+
+/**
+ * Standalone function to enrich just hiring signals for a company.
+ * Use this when you want to add hiring data without running the full pipeline.
+ *
+ * @param domain - Company domain (e.g., "costco.com")
+ * @param onProgress - Optional progress callback
+ * @returns Hiring signal data or null if service unavailable
+ */
+export async function enrichHiringSignals(
+  domain: string,
+  onProgress?: (progress: EnrichmentProgress) => void
+): Promise<{
+  hiring_signal_score?: number;
+  hiring_signal_strength?: 'strong' | 'moderate' | 'weak' | 'none';
+  hiring_total_jobs?: number;
+  hiring_relevant_jobs?: number;
+  hiring_tier_breakdown?: { tier_1: number; tier_2: number; tier_3: number };
+  hiring_category_breakdown?: Record<string, number>;
+  hiring_top_jobs?: Array<{ title: string; tier: number; categories: string[] }>;
+  hiring_fetched_at?: string;
+} | null> {
+  onProgress?.({
+    domain,
+    status: 'fetching',
+    message: 'Analyzing hiring signals...',
+    step: 'hiring',
+  });
+
+  // Extract company name from domain
+  const companyName = domain
+    .replace(/^www\./, '')
+    .split('.')[0]
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, c => c.toUpperCase());
+
+  const hiringData = await fetchHiringSignals(companyName);
+
+  if (!hiringData) {
+    onProgress?.({
+      domain,
+      status: 'error',
+      message: 'JSearch API unavailable or no API key',
+      step: 'hiring',
+    });
+    return null;
+  }
+
+  const result = {
+    hiring_signal_score: hiringData.signal_score,
+    hiring_signal_strength: hiringData.signal_strength,
+    hiring_total_jobs: hiringData.total_jobs_found,
+    hiring_relevant_jobs: hiringData.relevant_jobs,
+    hiring_tier_breakdown: hiringData.tier_breakdown,
+    hiring_category_breakdown: hiringData.category_breakdown,
+    hiring_top_jobs: hiringData.top_jobs,
+    hiring_fetched_at: new Date().toISOString(),
+  };
+
+  // Save to Supabase
+  onProgress?.({
+    domain,
+    status: 'updating',
+    message: 'Saving hiring signals...',
+    step: 'hiring',
+  });
+
+  const updated = await updateSupabase(domain, result);
+
+  if (updated) {
+    onProgress?.({
+      domain,
+      status: 'complete',
+      message: `Hiring: ${hiringData.signal_strength} (${hiringData.relevant_jobs} relevant jobs)`,
+      step: 'hiring',
+    });
+  } else {
+    onProgress?.({
+      domain,
+      status: 'error',
+      message: 'Failed to save hiring signals',
+      step: 'hiring',
+    });
+  }
+
+  return result;
+}
+
+// =============================================================================
 // Supabase Update
 // =============================================================================
 
@@ -514,7 +865,35 @@ export async function enrichCompany(
     enrichedData.reference_implementation = caseStudies[0].company;
   }
 
-  // Step 5: Update Supabase
+  // Step 5: Hiring Signals (JSearch API - 2,000/month quota)
+  // Included in selective enrichment pipeline
+  onProgress?.({
+    domain,
+    status: 'fetching',
+    message: 'Analyzing hiring signals...',
+    step: 'hiring',
+  });
+
+  // Extract company name from domain (e.g., "costco.com" -> "Costco")
+  const companyName = domain
+    .replace(/^www\./, '')
+    .split('.')[0]
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, c => c.toUpperCase());
+
+  const hiringData = await fetchHiringSignals(companyName);
+  if (hiringData) {
+    enrichedData.hiring_signal_score = hiringData.signal_score;
+    enrichedData.hiring_signal_strength = hiringData.signal_strength;
+    enrichedData.hiring_total_jobs = hiringData.total_jobs_found;
+    enrichedData.hiring_relevant_jobs = hiringData.relevant_jobs;
+    enrichedData.hiring_tier_breakdown = hiringData.tier_breakdown;
+    enrichedData.hiring_category_breakdown = hiringData.category_breakdown;
+    enrichedData.hiring_top_jobs = hiringData.top_jobs;
+    enrichedData.hiring_fetched_at = new Date().toISOString();
+  }
+
+  // Step 6: Update Supabase
   onProgress?.({
     domain,
     status: 'updating',
@@ -539,6 +918,7 @@ export async function enrichCompany(
     techStack ? `${techStack.all.length} technologies` : null,
     similarSites.length > 0 ? `${similarSites.length} competitors` : null,
     caseStudies.length > 0 ? `${caseStudies.length} case studies` : null,
+    hiringData ? `Hiring: ${hiringData.signal_strength} (${hiringData.relevant_jobs} relevant)` : null,
   ].filter(Boolean).join(', ');
 
   onProgress?.({

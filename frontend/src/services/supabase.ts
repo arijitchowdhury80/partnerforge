@@ -8,6 +8,7 @@
 // Environment variables - never hardcode keys in source code
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY;
+const SUPABASE_SERVICE_KEY = import.meta.env.VITE_SUPABASE_SERVICE_KEY;
 
 if (!SUPABASE_URL || !SUPABASE_KEY) {
   console.error('Missing Supabase environment variables. Check your .env file.');
@@ -51,6 +52,37 @@ async function supabaseRequest<T>(
     const count = contentRange ? parseInt(contentRange.split('/')[1]) : undefined;
 
     return { data, error: null, count };
+  } catch (err) {
+    return { data: null, error: String(err) };
+  }
+}
+
+// Service key request for tables with RLS (partners, partner_products)
+async function supabaseServiceRequest<T>(
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<SupabaseResponse<T>> {
+  const key = SUPABASE_SERVICE_KEY || SUPABASE_KEY;
+  const headers: Record<string, string> = {
+    'apikey': key,
+    'Authorization': `Bearer ${key}`,
+    'Content-Type': 'application/json',
+    ...(options.headers as Record<string, string> || {}),
+  };
+
+  try {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, {
+      ...options,
+      headers,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      return { data: null, error: errorText };
+    }
+
+    const data = await response.json();
+    return { data, error: null };
   } catch (err) {
     return { data: null, error: String(err) };
   }
@@ -138,6 +170,11 @@ export async function getTargets(filters: TargetFilters = {}): Promise<{
   // Select all fields
   params.push('select=*');
 
+  // CRITICAL: Always exclude Algolia customers - this is a DISPLACEMENT targets table
+  // Displacement = Companies Using Partner Tech − Existing Algolia Customers
+  // Use 'or' to include NULL values (no search detected) AND non-Algolia values
+  params.push('or=(current_search.is.null,current_search.neq.Algolia)');
+
   // Filters
   if (partner) {
     // Use ilike for partial matching (e.g., "Adobe" matches "Adobe Experience Manager")
@@ -220,8 +257,9 @@ export interface DashboardStats {
 
 export async function getStats(): Promise<DashboardStats> {
   // Get all targets to calculate stats (Supabase doesn't have built-in aggregation via REST)
+  // CRITICAL: Exclude Algolia customers - displacement = partner tech MINUS Algolia customers
   const { data, error, count } = await supabaseRequest<DisplacementTarget[]>(
-    'displacement_targets?select=icp_score,partner_tech,vertical',
+    'displacement_targets?select=icp_score,partner_tech,vertical&or=(current_search.is.null,current_search.neq.Algolia)',
     {},
     true
   );
@@ -396,25 +434,26 @@ export async function getPartners(): Promise<{
       key: string;
       name: string;
       shortName: string;
+      builtWithTechName?: string;
       count: number;
     }>;
   }>;
 }> {
-  // Try to fetch from partners table first
-  const { data: partnersData, error: partnersError } = await supabaseRequest<PartnerRecord[]>(
+  // Try to fetch from partners table first (using service key to bypass RLS)
+  const { data: partnersData, error: partnersError } = await supabaseServiceRequest<PartnerRecord[]>(
     'partners?is_active=eq.true&order=sort_order.asc'
   );
 
   // If partners table exists and has data, use it
   if (!partnersError && partnersData && partnersData.length > 0) {
-    // Also fetch products for each partner
-    const { data: productsData } = await supabaseRequest<PartnerProductRecord[]>(
+    // Also fetch products for each partner (using service key to bypass RLS)
+    const { data: productsData } = await supabaseServiceRequest<PartnerProductRecord[]>(
       'partner_products?is_active=eq.true&order=sort_order.asc'
     );
 
-    // Get counts from displacement_targets
+    // Get counts from displacement_targets (excluding Algolia customers)
     const { data: countData } = await supabaseRequest<Array<{ partner_tech: string }>>(
-      'displacement_targets?select=partner_tech'
+      'displacement_targets?select=partner_tech&or=(current_search.is.null,current_search.neq.Algolia)'
     );
 
     const partnerCounts: Record<string, number> = {};
@@ -444,6 +483,7 @@ export async function getPartners(): Promise<{
             key: prod.key,
             name: prod.name,
             shortName: prod.short_name,
+            builtWithTechName: prod.builtwith_tech_name,
             count: 0, // Would need separate query
           })),
       })),
@@ -451,8 +491,9 @@ export async function getPartners(): Promise<{
   }
 
   // Fallback: Derive partners from unique partner_tech values in displacement_targets
+  // CRITICAL: Exclude Algolia customers
   const { data: targetsData } = await supabaseRequest<Array<{ partner_tech: string }>>(
-    'displacement_targets?select=partner_tech'
+    'displacement_targets?select=partner_tech&or=(current_search.is.null,current_search.neq.Algolia)'
   );
 
   if (!targetsData) {

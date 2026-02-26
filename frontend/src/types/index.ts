@@ -29,19 +29,58 @@ export interface Company {
   status: 'hot' | 'warm' | 'cold';
   partner_tech?: string[];
   last_enriched?: string;
-  // Supabase fields
+
+  // SimilarWeb data
   sw_monthly_visits?: number;
-  revenue?: number;
+  sw_bounce_rate?: number;
+  sw_pages_per_visit?: number;
+  sw_global_rank?: number;
+  similar_sites?: Array<{ domain: string; similarity: number }>;
+
+  // BuiltWith data
   current_search?: string;
-  enrichment_level?: string;
-  // Tech stack data (from tech_stack_json)
+  ecommerce_platform?: string;
+  cms?: string;
   tech_stack_data?: TechStackData;
-  // Full enrichment data (v2.0)
-  competitor_data?: CompetitorData;
-  case_studies?: CaseStudyMatch[];
+
+  // Yahoo Finance data (v3)
+  revenue?: number;
+  net_income?: number;
+  market_cap?: number;
+  revenue_growth?: number;
+  profit_margins?: number;
+  analyst_rating?: {
+    buy: number;
+    hold: number;
+    sell: number;
+    target_price: number;
+  };
+
+  // SEC EDGAR data (v3)
+  cik?: string;
+  sec_filings_count?: number;
+  has_tech_risk_factors?: boolean;
+  has_digital_mentions?: boolean;
+
+  // Hiring signals - JSearch (v3)
+  hiring_signal_score?: number;
+  hiring_signal_strength?: 'strong' | 'moderate' | 'weak' | 'none';
+  hiring_total_jobs?: number;
+  hiring_relevant_jobs?: number;
+  hiring_has_search_roles?: boolean;
+  hiring_has_ecommerce_roles?: boolean;
+
+  // Executive quotes - WebSearch (v3)
   exec_quote?: string;
   exec_name?: string;
   exec_title?: string;
+  exec_quotes_count?: number;
+
+  // Derived/UI fields
+  enrichment_level?: string;
+  enrichment_sources?: string[];
+  competitor_data?: CompetitorData;
+  case_studies?: CaseStudyMatch[];
   displacement_angle?: string;
 }
 
@@ -450,6 +489,41 @@ export type {
   UploadWizardState,
   UploadStep,
 } from './upload';
+
+// =============================================================================
+// Composite Scoring Types (Multi-Factor)
+// =============================================================================
+
+/**
+ * Multi-factor composite score breakdown
+ * Total score = weighted average of 4 factors (0-100 each)
+ */
+export interface CompositeScore {
+  total: number;           // Weighted average (0-100)
+  factors: {
+    fit: number;           // ICP fit (25%) - vertical, size, geo
+    intent: number;        // Buying intent (25%) - hiring, tech changes
+    value: number;         // Deal value (25%) - revenue, traffic, growth
+    displacement: number;  // Ease of displacement (25%) - partner tech strength
+  };
+  confidence: 'high' | 'medium' | 'low';  // Based on data completeness
+  dataCompleteness: number;  // 0-100% of data points available
+}
+
+export interface ScoringFactorDetail {
+  name: string;
+  weight: number;
+  score: number;
+  maxScore: number;
+  signals: string[];  // What contributed to this score
+}
+
+export interface DetailedScoreBreakdown {
+  fit: ScoringFactorDetail;
+  intent: ScoringFactorDetail;
+  value: ScoringFactorDetail;
+  displacement: ScoringFactorDetail;
+}
 
 // =============================================================================
 // KPI Card Types
