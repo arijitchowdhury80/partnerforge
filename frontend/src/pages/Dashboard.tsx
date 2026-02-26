@@ -302,8 +302,10 @@ export function Dashboard() {
   }, [queryClient]);
 
   return (
-    <div style={{ background: COLORS.GRAY_50, minHeight: '100vh' }}>
-      <Container size="xl" py="xl">
+    <div style={{ background: COLORS.GRAY_50, height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      {/* Sticky Header Section */}
+      <div style={{ flexShrink: 0, background: COLORS.GRAY_50, paddingTop: 24, paddingBottom: 0 }}>
+        <Container size="xl">
         {/* Enrichment Status Notification */}
         {enrichmentStatus && (
           <Notification
@@ -425,6 +427,12 @@ export function Dashboard() {
             )}
           </Paper>
         </motion.div>
+        </Container>
+      </div>
+
+      {/* Scrollable Content Area */}
+      <div style={{ flex: 1, overflow: 'auto', paddingBottom: 24 }}>
+        <Container size="xl">
 
         {/* Empty State - when no partner selected */}
         {!hasPartnerSelected && (
@@ -508,13 +516,13 @@ export function Dashboard() {
                     <Badge size="lg" variant="filled" color="blue" styles={{ root: { fontWeight: 700 } }}>
                       {total.toLocaleString()} Total
                     </Badge>
-                    <Badge size="md" variant="light" color="red" leftSection={<IconFlame size={12} />}>
+                    <Badge size="md" variant="filled" color="red" leftSection={<IconFlame size={12} />} styles={{ root: { fontWeight: 600 } }}>
                       {hotCount} Hot
                     </Badge>
-                    <Badge size="md" variant="light" color="orange" leftSection={<IconTrendingUp size={12} />}>
+                    <Badge size="md" variant="filled" color="orange" leftSection={<IconTrendingUp size={12} />} styles={{ root: { fontWeight: 600 } }}>
                       {warmCount} Warm
                     </Badge>
-                    <Badge size="md" variant="light" color="gray" leftSection={<IconSnowflake size={12} />}>
+                    <Badge size="md" variant="filled" color="gray" leftSection={<IconSnowflake size={12} />} styles={{ root: { fontWeight: 600 } }}>
                       {coldCount} Cold
                     </Badge>
                   </Group>
@@ -584,7 +592,8 @@ export function Dashboard() {
             </Paper>
           </motion.div>
         )}
-      </Container>
+        </Container>
+      </div>
     </div>
   );
 }
