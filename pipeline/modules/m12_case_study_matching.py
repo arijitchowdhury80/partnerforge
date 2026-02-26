@@ -293,10 +293,10 @@ class M12CaseStudyMatching(BaseModule):
             # Calculate duration
             duration_ms = (time.time() - start_time) * 1000
 
-            # Create citation
+            # Create citation - use a canonical URL for the internal database
             citation = self._create_citation(
                 source_type=SourceType.MANUAL_ENTRY,
-                source_url=f"file://{self.DB_PATH}",
+                source_url="https://partnerforge.local/data/case_studies",
                 api_endpoint="case_studies",
                 confidence=0.9,
                 notes=f"Matched {len(matched_studies)} case studies from internal database",

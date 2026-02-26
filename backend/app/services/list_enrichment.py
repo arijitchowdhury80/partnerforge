@@ -342,10 +342,18 @@ class ListEnrichmentService:
         """
         pre_existing: Dict[str, Any] = {}
 
+        # Normalize row_data keys for matching (handle "Engagement Points" -> "engagement_points")
+        normalized_row = {}
+        for key, value in row_data.items():
+            norm_key = key.lower().replace(' ', '_').replace('-', '_')
+            normalized_row[norm_key] = value
+            # Also keep original key
+            normalized_row[key] = value
+
         # Revenue (use if present and reasonable)
         revenue_keys = ["revenue", "annual_revenue", "arr", "expected_revenue"]
         for key in revenue_keys:
-            value = row_data.get(key)
+            value = normalized_row.get(key)
             if value and self._parse_numeric(value):
                 pre_existing["revenue"] = {
                     "value": self._parse_numeric(value),
@@ -357,7 +365,7 @@ class ListEnrichmentService:
         # Traffic
         traffic_keys = ["traffic", "monthly_visits", "visits", "monthly_traffic"]
         for key in traffic_keys:
-            value = row_data.get(key)
+            value = normalized_row.get(key)
             if value and self._parse_numeric(value):
                 pre_existing["traffic"] = {
                     "value": self._parse_numeric(value),
@@ -369,7 +377,7 @@ class ListEnrichmentService:
         # Industry
         industry_keys = ["industry", "vertical", "demandbase_industry"]
         for key in industry_keys:
-            value = row_data.get(key)
+            value = normalized_row.get(key)
             if value and isinstance(value, str) and value.strip():
                 pre_existing["industry"] = {
                     "value": value.strip(),
@@ -381,7 +389,7 @@ class ListEnrichmentService:
         # Employee count
         employee_keys = ["employees", "employee_count", "headcount"]
         for key in employee_keys:
-            value = row_data.get(key)
+            value = normalized_row.get(key)
             if value and self._parse_numeric(value):
                 pre_existing["employee_count"] = {
                     "value": int(self._parse_numeric(value)),
@@ -409,7 +417,7 @@ class ListEnrichmentService:
         # Engagement score (for prioritization)
         engagement_keys = ["engagement_score", "engagement_points", "intent_score"]
         for key in engagement_keys:
-            value = row_data.get(key)
+            value = normalized_row.get(key)
             if value and self._parse_numeric(value):
                 pre_existing["engagement_score"] = {
                     "value": self._parse_numeric(value),

@@ -97,19 +97,19 @@ COLUMN_MAPPINGS: Dict[str, List[str]] = {
         "legal_name", "business", "account_name",
     ],
 
-    # External IDs
-    "salesforce_id": [
-        "account_id", "18_digit_account_id", "sf_id", "salesforce_id",
-        "sfdc_id", "id", "salesforce_account_id", "sf_account_id",
-        "18_digit_id", "account_id__c",
+    # External IDs (order matters - more specific first)
+    "hubspot_id": [
+        "hubspot_id", "hs_id", "hubspot_company_id", "hs_company_id",
+        "hubspot_object_id", "hs_object_id",
     ],
     "demandbase_id": [
         "abm_id", "demandbase_id", "db_id", "demandbase_company_id",
         "demandbase_account_id", "db_company_id",
     ],
-    "hubspot_id": [
-        "hubspot_id", "hs_id", "hubspot_company_id", "hs_company_id",
-        "hubspot_object_id", "hs_object_id",
+    "salesforce_id": [
+        "account_id", "18_digit_account_id", "sf_id", "salesforce_id",
+        "sfdc_id", "salesforce_account_id", "sf_account_id",
+        "18_digit_id", "account_id__c",
     ],
     "sixsense_id": [
         "6sense_id", "sixsense_id", "6s_id", "six_sense_id",
@@ -423,8 +423,15 @@ class ColumnMappingService:
         Returns:
             Detected SourceSystem enum
         """
-        headers_lower = [h.lower() for h in headers]
-        headers_text = ' '.join(headers_lower)
+        # Normalize headers for matching (spaces -> underscores, lowercase)
+        normalized_headers = []
+        for h in headers:
+            norm = h.lower()
+            norm = re.sub(r'[\s\-\.]+', '_', norm)  # Replace spaces, hyphens, dots
+            norm = re.sub(r'[^\w_]', '', norm)  # Remove other special chars
+            normalized_headers.append(norm)
+
+        headers_text = ' '.join(normalized_headers)
 
         scores: Dict[SourceSystem, int] = {source: 0 for source in SOURCE_PATTERNS}
 
@@ -432,7 +439,7 @@ class ColumnMappingService:
             for pattern in patterns:
                 pattern_lower = pattern.lower()
                 # Check for exact column match or substring
-                if any(pattern_lower in h for h in headers_lower):
+                if any(pattern_lower in h for h in normalized_headers):
                     scores[source] += 2
                 elif pattern_lower in headers_text:
                     scores[source] += 1
@@ -492,6 +499,15 @@ class ColumnMappingService:
                     )
 
         # Try fuzzy matching as last resort
+        # IMPORTANT: Don't use fuzzy matching for critical fields
+        # These require exact or partial matches only
+        critical_fields = {
+            "domain", "website", "url",  # Domain must be exact/partial
+            "salesforce_id", "demandbase_id", "hubspot_id", "sixsense_id",  # IDs must be specific
+        }
+        if standard_field in critical_fields:
+            return None
+
         for norm_header, original in normalized_map.items():
             if original in already_mapped:
                 continue

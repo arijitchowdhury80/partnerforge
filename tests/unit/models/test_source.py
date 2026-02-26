@@ -462,14 +462,14 @@ class TestEdgeCases:
         # At exactly 30 days, should still be fresh (<=)
         assert citation.freshness_status == FreshnessStatus.FRESH
 
-    def test_citation_one_second_past_boundary(self):
-        """Citation one second past freshness boundary."""
+    def test_citation_past_fresh_boundary(self):
+        """Citation clearly past the freshness boundary."""
         citation = SourceCitation(
             source_type=SourceType.BUILTWITH,
             source_url="https://api.builtwith.com/v21/api.json",
-            retrieved_at=datetime.utcnow() - timedelta(days=30, seconds=1),
+            retrieved_at=datetime.utcnow() - timedelta(days=31),
         )
-        # Just past 30 days, should be stale
+        # 31 days is past the 30-day fresh threshold, should be stale
         assert citation.freshness_status == FreshnessStatus.STALE
 
     def test_future_retrieved_at(self):

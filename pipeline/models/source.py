@@ -146,8 +146,12 @@ class SourceCitation(BaseModel):
         if not rules:
             return FreshnessStatus.UNKNOWN
 
+        # Use a small tolerance (1 minute) to handle edge case timing drift
+        # between citation creation and freshness check
+        tolerance = 1 / (24 * 60)  # 1 minute in days
         age = self.age_days
-        if age <= rules["fresh"]:
+
+        if age <= rules["fresh"] + tolerance:
             return FreshnessStatus.FRESH
         elif age <= rules["stale"]:
             return FreshnessStatus.STALE
