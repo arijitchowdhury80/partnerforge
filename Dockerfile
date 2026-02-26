@@ -18,8 +18,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-# Install Python dependencies
-COPY backend/requirements.txt .
+# Install Python dependencies (use root requirements.txt - more complete)
+COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
@@ -44,9 +44,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY --from=builder /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
+# Create data directory with proper permissions BEFORE switching to non-root user
+RUN mkdir -p /app/data && chown -R partnerforge:partnerforge /app/data
+
 # Copy application code (backend/app -> app)
 COPY --chown=partnerforge:partnerforge backend/app/ ./app/
-COPY --chown=partnerforge:partnerforge scripts/ ./scripts/
 
 # Environment variables
 ENV PYTHONUNBUFFERED=1 \
