@@ -1,0 +1,34 @@
+{
+  "description": "Known Algolia customers that BuiltWith may NOT detect. MANUALLY MAINTAINED.",
+  "last_updated": "2026-02-26",
+  "sources": [
+    "User feedback (Arijit)",
+    "Algolia internal customer list",
+    "Case studies",
+    "BuiltWith detection"
+  ],
+  "customers": [
+    {"domain": "gap.com", "company": "Gap Inc.", "verified_by": "user_feedback", "notes": "BuiltWith does not detect"},
+    {"domain": "johnlewis.com", "company": "John Lewis Partnership", "verified_by": "user_feedback", "notes": "BuiltWith does not detect"},
+    {"domain": "underarmour.com", "company": "Under Armour", "verified_by": "user_feedback", "notes": "BuiltWith detects but confirm"},
+    {"domain": "toyota.com", "company": "Toyota", "verified_by": "builtwith", "notes": "BuiltWith confirmed"},
+    {"domain": "ulta.com", "company": "Ulta Beauty", "verified_by": "builtwith", "notes": "BuiltWith confirmed"},
+    {"domain": "microchip.com", "company": "Microchip Technology", "verified_by": "builtwith", "notes": "BuiltWith confirmed"},
+    {"domain": "porsche.com", "company": "Porsche", "verified_by": "competitor_intel", "notes": "From competitor analysis"},
+    {"domain": "patagonia.com", "company": "Patagonia", "verified_by": "competitor_intel", "notes": "From competitor analysis"},
+    {"domain": "bmw.com", "company": "BMW", "verified_by": "case_study", "notes": "Known case study customer"},
+    {"domain": "audi.com", "company": "Audi", "verified_by": "case_study", "notes": "Known case study customer"}
+  ],
+  "domains_list": [
+    "gap.com",
+    "johnlewis.com",
+    "underarmour.com",
+    "toyota.com",
+    "ulta.com",
+    "microchip.com",
+    "porsche.com",
+    "patagonia.com",
+    "bmw.com",
+    "audi.com"
+  ]
+}

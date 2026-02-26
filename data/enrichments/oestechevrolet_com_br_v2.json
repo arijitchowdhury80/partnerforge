@@ -1,0 +1,32 @@
+{
+  "domain": "oestechevrolet.com.br",
+  "enriched_at": "2026-02-26T03:26:20.603887",
+  "version": "2.0",
+  "builtwith": {},
+  "similarweb": {
+    "monthly_visits": 1595,
+    "global_rank": [
+      {
+        "date": "2026-02",
+        "global_rank": 6721898
+      }
+    ],
+    "competitors": []
+  },
+  "financials": {
+    "is_public": false,
+    "ticker": null
+  },
+  "hiring": {
+    "has_careers_page": false,
+    "hiring_signals": []
+  },
+  "competitors": {},
+  "opportunity_score": {
+    "score": 30,
+    "factors": [
+      "No Algolia (greenfield)"
+    ],
+    "recommendation": "COLD"
+  }
+}

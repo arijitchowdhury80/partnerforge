@@ -261,3 +261,121 @@ export async function healthCheck(): Promise<{ status: string; version: string }
 
   return { status: 'healthy', version: '3.0.0-supabase' };
 }
+
+// =============================================================================
+// Data Feedback - User corrections system
+// =============================================================================
+
+export interface DataFeedbackRecord {
+  id?: number;
+  domain: string;
+  company_name?: string | null;
+  feedback_type: string;
+  reported_value?: string | null;
+  original_value?: string | null;
+  confidence?: string;
+  evidence_url?: string | null;
+  notes?: string | null;
+  reported_by?: string;
+  source?: string;
+  status?: string;
+  reported_at?: string;
+}
+
+/**
+ * Submit data feedback/correction
+ * Users can report issues like "this is an Algolia customer" or "wrong company name"
+ */
+export async function submitFeedback(feedback: Omit<DataFeedbackRecord, 'id' | 'reported_at' | 'status'>): Promise<{
+  success: boolean;
+  error?: string;
+}> {
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/data_feedback`, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=minimal',
+    },
+    body: JSON.stringify(feedback),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    return { success: false, error: errorText };
+  }
+
+  return { success: true };
+}
+
+/**
+ * Get pending feedback items
+ */
+export async function getPendingFeedback(): Promise<DataFeedbackRecord[]> {
+  const { data, error } = await supabaseRequest<DataFeedbackRecord[]>(
+    'data_feedback?status=eq.pending&order=reported_at.desc'
+  );
+
+  if (error || !data) {
+    return [];
+  }
+
+  return data;
+}
+
+/**
+ * Check if a domain has been reported as an Algolia customer
+ */
+export async function isVerifiedCustomer(domain: string): Promise<boolean> {
+  const { data, error } = await supabaseRequest<DataFeedbackRecord[]>(
+    `data_feedback?domain=eq.${encodeURIComponent(domain)}&feedback_type=eq.is_algolia_customer&status=in.(verified,applied)&limit=1`
+  );
+
+  return !error && data !== null && data.length > 0;
+}
+
+// =============================================================================
+// Supabase client-like interface for compatibility
+// =============================================================================
+
+/**
+ * Simple supabase client interface for components that expect it
+ */
+export const supabase = {
+  from: (table: string) => ({
+    insert: async (data: Record<string, unknown>) => {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        return { data: null, error: { message: errorText } };
+      }
+
+      return { data: null, error: null };
+    },
+
+    select: (columns = '*') => ({
+      eq: (column: string, value: string | number) => ({
+        single: async () => {
+          const { data, error } = await supabaseRequest<Record<string, unknown>[]>(
+            `${table}?select=${columns}&${column}=eq.${encodeURIComponent(String(value))}&limit=1`
+          );
+          return {
+            data: data && data.length > 0 ? data[0] : null,
+            error: error ? { message: error } : null,
+          };
+        },
+      }),
+    }),
+  }),
+};

@@ -1,0 +1,431 @@
+{
+  "domain": "chevrolet.com.mx",
+  "enriched_at": "2026-02-26T03:10:07.866355",
+  "builtwith": {
+    "all_techs": [
+      "Intersection Observer",
+      "Adobe Target v2.x",
+      "Brand Schema",
+      "Verified Profile",
+      "LivePerson",
+      "Decibel Insight",
+      "Google Analytics",
+      "jQuery",
+      "jQuery NoConflict",
+      "German Server Location",
+      "Google Bard Disallow",
+      "YouTube Link",
+      "JavaScript Modules",
+      "CDN JS",
+      "Twitter Conversion Tracking",
+      "U.S. Server Location",
+      "Neustar AdAdvisor",
+      "Google Maps API",
+      "Vue",
+      "JW Player",
+      "BIG-IP",
+      "Visa",
+      "Cloudflare JS",
+      "DMARC",
+      "Facebook Conversion Tracking",
+      "Spanish Server Location",
+      "Baidu Bot Disallow",
+      "reCAPTCHA",
+      "Akamai Global Host",
+      "Facebook",
+      "Foundation",
+      "CrUX Top 50k",
+      "CommonCrawl Top 250k",
+      "Akamai Edge",
+      "DNSSEC",
+      "Microsoft Azure CDN",
+      "Google Webmaster",
+      "Google Hosted Libraries",
+      "html5shiv",
+      "DoubleClick Bid Manager",
+      "jQuery UI Mouse",
+      "CommonCrawl Top 500k",
+      "CrUX Top 50m",
+      "Facebook Signal",
+      "Instagram",
+      "Java EE",
+      "Akamai Hosted",
+      "Yahoo Web Analytics",
+      "Facebook Domain Insights",
+      "Adobe Target Standard"
+    ],
+    "tech_categories": {
+      "javascript": [
+        "jQuery 1.7.1",
+        "Head JS",
+        "Twitter Platform",
+        "Modernizr",
+        "html5shiv",
+        "Handlebars",
+        "Google Hosted Libraries",
+        "Google Hosted jQuery",
+        "Google Hosted SWFObject",
+        "Facebook SDK",
+        "imagesLoaded",
+        "jQuery 1.5.1",
+        "jQuery Cookie",
+        "jQuery UI Mouse",
+        "jQuery UI",
+        "Facebook for Websites",
+        "jQuery",
+        "SWFObject",
+        "Backbone.js",
+        "Angular JS",
+        "lodash",
+        "Moment JS",
+        "Slick JS",
+        "core-js",
+        "Webpack",
+        "Intersection Observer",
+        "jQuery 1.6.4",
+        "matchMedia",
+        "Vue",
+        "jQuery NoConflict",
+        "JavaScript Modules",
+        "jQuery 3.6.1",
+        "Masked Input",
+        "jQuery 2.0.3",
+        "jQuery 3.6.0",
+        "Underscore.js",
+        "jQuery 3.6.0",
+        "GSAP",
+        "vuex",
+        "jQuery 3.6.0",
+        "GSAP",
+        "vuex",
+        "Vue v2",
+        "Vue v2"
+      ],
+      "ssl": [
+        "SSL.com",
+        "GeoTrust SSL",
+        "RapidSSL",
+        "DigiCert SSL",
+        "SSL by Default",
+        "LetsEncrypt",
+        "HSTS"
+      ],
+      "analytics": [
+        "Marin Software",
+        "Facebook Domain Insights",
+        "Signal",
+        "DoubleClick Floodlight",
+        "Google Conversion Tracking",
+        "Facebook Tag API",
+        "MediaMath",
+        "Omniture SiteCatalyst",
+        "iPerceptions",
+        "Facebook Signal",
+        "Adobe Marketing Cloud",
+        "Twitter Website Universal Tag",
+        "Twitter Conversion Tracking",
+        "Twitter Analytics",
+        "Adobe Dynamic Tag Management",
+        "Everest Technologies",
+        "LiveRamp",
+        "Rapleaf",
+        "Yahoo Web Analytics",
+        "Decibel Insight",
+        "Lotame Crowd Control",
+        "Adobe Launch",
+        "Adobe Experience Platform Identity Service",
+        "Adobe Analytics",
+        "Google Analytics Classic",
+        "Google Analytics",
+        "Dynatrace RUM",
+        "Facebook Pixel",
+        "Facebook Conversion Tracking",
+        "Global Site Tag",
+        "Google AdWords Conversion",
+        "Heap",
+        "Dynatrace OneAgent",
+        "Fastly",
+        "Adobe Target Standard",
+        "Omniture Adobe Test and Target",
+        "Adobe Target v2.x",
+        "Datadog",
+        "Ruxit",
+        "Akamai mPulse",
+        "Akamai mPulse"
+      ],
+      "widgets": [
+        "Google Plus One Button",
+        "Twitter Follow Button",
+        "Facebook Like Button",
+        "Google Plus One Platform",
+        "FastClick",
+        "Qualtrics Site Intercept",
+        "LivePerson",
+        "Proofpoint URL Defense",
+        "YouTube IFrame Upload",
+        "COVID-19",
+        "Apple Whitelist",
+        "CrUX Dataset",
+        "CrUX Top 50k",
+        "Cloudflare Radar",
+        "Cloudflare Radar Top 200k",
+        "US Privacy User Signal Mechanism",
+        "reCAPTCHA",
+        "Apple Business Chat",
+        "Cloudflare Radar Top 500k",
+        "Cloudflare Radar Top 100k",
+        "CrUX Top 10k",
+        "Google Tag Manager",
+        "Verified Profile",
+        "Microsoft Authentication Library for JavaScript",
+        "CommonCrawl Top 500k",
+        "CommonCrawl Top 250k",
+        "Common Crawl",
+        "Facebook Like Box",
+        "Font Awesome",
+        "CrUX Top 50m",
+        "8th Wall",
+        "8th Wall",
+        "CrUX Top 5m",
+        "CrUX Top 10m",
+        "CrUX Top 10m",
+        "CrUX Top 5m",
+        "Font Awesome",
+        "Font Awesome"
+      ],
+      "Web Master": [
+        "Google Webmaster",
+        "MSN/Bing Webmaster"
+      ],
+      "Web Server": [
+        "Sun ONE Web Server",
+        "BIG-IP",
+        "Apache",
+        "nginx",
+        "Application Request Routing"
+      ],
+      "hosting": [
+        "Plus.Line",
+        "Akamai Hosted",
+        "General Motors",
+        "U.S. Server Location",
+        "403 Error",
+        "Vocus Communications",
+        "Edge Network",
+        "German Server Location",
+        "Telecom Argentina",
+        "Emirati Server Location",
+        "Indian Server Location",
+        "Spanish Server Location"
+      ],
+      "media": [
+        "JW Player",
+        "Brightcove",
+        "VideoJS",
+        "YouTube IFrame API",
+        "Tremor Video",
+        "YouTube"
+      ],
+      "ads": [
+        "DoubleClick.Net",
+        "Google Remarketing",
+        "Google Adsense",
+        "DoubleClick Bid Manager",
+        "Pubmatic",
+        "Rubicon Project",
+        "Facebook Custom Audiences",
+        "Twitter Ads",
+        "DemDex",
+        "Index Exchange",
+        "AppNexus",
+        "Openads/OpenX",
+        "SpotXchange",
+        "Nativo",
+        "Adobe Audience Manager Sync",
+        "Adelphic",
+        "Adobe Audience Manager",
+        "Aggregate Knowledge",
+        "Neustar AdAdvisor",
+        "Facebook Reseller",
+        "App-Ads.txt"
+      ],
+      "mobile": [
+        "Viewport Meta",
+        "IPhone / Mobile Compatible",
+        "Mobile Optimized",
+        "Mobile Non Scaleable Content",
+        "Apple Mobile Web Clips Icon"
+      ],
+      "cdns": [
+        "Akamai Edge",
+        "Akamai EdgeWorkers"
+      ],
+      "cdn": [
+        "Akamai",
+        "GStatic Google Static Content",
+        "AJAX Libraries API",
+        "Microsoft Azure CDN",
+        "Zencoder CDN",
+        "Akamai Global Host",
+        "CDN JS",
+        "Cloudflare JS",
+        "General Motors CDN",
+        "jQuery CDN",
+        "jQuery CDN"
+      ],
+      "copyright": [
+        "Copyright Year 2015",
+        "Copyright Year 2011"
+      ],
+      "cms": [
+        "Adobe CQ",
+        "Adobe Experience Manager",
+        "TikTok Developers",
+        "Google Search Appliance"
+      ],
+      "CDN": [
+        "Content Delivery Network"
+      ],
+      "framework": [
+        "Foundation",
+        "Shockwave Flash Embed",
+        "Organization Schema",
+        "PostalAddress Schema",
+        "Java EE",
+        "Adobe Dreamweaver",
+        "Facebook Domain Verification",
+        "Vehicle Schema",
+        "Brand Schema",
+        "AggregateRating Schema",
+        "Google Front End",
+        "Perl"
+      ],
+      "payment": [
+        "Pound Sterling",
+        "Japanese Yen",
+        "Euro",
+        "Visa"
+      ],
+      "language": [
+        "Spanish",
+        "Mexican Spanish",
+        "Spanish - Inferred",
+        "French - Inferred",
+        "Portuguese - Inferred",
+        "English - Inferred",
+        "English - Inferred"
+      ],
+      "link": [
+        "Qualtrics",
+        "Facebook",
+        "Twitter",
+        "Instagram",
+        "YouTube Link",
+        "Events Page"
+      ],
+      "mx": [
+        "DMARC",
+        "DMARC None",
+        "DMARC Reject"
+      ],
+      "mapping": [
+        "Google Maps API",
+        "Google Maps"
+      ],
+      "robots": [
+        "Some Robots Disallow",
+        "Ahrefs Bot Disallow",
+        "AppleBot Disallow",
+        "Baidu Bot Disallow",
+        "Microsoft BingBot Disallow",
+        "DuckDuckGo Bot Disallow",
+        "Google Bard Disallow",
+        "Googlebot Disallow",
+        "Google Image Bot Disallow",
+        "Microsoft MSNBot Disallow",
+        "Yahoo Slurp Disallow"
+      ],
+      "ns": [
+        "DNSSEC",
+        "DNSSEC",
+        "DNSSEC",
+        "DNSSEC",
+        "DNSSEC"
+      ],
+      "Server": [
+        "IPv6",
+        "IPv6",
+        "IPv6",
+        "IPv6"
+      ]
+    },
+    "has_algolia": false,
+    "search_providers": [],
+    "tech_count": 235
+  },
+  "similarweb": {
+    "monthly_visits": 2776244.76126438,
+    "global_rank": [
+      {
+        "date": "2026-02",
+        "global_rank": 25311
+      }
+    ],
+    "country_rank": null,
+    "category": null,
+    "competitors": [
+      "ford.mx",
+      "vw.com.mx",
+      "nissan.com.mx",
+      "hyundai.com.mx",
+      "toyota.mx",
+      "honda.mx",
+      "kia.com",
+      "mazda.mx",
+      "autos.suzuki.com.mx",
+      "dodge.com"
+    ],
+    "top_countries": []
+  },
+  "competitors": {
+    "competitor_tech": {
+      "ford.mx": {
+        "search_providers": [
+          "LucidWorks"
+        ],
+        "has_algolia": false,
+        "tech_count": 317
+      },
+      "vw.com.mx": {
+        "search_providers": [
+          "Algolia",
+          "Amazon Elastic Load Balancing Sticky Session"
+        ],
+        "has_algolia": true,
+        "tech_count": 409
+      },
+      "nissan.com.mx": {
+        "search_providers": [],
+        "has_algolia": false,
+        "tech_count": 421
+      },
+      "hyundai.com.mx": {
+        "search_providers": [
+          "Amazon Elastic Load Balancing Sticky Session",
+          "Amazon Elastic Load Balancing"
+        ],
+        "has_algolia": false,
+        "tech_count": 282
+      },
+      "toyota.mx": {
+        "search_providers": [],
+        "has_algolia": false,
+        "tech_count": 196
+      }
+    },
+    "algolia_competitors": [
+      "vw.com.mx"
+    ],
+    "competitors_checked": 5
+  }
+}
