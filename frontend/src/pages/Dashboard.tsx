@@ -6,19 +6,14 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { motion, useMotionValue, useTransform, animate, useInView } from 'framer-motion';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import {
   Container,
-  Title,
   Text,
   Group,
   Paper,
   Badge,
-  Button,
-  TextInput,
-  SegmentedControl,
   SimpleGrid,
   Grid,
   Stack,
@@ -26,58 +21,50 @@ import {
   RingProgress,
 } from '@mantine/core';
 import {
-  IconSearch,
-  IconRefresh,
-  IconFilter,
-  IconTarget,
   IconDatabase,
   IconFlame,
   IconSun,
   IconTrendingUp,
   IconCheck,
-  IconClock,
-  IconUpload,
   IconSparkles,
-  IconChartBar,
-  IconBrandAdobe,
 } from '@tabler/icons-react';
 import { DonutChart, AreaChart, BarList } from '@tremor/react';
 import { formatDistanceToNow } from 'date-fns';
 
 import { getStats, getCompanies } from '@/services/api';
 import { TargetList } from '@/components/targets/TargetList';
+import { usePartner } from '@/contexts/PartnerContext';
 import type { FilterState, DashboardStats } from '@/types';
 
 export function Dashboard() {
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const { selectedPartner } = usePartner();
   const [filters, setFilters] = useState<FilterState>({
     sort_by: 'icp_score',
     sort_order: 'desc',
   });
-  const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
 
   // Fetch stats
   const { data: stats, isLoading: statsLoading, refetch: refetchStats } = useQuery({
-    queryKey: ['stats'],
+    queryKey: ['stats', selectedPartner.key],
     queryFn: getStats,
   });
 
-  // Fetch companies
+  // Fetch companies - filter by selected partner
   const { data: companies, isLoading: companiesLoading } = useQuery({
-    queryKey: ['companies', filters, page],
-    queryFn: () => getCompanies({ ...filters, page, limit: 20 }),
+    queryKey: ['companies', filters, page, selectedPartner.key],
+    queryFn: () => getCompanies({
+      ...filters,
+      page,
+      limit: 20,
+      partner: selectedPartner.key === 'all' ? undefined : selectedPartner.name,
+    }),
   });
-
-  const handleRefresh = () => {
-    queryClient.invalidateQueries();
-  };
 
   return (
     <Container size="xl" py="md">
       {/* Hero Section */}
-      <HeroSection stats={stats} isLoading={statsLoading} />
+      <HeroSection stats={stats} isLoading={statsLoading} partnerName={selectedPartner.name} partnerIcon={selectedPartner.icon} />
 
       {/* KPI Cards */}
       <KPISection stats={stats} isLoading={statsLoading} />
@@ -109,66 +96,6 @@ export function Dashboard() {
           <PartnerTechBreakdown />
         </Grid.Col>
       </Grid>
-
-      {/* Filters */}
-      <Paper
-        p="md"
-        mb="lg"
-        radius="lg"
-        className="bg-white/5 border border-white/10"
-      >
-        <Group justify="space-between" wrap="wrap" gap="md">
-          <TextInput
-            placeholder="Search companies..."
-            leftSection={<IconSearch size={16} />}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 min-w-[200px] max-w-[400px]"
-            classNames={{
-              input: 'bg-white/5 border-white/10 text-white placeholder:text-white/40',
-            }}
-          />
-
-          <Group gap="md">
-            <SegmentedControl
-              value={filters.status || 'all'}
-              onChange={(value) =>
-                setFilters((prev) => ({
-                  ...prev,
-                  status: value === 'all' ? undefined : (value as 'hot' | 'warm' | 'cool' | 'cold'),
-                }))
-              }
-              data={[
-                { label: 'All', value: 'all' },
-                { label: 'Hot', value: 'hot' },
-                { label: 'Warm', value: 'warm' },
-                { label: 'Cool', value: 'cool' },
-              ]}
-              size="xs"
-              classNames={{
-                root: 'bg-white/5',
-              }}
-            />
-
-            <Button
-              variant="subtle"
-              leftSection={<IconFilter size={16} />}
-              size="sm"
-            >
-              More Filters
-            </Button>
-
-            <Button
-              variant="light"
-              leftSection={<IconRefresh size={16} />}
-              onClick={handleRefresh}
-              size="sm"
-            >
-              Refresh
-            </Button>
-          </Group>
-        </Group>
-      </Paper>
 
       {/* Data Table */}
       <motion.div
@@ -204,9 +131,11 @@ export function Dashboard() {
 interface HeroSectionProps {
   stats?: DashboardStats;
   isLoading: boolean;
+  partnerName: string;
+  partnerIcon: string;
 }
 
-function HeroSection({ stats, isLoading }: HeroSectionProps) {
+function HeroSection({ stats, isLoading, partnerName, partnerIcon }: HeroSectionProps) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true });
 
@@ -245,13 +174,13 @@ function HeroSection({ stats, isLoading }: HeroSectionProps) {
           }}
         />
 
-        {/* Floating elements */}
+        {/* Floating partner icon */}
         <motion.div
           className="absolute top-8 right-8 p-4 rounded-2xl bg-white/5 border border-white/10"
           animate={{ y: [0, -10, 0] }}
           transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
         >
-          <IconBrandAdobe size={32} className="text-white/40" />
+          <Text size="xl" className="text-3xl">{partnerIcon}</Text>
         </motion.div>
 
         <div className="relative z-10">
@@ -277,8 +206,10 @@ function HeroSection({ stats, isLoading }: HeroSectionProps) {
           </Group>
 
           <Text c="dimmed" size="lg" mb="lg" maw={600}>
-            Companies using partner technologies (Adobe AEM, Shopify) who are NOT using Algolia.
-            Your co-sell pipeline starts here.
+            {partnerName === 'All Partners'
+              ? 'Companies using partner technologies who are NOT using Algolia. Your co-sell pipeline starts here.'
+              : `${partnerIcon} Companies using ${partnerName} who are NOT using Algolia. Your co-sell pipeline starts here.`
+            }
           </Text>
 
           <Group gap="md">

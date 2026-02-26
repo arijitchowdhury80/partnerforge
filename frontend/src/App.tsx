@@ -9,6 +9,9 @@ import { Notifications } from '@mantine/notifications';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
+// Contexts
+import { PartnerProvider } from './contexts/PartnerContext';
+
 // Layout
 import { AppShell } from './components/layout/AppShell';
 
@@ -104,9 +107,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <MantineProvider theme={theme} defaultColorScheme="dark">
-        <Notifications position="top-right" limit={5} />
-        <BrowserRouter>
-          <Routes>
+        <PartnerProvider>
+          <Notifications position="top-right" limit={5} />
+          <BrowserRouter>
+            <Routes>
             {/* Main Layout with Sidebar */}
             <Route element={<AppShell />}>
               {/* Redirect root to dashboard */}
@@ -151,8 +155,9 @@ function App() {
 
             {/* 404 Fallback */}
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
-          </Routes>
-        </BrowserRouter>
+            </Routes>
+          </BrowserRouter>
+        </PartnerProvider>
       </MantineProvider>
     </QueryClientProvider>
   );

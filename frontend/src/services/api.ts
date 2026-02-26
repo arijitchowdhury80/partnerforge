@@ -65,11 +65,11 @@ export async function getStats(): Promise<DashboardStats> {
 // =============================================================================
 
 // Helper to derive status from ICP score
-function getStatusFromScore(score: number): 'hot' | 'warm' | 'cool' | 'cold' {
+// Hot: 80+, Warm: 60+, Cool: below 60
+function getStatusFromScore(score: number): 'hot' | 'warm' | 'cool' {
   if (score >= 80) return 'hot';
   if (score >= 60) return 'warm';
-  if (score >= 40) return 'cool';
-  return 'cold';
+  return 'cool';
 }
 
 // Transform API target to frontend Company format

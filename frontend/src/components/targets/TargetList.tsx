@@ -357,7 +357,6 @@ export function TargetList({
                 { label: 'Hot', value: 'hot' },
                 { label: 'Warm', value: 'warm' },
                 { label: 'Cool', value: 'cool' },
-                { label: 'Cold', value: 'cold' },
               ]}
               classNames={{
                 root: 'bg-white/5',
