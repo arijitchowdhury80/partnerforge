@@ -63,6 +63,7 @@ interface DistributionGridProps {
   targets: DisplacementTarget[];
   onCellClick: (rowKey: string, colKey: string, targets: DisplacementTarget[]) => void;
   selectedPartner?: Partner;
+  onEnrichCompany?: (domain: string) => void;
 }
 
 // =============================================================================
@@ -100,7 +101,7 @@ function normalizeVertical(vertical: string | null | undefined): string {
 // Main Component
 // =============================================================================
 
-export function DistributionGrid({ viewMode, targets }: DistributionGridProps) {
+export function DistributionGrid({ viewMode, targets, onEnrichCompany }: DistributionGridProps) {
   // Client-side pagination state
   const [page, setPage] = useState(1);
 
@@ -178,6 +179,7 @@ export function DistributionGrid({ viewMode, targets }: DistributionGridProps) {
       isLoading={false}
       pagination={pagination}
       onPageChange={handlePageChange}
+      onEnrichCompany={onEnrichCompany}
     />
   );
 }

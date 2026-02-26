@@ -5,29 +5,21 @@
  * Light theme with Algolia Blue (#003DFF) accents.
  */
 
-import { useState, useEffect, useRef, useMemo } from 'react';
-import { motion, useMotionValue, useTransform, animate, useInView } from 'framer-motion';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useMemo, useCallback } from 'react';
+import { motion } from 'framer-motion';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Container,
   Text,
   Group,
   Paper,
   Badge,
-  Tooltip,
-  Modal,
-  Table,
   Loader,
   Button,
-  SimpleGrid,
-  Stack,
-  Progress,
-  Card,
   ThemeIcon,
-  Divider,
   Select,
-  MultiSelect,
   Box,
+  Notification,
 } from '@mantine/core';
 import {
   IconMinus,
@@ -36,36 +28,21 @@ import {
   IconFlame,
   IconTrendingUp,
   IconSnowflake,
-  IconChevronRight,
-  IconBuilding,
-  IconWorld,
+  IconCheck,
+  IconX,
+  IconRefresh,
 } from '@tabler/icons-react';
 
-import { getStats, getCompanies, getDistribution, type DistributionData } from '@/services/api';
+import { getCompanies } from '@/services/api';
+import { enrichCompany, type EnrichmentProgress } from '@/services/enrichment';
 import { getTargets, type DisplacementTarget } from '@/services/supabase';
 import { TargetList } from '@/components/targets/TargetList';
 import { ViewModeToggle, DistributionGrid, AccountDrillDown, type ViewMode } from '@/components/dashboard';
-import { usePartner, getSelectionTechName, PARTNERS, type Partner, type Product } from '@/contexts/PartnerContext';
+import { usePartner, getSelectionTechName } from '@/contexts/PartnerContext';
 import { AlgoliaLogo } from '@/components/common/AlgoliaLogo';
 import { getPartnerLogo } from '@/components/common/PartnerLogos';
-import type { FilterState, DashboardStats } from '@/types';
-
-// Algolia brand colors
-const ALGOLIA_BLUE = '#003DFF';
-const ALGOLIA_PURPLE = '#5468FF';
-const GRAY_50 = '#f8fafc';
-const GRAY_100 = '#f1f5f9';
-const GRAY_200 = '#e2e8f0';
-const GRAY_500 = '#64748b';
-const GRAY_700 = '#334155';
-const GRAY_900 = '#0f172a';
-
-// Tier colors - clear visual hierarchy
-const TIER_COLORS = {
-  hot: { bg: '#fef2f2', border: '#fecaca', text: '#dc2626', badge: 'red' },
-  warm: { bg: '#fff7ed', border: '#fed7aa', text: '#ea580c', badge: 'orange' },
-  cold: { bg: '#f8fafc', border: '#e2e8f0', text: '#64748b', badge: 'gray' },
-};
+import type { FilterState } from '@/types';
+import { COLORS } from '@/lib/constants';
 
 // Column filter type for TargetList
 interface ColumnFilter {
@@ -75,12 +52,16 @@ interface ColumnFilter {
 
 export function Dashboard() {
   const { selectedPartner, selection, selectPartner, selectProduct, partners } = usePartner();
+  const queryClient = useQueryClient();
   const [filters, setFilters] = useState<FilterState>({
     sort_by: 'icp_score',
     sort_order: 'desc',
   });
   const [page, setPage] = useState(1);
   const [columnFilters, setColumnFilters] = useState<ColumnFilter[]>([]);
+
+  // Enrichment state
+  const [enrichmentStatus, setEnrichmentStatus] = useState<EnrichmentProgress | null>(null);
 
   // Check if a specific partner is selected (not "All Partners")
   const hasPartnerSelected = selection.partner.key !== 'all';
@@ -102,31 +83,22 @@ export function Dashboard() {
     targets: [],
   });
 
-  // All targets for the distribution grid - filtered by partner when selected
-  const { data: allTargetsData } = useQuery({
-    queryKey: ['allTargets', selectedPartner.key, partnerTechName],
+  // PERFORMANCE: All targets for distribution grid - only fetch when partner selected
+  const { data: allTargetsData, isLoading: targetsLoading } = useQuery({
+    queryKey: ['allTargets', partnerTechName],
     queryFn: async () => {
       const result = await getTargets({
         limit: 5000,
-        partner: partnerTechName, // Filter by selected partner
+        partner: partnerTechName,
       });
       return result.targets;
     },
+    enabled: hasPartnerSelected, // Only fetch when a specific partner is selected
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
 
-  // Get unique partners from actual data (for "Select Partner" buttons)
-  const { data: allPartnersData } = useQuery({
-    queryKey: ['uniquePartners'],
-    queryFn: async () => {
-      const result = await getTargets({ limit: 5000 });
-      // Extract unique partner_tech values
-      const uniquePartners = new Set<string>();
-      result.targets.forEach(t => {
-        if (t.partner_tech) uniquePartners.add(t.partner_tech);
-      });
-      return Array.from(uniquePartners).sort();
-    },
-  });
+  // NOTE: Removed uniquePartners query - use static PARTNERS list for empty state
+  // This avoids an unnecessary network request on initial load
 
   // Handle column filter changes from TargetList
   const handleColumnFilterChange = (column: string, values: string[]) => {
@@ -141,27 +113,17 @@ export function Dashboard() {
     setPage(1);
   };
 
-  // Fetch stats
-  const { data: stats } = useQuery({
-    queryKey: ['stats', selectedPartner.key],
-    queryFn: getStats,
-  });
-
-  // Fetch distribution
-  const { data: distribution } = useQuery({
-    queryKey: ['distribution', selectedPartner.key],
-    queryFn: getDistribution,
-  });
-
-  // Fetch companies
-  const { data: companies, isLoading: companiesLoading, error: companiesError } = useQuery({
-    queryKey: ['companies', filters, page, selectedPartner.key, partnerTechName],
+  // PERFORMANCE: Fetch companies - only when partner selected, with caching
+  const { data: companies, isLoading: companiesLoading } = useQuery({
+    queryKey: ['companies', filters, page, partnerTechName],
     queryFn: () => getCompanies({
       ...filters,
       page,
       limit: 20,
       partner: partnerTechName,
     }),
+    enabled: hasPartnerSelected, // Only fetch when partner is selected
+    staleTime: 1000 * 60 * 2, // Cache for 2 minutes
   });
 
   // Calculate stats from filtered allTargetsData (not global stats)
@@ -227,9 +189,68 @@ export function Dashboard() {
     setDrillDown(prev => ({ ...prev, opened: false }));
   };
 
+  // Handle company enrichment - THIS IS THE CALLBACK FOR "Enrich Now" BUTTON
+  const handleEnrichCompany = useCallback(async (domain: string) => {
+    console.log(`[Dashboard] Starting enrichment for ${domain}`);
+
+    try {
+      const result = await enrichCompany(domain, (progress) => {
+        setEnrichmentStatus(progress);
+      });
+
+      if (result.success) {
+        // Invalidate queries to refresh the data
+        queryClient.invalidateQueries({ queryKey: ['allTargets'] });
+        queryClient.invalidateQueries({ queryKey: ['companies'] });
+
+        // Show success for 3 seconds then clear
+        setTimeout(() => setEnrichmentStatus(null), 3000);
+      } else {
+        // Show error for 5 seconds then clear
+        setTimeout(() => setEnrichmentStatus(null), 5000);
+      }
+    } catch (err) {
+      setEnrichmentStatus({
+        domain,
+        status: 'error',
+        message: `Enrichment failed: ${err}`,
+      });
+      setTimeout(() => setEnrichmentStatus(null), 5000);
+    }
+  }, [queryClient]);
+
   return (
-    <div style={{ background: GRAY_50, minHeight: '100vh' }}>
+    <div style={{ background: COLORS.GRAY_50, minHeight: '100vh' }}>
       <Container size="xl" py="xl">
+        {/* Enrichment Status Notification */}
+        {enrichmentStatus && (
+          <Notification
+            icon={
+              enrichmentStatus.status === 'complete' ? <IconCheck size={18} /> :
+              enrichmentStatus.status === 'error' ? <IconX size={18} /> :
+              <IconRefresh size={18} className="animate-spin" />
+            }
+            color={
+              enrichmentStatus.status === 'complete' ? 'green' :
+              enrichmentStatus.status === 'error' ? 'red' :
+              'blue'
+            }
+            title={`Enriching ${enrichmentStatus.domain}`}
+            onClose={() => setEnrichmentStatus(null)}
+            mb="lg"
+            style={{
+              position: 'fixed',
+              top: 80,
+              right: 20,
+              zIndex: 1000,
+              width: 350,
+              boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+            }}
+          >
+            {enrichmentStatus.message}
+          </Notification>
+        )}
+
         {/* Header with Partner Selection */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -243,18 +264,18 @@ export function Dashboard() {
             style={{
               background: 'white',
               boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-              border: `1px solid ${GRAY_200}`,
+              border: `1px solid ${COLORS.GRAY_200}`,
             }}
           >
             <Group justify="space-between" align="flex-start" wrap="wrap" gap="lg">
               <div>
-                <Text size="sm" c={GRAY_500} fw={500} tt="uppercase" mb={4}>
+                <Text size="sm" c={COLORS.GRAY_500} fw={500} tt="uppercase" mb={4}>
                   Partner Intelligence
                 </Text>
-                <Text size="xl" fw={700} c={GRAY_900}>
+                <Text size="xl" fw={700} c={COLORS.GRAY_900}>
                   Displacement Targets
                 </Text>
-                <Text size="sm" c={GRAY_500} mt={4}>
+                <Text size="sm" c={COLORS.GRAY_500} mt={4}>
                   Select a partner to see their tech stack targets minus Algolia customers
                 </Text>
               </div>
@@ -283,31 +304,31 @@ export function Dashboard() {
                 styles={{
                   input: {
                     backgroundColor: '#ffffff',
-                    borderColor: GRAY_200,
-                    color: GRAY_900,
+                    borderColor: COLORS.GRAY_200,
+                    color: COLORS.GRAY_900,
                     fontSize: '14px',
                   },
                   label: {
-                    color: GRAY_700,
+                    color: COLORS.GRAY_700,
                     fontWeight: 600,
                     marginBottom: 4,
                   },
                   dropdown: {
                     backgroundColor: '#ffffff',
-                    borderColor: GRAY_200,
+                    borderColor: COLORS.GRAY_200,
                     boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
                   },
                   option: {
-                    color: GRAY_900,
+                    color: COLORS.GRAY_900,
                     fontSize: '14px',
                     padding: '10px 14px',
                     '&[data-selected]': {
-                      backgroundColor: ALGOLIA_BLUE,
+                      backgroundColor: COLORS.ALGOLIA_NEBULA_BLUE,
                       color: '#ffffff',
                     },
                     '&[data-hovered]': {
-                      backgroundColor: GRAY_100,
-                      color: GRAY_900,
+                      backgroundColor: COLORS.GRAY_100,
+                      color: COLORS.GRAY_900,
                     },
                   },
                 }}
@@ -316,7 +337,7 @@ export function Dashboard() {
 
             {/* Formula Display - only show when partner selected */}
             {hasPartnerSelected && (
-              <Box mt="lg" pt="lg" style={{ borderTop: `1px solid ${GRAY_200}` }}>
+              <Box mt="lg" pt="lg" style={{ borderTop: `1px solid ${COLORS.GRAY_200}` }}>
                 <FormulaDisplay partnerName={selectedPartner.name} partnerKey={selectedPartner.key} />
               </Box>
             )}
@@ -337,75 +358,36 @@ export function Dashboard() {
               style={{
                 background: 'white',
                 boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                border: `1px solid ${GRAY_200}`,
+                border: `1px solid ${COLORS.GRAY_200}`,
                 textAlign: 'center',
               }}
             >
               <ThemeIcon size={64} radius="xl" variant="light" color="blue" mx="auto" mb="lg">
                 <IconTarget size={32} />
               </ThemeIcon>
-              <Text size="xl" fw={600} c={GRAY_900} mb="xs">
+              <Text size="xl" fw={600} c={COLORS.GRAY_900} mb="xs">
                 Select a Partner to Get Started
               </Text>
-              <Text size="md" c={GRAY_500} mb="lg" maw={500} mx="auto">
+              <Text size="md" c={COLORS.GRAY_500} mb="lg" maw={500} mx="auto">
                 Choose a partner from the dropdown above to see displacement targets.
                 We'll show you companies using their tech stack who aren't using Algolia yet.
               </Text>
               <Group justify="center" gap="md" wrap="wrap">
-                {/* Show all partners that have data in the database */}
-                {allPartnersData && allPartnersData.length > 0 ? (
-                  // Dynamic buttons from actual data
-                  allPartnersData.map(partnerTech => {
-                    // Find matching partner from PARTNERS array for logo
-                    const matchingPartner = partners.find(p =>
-                      p.key !== 'all' && (
-                        p.name.toLowerCase().includes(partnerTech.toLowerCase().split(' ')[0]) ||
-                        partnerTech.toLowerCase().includes(p.key)
-                      )
-                    );
-                    const Logo = matchingPartner ? getPartnerLogo(matchingPartner.key) : getPartnerLogo('all');
-                    return (
-                      <Button
-                        key={partnerTech}
-                        variant="light"
-                        leftSection={<Logo size={18} />}
-                        onClick={() => {
-                          // If we found a matching partner, use it; otherwise create ad-hoc selection
-                          if (matchingPartner) {
-                            selectPartner(matchingPartner);
-                          } else {
-                            // Create a dynamic partner entry
-                            selectPartner({
-                              key: partnerTech.toLowerCase().replace(/\s+/g, '-'),
-                              name: partnerTech,
-                              shortName: partnerTech.split(' ')[0],
-                              products: [{ key: 'default', name: partnerTech, shortName: partnerTech.split(' ')[0] }],
-                            });
-                          }
-                        }}
-                        size="md"
-                      >
-                        {partnerTech}
-                      </Button>
-                    );
-                  })
-                ) : (
-                  // Fallback to static list while loading
-                  partners.filter(p => p.key !== 'all').map(partner => {
-                    const Logo = getPartnerLogo(partner.key);
-                    return (
-                      <Button
-                        key={partner.key}
-                        variant="light"
-                        leftSection={<Logo size={18} />}
-                        onClick={() => selectPartner(partner)}
-                        size="md"
-                      >
-                        {partner.name}
-                      </Button>
-                    );
-                  })
-                )}
+                {/* Use static partners list - no network request needed */}
+                {partners.filter(p => p.key !== 'all').map(partner => {
+                  const Logo = getPartnerLogo(partner.key);
+                  return (
+                    <Button
+                      key={partner.key}
+                      variant="light"
+                      leftSection={<Logo size={18} />}
+                      onClick={() => selectPartner(partner)}
+                      size="md"
+                    >
+                      {partner.name}
+                    </Button>
+                  );
+                })}
               </Group>
             </Paper>
           </motion.div>
@@ -425,14 +407,14 @@ export function Dashboard() {
               style={{
                 background: 'white',
                 boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                border: `1px solid ${GRAY_200}`,
+                border: `1px solid ${COLORS.GRAY_200}`,
               }}
             >
               <Group justify="space-between" mb="lg">
                 <Group gap="lg">
                   <div>
-                    <Text fw={600} c={GRAY_900} size="lg">Target Distribution</Text>
-                    <Text size="sm" c={GRAY_500}>
+                    <Text fw={600} c={COLORS.GRAY_900} size="lg">Target Distribution</Text>
+                    <Text size="sm" c={COLORS.GRAY_500}>
                       {viewMode === 'partner' && 'By partner and vertical'}
                       {viewMode === 'product' && 'By product and vertical'}
                       {viewMode === 'vertical' && 'By vertical and ICP tier'}
@@ -464,10 +446,11 @@ export function Dashboard() {
                   targets={allTargetsData}
                   onCellClick={handleGridCellClick}
                   selectedPartner={selection.partner}
+                  onEnrichCompany={handleEnrichCompany}
                 />
               ) : (
                 <div className="flex justify-center py-8">
-                  <Loader color={ALGOLIA_BLUE} size="sm" />
+                  <Loader color={COLORS.ALGOLIA_NEBULA_BLUE} size="sm" />
                 </div>
               )}
             </Paper>
@@ -496,13 +479,13 @@ export function Dashboard() {
               style={{
                 background: 'white',
                 boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                border: `1px solid ${GRAY_200}`,
+                border: `1px solid ${COLORS.GRAY_200}`,
               }}
             >
               <Group justify="space-between" mb="lg">
                 <div>
-                  <Text fw={600} c={GRAY_900} size="lg">All Targets</Text>
-                  <Text size="sm" c={GRAY_500}>Click Status column to filter by Hot/Warm/Cold</Text>
+                  <Text fw={600} c={COLORS.GRAY_900} size="lg">All Targets</Text>
+                  <Text size="sm" c={COLORS.GRAY_500}>Click Status column to filter by Hot/Warm/Cold</Text>
                 </div>
               </Group>
 
@@ -514,6 +497,7 @@ export function Dashboard() {
                 onPageChange={setPage}
                 columnFilters={columnFilters}
                 onColumnFilterChange={handleColumnFilterChange}
+                onEnrichCompany={handleEnrichCompany}
               />
             </Paper>
           </motion.div>
@@ -533,241 +517,19 @@ function FormulaDisplay({ partnerName, partnerKey }: FormulaDisplayProps) {
   const PartnerLogo = getPartnerLogo(partnerKey);
 
   return (
-    <Group gap="sm" style={{ background: GRAY_100, padding: '8px 16px', borderRadius: 8 }}>
+    <Group gap="sm" style={{ background: COLORS.GRAY_100, padding: '8px 16px', borderRadius: 8 }}>
       <Group gap={6}>
         <PartnerLogo size={20} />
-        <Text size="sm" fw={500} c={GRAY_700}>{partnerName}</Text>
+        <Text size="sm" fw={500} c={COLORS.GRAY_700}>{partnerName}</Text>
       </Group>
-      <IconMinus size={14} style={{ color: GRAY_500 }} />
+      <IconMinus size={14} style={{ color: COLORS.GRAY_500 }} />
       <Group gap={6}>
         <AlgoliaLogo size={20} />
-        <Text size="sm" fw={500} c={GRAY_700}>Algolia Customers</Text>
+        <Text size="sm" fw={500} c={COLORS.GRAY_700}>Algolia Customers</Text>
       </Group>
-      <IconEqual size={14} style={{ color: GRAY_500 }} />
+      <IconEqual size={14} style={{ color: COLORS.GRAY_500 }} />
       <Badge color="blue" variant="filled" size="sm" styles={{ root: { color: '#fff' } }}>TARGETS</Badge>
     </Group>
-  );
-}
-
-// KPI Card - clean design
-interface KPICardProps {
-  label: string;
-  value: number;
-  sublabel?: string;
-  icon: React.ReactNode;
-  color: string;
-}
-
-function KPICard({ label, value, sublabel, icon, color }: KPICardProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true });
-  const motionValue = useMotionValue(0);
-  const displayValue = useTransform(motionValue, Math.round);
-
-  useEffect(() => {
-    if (isInView && value > 0) {
-      const animation = animate(motionValue, value, { duration: 1.5, ease: 'easeOut' });
-      return animation.stop;
-    }
-  }, [isInView, value]);
-
-  return (
-    <Paper
-      ref={ref}
-      p="lg"
-      radius="md"
-      style={{
-        background: 'white',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-        border: `1px solid ${GRAY_200}`,
-      }}
-    >
-      <Group justify="space-between" mb="xs">
-        <Text size="sm" c={GRAY_500} fw={500}>{label}</Text>
-        <ThemeIcon variant="light" color={color === ALGOLIA_BLUE ? 'blue' : color === '#dc2626' ? 'red' : color === '#ea580c' ? 'orange' : 'gray'} size="sm">
-          {icon}
-        </ThemeIcon>
-      </Group>
-      <motion.div style={{ fontSize: 32, fontWeight: 700, color: GRAY_900, lineHeight: 1 }}>
-        {displayValue}
-      </motion.div>
-      {sublabel && (
-        <Text size="xs" c={GRAY_500} mt={4}>{sublabel}</Text>
-      )}
-    </Paper>
-  );
-}
-
-// Distribution Table - clean, professional
-interface DistributionTableProps {
-  distribution: DistributionData;
-}
-
-function DistributionTable({ distribution }: DistributionTableProps) {
-  const { allVerticals, tiers, grandTotal } = distribution;
-
-  // Sort by HOT priority: Hot×1000 + Warm×10 + Cold×1 (hot leads matter most)
-  const sortedVerticals = [...allVerticals].sort((a, b) => {
-    const priorityA = a.hot * 1000 + a.warm * 10 + a.cold;
-    const priorityB = b.hot * 1000 + b.warm * 10 + b.cold;
-    return priorityB - priorityA;
-  });
-
-  // Take top 6 verticals by HOT priority for display
-  const displayVerticals = sortedVerticals.slice(0, 6);
-  const otherVerticals = sortedVerticals.slice(6);
-  const hasOther = otherVerticals.length > 0;
-
-  // Calculate "Other" totals
-  const otherTotals = {
-    hot: otherVerticals.reduce((sum, v) => sum + v.hot, 0),
-    warm: otherVerticals.reduce((sum, v) => sum + v.warm, 0),
-    cold: otherVerticals.reduce((sum, v) => sum + v.cold, 0),
-  };
-
-  const pct = (n: number) => grandTotal > 0 ? ((n / grandTotal) * 100).toFixed(1) : '0';
-
-  const shortName = (name: string) => {
-    const map: Record<string, string> = {
-      'Business And Industrial': 'Business',
-      'Technology And Computing': 'Technology',
-      'Automotive And Vehicles': 'Automotive',
-      'Law, Govt And Politics': 'Government',
-      'Health And Fitness': 'Healthcare',
-      'Art And Entertainment': 'Entertainment',
-      'Style And Fashion': 'Fashion',
-      'Food And Drink': 'F&B',
-      'Home And Garden': 'Home',
-      'Hobbies And Interests': 'Hobbies',
-      'Unknown': 'Other',
-    };
-    return map[name] || name;
-  };
-
-  return (
-    <div style={{ overflowX: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr style={{ borderBottom: `2px solid ${GRAY_200}` }}>
-            <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: GRAY_500, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Tier
-            </th>
-            {displayVerticals.map(v => (
-              <th key={v.name} style={{ padding: '12px 16px', textAlign: 'center', fontSize: 13, fontWeight: 600, color: GRAY_700 }}>
-                {shortName(v.name)}
-              </th>
-            ))}
-            {hasOther && (
-              <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: 13, fontWeight: 600, color: GRAY_500 }}>
-                Other ({otherVerticals.length})
-              </th>
-            )}
-            <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: 12, fontWeight: 600, color: GRAY_500, textTransform: 'uppercase' }}>
-              Total
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {/* Hot Row */}
-          <tr style={{ background: TIER_COLORS.hot.bg }}>
-            <td style={{ padding: '16px', borderLeft: `4px solid ${TIER_COLORS.hot.text}` }}>
-              <Text fw={700} c={TIER_COLORS.hot.text} size="sm">HOT</Text>
-              <Text size="xs" c={GRAY_500}>80-100</Text>
-            </td>
-            {displayVerticals.map(v => (
-              <td key={v.name} style={{ padding: '16px', textAlign: 'center' }}>
-                <CellValue value={v.hot} color={TIER_COLORS.hot.text} />
-              </td>
-            ))}
-            {hasOther && (
-              <td style={{ padding: '16px', textAlign: 'center' }}>
-                <CellValue value={otherTotals.hot} color={TIER_COLORS.hot.text} muted />
-              </td>
-            )}
-            <td style={{ padding: '16px', textAlign: 'center', borderLeft: `1px solid ${GRAY_200}` }}>
-              <Text fw={700} size="lg" c={TIER_COLORS.hot.text}>{tiers[0]?.total || 0}</Text>
-              <Text size="xs" c={GRAY_500}>{pct(tiers[0]?.total || 0)}%</Text>
-            </td>
-          </tr>
-
-          {/* Warm Row */}
-          <tr style={{ background: TIER_COLORS.warm.bg }}>
-            <td style={{ padding: '16px', borderLeft: `4px solid ${TIER_COLORS.warm.text}` }}>
-              <Text fw={700} c={TIER_COLORS.warm.text} size="sm">WARM</Text>
-              <Text size="xs" c={GRAY_500}>40-79</Text>
-            </td>
-            {displayVerticals.map(v => (
-              <td key={v.name} style={{ padding: '16px', textAlign: 'center' }}>
-                <CellValue value={v.warm} color={TIER_COLORS.warm.text} />
-              </td>
-            ))}
-            {hasOther && (
-              <td style={{ padding: '16px', textAlign: 'center' }}>
-                <CellValue value={otherTotals.warm} color={TIER_COLORS.warm.text} muted />
-              </td>
-            )}
-            <td style={{ padding: '16px', textAlign: 'center', borderLeft: `1px solid ${GRAY_200}` }}>
-              <Text fw={700} size="lg" c={TIER_COLORS.warm.text}>{tiers[1]?.total || 0}</Text>
-              <Text size="xs" c={GRAY_500}>{pct(tiers[1]?.total || 0)}%</Text>
-            </td>
-          </tr>
-
-          {/* Cold Row */}
-          <tr style={{ background: TIER_COLORS.cold.bg }}>
-            <td style={{ padding: '16px', borderLeft: `4px solid ${TIER_COLORS.cold.text}` }}>
-              <Text fw={700} c={TIER_COLORS.cold.text} size="sm">COLD</Text>
-              <Text size="xs" c={GRAY_500}>0-39</Text>
-            </td>
-            {displayVerticals.map(v => (
-              <td key={v.name} style={{ padding: '16px', textAlign: 'center' }}>
-                <CellValue value={v.cold} color={TIER_COLORS.cold.text} />
-              </td>
-            ))}
-            {hasOther && (
-              <td style={{ padding: '16px', textAlign: 'center' }}>
-                <CellValue value={otherTotals.cold} color={TIER_COLORS.cold.text} muted />
-              </td>
-            )}
-            <td style={{ padding: '16px', textAlign: 'center', borderLeft: `1px solid ${GRAY_200}` }}>
-              <Text fw={700} size="lg" c={TIER_COLORS.cold.text}>{tiers[2]?.total || 0}</Text>
-              <Text size="xs" c={GRAY_500}>{pct(tiers[2]?.total || 0)}%</Text>
-            </td>
-          </tr>
-
-          {/* Column Totals */}
-          <tr style={{ borderTop: `2px solid ${GRAY_200}`, background: 'white' }}>
-            <td style={{ padding: '12px 16px' }}>
-              <Text fw={600} c={GRAY_700} size="sm">TOTAL</Text>
-            </td>
-            {displayVerticals.map(v => (
-              <td key={v.name} style={{ padding: '12px 16px', textAlign: 'center' }}>
-                <Text fw={600} c={GRAY_700}>{v.total}</Text>
-              </td>
-            ))}
-            {hasOther && (
-              <td style={{ padding: '12px 16px', textAlign: 'center' }}>
-                <Text fw={600} c={GRAY_500}>{otherTotals.hot + otherTotals.warm + otherTotals.cold}</Text>
-              </td>
-            )}
-            <td style={{ padding: '12px 16px', textAlign: 'center', borderLeft: `1px solid ${GRAY_200}` }}>
-              <Text fw={700} size="lg" c={ALGOLIA_BLUE}>{grandTotal}</Text>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-// Cell Value - clean number display
-function CellValue({ value, color, muted }: { value: number; color: string; muted?: boolean }) {
-  if (value === 0) {
-    return <Text c="#94a3b8" size="sm">—</Text>;
-  }
-  return (
-    <Text fw={600} size="md" c={muted ? GRAY_500 : color}>
-      {value.toLocaleString()}
-    </Text>
   );
 }
 
