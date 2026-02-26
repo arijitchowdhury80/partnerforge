@@ -147,58 +147,8 @@ const docSections: DocSection[] = [
 // Mermaid Diagram Renderer using mermaid.ink
 // =============================================================================
 
-// Algolia-branded Mermaid theme configuration
-// Uses Nebula Blue (#003DFF), Accent Purple (#5468FF), Space Gray (#21243D)
-const ALGOLIA_MERMAID_THEME = `%%{init: {
-  'theme': 'base',
-  'themeVariables': {
-    'primaryColor': '#003DFF',
-    'primaryTextColor': '#ffffff',
-    'primaryBorderColor': '#5468FF',
-    'secondaryColor': '#5468FF',
-    'secondaryTextColor': '#ffffff',
-    'secondaryBorderColor': '#003DFF',
-    'tertiaryColor': '#21243D',
-    'tertiaryTextColor': '#ffffff',
-    'tertiaryBorderColor': '#5468FF',
-    'lineColor': '#5468FF',
-    'textColor': '#21243D',
-    'mainBkg': '#f8fafc',
-    'nodeBorder': '#003DFF',
-    'clusterBkg': '#f1f5f9',
-    'clusterBorder': '#5468FF',
-    'titleColor': '#003DFF',
-    'edgeLabelBackground': '#ffffff',
-    'nodeTextColor': '#21243D',
-    'actorBkg': '#003DFF',
-    'actorTextColor': '#ffffff',
-    'actorBorder': '#5468FF',
-    'signalColor': '#5468FF',
-    'labelBoxBkgColor': '#f8fafc',
-    'labelBoxBorderColor': '#5468FF',
-    'noteBkgColor': '#fffbeb',
-    'noteTextColor': '#21243D',
-    'noteBorderColor': '#f59e0b',
-    'activationBkgColor': '#e0e7ff',
-    'activationBorderColor': '#003DFF',
-    'sequenceNumberColor': '#ffffff',
-    'sectionBkgColor': '#f1f5f9',
-    'altSectionBkgColor': '#e2e8f0',
-    'sectionBkgColor2': '#f8fafc',
-    'taskBkgColor': '#003DFF',
-    'taskTextColor': '#ffffff',
-    'taskBorderColor': '#5468FF',
-    'gridColor': '#cbd5e1',
-    'doneTaskBkgColor': '#10b981',
-    'doneTaskBorderColor': '#059669',
-    'critBkgColor': '#ef4444',
-    'critBorderColor': '#dc2626',
-    'todayLineColor': '#f97316',
-    'fontFamily': 'Source Sans Pro, system-ui, sans-serif',
-    'fontSize': '14px'
-  }
-}}%%
-`;
+// Algolia-branded Mermaid theme - minimal to avoid URL length issues
+const ALGOLIA_MERMAID_THEME = `%%{init:{'theme':'base','themeVariables':{'primaryColor':'#003DFF','primaryTextColor':'#fff','lineColor':'#5468FF','textColor':'#21243D'}}}%%\n`;
 
 /**
  * Renders Mermaid diagrams using the mermaid.ink service
