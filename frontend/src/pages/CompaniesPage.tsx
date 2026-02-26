@@ -46,7 +46,7 @@ import type { FilterState } from '@/types';
 // =============================================================================
 
 interface StatusBadgeButtonProps {
-  status: 'hot' | 'warm' | 'cool' | 'cold';
+  status: 'hot' | 'warm' | 'cold';
   label: string;
   selected: boolean;
   onClick: () => void;
@@ -64,11 +64,6 @@ function StatusBadgeButton({ status, label, selected, onClick, icon }: StatusBad
       bg: selected ? 'rgba(249, 115, 22, 0.2)' : 'rgba(249, 115, 22, 0.05)',
       border: selected ? 'rgba(249, 115, 22, 0.6)' : 'rgba(249, 115, 22, 0.2)',
       text: selected ? '#f97316' : 'rgba(249, 115, 22, 0.6)',
-    },
-    cool: {
-      bg: selected ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.05)',
-      border: selected ? 'rgba(59, 130, 246, 0.6)' : 'rgba(59, 130, 246, 0.2)',
-      text: selected ? '#3b82f6' : 'rgba(59, 130, 246, 0.6)',
     },
     cold: {
       bg: selected ? 'rgba(107, 114, 128, 0.2)' : 'rgba(107, 114, 128, 0.05)',
@@ -340,18 +335,11 @@ export function CompaniesPage() {
                   icon={<IconBolt size={14} />}
                 />
                 <StatusBadgeButton
-                  status="cool"
-                  label="Cool"
-                  selected={selectedStatuses.includes('cool')}
-                  onClick={() => toggleStatus('cool')}
-                  icon={<IconSnowflake size={14} />}
-                />
-                <StatusBadgeButton
                   status="cold"
                   label="Cold"
                   selected={selectedStatuses.includes('cold')}
                   onClick={() => toggleStatus('cold')}
-                  icon={<IconMoon size={14} />}
+                  icon={<IconSnowflake size={14} />}
                 />
               </Group>
 
@@ -443,8 +431,6 @@ export function CompaniesPage() {
                       ? 'red'
                       : status === 'warm'
                       ? 'orange'
-                      : status === 'cool'
-                      ? 'blue'
                       : 'gray'
                   }
                   rightSection={

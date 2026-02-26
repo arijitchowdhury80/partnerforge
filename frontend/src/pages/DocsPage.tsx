@@ -141,40 +141,47 @@ const docSections: DocSection[] = [
 ];
 
 // =============================================================================
-// Mermaid Diagram Renderer
+// Mermaid Diagram Renderer using Kroki.io
 // =============================================================================
 
 /**
- * Encode diagram for mermaid.ink service
- * Format: https://mermaid.ink/img/base64:{base64-encoded-json}
- * The JSON payload contains: { code: string, mermaid: { theme: string } }
+ * Encode diagram for kroki.io service using deflate + base64url
+ * Since we can't use pako in browser easily, we'll use a simpler approach
+ * with the kroki.io GET endpoint that accepts plain base64
  */
-function encodeMermaidDiagram(code: string, theme: string = 'dark'): string {
-  const payload = JSON.stringify({
-    code: code,
-    mermaid: { theme: theme }
-  });
-  // Use encodeURIComponent + unescape for proper UTF-8 handling before base64
-  return btoa(unescape(encodeURIComponent(payload)));
-}
-
 function MermaidDiagram({ code, index }: { code: string; index: number }) {
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // Clean up the mermaid code - remove any leading/trailing whitespace
+  // Clean up the mermaid code
   const cleanCode = code.trim();
 
-  // Use mermaid.ink with proper base64-encoded JSON payload
-  // Format: https://mermaid.ink/img/base64:{base64-encoded-json}
-  const encoded = encodeMermaidDiagram(cleanCode, 'dark');
-  const imageUrl = `https://mermaid.ink/img/base64:${encoded}`;
+  // Use kroki.io with base64 encoding (simpler, no compression needed for small diagrams)
+  // kroki.io accepts base64url encoded diagram source
+  const base64 = btoa(unescape(encodeURIComponent(cleanCode)))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+
+  const imageUrl = `https://kroki.io/mermaid/svg/${base64}`;
 
   if (error) {
     // Fallback to showing code if image fails to load
     return (
       <Paper key={`mermaid-${index}`} p="md" bg="dark.8" radius="md" my="md" style={{ overflow: 'auto' }}>
         <Group justify="space-between" mb="xs">
-          <Badge size="sm" color="yellow" variant="light">Mermaid (render failed)</Badge>
+          <Badge size="sm" color="yellow" variant="light">Mermaid (view on GitHub)</Badge>
+          <Anchor
+            href="https://github.com/arijitchowdhury80/partnerforge/blob/main/docs/architecture/diagrams.md"
+            target="_blank"
+            size="xs"
+            c="dimmed"
+          >
+            <Group gap={4}>
+              <IconExternalLink size={12} />
+              View on GitHub
+            </Group>
+          </Anchor>
         </Group>
         <Code block style={{ whiteSpace: 'pre', fontSize: '13px' }}>
           {cleanCode}
@@ -193,7 +200,9 @@ function MermaidDiagram({ code, index }: { code: string; index: number }) {
       style={{ overflow: 'auto', textAlign: 'center' }}
     >
       <Group justify="space-between" mb="sm">
-        <Badge size="sm" color="blue" variant="light">Mermaid Diagram</Badge>
+        <Badge size="sm" color="blue" variant="light">
+          {loading ? 'Loading diagram...' : 'Mermaid Diagram'}
+        </Badge>
         <Anchor
           href={imageUrl}
           target="_blank"
@@ -213,8 +222,9 @@ function MermaidDiagram({ code, index }: { code: string; index: number }) {
           maxWidth: '100%',
           height: 'auto',
           borderRadius: 'var(--mantine-radius-sm)',
-          backgroundColor: '#1a1b1e',
+          filter: 'invert(1) hue-rotate(180deg)', // Invert colors for dark theme
         }}
+        onLoad={() => setLoading(false)}
         onError={() => setError(true)}
       />
     </Paper>

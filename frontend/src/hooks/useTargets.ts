@@ -249,8 +249,7 @@ export function useTargetStatusCounts() {
     enriched: stats?.enriched_companies || 0,
     hot: stats?.hot_leads || 0,
     warm: stats?.warm_leads || 0,
-    cool: 0, // Not currently tracked in stats
-    cold: 0, // Not currently tracked in stats
+    cold: stats?.cold_leads || 0,
   };
 }
 

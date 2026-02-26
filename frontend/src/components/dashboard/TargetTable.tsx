@@ -20,7 +20,6 @@ interface TargetTableProps {
 const statusColors: Record<string, string> = {
   hot: 'red',
   warm: 'orange',
-  cool: 'blue',
   cold: 'gray',
 };
 

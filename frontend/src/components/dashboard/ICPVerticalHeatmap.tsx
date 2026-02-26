@@ -10,12 +10,11 @@ import { ResponsiveHeatMap } from '@nivo/heatmap';
 import { Paper, Text, Group, Badge, Tooltip, Box } from '@mantine/core';
 import { IconInfoCircle } from '@tabler/icons-react';
 
-// ICP Tier definitions
+// ICP Tier definitions (3 tiers)
 const ICP_TIERS = [
   { id: 'T1 (80+)', label: 'Hot', color: '#ef4444', min: 80, max: 100 },
-  { id: 'T2 (60-79)', label: 'Warm', color: '#f97316', min: 60, max: 79 },
-  { id: 'T3 (40-59)', label: 'Cool', color: '#5468ff', min: 40, max: 59 },
-  { id: 'T4 (0-39)', label: 'Cold', color: '#6b7280', min: 0, max: 39 },
+  { id: 'T2 (40-79)', label: 'Warm', color: '#f97316', min: 40, max: 79 },
+  { id: 'T3 (0-39)', label: 'Cold', color: '#6b7280', min: 0, max: 39 },
 ];
 
 // Vertical categories

@@ -126,8 +126,18 @@ export async function getStats(): Promise<DashboardStats> {
 }
 
 // Distribution data for the grid - 3 tiers only
+export interface VerticalInfo {
+  name: string;
+  shortName: string;
+  total: number;
+  hot: number;
+  warm: number;
+  cold: number;
+}
+
 export interface DistributionData {
   verticals: string[];
+  allVerticals: VerticalInfo[];  // Full list with counts for the expanded view
   tiers: {
     key: 'hot' | 'warm' | 'cold';
     label: string;
@@ -137,6 +147,27 @@ export interface DistributionData {
     total: number;
   }[];
   grandTotal: number;
+  hiddenVerticalsCount: number;
+}
+
+// Shorten long vertical names
+function getShortName(name: string): string {
+  const map: Record<string, string> = {
+    'Business And Industrial': 'Business',
+    'Technology And Computing': 'Technology',
+    'Automotive And Vehicles': 'Automotive',
+    'Law, Govt And Politics': 'Government',
+    'Health And Fitness': 'Healthcare',
+    'Art And Entertainment': 'Entertainment',
+    'Style And Fashion': 'Fashion',
+    'Food And Drink': 'F&B',
+    'Home And Garden': 'Home',
+    'Hobbies And Interests': 'Hobbies',
+    'Family And Parenting': 'Family',
+    'Religion And Spirituality': 'Religion',
+    'Real Estate': 'Real Estate',
+  };
+  return map[name] || name;
 }
 
 export async function getDistribution(): Promise<DistributionData> {
@@ -146,7 +177,7 @@ export async function getDistribution(): Promise<DistributionData> {
   }>>('displacement_targets?select=icp_score,vertical');
 
   if (!data) {
-    return { verticals: [], tiers: [], grandTotal: 0 };
+    return { verticals: [], allVerticals: [], tiers: [], grandTotal: 0, hiddenVerticalsCount: 0 };
   }
 
   // Count by vertical and tier - 3 tiers: Hot (80+), Warm (40-79), Cold (0-39)
@@ -175,35 +206,42 @@ export async function getDistribution(): Promise<DistributionData> {
     }
   }
 
-  // Sort verticals by total count (top 6 + "Other")
+  // Sort verticals by total count
   const verticalTotals = Array.from(verticalSet).map(v => ({
     name: v,
-    total: Object.values(counts[v] || {}).reduce((a, b) => a + b, 0)
+    shortName: getShortName(v),
+    total: Object.values(counts[v] || {}).reduce((a, b) => a + b, 0),
+    hot: counts[v]?.hot || 0,
+    warm: counts[v]?.warm || 0,
+    cold: counts[v]?.cold || 0,
   }));
   verticalTotals.sort((a, b) => b.total - a.total);
 
   const topVerticals = verticalTotals.slice(0, 5).map(v => v.name);
-  const otherVerticals = verticalTotals.slice(5).map(v => v.name);
+  const otherVerticals = verticalTotals.slice(5);
+  const hiddenCount = otherVerticals.length;
 
-  // Combine "Other" verticals
-  if (otherVerticals.length > 0) {
+  // Combine "Other" verticals for collapsed view
+  if (hiddenCount > 0) {
     counts['Other'] = { hot: 0, warm: 0, cold: 0 };
     for (const v of otherVerticals) {
-      counts['Other'].hot += counts[v]?.hot || 0;
-      counts['Other'].warm += counts[v]?.warm || 0;
-      counts['Other'].cold += counts[v]?.cold || 0;
+      counts['Other'].hot += v.hot;
+      counts['Other'].warm += v.warm;
+      counts['Other'].cold += v.cold;
     }
     topVerticals.push('Other');
   }
 
-  // Build tier data - 3 tiers only
+  // Build tier data with ALL verticals (for expanded view)
+  const allVerticalNames = verticalTotals.map(v => v.name);
+
   const tiers: DistributionData['tiers'] = [
     {
       key: 'hot',
       label: 'HOT',
       score: '80-100',
       color: '#ef4444',
-      values: Object.fromEntries(topVerticals.map(v => [v, counts[v]?.hot || 0])),
+      values: Object.fromEntries(allVerticalNames.map(v => [v, counts[v]?.hot || 0])),
       total: tierTotals.hot,
     },
     {
@@ -211,7 +249,7 @@ export async function getDistribution(): Promise<DistributionData> {
       label: 'WARM',
       score: '40-79',
       color: '#f97316',
-      values: Object.fromEntries(topVerticals.map(v => [v, counts[v]?.warm || 0])),
+      values: Object.fromEntries(allVerticalNames.map(v => [v, counts[v]?.warm || 0])),
       total: tierTotals.warm,
     },
     {
@@ -219,15 +257,17 @@ export async function getDistribution(): Promise<DistributionData> {
       label: 'COLD',
       score: '0-39',
       color: '#6b7280',
-      values: Object.fromEntries(topVerticals.map(v => [v, counts[v]?.cold || 0])),
+      values: Object.fromEntries(allVerticalNames.map(v => [v, counts[v]?.cold || 0])),
       total: tierTotals.cold,
     },
   ];
 
   return {
     verticals: topVerticals,
+    allVerticals: verticalTotals,
     tiers,
     grandTotal: data.length,
+    hiddenVerticalsCount: hiddenCount,
   };
 }
 

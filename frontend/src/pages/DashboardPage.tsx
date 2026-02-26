@@ -248,7 +248,7 @@ export function DashboardPage() {
               data={statusData}
               category="value"
               index="name"
-              colors={['red', 'orange', 'blue', 'gray']}
+              colors={['red', 'orange', 'gray']}
               showAnimation
             />
           </Paper>

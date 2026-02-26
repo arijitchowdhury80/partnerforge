@@ -42,18 +42,16 @@ interface CompanyHeaderProps {
   isRefreshing?: boolean;
 }
 
-// ICP Score color coding
+// ICP Score color coding (3 tiers)
 function getScoreColor(score: number): string {
   if (score >= 80) return 'red';
-  if (score >= 60) return 'orange';
-  if (score >= 40) return 'yellow';
+  if (score >= 40) return 'orange';
   return 'gray';
 }
 
 function getScoreLabel(score: number): string {
   if (score >= 80) return 'HOT';
-  if (score >= 60) return 'WARM';
-  if (score >= 40) return 'COOL';
+  if (score >= 40) return 'WARM';
   return 'COLD';
 }
 

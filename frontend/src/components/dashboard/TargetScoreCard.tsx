@@ -69,17 +69,10 @@ export function TargetScoreCard({
         label: 'Warm Lead',
         glow: 'rgba(249, 115, 22, 0.3)',
       },
-      cool: {
-        color: 'blue',
-        gradient: 'from-blue-500 to-cyan-500',
-        icon: <IconSnowflake size={16} />,
-        label: 'Cool Lead',
-        glow: 'rgba(59, 130, 246, 0.3)',
-      },
       cold: {
         color: 'gray',
         gradient: 'from-gray-500 to-gray-600',
-        icon: <IconMoon size={16} />,
+        icon: <IconSnowflake size={16} />,
         label: 'Cold Lead',
         glow: 'rgba(107, 114, 128, 0.3)',
       },
@@ -360,8 +353,7 @@ function getStatusConfig(status: string) {
   const configs = {
     hot: { color: 'red', gradient: 'from-red-500 to-orange-500', icon: <IconFlame size={14} />, glow: 'rgba(239, 68, 68, 0.3)' },
     warm: { color: 'orange', gradient: 'from-orange-500 to-yellow-500', icon: <IconSun size={14} />, glow: 'rgba(249, 115, 22, 0.3)' },
-    cool: { color: 'blue', gradient: 'from-blue-500 to-cyan-500', icon: <IconSnowflake size={14} />, glow: 'rgba(59, 130, 246, 0.3)' },
-    cold: { color: 'gray', gradient: 'from-gray-500 to-gray-600', icon: <IconMoon size={14} />, glow: 'rgba(107, 114, 128, 0.3)' },
+    cold: { color: 'gray', gradient: 'from-gray-500 to-gray-600', icon: <IconSnowflake size={14} />, glow: 'rgba(107, 114, 128, 0.3)' },
   };
   return configs[status as keyof typeof configs] || configs.cold;
 }

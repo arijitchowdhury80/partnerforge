@@ -290,12 +290,12 @@ export function Dashboard() {
                   {hotCount} Hot
                 </Badge>
               </Tooltip>
-              <Tooltip label="ICP 60-79: Strong potential" withArrow>
+              <Tooltip label="ICP 40-79: Nurture pipeline" withArrow>
                 <Badge size="sm" variant="gradient" gradient={{ from: '#f97316', to: '#ea580c' }} leftSection={<IconBolt size={12} />} style={{ cursor: 'help' }}>
                   {warmCount} Warm
                 </Badge>
               </Tooltip>
-              <Tooltip label="ICP 0-59: Lower priority targets" withArrow>
+              <Tooltip label="ICP 0-39: Low priority" withArrow>
                 <Badge size="sm" variant="light" color="gray" leftSection={<IconSnowflake size={12} />} style={{ cursor: 'help' }}>
                   {coldCount} Cold
                 </Badge>

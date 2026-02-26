@@ -408,7 +408,6 @@ export function useCompanyScoreColor(score: number | undefined): string {
 export function useCompanyStatusLabel(score: number | undefined): string {
   if (!score) return 'UNKNOWN';
   if (score >= 80) return 'HOT';
-  if (score >= 60) return 'WARM';
-  if (score >= 40) return 'COOL';
+  if (score >= 40) return 'WARM';
   return 'COLD';
 }

@@ -9,10 +9,9 @@
   --algolia-purple: #5468ff;
   --algolia-gray: #21243d;
 
-  /* Signal Status */
+  /* Signal Status (3 tiers) */
   --color-hot: #ef4444;
   --color-warm: #f97316;
-  --color-cool: #3b82f6;
   --color-cold: #6b7280;
 
   /* Margin Zones */
@@ -52,10 +51,6 @@
 
 .status-warm {
   @apply bg-orange-500/20 text-orange-400 border-orange-500/30;
-}
-
-.status-cool {
-  @apply bg-blue-500/20 text-blue-400 border-blue-500/30;
 }
 
 .status-cold {

@@ -26,7 +26,7 @@ export interface Company {
   icp_score: number;
   signal_score: number;
   priority_score: number;
-  status: 'hot' | 'warm' | 'cool' | 'cold';
+  status: 'hot' | 'warm' | 'cold';
   partner_tech?: string[];
   last_enriched?: string;
   // Supabase fields
@@ -387,10 +387,9 @@ export interface ApiError {
 export interface DashboardStats {
   total_companies: number;
   enriched_companies: number;
-  hot_leads: number;
-  warm_leads: number;
-  cool_leads?: number;
-  cold_leads?: number;
+  hot_leads: number;   // 80-100: Ready for outreach
+  warm_leads: number;  // 40-79: Nurture pipeline
+  cold_leads: number;  // 0-39: Low priority
   modules_active: number;
   waves_configured: number;
   last_enrichment?: string;
@@ -400,7 +399,7 @@ export interface DashboardStats {
 }
 
 export interface FilterState {
-  status?: 'hot' | 'warm' | 'cool' | 'cold';
+  status?: 'hot' | 'warm' | 'cold';
   partner?: string;
   vertical?: string;
   min_score?: number;

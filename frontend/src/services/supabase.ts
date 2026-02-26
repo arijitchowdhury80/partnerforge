@@ -83,7 +83,7 @@ export interface DisplacementTarget {
 }
 
 export interface TargetFilters {
-  status?: 'hot' | 'warm' | 'cool' | 'cold';
+  status?: 'hot' | 'warm' | 'cold';
   partner?: string;
   vertical?: string;
   min_score?: number;
@@ -129,11 +129,10 @@ export async function getTargets(filters: TargetFilters = {}): Promise<{
     params.push(`icp_score=gte.${min_score}`);
   }
   if (status) {
-    // Map status to ICP score ranges
+    // Map status to ICP score ranges (3 tiers)
     const ranges: Record<string, [number, number]> = {
       hot: [80, 100],
-      warm: [60, 79],
-      cool: [40, 59],
+      warm: [40, 79],
       cold: [0, 39],
     };
     const [min, max] = ranges[status] || [0, 100];
@@ -193,7 +192,6 @@ export interface DashboardStats {
   total_targets: number;
   hot_leads: number;
   warm_leads: number;
-  cool_leads: number;
   cold_leads: number;
   by_partner: Record<string, number>;
   by_vertical: Record<string, number>;
@@ -212,23 +210,21 @@ export async function getStats(): Promise<DashboardStats> {
       total_targets: 0,
       hot_leads: 0,
       warm_leads: 0,
-      cool_leads: 0,
       cold_leads: 0,
       by_partner: {},
       by_vertical: {},
     };
   }
 
-  // Calculate stats
-  let hot = 0, warm = 0, cool = 0, cold = 0;
+  // Calculate stats (3 tiers)
+  let hot = 0, warm = 0, cold = 0;
   const byPartner: Record<string, number> = {};
   const byVertical: Record<string, number> = {};
 
   for (const target of data) {
     const score = target.icp_score || 0;
     if (score >= 80) hot++;
-    else if (score >= 60) warm++;
-    else if (score >= 40) cool++;
+    else if (score >= 40) warm++;
     else cold++;
 
     if (target.partner_tech) {
@@ -243,7 +239,6 @@ export async function getStats(): Promise<DashboardStats> {
     total_targets: count || data.length,
     hot_leads: hot,
     warm_leads: warm,
-    cool_leads: cool,
     cold_leads: cold,
     by_partner: byPartner,
     by_vertical: byVertical,

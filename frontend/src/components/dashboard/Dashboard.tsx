@@ -28,8 +28,7 @@ export function Dashboard() {
   const statusData = [
     { name: 'Hot', value: stats?.hot_leads || 0 },
     { name: 'Warm', value: stats?.warm_leads || 0 },
-    { name: 'Cool', value: 50 },
-    { name: 'Cold', value: 100 },
+    { name: 'Cold', value: stats?.cold_leads || 0 },
   ];
 
   return (
@@ -83,7 +82,7 @@ export function Dashboard() {
               data={statusData}
               category="value"
               index="name"
-              colors={['red', 'orange', 'blue', 'gray']}
+              colors={['red', 'orange', 'gray']}
               showAnimation
             />
           </Paper>

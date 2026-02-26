@@ -1,14 +1,14 @@
 /**
  * StatusBadge Component
  *
- * Premium gradient status pills for Hot/Warm/Cool/Cold indicators.
+ * Premium gradient status pills for Hot/Warm/Cold indicators (3 tiers).
  * Features hover animations and consistent styling.
  */
 
 import { motion } from 'framer-motion';
 import { Tooltip } from '@mantine/core';
 
-type StatusType = 'hot' | 'warm' | 'cool' | 'cold';
+type StatusType = 'hot' | 'warm' | 'cold';
 
 interface StatusBadgeProps {
   status: StatusType;
@@ -29,28 +29,21 @@ const statusConfig: Record<StatusType, {
     shadow: 'shadow-red-500/30',
     label: 'HOT',
     icon: '\u{1F525}', // Fire emoji
-    description: 'High priority - Score 80+',
+    description: 'High priority - Score 80-100',
   },
   warm: {
     gradient: 'from-orange-500 to-orange-600',
     shadow: 'shadow-orange-500/30',
     label: 'WARM',
     icon: '\u{2600}\u{FE0F}', // Sun emoji
-    description: 'Medium priority - Score 60-79',
-  },
-  cool: {
-    gradient: 'from-blue-500 to-blue-600',
-    shadow: 'shadow-blue-500/30',
-    label: 'COOL',
-    icon: '\u{2744}\u{FE0F}', // Snowflake emoji
-    description: 'Lower priority - Score 40-59',
+    description: 'Nurture pipeline - Score 40-79',
   },
   cold: {
     gradient: 'from-gray-500 to-gray-600',
     shadow: 'shadow-gray-500/30',
     label: 'COLD',
-    icon: '\u{1F319}', // Moon emoji
-    description: 'Low priority - Score <40',
+    icon: '\u{2744}\u{FE0F}', // Snowflake emoji
+    description: 'Low priority - Score 0-39',
   },
 };
 
@@ -117,11 +110,10 @@ export function StatusBadge({
   );
 }
 
-// Utility function to determine status from score
+// Utility function to determine status from score - 3 tiers
 export function getStatusFromScore(score: number): StatusType {
   if (score >= 80) return 'hot';
-  if (score >= 60) return 'warm';
-  if (score >= 40) return 'cool';
+  if (score >= 40) return 'warm';
   return 'cold';
 }
 
@@ -136,7 +128,6 @@ export function StatusDot({ status, size = 'md' }: { status: StatusType; size?: 
   const colors: Record<StatusType, string> = {
     hot: 'bg-red-500',
     warm: 'bg-orange-500',
-    cool: 'bg-blue-500',
     cold: 'bg-gray-500',
   };
 
