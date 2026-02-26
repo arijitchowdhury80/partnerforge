@@ -13,11 +13,12 @@
 PartnerForge v3.0 transforms the prototype into enterprise-grade ABM software with:
 - 15 intelligence modules
 - 4-wave parallel execution (3-5x speedup)
-- PostgreSQL migration with 48+ tables
+- PostgreSQL migration with 51+ tables
 - Source citation enforcement (P0)
 - Testing methodology built-in (P0)
 - Automated orchestration
 - Enterprise systems (change detection, multi-tenancy, cost tracking, observability)
+- **CSV Upload & List Import (P0.5)** - Upload Salesforce/Demandbase exports for enrichment
 
 ---
 
@@ -30,15 +31,16 @@ PartnerForge v3.0 transforms the prototype into enterprise-grade ABM software wi
 
 | Category | Count | Status |
 |----------|-------|--------|
-| Architecture Documents | 18 | ✅ Complete (~15,000 lines) |
-| Database Tables Designed | 48+ | ✅ Designed |
+| Architecture Documents | 24 | ✅ Complete (~23,000 lines) |
+| Database Tables Designed | 51+ | ✅ Designed |
 | Intelligence Modules Specified | 15 | ✅ Full JSON schemas |
-| API Endpoints Defined | 14+ | ✅ Contracts ready |
-| Enterprise Systems Designed | 5 | ✅ Implementation blueprints |
-| Testing Methodology | 1 | ✅ TESTING_ARCHITECTURE.md |
+| API Endpoints Defined | 17+ | ✅ Contracts ready |
+| Enterprise Systems Designed | 6 | ✅ Implementation blueprints |
+| Testing Methodology | 1 | ✅ TESTING_METHODOLOGY.md |
 | CI/CD Pipeline | 1 | ✅ GitHub Actions ready |
-| Frontend Scaffold | 11 files | ✅ Created |
-| Backend Scaffold | 6 files | ✅ Created |
+| Frontend Scaffold | 15 files | ✅ Created |
+| Backend Scaffold | 12 files | ✅ Created |
+| CSV Upload Architecture | 1 | ✅ CSV_UPLOAD_ARCHITECTURE.md (1,245 lines) |
 
 ### What Needs Implementation (Build Phase)
 
@@ -769,22 +771,29 @@ Following architecture pressure testing, the following P1 capabilities were iden
 
 | Task | Status | Priority |
 |------|--------|----------|
-| Create `uploaded_lists` table | ⚪ Not Started | P0 |
-| Create `uploaded_list_rows` table | ⚪ Not Started | P0 |
-| Create SQLAlchemy models | ⚪ Not Started | P0 |
+| Create `uploaded_lists` table schema | ✅ Complete | P0 |
+| Create `uploaded_list_items` table schema | ✅ Complete | P0 |
+| Create `list_processing_queue` table schema | ✅ Complete | P0 |
+| Create SQLAlchemy models (`backend/app/models/lists.py`) | ✅ Complete | P0 |
+| Column mapping auto-detection (`COLUMN_MAPPINGS`) | ✅ Complete | P0 |
 | CSVParserService (encoding, delimiter detection) | ⚪ Not Started | P0 |
-| ColumnMappingService (auto-detect) | ⚪ Not Started | P0 |
 | ValidationService (domain required, dedup) | ⚪ Not Started | P0 |
 | StorageService (S3/local) | ⚪ Not Started | P0 |
 | UploadEnrichmentBridge | ⚪ Not Started | P0 |
-| POST /api/v1/uploads endpoint | ⚪ Not Started | P0 |
-| GET /api/v1/uploads/{id}/preview endpoint | ⚪ Not Started | P0 |
-| POST /api/v1/uploads/{id}/confirm endpoint | ⚪ Not Started | P0 |
+| POST /api/v1/lists/upload endpoint | ⚪ Not Started | P0 |
+| GET /api/v1/lists/{id}/status endpoint | ⚪ Not Started | P0 |
+| POST /api/v1/lists/{id}/enrich endpoint | ⚪ Not Started | P0 |
 | CSVUploader React component | ⚪ Not Started | P0 |
 | ColumnMapper React component | ⚪ Not Started | P0 |
 | UploadList dashboard | ⚪ Not Started | P0 |
 | ChunkedUploadProcessor | ⚪ Not Started | P1 |
 | Column mapping presets | ⚪ Not Started | P1 |
+
+**Sample Input Analyzed:**
+- File: `260225_DG_FY27_Q1_Whale_Final_ready_for_launch_accountsByStage.csv`
+- Rows: 776 companies
+- Columns: 47 (Account Name, Domain, Revenue, Industry, Journey Stage, etc.)
+- Pre-existing data: Revenue, Traffic, Tech Stack flags from Demandbase
 
 ---
 
