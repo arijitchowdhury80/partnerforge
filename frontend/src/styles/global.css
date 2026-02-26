@@ -701,3 +701,338 @@ a:hover, .algolia-link:hover {
   background-color: #002999 !important;
   color: #ffffff !important;
 }
+
+/* =============================================================================
+ * MANTINE DRAWER OVERRIDES
+ * Consistent drawer styling - white content, proper borders
+ * ============================================================================= */
+
+.mantine-Drawer-content {
+  background-color: #f8fafc !important;
+}
+
+.mantine-Drawer-header {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.mantine-Drawer-body {
+  background-color: inherit !important;
+}
+
+/* =============================================================================
+ * MANTINE ACCORDION OVERRIDES
+ * Consistent hover and active states
+ * ============================================================================= */
+
+.mantine-Accordion-item {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  margin-bottom: 8px !important;
+}
+
+.mantine-Accordion-item[data-active] {
+  background-color: #ffffff !important;
+}
+
+.mantine-Accordion-control {
+  padding: 16px !important;
+  color: #0f172a !important;
+}
+
+.mantine-Accordion-control:hover {
+  background-color: #f8fafc !important;
+}
+
+.mantine-Accordion-label {
+  color: #0f172a !important;
+  font-weight: 600 !important;
+}
+
+.mantine-Accordion-chevron {
+  color: #64748b !important;
+}
+
+.mantine-Accordion-panel {
+  background-color: #ffffff !important;
+  color: #334155 !important;
+}
+
+/* =============================================================================
+ * MANTINE TEXT INPUT OVERRIDES
+ * Consistent input styling with proper focus states
+ * ============================================================================= */
+
+.mantine-TextInput-input,
+.mantine-NumberInput-input,
+.mantine-Textarea-input {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+  font-size: 14px !important;
+}
+
+.mantine-TextInput-input:focus,
+.mantine-NumberInput-input:focus,
+.mantine-Textarea-input:focus {
+  border-color: #003DFF !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(0, 61, 255, 0.1) !important;
+}
+
+.mantine-TextInput-input::placeholder,
+.mantine-NumberInput-input::placeholder,
+.mantine-Textarea-input::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* =============================================================================
+ * MANTINE CHECKBOX OVERRIDES
+ * Consistent checkbox styling
+ * ============================================================================= */
+
+.mantine-Checkbox-input {
+  cursor: pointer !important;
+  background-color: #ffffff !important;
+  border-color: #d1d5db !important;
+  border-width: 2px !important;
+}
+
+.mantine-Checkbox-input:checked {
+  background-color: #003DFF !important;
+  border-color: #003DFF !important;
+}
+
+.mantine-Checkbox-input:hover:not(:checked) {
+  border-color: #94a3b8 !important;
+}
+
+.mantine-Checkbox-icon {
+  color: #ffffff !important;
+}
+
+.mantine-Checkbox-label {
+  color: #334155 !important;
+}
+
+/* =============================================================================
+ * MANTINE CHIP OVERRIDES
+ * Consistent chip/filter tag styling
+ * ============================================================================= */
+
+.mantine-Chip-label {
+  color: #334155 !important;
+  font-weight: 500 !important;
+}
+
+.mantine-Chip-label:hover {
+  background-color: #f1f5f9 !important;
+}
+
+.mantine-Chip-input:checked + .mantine-Chip-label {
+  background-color: rgba(0, 61, 255, 0.1) !important;
+  border-color: #003DFF !important;
+  color: #003DFF !important;
+}
+
+/* =============================================================================
+ * MANTINE POPOVER OVERRIDES
+ * Consistent popover/dropdown styling
+ * ============================================================================= */
+
+.mantine-Popover-dropdown {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
+  border-radius: 8px !important;
+}
+
+/* =============================================================================
+ * MANTINE MENU OVERRIDES
+ * Consistent menu dropdown styling
+ * ============================================================================= */
+
+.mantine-Menu-dropdown {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
+}
+
+.mantine-Menu-item {
+  color: #0f172a !important;
+  font-size: 14px !important;
+}
+
+.mantine-Menu-item:hover,
+.mantine-Menu-item[data-hovered] {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+.mantine-Menu-itemLabel {
+  color: inherit !important;
+}
+
+.mantine-Menu-label {
+  color: #64748b !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  font-size: 11px !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* =============================================================================
+ * MANTINE TOOLTIP OVERRIDES
+ * Consistent tooltip styling
+ * ============================================================================= */
+
+.mantine-Tooltip-tooltip {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+  font-size: 13px !important;
+  padding: 8px 12px !important;
+  border-radius: 6px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* =============================================================================
+ * MANTINE BUTTON OVERRIDES
+ * Consistent button hover/active states
+ * ============================================================================= */
+
+.mantine-Button-root[data-variant="light"]:hover {
+  background-color: rgba(0, 61, 255, 0.15) !important;
+}
+
+.mantine-Button-root[data-variant="subtle"]:hover {
+  background-color: #f1f5f9 !important;
+}
+
+.mantine-Button-root[data-variant="filled"][data-color="blue"] {
+  background-color: #003DFF !important;
+}
+
+.mantine-Button-root[data-variant="filled"][data-color="blue"]:hover {
+  background-color: #002999 !important;
+}
+
+/* =============================================================================
+ * MANTINE BADGE OVERRIDES
+ * Ensure badge text contrast
+ * ============================================================================= */
+
+.mantine-Badge-root[data-variant="filled"] {
+  color: #ffffff !important;
+}
+
+/* =============================================================================
+ * MANTINE TABLE OVERRIDES
+ * Consistent table row hover states
+ * ============================================================================= */
+
+.mantine-Table-tr:hover {
+  background-color: #f8fafc !important;
+}
+
+.mantine-Table-th {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+.mantine-Table-td {
+  color: #334155 !important;
+}
+
+/* =============================================================================
+ * MANTINE SEGMENTED CONTROL OVERRIDES
+ * Consistent segmented control styling
+ * ============================================================================= */
+
+.mantine-SegmentedControl-root {
+  background-color: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.mantine-SegmentedControl-indicator {
+  background-color: #ffffff !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+.mantine-SegmentedControl-label {
+  color: #64748b !important;
+}
+
+.mantine-SegmentedControl-label[data-active] {
+  color: #0f172a !important;
+}
+
+/* =============================================================================
+ * MANTINE PAGINATION OVERRIDES
+ * Consistent pagination styling
+ * ============================================================================= */
+
+.mantine-Pagination-control {
+  color: #334155 !important;
+  border-color: #e2e8f0 !important;
+}
+
+.mantine-Pagination-control:hover:not([data-active]):not([data-disabled]) {
+  background-color: #f1f5f9 !important;
+}
+
+.mantine-Pagination-control[data-active] {
+  background-color: #003DFF !important;
+  border-color: #003DFF !important;
+  color: #ffffff !important;
+}
+
+/* =============================================================================
+ * MANTINE SCROLLAREA OVERRIDES
+ * Consistent scrollbar styling
+ * ============================================================================= */
+
+.mantine-ScrollArea-scrollbar {
+  background-color: transparent !important;
+}
+
+.mantine-ScrollArea-thumb {
+  background-color: #cbd5e1 !important;
+}
+
+.mantine-ScrollArea-thumb:hover {
+  background-color: #94a3b8 !important;
+}
+
+/* =============================================================================
+ * MANTINE MODAL OVERRIDES
+ * Consistent modal styling
+ * ============================================================================= */
+
+.mantine-Modal-content {
+  background-color: #ffffff !important;
+}
+
+.mantine-Modal-header {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.mantine-Modal-title {
+  color: #0f172a !important;
+  font-weight: 600 !important;
+}
+
+/* =============================================================================
+ * MANTINE PAPER OVERRIDES
+ * Consistent card/paper styling
+ * ============================================================================= */
+
+.mantine-Paper-root {
+  background-color: #ffffff !important;
+}
+
+.mantine-Paper-root[data-with-border] {
+  border-color: #e2e8f0 !important;
+}
