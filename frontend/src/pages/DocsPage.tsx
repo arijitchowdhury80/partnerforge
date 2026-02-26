@@ -147,26 +147,21 @@ const docSections: DocSection[] = [
 // Mermaid Diagram Renderer using mermaid.ink
 // =============================================================================
 
-// Algolia-branded Mermaid theme - minimal to avoid URL length issues
-const ALGOLIA_MERMAID_THEME = `%%{init:{'theme':'base','themeVariables':{'primaryColor':'#003DFF','primaryTextColor':'#fff','lineColor':'#5468FF','textColor':'#21243D'}}}%%\n`;
-
 /**
  * Renders Mermaid diagrams using the mermaid.ink service
- * Injects Algolia branding theme for professional appearance
+ * No custom theme - uses mermaid defaults for reliability
  */
 function MermaidDiagram({ code, index }: { code: string; index: number }) {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Clean up the mermaid code and inject Algolia theme
+  // Clean up the mermaid code (no theme injection)
   const cleanCode = code.trim();
-  const themedCode = ALGOLIA_MERMAID_THEME + cleanCode;
 
   // Base64 encoding with UTF-8 support (handles emojis and special characters)
-  // btoa() alone fails on non-ASCII, so we use encodeURIComponent + unescape trick
   let base64: string;
   try {
-    base64 = btoa(unescape(encodeURIComponent(themedCode)));
+    base64 = btoa(unescape(encodeURIComponent(cleanCode)));
   } catch {
     // If encoding fails, show fallback
     return (
@@ -435,8 +430,12 @@ function DiagramGallery({ markdown }: { markdown: string }) {
 // =============================================================================
 
 function renderMarkdown(markdown: string, isDiagramsPage: boolean = false): JSX.Element[] {
+  // DEBUG: Log to verify gallery is being triggered
+  console.log('[renderMarkdown] isDiagramsPage:', isDiagramsPage, 'markdown length:', markdown.length);
+
   // Special handling for diagrams page - use gallery view
   if (isDiagramsPage) {
+    console.log('[renderMarkdown] Rendering DiagramGallery');
     return [<DiagramGallery key="diagram-gallery" markdown={markdown} />];
   }
   const lines = markdown.split('\n');
