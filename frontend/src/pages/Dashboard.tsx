@@ -283,7 +283,7 @@ export function Dashboard() {
                 colors={['#dc2626', '#ea580c', '#64748b']}
                 showAnimation
                 showLabel
-                valueFormatter={(val) => val.toLocaleString()}
+                valueFormatter={(val: number) => val.toLocaleString()}
                 className="h-40"
               />
               <Group justify="center" mt="md" gap="lg">
