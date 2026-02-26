@@ -12,20 +12,52 @@
 
 import { useMemo, useState } from 'react';
 import {
-  Paper,
   Table,
   Text,
   Group,
   Badge,
   Tooltip,
   Box,
-  Pagination,
   Stack,
   ScrollArea,
 } from '@mantine/core';
-import { IconInfoCircle } from '@tabler/icons-react';
 import type { DisplacementTarget } from '@/services/supabase';
 import type { ViewMode } from './ViewModeToggle';
+import { TargetList } from '@/components/targets/TargetList';
+import type { Company } from '@/types';
+
+// =============================================================================
+// Type Conversion: DisplacementTarget -> Company
+// =============================================================================
+
+function convertTargetToCompany(target: DisplacementTarget): Company {
+  const score = target.icp_score || 0;
+  const status: 'hot' | 'warm' | 'cold' = score >= 80 ? 'hot' : score >= 40 ? 'warm' : 'cold';
+
+  return {
+    domain: target.domain,
+    company_name: target.company_name || target.domain,
+    ticker: target.ticker || undefined,
+    is_public: target.is_public || false,
+    headquarters: {
+      city: '',
+      state: '',
+      country: target.country || '',
+    },
+    industry: target.vertical || 'Unknown',
+    vertical: target.vertical || 'Unknown',
+    icp_score: target.icp_score || 0,
+    signal_score: 0,
+    priority_score: 0,
+    status,
+    partner_tech: target.partner_tech ? [target.partner_tech] : [],
+    last_enriched: target.last_enriched || undefined,
+    sw_monthly_visits: target.sw_monthly_visits || undefined,
+    revenue: target.revenue || undefined,
+    current_search: target.current_search || undefined,
+    enrichment_level: target.enrichment_level || undefined,
+  };
+}
 
 // =============================================================================
 // Types
@@ -331,130 +363,7 @@ function GridCellComponent({ cell, rowKey, colKey, onClick, isTotal = false, tie
   );
 }
 
-// =============================================================================
-// Account List Component (for Account View)
-// =============================================================================
-
-interface AccountListProps {
-  targets: DisplacementTarget[];
-  onRowClick: (target: DisplacementTarget) => void;
-}
-
-function AccountList({ targets, onRowClick }: AccountListProps) {
-  const [page, setPage] = useState(1);
-  const pageSize = 20;
-  const totalPages = Math.ceil(targets.length / pageSize);
-
-  const paginatedTargets = useMemo(() => {
-    const start = (page - 1) * pageSize;
-    return targets.slice(start, start + pageSize);
-  }, [targets, page]);
-
-  return (
-    <Stack gap="md">
-      <ScrollArea>
-        <Table withTableBorder withColumnBorders style={{ backgroundColor: BODY_BG_WHITE, borderRadius: '8px', overflow: 'hidden' }}>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th style={{ backgroundColor: HEADER_BG, padding: '14px 16px' }}>
-                <Text style={{ fontSize: '13px', fontWeight: 700, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  Company
-                </Text>
-              </Table.Th>
-              <Table.Th style={{ backgroundColor: HEADER_BG, padding: '14px 16px' }}>
-                <Text style={{ fontSize: '13px', fontWeight: 700, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  Domain
-                </Text>
-              </Table.Th>
-              <Table.Th style={{ textAlign: 'center', backgroundColor: HEADER_BG, padding: '14px 16px' }}>
-                <Text style={{ fontSize: '13px', fontWeight: 700, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  Partner
-                </Text>
-              </Table.Th>
-              <Table.Th style={{ textAlign: 'center', backgroundColor: HEADER_BG, padding: '14px 16px' }}>
-                <Text style={{ fontSize: '13px', fontWeight: 700, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  Vertical
-                </Text>
-              </Table.Th>
-              <Table.Th style={{ textAlign: 'center', backgroundColor: HEADER_BG, padding: '14px 16px' }}>
-                <Text style={{ fontSize: '13px', fontWeight: 700, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  ICP Score
-                </Text>
-              </Table.Th>
-              <Table.Th style={{ textAlign: 'center', backgroundColor: HEADER_BG, padding: '14px 16px' }}>
-                <Text style={{ fontSize: '13px', fontWeight: 700, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  Traffic
-                </Text>
-              </Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {paginatedTargets.map((target, idx) => {
-              const rowBg = idx % 2 === 0 ? BODY_BG_WHITE : BODY_BG_ALT;
-              return (
-                <Table.Tr
-                  key={target.id}
-                  onClick={() => onRowClick(target)}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <Table.Td style={{ backgroundColor: rowBg, padding: '14px 16px' }}>
-                    <Text style={{ fontSize: '14px', fontWeight: 600, color: TEXT_DARK }}>
-                      {target.company_name || target.domain}
-                    </Text>
-                  </Table.Td>
-                  <Table.Td style={{ backgroundColor: rowBg, padding: '14px 16px' }}>
-                    <Text style={{ fontSize: '13px', color: TEXT_MUTED }}>{target.domain}</Text>
-                  </Table.Td>
-                  <Table.Td style={{ textAlign: 'center', backgroundColor: rowBg, padding: '14px 16px' }}>
-                    <Badge size="sm" variant="filled" color="blue">
-                      {normalizePartner(target.partner_tech)}
-                    </Badge>
-                  </Table.Td>
-                  <Table.Td style={{ textAlign: 'center', backgroundColor: rowBg, padding: '14px 16px' }}>
-                    <Badge size="sm" variant="outline" color="gray">
-                      {normalizeVertical(target.vertical)}
-                    </Badge>
-                  </Table.Td>
-                  <Table.Td style={{ textAlign: 'center', backgroundColor: rowBg, padding: '14px 16px' }}>
-                    <Badge
-                      size="sm"
-                      variant="filled"
-                      style={{
-                        backgroundColor: (target.icp_score || 0) >= 80 ? '#dc2626' : (target.icp_score || 0) >= 40 ? '#ea580c' : '#64748b',
-                        color: '#ffffff',
-                        fontWeight: 700,
-                      }}
-                    >
-                      {target.icp_score || 0}
-                    </Badge>
-                  </Table.Td>
-                  <Table.Td style={{ textAlign: 'center', backgroundColor: rowBg, padding: '14px 16px' }}>
-                    <Text style={{ fontSize: '14px', color: TEXT_DARK }}>
-                      {target.sw_monthly_visits
-                        ? `${(target.sw_monthly_visits / 1000000).toFixed(1)}M`
-                        : '-'}
-                    </Text>
-                  </Table.Td>
-                </Table.Tr>
-              );
-            })}
-          </Table.Tbody>
-        </Table>
-      </ScrollArea>
-
-      {totalPages > 1 && (
-        <Group justify="center">
-          <Pagination
-            total={totalPages}
-            value={page}
-            onChange={setPage}
-            size="md"
-          />
-        </Group>
-      )}
-    </Stack>
-  );
-}
+// AccountList component removed - now using shared TargetList component for consistency
 
 // =============================================================================
 // Main Component
@@ -516,12 +425,18 @@ export function DistributionGrid({ viewMode, targets, onCellClick }: Distributio
   // Grand total
   const grandTotal = targets.length;
 
-  // Handle account view separately - simple table without pivot
+  // Convert targets to Company type for TargetList
+  const companiesForAccountView = useMemo(() => {
+    return targets.map(convertTargetToCompany);
+  }, [targets]);
+
+  // Handle account view - uses the shared TargetList component for consistency
   if (viewMode === 'account') {
     return (
-      <AccountList
-        targets={targets}
-        onRowClick={(target) => onCellClick(target.domain, 'account', [target])}
+      <TargetList
+        companies={companiesForAccountView}
+        allCompanies={companiesForAccountView}
+        isLoading={false}
       />
     );
   }
