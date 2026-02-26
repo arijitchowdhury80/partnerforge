@@ -32,7 +32,7 @@ import { getCompanies } from '@/services/api';
 import { TargetList, type ColumnFilter } from '@/components/targets/TargetList';
 
 // Version for deployment tracking
-const VERSION = 'v2.2.0-excel-filters';
+const VERSION = 'v2.3.0-data-transparency';
 
 // =============================================================================
 // Companies Page Component
