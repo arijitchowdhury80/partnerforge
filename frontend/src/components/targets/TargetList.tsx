@@ -55,32 +55,29 @@ import {
   AllPartnersLogo,
 } from '@/components/common/PartnerLogos';
 
-// Import shared TableFilters library - single source of truth for filtering
+// Import shared libraries - SINGLE SOURCE OF TRUTH
 import {
   FilterHeader,
-  TABLE_COLORS,
   STATUS_COLOR_MAP,
   type FilterOption,
 } from '@/components/common/TableFilters';
+import { COLORS } from '@/lib/constants';
 
-// Use shared color constants from TableFilters library
-const { ALGOLIA_NEBULA_BLUE, ALGOLIA_SPACE_GRAY, GRAY_200, GRAY_500, GRAY_700 } = TABLE_COLORS;
-
-// Local aliases for backward compatibility
-const ALGOLIA_BLUE = ALGOLIA_NEBULA_BLUE;
-const GRAY_50 = '#f8fafc';
-const GRAY_100 = '#f1f5f9';
-const GRAY_400 = '#94a3b8';
+// Use shared color constants - no more inline duplicates
+const ALGOLIA_NEBULA_BLUE = COLORS.ALGOLIA_NEBULA_BLUE;
+const ALGOLIA_SPACE_GRAY = COLORS.ALGOLIA_SPACE_GRAY;
+const ALGOLIA_BLUE = COLORS.ALGOLIA_NEBULA_BLUE;
+const GRAY_50 = COLORS.GRAY_50;
+const GRAY_100 = COLORS.GRAY_100;
+const GRAY_200 = COLORS.GRAY_200;
+const GRAY_400 = COLORS.GRAY_400;
+const GRAY_500 = COLORS.GRAY_500;
+const GRAY_700 = COLORS.GRAY_700;
 
 // Types
 export interface ColumnFilter {
   column: string;
   values: string[];
-}
-
-interface FilterOption {
-  value: string;
-  count: number;
 }
 
 interface TargetListProps {
@@ -101,250 +98,11 @@ interface TargetListProps {
 }
 
 // =============================================================================
-// Excel-Style Filter Header Component - WITH APPLY BUTTON
+// TanStack Table Sort Header Adapter
+// This wraps TanStack Table's column API. For standalone use, import from TableFilters.
 // =============================================================================
 
-interface FilterHeaderProps {
-  column: any;
-  label: string;
-  options: FilterOption[];
-  selectedValues: string[];
-  onFilterChange: (values: string[]) => void;
-  colorMap?: Record<string, string>;
-}
-
-function FilterHeader({
-  column,
-  label,
-  options,
-  selectedValues,
-  onFilterChange,
-  colorMap,
-}: FilterHeaderProps) {
-  const [opened, setOpened] = useState(false);
-
-  // LOCAL pending state - only applied when user clicks "Apply"
-  const [pendingValues, setPendingValues] = useState<string[]>([]);
-
-  // When popover opens, sync pending with current applied values
-  const handleOpen = () => {
-    setPendingValues([...selectedValues]);
-    setOpened(true);
-  };
-
-  // Check if filter is currently applied (not pending)
-  const hasAppliedFilter = selectedValues.length > 0;
-  const filterCount = selectedValues.length;
-
-  // Check if pending differs from applied
-  const hasPendingChanges = JSON.stringify(pendingValues.sort()) !== JSON.stringify([...selectedValues].sort());
-
-  // Sort options by count (highest first)
-  const sortedOptions = useMemo(() => {
-    return [...options].sort((a, b) => b.count - a.count);
-  }, [options]);
-
-  // Toggle a value in PENDING state (doesn't apply yet)
-  const togglePendingValue = (value: string) => {
-    if (pendingValues.includes(value)) {
-      setPendingValues(pendingValues.filter((v) => v !== value));
-    } else {
-      setPendingValues([...pendingValues, value]);
-    }
-  };
-
-  // Select all in pending (clears filter)
-  const selectAllPending = () => {
-    setPendingValues([]);
-  };
-
-  // Clear all pending selections
-  const clearAllPending = () => {
-    setPendingValues([]);
-  };
-
-  // APPLY the pending selections
-  const applyFilter = () => {
-    onFilterChange(pendingValues);
-    setOpened(false);
-  };
-
-  // Cancel and discard pending changes
-  const cancelFilter = () => {
-    setPendingValues([...selectedValues]);
-    setOpened(false);
-  };
-
-  return (
-    <Popover
-      opened={opened}
-      onChange={(isOpen) => {
-        if (!isOpen) {
-          // Closing without apply - discard pending changes
-          setPendingValues([...selectedValues]);
-        }
-        setOpened(isOpen);
-      }}
-      position="bottom-start"
-      shadow="xl"
-      width={320}
-    >
-      <Popover.Target>
-        {/* ENTIRE HEADER IS CLICKABLE - Excel style */}
-        <UnstyledButton
-          onClick={handleOpen}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '6px 10px',
-            borderRadius: 6,
-            background: hasAppliedFilter ? 'rgba(0, 61, 255, 0.1)' : 'transparent',
-            border: hasAppliedFilter ? '1px solid rgba(0, 61, 255, 0.3)' : '1px solid transparent',
-            transition: 'all 0.15s ease',
-          }}
-        >
-          <Text size="sm" fw={700} c={hasAppliedFilter ? ALGOLIA_NEBULA_BLUE : GRAY_700} tt="uppercase">
-            {label}
-          </Text>
-
-          {/* Filter indicator - always visible dropdown arrow */}
-          {hasAppliedFilter ? (
-            <Badge size="sm" variant="filled" color="blue" style={{ minWidth: 22 }}>
-              {filterCount}
-            </Badge>
-          ) : (
-            <IconChevronDown size={16} color={ALGOLIA_SPACE_GRAY} strokeWidth={2.5} />
-          )}
-        </UnstyledButton>
-      </Popover.Target>
-
-      <Popover.Dropdown
-        style={{
-          background: 'white',
-          border: `1px solid ${GRAY_200}`,
-          boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
-          borderRadius: 8,
-        }}
-      >
-        <Stack gap="sm">
-          {/* Header */}
-          <Group justify="space-between">
-            <Group gap="xs">
-              <IconFilter size={16} color={ALGOLIA_NEBULA_BLUE} />
-              <Text size="sm" fw={600} c="#1e293b">
-                Filter by {label}
-              </Text>
-            </Group>
-            <Text size="xs" c={GRAY_500}>
-              {pendingValues.length > 0
-                ? `${pendingValues.length} of ${options.length} selected`
-                : `${options.length} values`}
-            </Text>
-          </Group>
-
-          <Divider />
-
-          {/* Quick actions row */}
-          <Group gap="xs">
-            <Button size="compact-xs" variant="subtle" color="blue" onClick={selectAllPending}>
-              Select All
-            </Button>
-            <Button size="compact-xs" variant="subtle" color="gray" onClick={clearAllPending}>
-              Clear All
-            </Button>
-          </Group>
-
-          {/* Filter options - SORTED BY COUNT */}
-          <ScrollArea.Autosize mah={280}>
-            <Stack gap={6}>
-              {sortedOptions.map((option) => {
-                const isChecked = pendingValues.includes(option.value);
-
-                return (
-                  <UnstyledButton
-                    key={option.value}
-                    onClick={() => togglePendingValue(option.value)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '10px 14px',
-                      borderRadius: 8,
-                      background: isChecked ? '#dbeafe' : '#f8fafc',
-                      border: isChecked ? '2px solid #3b82f6' : '1px solid #e2e8f0',
-                      transition: 'all 0.15s ease',
-                    }}
-                  >
-                    <Group gap="sm">
-                      <Checkbox
-                        checked={isChecked}
-                        onChange={() => {}}
-                        size="md"
-                        color="blue"
-                        styles={{
-                          input: {
-                            cursor: 'pointer',
-                            backgroundColor: isChecked ? '#3b82f6' : '#ffffff',
-                            borderColor: isChecked ? '#3b82f6' : '#d1d5db',
-                            borderWidth: 2,
-                          },
-                          icon: {
-                            color: '#ffffff',
-                          },
-                        }}
-                      />
-                      {colorMap?.[option.value] ? (
-                        <Badge size="md" color={colorMap[option.value]} variant="filled" tt="capitalize" styles={{ root: { color: '#fff' } }}>
-                          {option.value}
-                        </Badge>
-                      ) : (
-                        <Text size="sm" fw={500} c="#1e293b">
-                          {option.value || '(empty)'}
-                        </Text>
-                      )}
-                    </Group>
-                    {/* COUNT - shows how many companies (dark for visibility) */}
-                    <Badge
-                      size="md"
-                      variant="filled"
-                      color="dark"
-                      styles={{ root: { minWidth: 32, fontWeight: 700 } }}
-                    >
-                      {option.count}
-                    </Badge>
-                  </UnstyledButton>
-                );
-              })}
-            </Stack>
-          </ScrollArea.Autosize>
-
-          {/* Footer with Apply/Cancel buttons */}
-          <Divider />
-          <Group justify="flex-end" gap="sm">
-            <Button size="sm" variant="subtle" color="gray" onClick={cancelFilter}>
-              Cancel
-            </Button>
-            <Button
-              size="sm"
-              variant="filled"
-              color="blue"
-              onClick={applyFilter}
-            >
-              Apply Filter
-            </Button>
-          </Group>
-        </Stack>
-      </Popover.Dropdown>
-    </Popover>
-  );
-}
-
-// =============================================================================
-// Simple Sort Header (for columns without filtering)
-// =============================================================================
-
-function SortHeader({ column, label }: { column: any; label: string }) {
+function TanStackSortHeader({ column, label }: { column: any; label: string }) {
   const isSorted = column.getIsSorted();
   return (
     <UnstyledButton
@@ -506,13 +264,11 @@ export function TargetList({
       .sort((a, b) => b.count - a.count);
   }, [companiesForOptions]);
 
-  const statusColors: Record<string, string> = { hot: 'red', warm: 'orange', cold: 'gray' };
-
   const columns = useMemo<ColumnDef<Company>[]>(
     () => [
       {
         accessorKey: 'company_name',
-        header: ({ column }) => <SortHeader column={column} label="Company" />,
+        header: ({ column }) => <TanStackSortHeader column={column} label="Company" />,
         cell: ({ row }) => {
           const company = row.original;
           return (
@@ -538,20 +294,20 @@ export function TargetList({
       },
       {
         accessorKey: 'icp_score',
-        header: ({ column }) => <SortHeader column={column} label="ICP Score" />,
+        header: ({ column }) => <TanStackSortHeader column={column} label="ICP Score" />,
         cell: ({ getValue }) => <ScoreDisplay score={getValue<number>() || 0} />,
         size: 120,
       },
       {
         accessorKey: 'status',
-        header: ({ column }) => (
+        header: () => (
           <FilterHeader
-            column={column}
             label="Status"
             options={statusOptions}
             selectedValues={getFilterValues('status')}
             onFilterChange={(values) => handleFilterChange('status', values)}
-            colorMap={statusColors}
+            colorMap={STATUS_COLOR_MAP}
+            useCanonicalOrder={true}  // Always show Hot → Warm → Cold order
           />
         ),
         cell: ({ getValue }) => <StatusBadge status={getValue<Company['status']>()} />,
@@ -559,9 +315,8 @@ export function TargetList({
       },
       {
         accessorKey: 'vertical',
-        header: ({ column }) => (
+        header: () => (
           <FilterHeader
-            column={column}
             label="Vertical"
             options={verticalOptions}
             selectedValues={getFilterValues('vertical')}
@@ -577,9 +332,8 @@ export function TargetList({
       },
       {
         accessorKey: 'partner_tech',
-        header: ({ column }) => (
+        header: () => (
           <FilterHeader
-            column={column}
             label="Partner Tech"
             options={partnerTechOptions}
             selectedValues={getFilterValues('partner_tech')}
@@ -632,7 +386,7 @@ export function TargetList({
       },
       {
         accessorKey: 'sw_monthly_visits',
-        header: ({ column }) => <SortHeader column={column} label="Traffic" />,
+        header: ({ column }) => <TanStackSortHeader column={column} label="Traffic" />,
         cell: ({ getValue, row }) => {
           const visits = getValue<number>();
           return (
@@ -653,7 +407,7 @@ export function TargetList({
         size: 110,
       },
     ],
-    [openDrawer, statusOptions, verticalOptions, partnerTechOptions, getFilterValues, handleFilterChange]
+    [statusOptions, verticalOptions, partnerTechOptions, getFilterValues, handleFilterChange]
   );
 
   const table = useReactTable({
