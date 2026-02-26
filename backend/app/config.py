@@ -16,7 +16,7 @@ class Settings(BaseSettings):
 
     # Application
     APP_NAME: str = "PartnerForge"
-    APP_VERSION: str = "2.0.0"
+    APP_VERSION: str = "2.1.0"  # Bump for enrichment feature
     DEBUG: bool = False
 
     # Database
