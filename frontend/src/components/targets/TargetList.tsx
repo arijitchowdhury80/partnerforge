@@ -37,7 +37,6 @@ import {
   Stack,
 } from '@mantine/core';
 import {
-  IconExternalLink,
   IconArrowUp,
   IconArrowDown,
   IconSelector,
@@ -52,21 +51,29 @@ import type { Company } from '@/types';
 import { CompanyDrawer } from '@/components/company/CompanyDrawer';
 import { CompanyLogo } from '@/components/ui/CompanyLogo';
 
-// Colors
-const ALGOLIA_BLUE = '#003DFF';
+// Algolia Brand Colors (Official)
+const ALGOLIA_NEBULA_BLUE = '#003DFF';   // Primary - CTAs, headers
+const ALGOLIA_SPACE_GRAY = '#21243D';    // Body text, headings
+const ALGOLIA_PURPLE = '#5468FF';        // Accents, highlights
+const ALGOLIA_WHITE = '#FFFFFF';         // Backgrounds
+const ALGOLIA_LIGHT_GRAY = '#F5F5F7';    // Alternating sections
+const ALGOLIA_BORDER = '#E8E8ED';        // Borders
+
+// Legacy aliases for compatibility
+const ALGOLIA_BLUE = ALGOLIA_NEBULA_BLUE;
 const GRAY_50 = '#f8fafc';
 const GRAY_100 = '#f1f5f9';
-const GRAY_200 = '#e2e8f0';
+const GRAY_200 = ALGOLIA_BORDER;
 const GRAY_400 = '#94a3b8';
 const GRAY_500 = '#64748b';
-const GRAY_700 = '#334155';
-const GRAY_900 = '#0f172a';
+const GRAY_700 = ALGOLIA_SPACE_GRAY;
+const GRAY_900 = ALGOLIA_SPACE_GRAY;
 
-// Status colors
+// Status colors - Enterprise grade visibility
 const STATUS_COLORS: Record<string, { bg: string; text: string; badge: string }> = {
-  hot: { bg: '#fef2f2', text: '#dc2626', badge: 'red' },
-  warm: { bg: '#fff7ed', text: '#ea580c', badge: 'orange' },
-  cold: { bg: '#f8fafc', text: '#64748b', badge: 'gray' },
+  hot: { bg: '#dc2626', text: '#ffffff', badge: 'red' },
+  warm: { bg: '#ea580c', text: '#ffffff', badge: 'orange' },
+  cold: { bg: '#64748b', text: '#ffffff', badge: 'gray' },
 };
 
 // Types
@@ -450,24 +457,13 @@ export function TargetList({
                 size="sm"
                 radius="md"
               />
-              <div>
-                <Text size="md" fw={600} c={GRAY_900} lineClamp={1}>
-                  {company.company_name || company.domain}
-                </Text>
-                <Anchor
-                  href={`https://${company.domain}`}
-                  target="_blank"
-                  size="sm"
-                  c={GRAY_500}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {company.domain}
-                </Anchor>
-              </div>
+              <Text size="md" fw={600} c={ALGOLIA_NEBULA_BLUE} lineClamp={1} style={{ cursor: 'pointer' }}>
+                {company.company_name || company.domain}
+              </Text>
             </Group>
           );
         },
-        size: 220,
+        size: 200,
       },
       {
         accessorKey: 'icp_score',
@@ -522,25 +518,50 @@ export function TargetList({
         cell: ({ getValue, row }) => {
           const techs = getValue<string[]>() || [];
           if (techs.length === 0) return <Text size="md" c={GRAY_400}>—</Text>;
+
+          // Partner tech color mapping
+          const techColors: Record<string, string> = {
+            'Adobe Experience Manager': 'red',
+            'Adobe Commerce': 'grape',
+            'Amplience': 'blue',
+            'Spryker': 'teal',
+            'Shopify': 'green',
+            'BigCommerce': 'violet',
+            'Salesforce Commerce': 'cyan',
+            'SAP Commerce': 'orange',
+            'Commercetools': 'indigo',
+          };
+
+          // Short names for display
+          const shortNames: Record<string, string> = {
+            'Adobe Experience Manager': 'Adobe AEM',
+            'Adobe Commerce': 'Adobe Commerce',
+            'Salesforce Commerce': 'Salesforce',
+            'SAP Commerce': 'SAP',
+          };
+
           return (
-            <Tooltip label={`Source: BuiltWith • ${techs.join(', ')}`} withArrow>
-              <Anchor
-                href={`https://builtwith.com/${row.original.domain}`}
-                target="_blank"
-                onClick={(e) => e.stopPropagation()}
-                size="md"
-              >
-                <Badge
-                  size="lg"
-                  variant="filled"
-                  color="green"
-                  styles={{ root: { fontWeight: 600, fontSize: 12 } }}
-                >
-                  {techs[0]}
-                  {techs.length > 1 && ` +${techs.length - 1}`}
-                </Badge>
-              </Anchor>
-            </Tooltip>
+            <Group gap={4} wrap="wrap">
+              {techs.slice(0, 3).map((tech) => (
+                <Tooltip key={tech} label={`Source: BuiltWith • ${tech}`} withArrow>
+                  <Badge
+                    size="sm"
+                    variant="filled"
+                    color={techColors[tech] || 'gray'}
+                    styles={{ root: { fontWeight: 600, fontSize: 11, color: '#fff' } }}
+                  >
+                    {shortNames[tech] || tech}
+                  </Badge>
+                </Tooltip>
+              ))}
+              {techs.length > 3 && (
+                <Tooltip label={techs.slice(3).join(', ')} withArrow>
+                  <Badge size="sm" variant="outline" color="gray" styles={{ root: { fontWeight: 600, fontSize: 11 } }}>
+                    +{techs.length - 3}
+                  </Badge>
+                </Tooltip>
+              )}
+            </Group>
           );
         },
         size: 180,
@@ -566,26 +587,6 @@ export function TargetList({
           );
         },
         size: 110,
-      },
-      {
-        id: 'actions',
-        header: '',
-        cell: ({ row }) => (
-          <Tooltip label="Open website in new tab">
-            <ActionIcon
-              variant="subtle"
-              color="gray"
-              size="md"
-              component="a"
-              href={`https://${row.original.domain}`}
-              target="_blank"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <IconExternalLink size={18} />
-            </ActionIcon>
-          </Tooltip>
-        ),
-        size: 50,
       },
     ],
     [openDrawer, statusOptions, verticalOptions, partnerTechOptions, getFilterValues, handleFilterChange]
