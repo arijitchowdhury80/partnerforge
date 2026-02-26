@@ -27,6 +27,9 @@ import {
   ActionIcon,
   Tooltip,
   SegmentedControl,
+  Tabs,
+  SimpleGrid,
+  Card,
 } from '@mantine/core';
 import {
   IconBook,

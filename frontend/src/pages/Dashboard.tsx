@@ -646,17 +646,17 @@ function DistributionGrid({ distribution, onCellClick }: DistributionGridProps) 
         )}
       </Group>
 
-      {/* Grid Container with Animation */}
+      {/* Grid Container - PREMIUM DESIGN with LARGE fonts, TIGHT spacing */}
       <motion.div
         layout
-        transition={{ duration: 0.4, ease: 'easeInOut' }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
         style={{ overflowX: 'auto' }}
       >
-        <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '6px' }}>
+        <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '3px' }}>
           <thead>
             <tr>
-              <th style={{ width: '120px', padding: '12px', textAlign: 'left', fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>
-                ICP Tier
+              <th style={{ width: '90px', padding: '6px 8px', textAlign: 'left', fontSize: '15px', fontWeight: 700, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                Tier
               </th>
               <AnimatePresence mode="popLayout">
                 {displayedVerticals.map(v => (
@@ -665,8 +665,8 @@ function DistributionGrid({ distribution, onCellClick }: DistributionGridProps) 
                     initial={{ opacity: 0, width: 0 }}
                     animate={{ opacity: 1, width: 'auto' }}
                     exit={{ opacity: 0, width: 0 }}
-                    transition={{ duration: 0.25 }}
-                    style={{ padding: '12px', textAlign: 'center', fontSize: '14px', fontWeight: 600, color: 'white' }}
+                    transition={{ duration: 0.2 }}
+                    style={{ padding: '6px 8px', textAlign: 'center', fontSize: '16px', fontWeight: 700, color: 'white' }}
                   >
                     {v === 'Other' ? (
                       <Tooltip label={`Click to see all ${hiddenVerticalsCount} hidden verticals`} withArrow>
@@ -674,10 +674,11 @@ function DistributionGrid({ distribution, onCellClick }: DistributionGridProps) 
                           onClick={() => setShowOtherModal(true)}
                           style={{
                             cursor: 'pointer',
-                            color: ALGOLIA_PURPLE,
+                            color: '#a78bfa',
                             textDecoration: 'underline',
                             textDecorationStyle: 'dotted',
-                            fontSize: '14px',
+                            fontSize: '16px',
+                            fontWeight: 700,
                           }}
                         >
                           Other ({hiddenVerticalsCount})
@@ -689,106 +690,128 @@ function DistributionGrid({ distribution, onCellClick }: DistributionGridProps) 
                   </motion.th>
                 ))}
               </AnimatePresence>
-              <th style={{ padding: '12px', textAlign: 'center', fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>
+              <th style={{ padding: '6px 8px', textAlign: 'center', fontSize: '15px', fontWeight: 700, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase' }}>
                 Total
               </th>
             </tr>
           </thead>
           <tbody>
-            {tiers.map((tier, idx) => (
-              <tr key={tier.key}>
-                <td style={{
-                  padding: '12px 14px',
-                  borderRadius: '10px',
-                  background: `${tier.color}18`,
-                  borderLeft: `4px solid ${tier.color}`,
-                  boxShadow: idx === 0 ? `0 0 16px ${tier.color}35` : 'none',
-                }}>
-                  <div style={{ fontSize: '16px', fontWeight: 700, color: tier.color }}>{tier.label}</div>
-                  <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginTop: '2px' }}>{tier.score}</div>
-                </td>
-                <AnimatePresence mode="popLayout">
-                  {displayedVerticals.map(v => {
-                    // For "Other" in collapsed view, sum up all hidden verticals
-                    const value = v === 'Other'
-                      ? hiddenVerticals.reduce((sum, hv) => sum + (tier.values[hv.name] || 0), 0)
-                      : (tier.values[v] || 0);
-                    const maxValue = Math.max(...Object.values(tier.values), 1);
-                    return (
-                      <motion.td
-                        key={v}
-                        initial={{ opacity: 0, width: 0 }}
-                        animate={{ opacity: 1, width: 'auto' }}
-                        exit={{ opacity: 0, width: 0 }}
-                        transition={{ duration: 0.25 }}
-                        onClick={() => {
-                          if (v === 'Other') {
-                            setShowOtherModal(true);
-                          } else {
-                            onCellClick({
-                              tier: tier.key,
-                              tierLabel: tier.label,
-                              vertical: v,
-                              count: value,
-                              color: tier.color,
-                            });
-                          }
-                        }}
-                        style={{
-                          padding: '12px',
-                          textAlign: 'center',
-                          borderRadius: '10px',
-                          background: value > 0 ? `${tier.color}${Math.min(18 + Math.round((value / maxValue) * 40), 58).toString(16)}` : 'rgba(255,255,255,0.02)',
-                          border: v === 'Other' ? `2px dashed ${ALGOLIA_PURPLE}60` : '1px solid rgba(255,255,255,0.08)',
-                          cursor: value > 0 || v === 'Other' ? 'pointer' : 'default',
-                          transition: 'all 0.15s ease',
-                        }}
-                        onMouseEnter={(e) => {
-                          if (value > 0 || v === 'Other') {
-                            e.currentTarget.style.transform = 'scale(1.04)';
-                            e.currentTarget.style.boxShadow = `0 4px 16px ${v === 'Other' ? ALGOLIA_PURPLE : tier.color}50`;
-                          }
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.transform = 'scale(1)';
-                          e.currentTarget.style.boxShadow = 'none';
-                        }}
-                      >
-                        <div style={{ fontSize: '20px', fontWeight: 700, color: value > 0 ? 'white' : 'rgba(255,255,255,0.15)' }}>
-                          {value > 0 ? value.toLocaleString() : '—'}
-                        </div>
-                        {value > 0 && (
-                          <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', marginTop: '2px' }}>
-                            {pct(value)}%
+            {tiers.map((tier, idx) => {
+              // VIBRANT colors with higher saturation
+              const vibrantColors: Record<string, { bg: string; text: string; glow: string }> = {
+                hot: { bg: 'rgba(239, 68, 68, 0.35)', text: '#ff6b6b', glow: 'rgba(239, 68, 68, 0.5)' },
+                warm: { bg: 'rgba(251, 146, 60, 0.35)', text: '#ffa94d', glow: 'rgba(251, 146, 60, 0.5)' },
+                cold: { bg: 'rgba(148, 163, 184, 0.25)', text: '#94a3b8', glow: 'rgba(148, 163, 184, 0.4)' },
+              };
+              const colors = vibrantColors[tier.key] || vibrantColors.cold;
+
+              return (
+                <tr key={tier.key}>
+                  <td style={{
+                    padding: '8px 10px',
+                    borderRadius: '8px',
+                    background: colors.bg,
+                    borderLeft: `4px solid ${colors.text}`,
+                    boxShadow: idx === 0 ? `0 0 20px ${colors.glow}` : 'none',
+                  }}>
+                    <div style={{ fontSize: '18px', fontWeight: 800, color: colors.text, letterSpacing: '0.5px' }}>{tier.label}</div>
+                    <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', marginTop: '1px' }}>{tier.score}</div>
+                  </td>
+                  <AnimatePresence mode="popLayout">
+                    {displayedVerticals.map(v => {
+                      // For "Other" in collapsed view, sum up all hidden verticals
+                      const value = v === 'Other'
+                        ? hiddenVerticals.reduce((sum, hv) => sum + (tier.values[hv.name] || 0), 0)
+                        : (tier.values[v] || 0);
+                      const maxValue = Math.max(...Object.values(tier.values), 1);
+                      const intensity = value > 0 ? Math.min(0.25 + (value / maxValue) * 0.45, 0.7) : 0.03;
+
+                      return (
+                        <motion.td
+                          key={v}
+                          initial={{ opacity: 0, width: 0 }}
+                          animate={{ opacity: 1, width: 'auto' }}
+                          exit={{ opacity: 0, width: 0 }}
+                          transition={{ duration: 0.2 }}
+                          onClick={() => {
+                            if (v === 'Other') {
+                              setShowOtherModal(true);
+                            } else {
+                              onCellClick({
+                                tier: tier.key,
+                                tierLabel: tier.label,
+                                vertical: v,
+                                count: value,
+                                color: colors.text,
+                              });
+                            }
+                          }}
+                          style={{
+                            padding: '8px 6px',
+                            textAlign: 'center',
+                            borderRadius: '8px',
+                            background: value > 0
+                              ? `rgba(${tier.key === 'hot' ? '239, 68, 68' : tier.key === 'warm' ? '251, 146, 60' : '148, 163, 184'}, ${intensity})`
+                              : 'rgba(255,255,255,0.03)',
+                            border: v === 'Other' ? '2px dashed rgba(167, 139, 250, 0.5)' : '1px solid rgba(255,255,255,0.1)',
+                            cursor: value > 0 || v === 'Other' ? 'pointer' : 'default',
+                            transition: 'all 0.12s ease',
+                          }}
+                          onMouseEnter={(e) => {
+                            if (value > 0 || v === 'Other') {
+                              e.currentTarget.style.transform = 'scale(1.05)';
+                              e.currentTarget.style.boxShadow = `0 4px 20px ${colors.glow}`;
+                              e.currentTarget.style.zIndex = '10';
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'scale(1)';
+                            e.currentTarget.style.boxShadow = 'none';
+                            e.currentTarget.style.zIndex = '1';
+                          }}
+                        >
+                          <div style={{
+                            fontSize: '28px',
+                            fontWeight: 800,
+                            color: value > 0 ? 'white' : 'rgba(255,255,255,0.15)',
+                            lineHeight: 1,
+                            textShadow: value > 0 ? '0 2px 8px rgba(0,0,0,0.3)' : 'none',
+                          }}>
+                            {value > 0 ? value.toLocaleString() : '—'}
                           </div>
-                        )}
-                      </motion.td>
-                    );
-                  })}
-                </AnimatePresence>
-                <td style={{
-                  padding: '14px',
-                  textAlign: 'center',
-                  borderRadius: '10px',
-                  background: 'rgba(255,255,255,0.04)',
-                  border: `2px solid ${tier.color}40`,
-                }}>
-                  <div style={{ fontSize: '20px', fontWeight: 700, color: tier.color }}>
-                    {tier.total.toLocaleString()}
-                  </div>
-                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', marginTop: '2px' }}>
-                    {pct(tier.total)}%
-                  </div>
-                </td>
-              </tr>
-            ))}
+                          {value > 0 && (
+                            <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', marginTop: '2px', fontWeight: 500 }}>
+                              {pct(value)}%
+                            </div>
+                          )}
+                        </motion.td>
+                      );
+                    })}
+                  </AnimatePresence>
+                  <td style={{
+                    padding: '8px 10px',
+                    textAlign: 'center',
+                    borderRadius: '8px',
+                    background: `rgba(${tier.key === 'hot' ? '239, 68, 68' : tier.key === 'warm' ? '251, 146, 60' : '148, 163, 184'}, 0.15)`,
+                    border: `2px solid ${colors.text}50`,
+                  }}>
+                    <div style={{ fontSize: '28px', fontWeight: 800, color: colors.text, lineHeight: 1 }}>
+                      {tier.total.toLocaleString()}
+                    </div>
+                    <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', marginTop: '2px', fontWeight: 500 }}>
+                      {pct(tier.total)}%
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </motion.div>
 
-      {/* Footer info */}
-      <Text size="sm" c="dimmed" mt="sm" ta="center">
-        Click any cell to view companies • {isExpanded ? 'Showing all verticals' : 'Click "Expand" to see all verticals'}
+      {/* Footer - minimal */}
+      <Text size="sm" c="dimmed" mt="xs" ta="center">
+        Click any cell to view companies
       </Text>
     </>
   );

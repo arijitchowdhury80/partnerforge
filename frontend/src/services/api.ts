@@ -206,7 +206,7 @@ export async function getDistribution(): Promise<DistributionData> {
     }
   }
 
-  // Sort verticals by total count
+  // Sort verticals by total count - EXCLUDE "Unknown" from top 5
   const verticalTotals = Array.from(verticalSet).map(v => ({
     name: v,
     shortName: getShortName(v),
@@ -217,8 +217,16 @@ export async function getDistribution(): Promise<DistributionData> {
   }));
   verticalTotals.sort((a, b) => b.total - a.total);
 
-  const topVerticals = verticalTotals.slice(0, 5).map(v => v.name);
-  const otherVerticals = verticalTotals.slice(5);
+  // IMPORTANT: "Unknown" is not a real vertical - always put it in "Other"
+  // Top 5 should only show REAL industry verticals
+  const realVerticals = verticalTotals.filter(v => v.name !== 'Unknown');
+  const unknownVertical = verticalTotals.find(v => v.name === 'Unknown');
+
+  const topVerticals = realVerticals.slice(0, 5).map(v => v.name);
+  const otherVerticals = [...realVerticals.slice(5)];
+  if (unknownVertical) {
+    otherVerticals.push(unknownVertical); // Add Unknown to Other
+  }
   const hiddenCount = otherVerticals.length;
 
   // Combine "Other" verticals for collapsed view
@@ -233,14 +241,19 @@ export async function getDistribution(): Promise<DistributionData> {
   }
 
   // Build tier data with ALL verticals (for expanded view)
-  const allVerticalNames = verticalTotals.map(v => v.name);
+  // Sort: real verticals by total (descending), then Unknown at the end
+  const sortedAllVerticals = [...realVerticals];
+  if (unknownVertical) {
+    sortedAllVerticals.push(unknownVertical);
+  }
+  const allVerticalNames = sortedAllVerticals.map(v => v.name);
 
   const tiers: DistributionData['tiers'] = [
     {
       key: 'hot',
       label: 'HOT',
       score: '80-100',
-      color: '#ef4444',
+      color: '#ff6b6b', // Vibrant red
       values: Object.fromEntries(allVerticalNames.map(v => [v, counts[v]?.hot || 0])),
       total: tierTotals.hot,
     },
@@ -248,7 +261,7 @@ export async function getDistribution(): Promise<DistributionData> {
       key: 'warm',
       label: 'WARM',
       score: '40-79',
-      color: '#f97316',
+      color: '#ffa94d', // Vibrant orange
       values: Object.fromEntries(allVerticalNames.map(v => [v, counts[v]?.warm || 0])),
       total: tierTotals.warm,
     },
@@ -256,7 +269,7 @@ export async function getDistribution(): Promise<DistributionData> {
       key: 'cold',
       label: 'COLD',
       score: '0-39',
-      color: '#6b7280',
+      color: '#94a3b8', // Bright slate
       values: Object.fromEntries(allVerticalNames.map(v => [v, counts[v]?.cold || 0])),
       total: tierTotals.cold,
     },
@@ -264,7 +277,7 @@ export async function getDistribution(): Promise<DistributionData> {
 
   return {
     verticals: topVerticals,
-    allVerticals: verticalTotals,
+    allVerticals: sortedAllVerticals, // Real verticals sorted by count, Unknown at end
     tiers,
     grandTotal: data.length,
     hiddenVerticalsCount: hiddenCount,
