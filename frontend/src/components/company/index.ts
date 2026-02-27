@@ -8,3 +8,10 @@ export { IntelligenceModules, MODULE_CONFIGS, WAVE_LABELS } from './Intelligence
 export type { ModuleConfig, ModuleData } from './IntelligenceModules';
 export { ChangeTimeline } from './ChangeTimeline';
 export type { ChangeEntry, Significance, ChangeTimelineProps } from './ChangeTimeline';
+export { EnrichmentProgress, ENRICHMENT_STEPS } from './EnrichmentProgress';
+export type {
+  EnrichmentProgressProps,
+  EnrichmentStepStatus,
+  EnrichmentStep,
+  FailedSource,
+} from './EnrichmentProgress';

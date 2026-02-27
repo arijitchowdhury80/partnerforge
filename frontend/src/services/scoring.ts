@@ -1,15 +1,23 @@
 /**
- * Composite Scoring Service
+ * Composite Scoring Service v2
  *
  * Multi-factor scoring system for company prioritization.
- * Replaces simple ICP score with a weighted composite of:
- * - Fit (25%): How well they match ICP criteria
- * - Intent (25%): Buying signals and readiness
- * - Value (25%): Deal potential and size
- * - Displacement (25%): Ease of converting from current provider
+ * Enhanced to use v3 enrichment data from all sources:
+ * - SimilarWeb: Traffic, engagement, competitors
+ * - BuiltWith: Tech stack, search provider
+ * - Yahoo Finance: Financials, analyst sentiment
+ * - SEC EDGAR: Risk factors, digital mentions
+ * - JSearch: Hiring signals
+ * - WebSearch: Executive quotes
+ *
+ * Factors (25% each):
+ * - Fit: How well they match ICP criteria
+ * - Intent: Buying signals and readiness (includes hiring!)
+ * - Value: Deal potential and size (includes financial health!)
+ * - Displacement: Ease of converting from current provider
  */
 
-import type { Company, CompositeScore, DetailedScoreBreakdown, ScoringFactorDetail } from '@/types';
+import type { Company, CompositeScore, DetailedScoreBreakdown } from '@/types';
 
 // =============================================================================
 // Factor Weights (must sum to 1.0)
@@ -109,7 +117,7 @@ export function calculateCompositeScore(company: Company): CompositeScore {
 }
 
 // =============================================================================
-// Individual Factor Calculations
+// FIT Factor (25%)
 // =============================================================================
 
 function calculateFitScore(company: Company): { score: number; signals: string[] } {
@@ -133,19 +141,19 @@ function calculateFitScore(company: Company): { score: number; signals: string[]
   const employees = company.employee_count || 0;
   if (employees >= EMPLOYEE_TIERS.enterprise) {
     score += 30;
-    signals.push(`Enterprise size: ${formatNumber(employees)} employees`);
+    signals.push(`Enterprise: ${formatNumber(employees)} employees`);
   } else if (employees >= EMPLOYEE_TIERS.large) {
     score += 25;
-    signals.push(`Large company: ${formatNumber(employees)} employees`);
+    signals.push(`Large: ${formatNumber(employees)} employees`);
   } else if (employees >= EMPLOYEE_TIERS.mid) {
     score += 15;
     signals.push(`Mid-market: ${formatNumber(employees)} employees`);
   } else if (employees >= EMPLOYEE_TIERS.small) {
     score += 5;
-    signals.push(`Small company: ${formatNumber(employees)} employees`);
+    signals.push(`Small: ${formatNumber(employees)} employees`);
   }
 
-  // Geographic fit (0-20 points) - US/UK/EU preferred
+  // Geographic fit (0-20 points)
   const country = company.headquarters?.country?.toLowerCase() || '';
   if (['united states', 'us', 'usa'].includes(country)) {
     score += 20;
@@ -161,116 +169,184 @@ function calculateFitScore(company: Company): { score: number; signals: string[]
   // Public company bonus (0-10 points)
   if (company.is_public) {
     score += 10;
-    signals.push('Public company (accountable spend)');
+    signals.push('Public company');
   }
 
   return { score: Math.min(100, score), signals };
 }
+
+// =============================================================================
+// INTENT Factor (25%) - Enhanced with hiring signals!
+// =============================================================================
 
 function calculateIntentScore(company: Company): { score: number; signals: string[] } {
   let score = 0;
   const signals: string[] = [];
 
-  // Traffic growth signals (0-30 points)
+  // Traffic = active digital presence (0-20 points)
   const monthlyVisits = company.sw_monthly_visits || 0;
   if (monthlyVisits >= TRAFFIC_TIERS.excellent) {
-    score += 30;
-    signals.push('Very high traffic (need scalable search)');
+    score += 20;
+    signals.push('Very high traffic (needs scalable search)');
   } else if (monthlyVisits >= TRAFFIC_TIERS.great) {
-    score += 25;
+    score += 15;
     signals.push('High traffic volume');
   } else if (monthlyVisits >= TRAFFIC_TIERS.good) {
-    score += 15;
+    score += 10;
     signals.push('Solid traffic base');
   }
 
-  // Existing search pain indicators (0-30 points)
-  // Companies with content platforms often have search pain
+  // Content platform = search pain (0-20 points)
   const partnerTech = company.partner_tech?.map(t => t.toLowerCase()) || [];
   const hasContentPlatform = partnerTech.some(t =>
     WEAK_SEARCH_PARTNERS.some(w => t.includes(w))
   );
   if (hasContentPlatform) {
-    score += 25;
+    score += 20;
     signals.push('Uses content platform with weak native search');
   }
 
-  // Tech stack complexity (0-20 points)
-  if (partnerTech.length >= 3) {
-    score += 20;
-    signals.push(`Complex tech stack (${partnerTech.length} partners)`);
-  } else if (partnerTech.length >= 1) {
-    score += 10;
-    signals.push('Has partner technology detected');
+  // *** NEW: Hiring signals from JSearch (0-25 points) ***
+  const hiringScore = company.hiring_signal_score || 0;
+  const hiringStrength = company.hiring_signal_strength;
+
+  if (hiringStrength === 'strong' || hiringScore >= 70) {
+    score += 25;
+    signals.push(`Strong hiring signal (score: ${hiringScore})`);
+  } else if (hiringStrength === 'moderate' || hiringScore >= 40) {
+    score += 15;
+    signals.push(`Moderate hiring signal (score: ${hiringScore})`);
+  } else if (hiringStrength === 'weak' || hiringScore >= 15) {
+    score += 5;
+    signals.push(`Weak hiring signal (score: ${hiringScore})`);
   }
 
-  // Executive quote/displacement angle (0-20 points)
+  // Hiring for search-specific roles (0-10 bonus)
+  if (company.hiring_has_search_roles) {
+    score += 10;
+    signals.push('Hiring for search/discovery roles');
+  }
+
+  // Hiring for e-commerce roles (0-5 bonus)
+  if (company.hiring_has_ecommerce_roles) {
+    score += 5;
+    signals.push('Hiring for e-commerce roles');
+  }
+
+  // *** NEW: SEC risk factors mentioning tech/digital (0-10 points) ***
+  if (company.has_tech_risk_factors) {
+    score += 10;
+    signals.push('SEC filings mention technology risks');
+  }
+  if (company.has_digital_mentions) {
+    score += 5;
+    signals.push('SEC filings mention digital transformation');
+  }
+
+  // Executive quotes (0-10 points)
   if (company.exec_quote) {
-    score += 15;
+    score += 10;
     signals.push('Executive quote captured');
   }
-  if (company.displacement_angle) {
+  if (company.exec_quotes_count && company.exec_quotes_count > 1) {
     score += 5;
-    signals.push('Displacement angle identified');
+    signals.push(`${company.exec_quotes_count} exec quotes found`);
   }
 
   return { score: Math.min(100, score), signals };
 }
+
+// =============================================================================
+// VALUE Factor (25%) - Enhanced with financial health!
+// =============================================================================
 
 function calculateValueScore(company: Company): { score: number; signals: string[] } {
   let score = 0;
   const signals: string[] = [];
 
-  // Revenue potential (0-40 points)
+  // Revenue potential (0-35 points)
   const revenue = company.revenue || 0;
   if (revenue >= REVENUE_TIERS.enterprise) {
-    score += 40;
+    score += 35;
     signals.push(`Enterprise revenue: ${formatCurrency(revenue)}`);
   } else if (revenue >= REVENUE_TIERS.large) {
-    score += 30;
+    score += 25;
     signals.push(`Large revenue: ${formatCurrency(revenue)}`);
   } else if (revenue >= REVENUE_TIERS.mid) {
-    score += 20;
+    score += 15;
     signals.push(`Mid-market revenue: ${formatCurrency(revenue)}`);
   } else if (revenue >= REVENUE_TIERS.small) {
-    score += 10;
+    score += 8;
     signals.push(`Small revenue: ${formatCurrency(revenue)}`);
   }
 
-  // Traffic volume = search volume proxy (0-30 points)
+  // Traffic volume = search volume proxy (0-20 points)
   const monthlyVisits = company.sw_monthly_visits || 0;
   if (monthlyVisits >= TRAFFIC_TIERS.excellent) {
-    score += 30;
-    signals.push(`${formatNumber(monthlyVisits)} monthly visits = high search volume`);
-  } else if (monthlyVisits >= TRAFFIC_TIERS.great) {
     score += 20;
+    signals.push(`${formatNumber(monthlyVisits)} visits = high search volume`);
+  } else if (monthlyVisits >= TRAFFIC_TIERS.great) {
+    score += 15;
     signals.push(`${formatNumber(monthlyVisits)} monthly visits`);
   } else if (monthlyVisits >= TRAFFIC_TIERS.good) {
-    score += 10;
+    score += 8;
     signals.push(`${formatNumber(monthlyVisits)} monthly visits`);
   }
 
-  // Multi-site potential (0-15 points)
-  if (company.store_count && company.store_count > 100) {
+  // *** NEW: Revenue growth from Yahoo Finance (0-15 points) ***
+  const revenueGrowth = company.revenue_growth || 0;
+  if (revenueGrowth >= 0.20) {
     score += 15;
-    signals.push(`${company.store_count} stores = multi-site potential`);
-  } else if (company.store_count && company.store_count > 10) {
+    signals.push(`High revenue growth: ${(revenueGrowth * 100).toFixed(0)}%`);
+  } else if (revenueGrowth >= 0.10) {
     score += 10;
-    signals.push(`${company.store_count} stores`);
+    signals.push(`Solid growth: ${(revenueGrowth * 100).toFixed(0)}%`);
+  } else if (revenueGrowth >= 0.05) {
+    score += 5;
+    signals.push(`Moderate growth: ${(revenueGrowth * 100).toFixed(0)}%`);
   }
 
-  // Growth indicators (0-15 points)
-  // Young companies in high-value verticals are often growth-stage
-  if (company.founded_year && company.founded_year >= 2015) {
-    const vertical = company.vertical?.toLowerCase() || '';
-    if (HIGH_VALUE_VERTICALS.some(v => vertical.includes(v))) {
-      score += 15;
-      signals.push('Growth-stage company in high-value vertical');
+  // *** NEW: Analyst sentiment from Yahoo Finance (0-10 points) ***
+  if (company.analyst_rating) {
+    const { buy, hold, sell } = company.analyst_rating;
+    const total = buy + hold + sell;
+    if (total > 0) {
+      const buyPct = buy / total;
+      if (buyPct >= 0.7) {
+        score += 10;
+        signals.push(`Strong buy consensus (${Math.round(buyPct * 100)}% buy)`);
+      } else if (buyPct >= 0.5) {
+        score += 5;
+        signals.push('Positive analyst sentiment');
+      }
     }
+  }
+
+  // *** NEW: Profit margins = healthy business (0-10 points) ***
+  const profitMargins = company.profit_margins || 0;
+  if (profitMargins >= 0.15) {
+    score += 10;
+    signals.push(`Strong margins: ${(profitMargins * 100).toFixed(0)}%`);
+  } else if (profitMargins >= 0.05) {
+    score += 5;
+    signals.push(`Healthy margins: ${(profitMargins * 100).toFixed(0)}%`);
+  }
+
+  // Multi-site potential (0-10 points)
+  if (company.store_count && company.store_count > 100) {
+    score += 10;
+    signals.push(`${company.store_count} stores = multi-site potential`);
+  } else if (company.store_count && company.store_count > 10) {
+    score += 5;
+    signals.push(`${company.store_count} stores`);
   }
 
   return { score: Math.min(100, score), signals };
 }
+
+// =============================================================================
+// DISPLACEMENT Factor (25%) - Enhanced with competitor analysis!
+// =============================================================================
 
 function calculateDisplacementScore(company: Company): { score: number; signals: string[] } {
   let score = 50; // Start at neutral
@@ -279,19 +355,22 @@ function calculateDisplacementScore(company: Company): { score: number; signals:
   const partnerTech = company.partner_tech?.map(t => t.toLowerCase()) || [];
   const currentSearch = company.current_search?.toLowerCase() || '';
 
-  // Current search provider analysis
+  // Current search provider analysis (major impact)
   if (currentSearch === 'none' || !currentSearch) {
-    score += 30;
+    score += 25;
     signals.push('No detected search provider (greenfield)');
   } else if (currentSearch === 'elasticsearch' || currentSearch === 'solr') {
     score += 20;
     signals.push('Uses open-source search (maintainability pain)');
   } else if (currentSearch === 'algolia') {
     score -= 50;
-    signals.push('Already using Algolia (existing customer)');
-  } else if (['google custom search', 'swiftype', 'searchspring'].includes(currentSearch)) {
+    signals.push('Already using Algolia');
+  } else if (['google custom search', 'swiftype', 'searchspring', 'klevu'].includes(currentSearch)) {
     score += 15;
     signals.push(`Displaceable provider: ${company.current_search}`);
+  } else if (['coveo', 'bloomreach', 'constructor'].some(c => currentSearch.includes(c))) {
+    score += 5;
+    signals.push(`Competitor provider: ${company.current_search}`);
   }
 
   // Partner tech assessment
@@ -303,45 +382,88 @@ function calculateDisplacementScore(company: Company): { score: number; signals:
   );
 
   if (hasWeakSearchPartner && !hasStrongSearchPartner) {
-    score += 20;
+    score += 15;
     signals.push('Partner platform has weak native search');
   } else if (hasStrongSearchPartner) {
     score -= 10;
-    signals.push('Partner platform has native search capabilities');
+    signals.push('Partner platform has native search');
   }
 
-  // Competitor intelligence
+  // *** NEW: Similar sites / competitor analysis (0-5 points) ***
+  if (company.similar_sites && company.similar_sites.length > 0) {
+    signals.push(`${company.similar_sites.length} similar sites identified`);
+  }
+
+  // Competitor intelligence (existing)
   if (company.competitor_data?.competitors) {
     const competitorsUsingAlgolia = company.competitor_data.competitors.filter(c => c.using_algolia);
-    if (competitorsUsingAlgolia.length > 0) {
+    if (competitorsUsingAlgolia.length >= 3) {
       score += 15;
+      signals.push(`${competitorsUsingAlgolia.length} competitors using Algolia (strong proof)`);
+    } else if (competitorsUsingAlgolia.length > 0) {
+      score += 10;
       signals.push(`${competitorsUsingAlgolia.length} competitor(s) using Algolia`);
     }
+  }
+
+  // *** NEW: Engagement quality from SimilarWeb (0-10 points) ***
+  // High bounce rate = poor user experience = search opportunity
+  const bounceRate = company.sw_bounce_rate || 0;
+  if (bounceRate >= 0.6) {
+    score += 10;
+    signals.push(`High bounce rate (${(bounceRate * 100).toFixed(0)}%) = UX opportunity`);
+  } else if (bounceRate >= 0.45) {
+    score += 5;
+    signals.push(`Moderate bounce rate (${(bounceRate * 100).toFixed(0)}%)`);
   }
 
   return { score: Math.max(0, Math.min(100, score)), signals };
 }
 
 // =============================================================================
-// Data Completeness Calculation
+// Data Completeness - Enhanced for v3 sources
 // =============================================================================
 
 function calculateDataCompleteness(company: Company): number {
   const dataPoints = [
+    // Basic info
     company.company_name,
     company.domain,
     company.vertical,
     company.industry,
     company.headquarters?.country,
-    company.employee_count,
-    company.revenue,
+
+    // SimilarWeb
     company.sw_monthly_visits,
+    company.sw_bounce_rate,
+    company.similar_sites?.length,
+
+    // BuiltWith
     company.partner_tech?.length,
     company.current_search,
-    company.is_public !== undefined,
-    company.founded_year,
-    company.competitor_data,
+    company.tech_stack_data,
+
+    // Yahoo Finance
+    company.revenue,
+    company.revenue_growth,
+    company.profit_margins,
+    company.analyst_rating,
+
+    // SEC EDGAR
+    company.has_tech_risk_factors !== undefined,
+    company.has_digital_mentions !== undefined,
+
+    // JSearch (hiring)
+    company.hiring_signal_score !== undefined,
+    company.hiring_signal_strength,
+
+    // WebSearch (exec quotes)
     company.exec_quote,
+
+    // Derived
+    company.competitor_data,
+    company.is_public !== undefined,
+    company.employee_count,
   ];
 
   const available = dataPoints.filter(Boolean).length;

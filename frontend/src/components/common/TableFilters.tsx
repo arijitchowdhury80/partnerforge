@@ -575,9 +575,9 @@ export const TRAFFIC_RANGES: NumericRange[] = [
   { min: 0, max: 100000, label: '<100K' },
 ];
 
+// Matches composite scoring thresholds: 70+ = Hot, 40-69 = Warm, 0-39 = Cold
 export const ICP_SCORE_RANGES: NumericRange[] = [
-  { min: 80, max: 100, label: 'Hot (80-100)' },
-  { min: 60, max: 79, label: 'Warm (60-79)' },
-  { min: 40, max: 59, label: 'Cool (40-59)' },
+  { min: 70, max: 100, label: 'Hot (70-100)' },
+  { min: 40, max: 69, label: 'Warm (40-69)' },
   { min: 0, max: 39, label: 'Cold (0-39)' },
 ];

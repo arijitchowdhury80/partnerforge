@@ -23,6 +23,7 @@ export interface StatusDefinition {
 }
 
 // THE single source of truth for status - always in this order
+// Thresholds: 70+ = Hot, 40-69 = Warm, 0-39 = Cold (matches composite scoring)
 export const STATUSES: StatusDefinition[] = [
   {
     key: 'hot',
@@ -32,7 +33,7 @@ export const STATUSES: StatusDefinition[] = [
     textColor: '#ffffff',
     icon: 'flame',
     description: 'Ready for outreach',
-    scoreRange: [80, 100],
+    scoreRange: [70, 100],
   },
   {
     key: 'warm',
@@ -42,7 +43,7 @@ export const STATUSES: StatusDefinition[] = [
     textColor: '#ffffff',
     icon: 'trending-up',
     description: 'Nurture pipeline',
-    scoreRange: [40, 79],
+    scoreRange: [40, 69],
   },
   {
     key: 'cold',
@@ -63,9 +64,10 @@ export const STATUS_MAP: Record<StatusKey, StatusDefinition> = {
   cold: STATUSES[2],
 };
 
-// Get status from ICP score
+// Get status from ICP/composite score
+// Thresholds: 70+ = Hot, 40-69 = Warm, 0-39 = Cold
 export function getStatusFromScore(score: number): StatusKey {
-  if (score >= 80) return 'hot';
+  if (score >= 70) return 'hot';
   if (score >= 40) return 'warm';
   return 'cold';
 }

@@ -121,7 +121,7 @@ export async function getStats(): Promise<DashboardStats> {
     };
   }
 
-  // 3 tiers: Hot (80-100), Warm (40-79), Cold (0-39)
+  // 3 tiers: Hot (70-100), Warm (40-69), Cold (0-39) - matches composite scoring
   let hot = 0, warm = 0, cold = 0, enriched = 0;
   const byVertical: Record<string, number> = {};
 
@@ -131,7 +131,7 @@ export async function getStats(): Promise<DashboardStats> {
   for (const target of data) {
     const score = target.icp_score || 0;
     if (score > 0) enriched++;
-    if (score >= 80) hot++;
+    if (score >= 70) hot++;
     else if (score >= 40) warm++;
     else cold++;
 
@@ -238,7 +238,7 @@ export async function getDistribution(): Promise<DistributionData> {
     return { verticals: [], allVerticals: [], tiers: [], grandTotal: 0, hiddenVerticalsCount: 0 };
   }
 
-  // Count by vertical and tier - 3 tiers: Hot (80+), Warm (40-79), Cold (0-39)
+  // Count by vertical and tier - 3 tiers: Hot (70+), Warm (40-69), Cold (0-39) - matches composite scoring
   const counts: Record<string, Record<string, number>> = {};
   const tierTotals = { hot: 0, warm: 0, cold: 0 };
   const verticalSet = new Set<string>();
@@ -252,7 +252,7 @@ export async function getDistribution(): Promise<DistributionData> {
       counts[vertical] = { hot: 0, warm: 0, cold: 0 };
     }
 
-    if (score >= 80) {
+    if (score >= 70) {
       counts[vertical].hot++;
       tierTotals.hot++;
     } else if (score >= 40) {
@@ -318,7 +318,7 @@ export async function getDistribution(): Promise<DistributionData> {
     {
       key: 'hot',
       label: 'HOT',
-      score: '80-100',
+      score: '70-100',  // Matches composite scoring thresholds
       color: '#ff6b6b', // Vibrant red
       values: Object.fromEntries(allVerticalNames.map(v => [v, counts[v]?.hot || 0])),
       total: tierTotals.hot,
@@ -326,7 +326,7 @@ export async function getDistribution(): Promise<DistributionData> {
     {
       key: 'warm',
       label: 'WARM',
-      score: '40-79',
+      score: '40-69',   // Matches composite scoring thresholds
       color: '#ffa94d', // Vibrant orange
       values: Object.fromEntries(allVerticalNames.map(v => [v, counts[v]?.warm || 0])),
       total: tierTotals.warm,
@@ -355,7 +355,8 @@ export async function getDistribution(): Promise<DistributionData> {
 // =============================================================================
 
 function getStatusFromScore(score: number): 'hot' | 'warm' | 'cold' {
-  if (score >= 80) return 'hot';
+  // Matches composite scoring thresholds: 70+ = hot, 40-69 = warm, <40 = cold
+  if (score >= 70) return 'hot';
   if (score >= 40) return 'warm';
   return 'cold';
 }
@@ -500,10 +501,10 @@ export async function getCompanies(
     params.push(`icp_score=gte.${min_score}`);
   }
   if (status) {
-    // 3 tiers: Hot (80-100), Warm (40-79), Cold (0-39)
+    // 3 tiers: Hot (70-100), Warm (40-69), Cold (0-39) - matches composite scoring
     const ranges: Record<string, [number, number]> = {
-      hot: [80, 100],
-      warm: [40, 79],
+      hot: [70, 100],
+      warm: [40, 69],
       cold: [0, 39],
     };
     const [min, max] = ranges[status] || [0, 100];

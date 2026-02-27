@@ -60,16 +60,17 @@ import type {
   CompetitorData,
   CaseStudyMatch,
 } from '@/types';
+import { COLORS } from '@/lib/constants';
 
 // =============================================================================
-// Color Constants
+// Color Constants - Use shared COLORS from @/lib/constants
 // =============================================================================
 
-const ALGOLIA_BLUE = '#003DFF';
-const TEXT_DARK = '#0f172a';
-const TEXT_MUTED = '#64748b';
-const BG_WHITE = '#ffffff';
-const BG_ALT = '#f8fafc';
+const ALGOLIA_BLUE = COLORS.ALGOLIA_NEBULA_BLUE;
+const TEXT_DARK = COLORS.GRAY_900;
+const TEXT_MUTED = COLORS.GRAY_500;
+const BG_WHITE = COLORS.ALGOLIA_WHITE;
+const BG_ALT = COLORS.GRAY_50;
 
 // =============================================================================
 // Traffic Accordion

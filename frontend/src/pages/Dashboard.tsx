@@ -115,9 +115,10 @@ export function Dashboard() {
   const filteredStats = useMemo(() => {
     if (!allTargetsData) return { total: 0, hot: 0, warm: 0, cold: 0 };
     let hot = 0, warm = 0, cold = 0;
+    // Thresholds: 70+ = Hot, 40-69 = Warm, 0-39 = Cold (matches composite scoring)
     allTargetsData.forEach(t => {
       const score = t.icp_score || 0;
-      if (score >= 80) hot++;
+      if (score >= 70) hot++;
       else if (score >= 40) warm++;
       else cold++;
     });
@@ -187,7 +188,7 @@ export function Dashboard() {
         icp_score: icpScore,
         signal_score: icpScore, // Default to ICP score
         priority_score: icpScore, // Default to ICP score
-        status: icpScore >= 80 ? 'hot' : icpScore >= 40 ? 'warm' : 'cold',
+        status: icpScore >= 70 ? 'hot' : icpScore >= 40 ? 'warm' : 'cold',
         partner_tech: t.partner_tech ? [t.partner_tech] : [],
         last_enriched: t.last_enriched || undefined,
         sw_monthly_visits: t.sw_monthly_visits || undefined,

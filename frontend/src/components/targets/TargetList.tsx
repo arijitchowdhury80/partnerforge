@@ -186,7 +186,8 @@ const FACTOR_COLORS = {
 };
 
 function ScoreDisplay({ score }: { score: number }) {
-  const color = score >= 80 ? STATUS_MAP.hot.bgColor : score >= 40 ? STATUS_MAP.warm.bgColor : GRAY_500;
+  // Thresholds: 70+ = Hot, 40-69 = Warm, 0-39 = Cold (matches composite scoring)
+  const color = score >= 70 ? STATUS_MAP.hot.bgColor : score >= 40 ? STATUS_MAP.warm.bgColor : GRAY_500;
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
       <div style={{ width: 50, height: 8, borderRadius: 4, background: GRAY_200, overflow: 'hidden' }}>

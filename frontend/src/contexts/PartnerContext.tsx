@@ -3,9 +3,13 @@
  *
  * Global state for selected partner and product.
  * Hierarchical structure: Partner → Products
+ *
+ * DATA SOURCE: Database tables (partners, partner_products)
+ * NOT hardcoded - fetched from Supabase on mount
  */
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { getPartners } from '../services/supabase';
 
 // Product within a partner ecosystem
 export interface Product {
@@ -13,6 +17,7 @@ export interface Product {
   name: string;
   shortName: string;
   count?: number;  // Number of targets with this product
+  builtWithTechName?: string;  // For API filtering
 }
 
 // Partner company with their products
@@ -29,90 +34,13 @@ export interface PartnerSelection {
   product: Product | null;  // null means all products for this partner
 }
 
-// Partner/Product hierarchy
-export const PARTNERS: Partner[] = [
-  {
-    key: 'all',
-    name: 'All Partners',
-    shortName: 'All',
-    products: [],
-  },
-  {
-    key: 'adobe',
-    name: 'Adobe',
-    shortName: 'Adobe',
-    products: [
-      { key: 'aem', name: 'Experience Manager (AEM)', shortName: 'AEM', count: 2687 },
-      { key: 'commerce', name: 'Commerce (Magento)', shortName: 'Commerce', count: 0 },
-      { key: 'campaign', name: 'Campaign', shortName: 'Campaign' },
-      { key: 'analytics', name: 'Analytics', shortName: 'Analytics' },
-      { key: 'target', name: 'Target', shortName: 'Target' },
-    ],
-  },
-  {
-    key: 'salesforce',
-    name: 'Salesforce',
-    shortName: 'Salesforce',
-    products: [
-      { key: 'commerce-cloud', name: 'Commerce Cloud (SFCC)', shortName: 'SFCC' },
-      { key: 'marketing-cloud', name: 'Marketing Cloud', shortName: 'Marketing' },
-      { key: 'service-cloud', name: 'Service Cloud', shortName: 'Service' },
-      { key: 'experience-cloud', name: 'Experience Cloud', shortName: 'Experience' },
-    ],
-  },
-  {
-    key: 'shopify',
-    name: 'Shopify',
-    shortName: 'Shopify',
-    products: [
-      { key: 'shopify-plus', name: 'Shopify Plus', shortName: 'Plus' },
-      { key: 'shopify', name: 'Shopify', shortName: 'Shopify' },
-      { key: 'shopify-lite', name: 'Shopify Lite', shortName: 'Lite' },
-    ],
-  },
-  {
-    key: 'commercetools',
-    name: 'commercetools',
-    shortName: 'CT',
-    products: [
-      { key: 'commercetools', name: 'commercetools', shortName: 'CT' },
-    ],
-  },
-  {
-    key: 'bigcommerce',
-    name: 'BigCommerce',
-    shortName: 'BigCommerce',
-    products: [
-      { key: 'enterprise', name: 'BigCommerce Enterprise', shortName: 'Enterprise' },
-      { key: 'essentials', name: 'BigCommerce Essentials', shortName: 'Essentials' },
-    ],
-  },
-  {
-    key: 'vtex',
-    name: 'VTEX',
-    shortName: 'VTEX',
-    products: [
-      { key: 'vtex', name: 'VTEX', shortName: 'VTEX' },
-    ],
-  },
-  {
-    key: 'amplience',
-    name: 'Amplience',
-    shortName: 'Amplience',
-    products: [
-      { key: 'amplience', name: 'Amplience DXP', shortName: 'DXP', count: 15 },
-    ],
-  },
-  {
-    key: 'spryker',
-    name: 'Spryker',
-    shortName: 'Spryker',
-    products: [
-      { key: 'spryker', name: 'Spryker Commerce OS', shortName: 'Commerce OS', count: 20 },
-    ],
-  },
-  // NOTE: Elasticsearch is a COMPETITOR, not a partner - removed from this list
-];
+// Default "All Partners" option - always available
+const ALL_PARTNERS: Partner = {
+  key: 'all',
+  name: 'All Partners',
+  shortName: 'All',
+  products: [],
+};
 
 // Get display name for current selection
 export function getSelectionDisplayName(selection: PartnerSelection): string {
@@ -131,36 +59,12 @@ export function getSelectionTechName(selection: PartnerSelection): string | unde
     return undefined;
   }
   if (selection.product) {
-    // Map to BuiltWith tech names
-    const techNameMap: Record<string, string> = {
-      'adobe-aem': 'Adobe Experience Manager',
-      'adobe-commerce': 'Adobe Commerce',
-      'adobe-campaign': 'Adobe Campaign',
-      'adobe-analytics': 'Adobe Analytics',
-      'salesforce-commerce-cloud': 'Salesforce Commerce Cloud',
-      'shopify-shopify-plus': 'Shopify Plus',
-      'shopify-shopify': 'Shopify',
-      'commercetools-commercetools': 'commercetools',
-      'bigcommerce-enterprise': 'BigCommerce',
-      'vtex-vtex': 'VTEX',
-      'amplience-amplience': 'Amplience',
-      'spryker-spryker': 'Spryker',
-    };
-    return techNameMap[`${selection.partner.key}-${selection.product.key}`] || selection.product.name;
+    // Use the builtWithTechName if available, otherwise fall back to product name
+    return selection.product.builtWithTechName || selection.product.name;
   }
-  // Default partner tech name - use broad names for ilike matching
+  // Default: use partner name for broad matching
   // e.g., 'Adobe' matches both 'Adobe Experience Manager' AND 'Adobe Commerce'
-  const defaultTechMap: Record<string, string> = {
-    adobe: 'Adobe',                // Matches AEM, Commerce, Campaign, Analytics
-    salesforce: 'Salesforce',      // Matches all Salesforce products
-    shopify: 'Shopify',
-    commercetools: 'commercetools',
-    bigcommerce: 'BigCommerce',
-    vtex: 'VTEX',
-    amplience: 'Amplience',
-    spryker: 'Spryker',
-  };
-  return defaultTechMap[selection.partner.key];
+  return selection.partner.name;
 }
 
 interface PartnerContextType {
@@ -169,6 +73,7 @@ interface PartnerContextType {
   selectPartner: (partner: Partner) => void;
   selectProduct: (product: Product | null) => void;
   partners: Partner[];
+  isLoading: boolean;
   // Legacy support
   selectedPartner: {
     key: string;
@@ -186,6 +91,7 @@ const iconMap: Record<string, string> = {
   adobe: '🔴',
   salesforce: '☁️',
   shopify: '🛒',
+  sap: '🔷',
   commercetools: '⚙️',
   bigcommerce: '🏪',
   vtex: '💜',
@@ -194,12 +100,49 @@ const iconMap: Record<string, string> = {
 };
 
 export function PartnerProvider({ children }: { children: ReactNode }) {
+  // Partners loaded from database
+  const [partners, setPartners] = useState<Partner[]>([ALL_PARTNERS]);
+  const [isLoading, setIsLoading] = useState(true);
+
   // Default to "All Partners" - no specific partner selected
-  // User must explicitly select a partner to see filtered data
   const [selection, setSelection] = useState<PartnerSelection>({
-    partner: PARTNERS[0], // "All Partners" - no specific selection
+    partner: ALL_PARTNERS,
     product: null,
   });
+
+  // Fetch partners from database on mount
+  useEffect(() => {
+    async function loadPartners() {
+      setIsLoading(true);
+      try {
+        const result = await getPartners();
+
+        // Transform database format to Partner interface
+        const dbPartners: Partner[] = result.partners.map(p => ({
+          key: p.key,
+          name: p.name,
+          shortName: p.shortName,
+          products: p.products.map(prod => ({
+            key: prod.key,
+            name: prod.name,
+            shortName: prod.shortName,
+            count: prod.count,
+            builtWithTechName: prod.builtWithTechName,
+          })),
+        }));
+
+        // Always include "All Partners" at the beginning
+        setPartners([ALL_PARTNERS, ...dbPartners]);
+      } catch (error) {
+        console.error('Failed to load partners from database:', error);
+        // Keep default [ALL_PARTNERS] on error
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadPartners();
+  }, []);
 
   const selectPartner = (partner: Partner) => {
     setSelection({
@@ -230,7 +173,8 @@ export function PartnerProvider({ children }: { children: ReactNode }) {
         setSelection,
         selectPartner,
         selectProduct,
-        partners: PARTNERS,
+        partners,
+        isLoading,
         selectedPartner,
       }}
     >

@@ -274,21 +274,23 @@ async function fetchBuiltWithTechStack(domain: string): Promise<TechStackResult 
 // Algolia Customer Detection
 // =============================================================================
 
-// Known Algolia customers - this would ideally come from a database
-const KNOWN_ALGOLIA_CUSTOMERS = new Set([
-  'lacoste.com', 'staples.com', 'gymshark.com', 'discord.com', 'twitch.tv',
-  'stripe.com', 'slack.com', 'medium.com', 'birchbox.com', 'vimeo.com',
-  'asos.com', 'underarmour.com', 'decathlon.com', 'sephora.com',
-  'lacoste.com', 'coupa.com', 'zendesk.com', 'perplexity.ai',
-  // Add more as needed
-]);
+// SECURITY: Removed hardcoded customer list (HIGH-3)
+// Customer list was exposing confidential business information.
+// Algolia customer detection now relies solely on BuiltWith tech stack detection.
+// If needed in the future, implement a backend API that queries a secure database.
 
-function checkIfAlgoliaCustomer(domain: string): boolean {
-  const normalizedDomain = domain.toLowerCase().replace('www.', '');
-  return KNOWN_ALGOLIA_CUSTOMERS.has(normalizedDomain);
+/**
+ * Check if a domain is an Algolia customer
+ * Currently relies on tech stack detection only.
+ * TODO: Implement backend API for verified customer lookup if needed.
+ */
+function checkIfAlgoliaCustomer(_domain: string): boolean {
+  // SECURITY: No longer checking hardcoded list
+  // Rely on BuiltWith detection in detectSearchProvider()
+  return false;
 }
 
-async function detectSearchProvider(techStack: TechStackResult | null, domain: string): Promise<string | undefined> {
+async function detectSearchProvider(techStack: TechStackResult | null, _domain: string): Promise<string | undefined> {
   const searchTechs = techStack?.search || [];
 
   for (const tech of searchTechs) {
@@ -303,10 +305,8 @@ async function detectSearchProvider(techStack: TechStackResult | null, domain: s
     if (name.includes('klevu')) return 'Klevu';
   }
 
-  // If in known customers list, they use Algolia
-  if (checkIfAlgoliaCustomer(domain)) {
-    return 'Algolia';
-  }
+  // SECURITY: Removed hardcoded customer list check (HIGH-3)
+  // Now relying solely on BuiltWith tech stack detection
 
   return undefined;
 }

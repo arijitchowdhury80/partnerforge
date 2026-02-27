@@ -43,11 +43,20 @@ htmlcov/
 *.log
 logs/
 
-# Environment
+# Environment - NEVER commit secrets!
 .env
 .env.local
 .env.*.local
+.env.production
+.env.staging
+.env.development
+frontend/.env
+frontend/.env.local
+frontend/.env.production
+frontend/.env.staging
 !.env.example
+!frontend/.env.example
+!backend/.env.example
 
 # Temporary files
 *.tmp

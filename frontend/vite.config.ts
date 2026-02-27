@@ -15,15 +15,12 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:8000',
-        changeOrigin: true,
-      },
-    },
+    // No backend proxy needed - all data via direct Supabase REST API
   },
   build: {
     outDir: 'dist',
-    sourcemap: true,
+    // SECURITY: Disable sourcemaps in production (MEDIUM-1)
+    // Sourcemaps expose original TypeScript source code
+    sourcemap: process.env.NODE_ENV !== 'production',
   },
 });

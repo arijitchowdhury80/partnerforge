@@ -27,7 +27,8 @@ const PAGE_SIZE = 50;
 
 function convertTargetToCompany(target: DisplacementTarget): Company {
   const score = target.icp_score || 0;
-  const status: 'hot' | 'warm' | 'cold' = score >= 80 ? 'hot' : score >= 40 ? 'warm' : 'cold';
+  // Thresholds: 70+ = Hot, 40-69 = Warm, 0-39 = Cold (matches composite scoring)
+  const status: 'hot' | 'warm' | 'cold' = score >= 70 ? 'hot' : score >= 40 ? 'warm' : 'cold';
 
   return {
     domain: target.domain,

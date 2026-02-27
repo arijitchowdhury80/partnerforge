@@ -38,13 +38,16 @@ Displacement Targets = Companies Using Partner Tech − Existing Algolia Custome
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-## Data Sources
+## Data Sources (Enrichment v3)
 
-| Source | Purpose |
-|--------|---------|
-| **BuiltWith** | Technology detection (AEM, Shopify, etc.) |
-| **SimilarWeb** | Traffic metrics + competitor discovery |
-| **Customer Evidence** | Existing Algolia customers (to exclude) |
+| Source | Module | Key Data |
+|--------|--------|----------|
+| **SimilarWeb** | `similarweb.ts` | Traffic, bounce rate, similar sites |
+| **BuiltWith** | `builtwith.ts` | Tech stack, search provider, CMS |
+| **Yahoo Finance** | `yahoofinance.ts` | 3-yr financials, analyst ratings |
+| **SEC EDGAR** | `secedgar.ts` | 10-K/10-Q filings, risk factors |
+| **WebSearch** | `websearch.ts` | Executive quotes, strategic signals |
+| **JSearch** | `jsearch.ts` | Job postings, hiring signals |
 
 ## Database
 
@@ -52,25 +55,35 @@ PostgreSQL hosted on Supabase. Data is accessed via auto-generated REST API.
 
 | Table | Records | Purpose |
 |-------|---------|---------|
-| `displacement_targets` | 2,737 | Partner tech users NOT on Algolia |
+| `displacement_targets` | ~2,800 | Partner tech users NOT on Algolia |
 
-## ICP Scoring (0-100 points)
+## Composite Scoring (0-100 points)
 
-| Component | Weight | Logic |
-|-----------|--------|-------|
-| Vertical/Tier | 40 | Commerce=40, Content=25, Support=15 |
-| Traffic | 30 | 50M+=30, 10M+=25, 1M+=15 |
-| Tech Spend | 20 | $100K+=20, $50K+=15 |
-| Partner Tech | 10 | Adobe=10, Shopify=7 |
+**Enrichment automatically calculates and saves multi-factor scores.**
+
+| Factor | Weight | What It Measures |
+|--------|--------|------------------|
+| **Fit** | 25% | Vertical, company size, geography, public vs private |
+| **Intent** | 25% | Traffic, hiring signals, SEC risk factors, exec quotes |
+| **Value** | 25% | Revenue, revenue growth, analyst ratings, profit margins |
+| **Displacement** | 25% | Current search provider, partner tech, bounce rate |
+
+### Score Thresholds
+
+| Score | Status | Action |
+|-------|--------|--------|
+| **70-100** | Hot | Immediate outreach |
+| **40-69** | Warm | Nurture pipeline |
+| **0-39** | Cold | Deprioritize |
 
 ## Partner Coverage
 
 | Partner | Targets |
 |---------|---------|
-| Adobe AEM | 2,687 |
-| Adobe Commerce | 18 |
-| Amplience | 20 |
-| Spryker | 12 |
+| Adobe AEM | ~2,700 |
+| Adobe Commerce | ~18 |
+| Amplience | ~32 |
+| Spryker | ~28 |
 
 ## Quick Start
 
@@ -86,29 +99,31 @@ cd frontend && npm install && npm run dev
 ```
 PartnerForge/
 ├── README.md                 # This file
-├── PRD.md                    # Product requirements
-├── DEPLOYMENT.md             # Deployment guide
+├── PROJECT_TRACKER.md        # Project status and milestones
+├── ARCHITECTURE.md           # Technical architecture
 ├── frontend/                 # React application
 │   ├── src/
+│   │   ├── lib/constants.ts  # COLORS, STATUSES, thresholds
 │   │   ├── components/       # UI components
-│   │   ├── services/         # API client (Supabase)
+│   │   ├── services/
+│   │   │   ├── api.ts        # Supabase API client
+│   │   │   ├── scoring.ts    # Composite scoring algorithm
+│   │   │   └── enrichment/v3/ # Modular enrichment (6 sources)
 │   │   └── types/            # TypeScript definitions
 │   └── package.json
-├── docs/                     # Architecture documentation
-│   ├── README.md             # Documentation index
-│   ├── prd/                  # PRD versions
-│   └── api/                  # API documentation
-├── scripts/                  # Utility scripts
-└── data/                     # Local data (legacy SQLite backup)
+├── docs/
+│   └── ENRICHMENT_PIPELINE.md # Enrichment v3 documentation
+└── supabase/                 # Database migrations
 ```
 
 ## Documentation
 
-See [docs/README.md](docs/README.md) for full architecture documentation including:
-- Intelligence module specifications
-- Database schema
-- API endpoints
-- UI/UX specifications
+| Document | Purpose |
+|----------|---------|
+| [PROJECT_TRACKER.md](./PROJECT_TRACKER.md) | Current status, statistics, milestones |
+| [ARCHITECTURE.md](./ARCHITECTURE.md) | Technical architecture (v5.0) |
+| [docs/ENRICHMENT_PIPELINE.md](./docs/ENRICHMENT_PIPELINE.md) | Enrichment v3 + scoring integration |
+| [PRD.md](./PRD.md) | Product requirements |
 
 ## License
 
@@ -116,4 +131,4 @@ Internal Algolia use only.
 
 ---
 
-*Last updated: 2026-02-26*
+*Last updated: 2026-02-26 (Enrichment v3 + Composite Scoring)*

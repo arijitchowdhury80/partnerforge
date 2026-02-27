@@ -8,10 +8,13 @@
 // Environment variables - never hardcode keys in source code
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY;
-const SUPABASE_SERVICE_KEY = import.meta.env.VITE_SUPABASE_SERVICE_KEY;
+
+// SECURITY: Service role key removed (CRITICAL-2)
+// Service role keys must NEVER be used in frontend code
+// All privileged operations should go through backend API
 
 if (!SUPABASE_URL || !SUPABASE_KEY) {
-  console.error('Missing Supabase environment variables. Check your .env file.');
+  throw new Error('Missing Supabase environment variables (VITE_SUPABASE_URL or VITE_SUPABASE_KEY). Check your .env file.');
 }
 
 interface SupabaseResponse<T> {
@@ -57,36 +60,10 @@ async function supabaseRequest<T>(
   }
 }
 
-// Service key request for tables with RLS (partners, partner_products)
-async function supabaseServiceRequest<T>(
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<SupabaseResponse<T>> {
-  const key = SUPABASE_SERVICE_KEY || SUPABASE_KEY;
-  const headers: Record<string, string> = {
-    'apikey': key,
-    'Authorization': `Bearer ${key}`,
-    'Content-Type': 'application/json',
-    ...(options.headers as Record<string, string> || {}),
-  };
-
-  try {
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/${endpoint}`, {
-      ...options,
-      headers,
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      return { data: null, error: errorText };
-    }
-
-    const data = await response.json();
-    return { data, error: null };
-  } catch (err) {
-    return { data: null, error: String(err) };
-  }
-}
+// SECURITY: supabaseServiceRequest() removed (CRITICAL-2)
+// Service role keys must NEVER be used in frontend code.
+// RLS policies have been updated to allow anon access to partners table.
+// See migration: 20260226_fix_rls_security.sql
 
 // =============================================================================
 // Displacement Targets
@@ -280,9 +257,10 @@ export async function getStats(): Promise<DashboardStats> {
   const byPartner: Record<string, number> = {};
   const byVertical: Record<string, number> = {};
 
+  // Thresholds: 70+ = Hot, 40-69 = Warm, 0-39 = Cold (matches composite scoring)
   for (const target of data) {
     const score = target.icp_score || 0;
-    if (score >= 80) hot++;
+    if (score >= 70) hot++;
     else if (score >= 40) warm++;
     else cold++;
 
@@ -341,6 +319,19 @@ export interface DataFeedbackRecord {
   reported_at?: string;
 }
 
+// SECURITY: Allowed feedback types (HIGH-5 validation)
+const ALLOWED_FEEDBACK_TYPES = [
+  'is_algolia_customer',
+  'wrong_company_name',
+  'missing_data',
+  'incorrect_data',
+  'wrong_vertical',
+  'wrong_revenue',
+  'other'
+];
+const MAX_NOTES_LENGTH = 5000;
+const DOMAIN_REGEX = /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z]{2,})+$/;
+
 /**
  * Submit data feedback/correction
  * Users can report issues like "this is an Algolia customer" or "wrong company name"
@@ -349,6 +340,27 @@ export async function submitFeedback(feedback: Omit<DataFeedbackRecord, 'id' | '
   success: boolean;
   error?: string;
 }> {
+  // SECURITY: Input validation (HIGH-5)
+  if (!ALLOWED_FEEDBACK_TYPES.includes(feedback.feedback_type)) {
+    return { success: false, error: 'Invalid feedback type' };
+  }
+
+  if (!feedback.domain || !DOMAIN_REGEX.test(feedback.domain)) {
+    return { success: false, error: 'Invalid domain format' };
+  }
+
+  if (feedback.notes && feedback.notes.length > MAX_NOTES_LENGTH) {
+    return { success: false, error: `Notes must be under ${MAX_NOTES_LENGTH} characters` };
+  }
+
+  // Sanitize text fields
+  const sanitizedFeedback = {
+    ...feedback,
+    domain: feedback.domain.toLowerCase().trim(),
+    notes: feedback.notes?.slice(0, MAX_NOTES_LENGTH),
+    company_name: feedback.company_name?.slice(0, 255),
+  };
+
   const response = await fetch(`${SUPABASE_URL}/rest/v1/data_feedback`, {
     method: 'POST',
     headers: {
@@ -357,12 +369,13 @@ export async function submitFeedback(feedback: Omit<DataFeedbackRecord, 'id' | '
       'Content-Type': 'application/json',
       'Prefer': 'return=minimal',
     },
-    body: JSON.stringify(feedback),
+    body: JSON.stringify(sanitizedFeedback),
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    return { success: false, error: errorText };
+    // SECURITY: Don't expose raw error messages to users (MEDIUM-6)
+    console.error('[Supabase] Feedback submission failed:', await response.text());
+    return { success: false, error: 'Unable to submit feedback. Please try again.' };
   }
 
   return { success: true };
@@ -439,15 +452,15 @@ export async function getPartners(): Promise<{
     }>;
   }>;
 }> {
-  // Try to fetch from partners table first (using service key to bypass RLS)
-  const { data: partnersData, error: partnersError } = await supabaseServiceRequest<PartnerRecord[]>(
+  // Fetch from partners table (RLS allows anon read - see migration 20260226_fix_rls_security.sql)
+  const { data: partnersData, error: partnersError } = await supabaseRequest<PartnerRecord[]>(
     'partners?is_active=eq.true&order=sort_order.asc'
   );
 
   // If partners table exists and has data, use it
   if (!partnersError && partnersData && partnersData.length > 0) {
-    // Also fetch products for each partner (using service key to bypass RLS)
-    const { data: productsData } = await supabaseServiceRequest<PartnerProductRecord[]>(
+    // Also fetch products for each partner
+    const { data: productsData } = await supabaseRequest<PartnerProductRecord[]>(
       'partner_products?is_active=eq.true&order=sort_order.asc'
     );
 

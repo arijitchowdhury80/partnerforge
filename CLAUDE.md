@@ -76,12 +76,30 @@ frontend/src/
 3. **Status order is sacred** - Hot → Warm → Cold, never any other order
 4. **Filter dropdowns** - Always use `useCanonicalOrder={true}` for status filters
 
-## Backend
+## Standardized Tech Stack
 
-- **Database**: Supabase (project: xbitqeejsgqnwvxlnjra)
-- **API**: Direct Supabase REST API via `@/services/supabase.ts`
+**SINGLE LANGUAGE: TypeScript everywhere. No Python, no separate backend service.**
+
+| Layer | Technology | Location |
+|-------|------------|----------|
+| Frontend | React + TypeScript + Vite | `frontend/` |
+| Database | Supabase (PostgreSQL + REST API) | Cloud |
+| Hosting | Vercel | Auto-deploy from main |
+| Backend (if needed) | Supabase Edge Functions | `supabase/functions/` |
+
+### Data Flow
+```
+Frontend (React) → Supabase REST API → PostgreSQL
+                 → External APIs (SimilarWeb, BuiltWith, JSearch)
+```
+
+### Key Services
+- `@/services/supabase.ts` - Direct Supabase REST API client
+- `@/services/enrichment.ts` - Multi-source enrichment pipeline
+- `@/services/scoring.ts` - Composite scoring (Fit/Intent/Value/Displacement)
 
 ## Deployment
 
 - **Frontend**: Vercel (auto-deploys from main branch)
 - **URL**: https://partnerforge.vercel.app
+- **Database**: Supabase (project: xbitqeejsgqnwvxlnjra)

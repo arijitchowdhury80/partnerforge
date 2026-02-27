@@ -585,6 +585,16 @@ a:hover, .algolia-link:hover {
  * ANIMATIONS
  * ============================================================================= */
 
+/* Spin animation for loading icons */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
 @keyframes shimmer {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }

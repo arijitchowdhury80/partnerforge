@@ -1,6 +1,6 @@
 # PartnerForge Architecture
 
-**Version:** 4.0 (Simplified Architecture)
+**Version:** 5.0 (Enrichment v3 + Composite Scoring)
 **Date:** 2026-02-26
 **Status:** Production
 
@@ -171,17 +171,32 @@ frontend/
 ├── src/
 │   ├── App.tsx                    # Root component
 │   ├── main.tsx                   # Entry point
+│   ├── lib/
+│   │   └── constants.ts           # COLORS, STATUSES, getStatusFromScore()
 │   ├── components/
-│   │   ├── AppShell.tsx           # Main layout
-│   │   ├── TargetTable.tsx        # Data grid
-│   │   ├── CompanyDrawer.tsx      # Detail view
-│   │   ├── FilterBar.tsx          # Column filters
-│   │   └── DataFeedback.tsx       # Data quality feedback
+│   │   ├── common/
+│   │   │   └── TableFilters.tsx   # Excel-style column filters
+│   │   ├── company/
+│   │   │   ├── CompanyDrawer.tsx  # Slide-in detail view
+│   │   │   └── ScoreBreakdown.tsx # Composite score visualization
+│   │   ├── dashboard/
+│   │   │   └── DistributionGrid.tsx # Heatmap by vertical
+│   │   └── targets/
+│   │       ├── TargetList.tsx     # Main data grid with hover preview
+│   │       └── QuickLookCard.tsx  # Inline preview card
 │   ├── services/
-│   │   └── api.ts                 # Supabase API client
+│   │   ├── api.ts                 # Supabase API client
+│   │   ├── scoring.ts             # Composite scoring algorithm
+│   │   ├── supabase.ts            # Direct Supabase client
+│   │   └── enrichment/
+│   │       └── v3/                # Modular enrichment (6 sources)
+│   │           ├── index.ts       # enrich(), enrichAndSave()
+│   │           ├── types.ts       # TypeScript definitions
+│   │           └── sources/       # One file per data source
 │   ├── types/
 │   │   └── index.ts               # TypeScript definitions
-│   └── index.css                  # Global styles
+│   └── styles/
+│       └── global.css             # Global styles
 ├── package.json
 ├── vite.config.ts
 └── tailwind.config.js
@@ -235,24 +250,94 @@ Drawer opens with company data
 
 ---
 
-## Enrichment Pipeline (Scripts)
+## Enrichment Pipeline v3
 
-For data enrichment, Python scripts communicate with external APIs:
+**Clean, modular TypeScript architecture: 1 source = 1 module**
 
 ```
-scripts/
-├── enrich_company_v2.py     # BuiltWith + SimilarWeb enrichment
-├── icp_scoring.py           # Apply ICP scoring algorithm
-└── migrate_to_supabase.py   # SQLite → Supabase migration
+frontend/src/services/enrichment/v3/
+├── index.ts           # The umbrella - enrich(), enrichBatch(), enrichAndSave()
+├── types.ts           # All shared types
+└── sources/
+    ├── index.ts       # Source registry
+    ├── similarweb.ts  # Traffic, engagement, competitors
+    ├── builtwith.ts   # Tech stack, search provider
+    ├── yahoofinance.ts # Financials, analyst ratings
+    ├── secedgar.ts    # SEC filings, risk factors
+    ├── websearch.ts   # Executive quotes, strategic signals
+    └── jsearch.ts     # Hiring signals (jobs)
 ```
 
 ### Data Sources
 
-| Source | API | Purpose |
-|--------|-----|---------|
-| BuiltWith | REST | Technology detection |
-| SimilarWeb | REST | Traffic metrics |
-| Yahoo Finance | Library | Financial data (public companies) |
+| Source | Module | Auth | Key Data |
+|--------|--------|------|----------|
+| SimilarWeb | `similarweb.ts` | API Key | Traffic, bounce rate, similar sites |
+| BuiltWith | `builtwith.ts` | API Key | Tech stack, search provider, CMS |
+| Yahoo Finance | `yahoofinance.ts` | None | 3-yr financials, analyst ratings |
+| SEC EDGAR | `secedgar.ts` | None | 10-K/10-Q filings, risk factors |
+| WebSearch | `websearch.ts` | Backend | Executive quotes, strategic signals |
+| JSearch | `jsearch.ts` | API Key | Job postings, hiring signals |
+
+### Usage
+
+```typescript
+import { enrich, enrichBatch, enrichAndSave } from '@/services/enrichment/v3';
+
+// Enrich ALL sources
+const result = await enrich('costco.com');
+
+// Enrich specific sources
+await enrich('costco.com', { sources: ['similarweb', 'builtwith'] });
+
+// Enrich and save to database (includes composite scoring)
+await enrichAndSave('costco.com');
+```
+
+---
+
+## Composite Scoring
+
+**Enrichment automatically calculates and saves composite scores.**
+
+### Scoring Flow
+
+```
+enrichAndSave(domain)
+    │
+    ▼
+Fetch data from all sources in parallel
+    │
+    ▼
+Build Company object from enrichment results
+    │
+    ▼
+calculateCompositeScore(company)
+    │
+    ├── Fit Factor (25%)        ── Vertical, company size, geography
+    ├── Intent Factor (25%)     ── Traffic, hiring signals, SEC risks
+    ├── Value Factor (25%)      ── Revenue, growth, analyst ratings
+    └── Displacement Factor (25%) ── Current search, partner tech, bounce
+    │
+    ▼
+Save to icp_score column + derive status
+```
+
+### Score Thresholds
+
+| Score | Status | Description |
+|-------|--------|-------------|
+| **70-100** | Hot | Ready for immediate outreach |
+| **40-69** | Warm | Nurture pipeline |
+| **0-39** | Cold | Low priority |
+
+### Implementation
+
+| File | Purpose |
+|------|---------|
+| `services/scoring.ts` | `calculateCompositeScore()`, `getDetailedBreakdown()` |
+| `lib/constants.ts` | `getStatusFromScore()`, status thresholds |
+| `services/enrichment/v3/index.ts` | Scoring integration in `saveToSupabase()` |
 
 ---
 
@@ -333,10 +418,11 @@ For advanced features (real-time enrichment, background jobs), the architecture 
 
 | Document | Purpose |
 |----------|---------|
-| [DEPLOYMENT.md](./DEPLOYMENT.md) | Deployment instructions |
+| [PROJECT_TRACKER.md](./PROJECT_TRACKER.md) | Project status and milestones |
+| [docs/ENRICHMENT_PIPELINE.md](./docs/ENRICHMENT_PIPELINE.md) | Enrichment v3 full documentation |
 | [PRD.md](./PRD.md) | Product requirements |
-| [docs/README.md](./docs/README.md) | Full documentation index |
+| [README.md](./README.md) | Project overview |
 
 ---
 
-*Last updated: 2026-02-26*
+*Last updated: 2026-02-26 (v5.0 - Enrichment v3 + Composite Scoring)*

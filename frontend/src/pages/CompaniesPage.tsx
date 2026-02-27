@@ -25,6 +25,7 @@ import {
 import {
   IconSearch,
   IconUpload,
+  IconDownload,
   IconX,
   IconFilter,
   IconChevronDown,
@@ -34,7 +35,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import { getCompanies } from '@/services/api';
 import { TargetList, type ColumnFilter } from '@/components/targets/TargetList';
+import { ExportModal } from '@/components/modals/ExportModal';
 import { COLORS } from '@/lib/constants';
+import type { Company } from '@/types';
 
 // =============================================================================
 // Companies Page Component
@@ -139,6 +142,9 @@ export function CompaniesPage() {
   const [searchQuery, setSearchQuery] = useState(initialState.searchQuery);
   const [columnFilters, setColumnFilters] = useState<ColumnFilter[]>(initialState.columnFilters);
   const [currentPage, setCurrentPage] = useState(initialState.currentPage);
+
+  // Export modal state
+  const [showExportModal, setShowExportModal] = useState(false);
 
   // Sync state changes back to URL
   useEffect(() => {
@@ -318,14 +324,25 @@ export function CompaniesPage() {
                   Click column header dropdowns (Status, Vertical, Partner Tech) to filter like Excel
                 </Text>
               </div>
-              <Button
-                leftSection={<IconUpload size={16} />}
-                variant="gradient"
-                gradient={{ from: 'blue', to: 'cyan', deg: 135 }}
-                onClick={() => navigate('/upload')}
-              >
-                Upload New List
-              </Button>
+              <Group gap="sm">
+                <Button
+                  leftSection={<IconDownload size={16} />}
+                  variant="light"
+                  color="green"
+                  onClick={() => setShowExportModal(true)}
+                  disabled={filteredCompanies.length === 0}
+                >
+                  Export ({filteredCompanies.length})
+                </Button>
+                <Button
+                  leftSection={<IconUpload size={16} />}
+                  variant="gradient"
+                  gradient={{ from: 'blue', to: 'cyan', deg: 135 }}
+                  onClick={() => navigate('/upload')}
+                >
+                  Upload New List
+                </Button>
+              </Group>
             </Group>
           </motion.div>
 
@@ -522,6 +539,14 @@ export function CompaniesPage() {
           </motion.div>
         </Container>
       </div>
+
+      {/* Export Modal */}
+      <ExportModal
+        opened={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        companies={filteredCompanies as Company[]}
+        selectedCount={filteredCompanies.length}
+      />
     </div>
   );
 }
