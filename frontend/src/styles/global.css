@@ -670,7 +670,8 @@ a:hover, .algolia-link:hover {
 
 /* Dropdown container */
 .mantine-Select-dropdown,
-.mantine-Combobox-dropdown {
+.mantine-Combobox-dropdown,
+.mantine-MultiSelect-dropdown {
   background-color: #ffffff !important;
   border: 1px solid #e2e8f0 !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
@@ -678,7 +679,8 @@ a:hover, .algolia-link:hover {
 
 /* All options - base state */
 .mantine-Select-option,
-.mantine-Combobox-option {
+.mantine-Combobox-option,
+.mantine-MultiSelect-option {
   color: #0f172a !important;
   background-color: #ffffff !important;
   font-size: 14px !important;
@@ -688,8 +690,10 @@ a:hover, .algolia-link:hover {
 /* Hover state - light gray background */
 .mantine-Select-option:hover,
 .mantine-Combobox-option:hover,
+.mantine-MultiSelect-option:hover,
 .mantine-Select-option[data-hovered],
-.mantine-Combobox-option[data-hovered] {
+.mantine-Combobox-option[data-hovered],
+.mantine-MultiSelect-option[data-hovered] {
   background-color: #f1f5f9 !important;
   color: #0f172a !important;
 }
@@ -697,8 +701,10 @@ a:hover, .algolia-link:hover {
 /* Selected state - Algolia Blue background with white text */
 .mantine-Select-option[data-selected],
 .mantine-Combobox-option[data-selected],
+.mantine-MultiSelect-option[data-selected],
 .mantine-Select-option[data-checked],
-.mantine-Combobox-option[data-checked] {
+.mantine-Combobox-option[data-checked],
+.mantine-MultiSelect-option[data-checked] {
   background-color: #003DFF !important;
   color: #ffffff !important;
 }
@@ -706,8 +712,10 @@ a:hover, .algolia-link:hover {
 /* Selected + Hovered - slightly darker blue */
 .mantine-Select-option[data-selected]:hover,
 .mantine-Combobox-option[data-selected]:hover,
+.mantine-MultiSelect-option[data-selected]:hover,
 .mantine-Select-option[data-selected][data-hovered],
-.mantine-Combobox-option[data-selected][data-hovered] {
+.mantine-Combobox-option[data-selected][data-hovered],
+.mantine-MultiSelect-option[data-selected][data-hovered] {
   background-color: #002999 !important;
   color: #ffffff !important;
 }
@@ -1061,4 +1069,98 @@ a:hover, .algolia-link:hover {
 
 .mantine-Paper-root[data-with-border] {
   border-color: #e2e8f0 !important;
+}
+
+/* Galaxy glass panels - override default white background */
+.galaxy-glass-panel.mantine-Paper-root {
+  background-color: rgba(15, 23, 42, 0.85) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* =============================================================================
+ * GALAXY EXPLORER BACKGROUND
+ * Starfield fallback when video isn't loaded
+ * ============================================================================= */
+
+.galaxy-background {
+  background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+}
+
+/* Animated stars */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+.galaxy-stars {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image:
+    radial-gradient(2px 2px at 20px 30px, white, transparent),
+    radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 90px 40px, white, transparent),
+    radial-gradient(2px 2px at 160px 120px, rgba(255,255,255,0.9), transparent),
+    radial-gradient(1px 1px at 230px 80px, white, transparent),
+    radial-gradient(2px 2px at 300px 150px, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1px 1px at 370px 50px, white, transparent),
+    radial-gradient(2px 2px at 450px 180px, rgba(255,255,255,0.8), transparent);
+  background-repeat: repeat;
+  background-size: 500px 200px;
+  animation: twinkle 4s ease-in-out infinite;
+}
+
+/* =============================================================================
+ * GLASSMORPHISM INPUT OVERRIDES
+ * For inputs within glass panels
+ * ============================================================================= */
+
+.galaxy-glass-input .mantine-Input-input,
+.galaxy-glass-input .mantine-TextInput-input,
+.galaxy-glass-input .mantine-MultiSelect-input {
+  background-color: rgba(30, 41, 59, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #ffffff !important;
+}
+
+.galaxy-glass-input .mantine-Input-input::placeholder,
+.galaxy-glass-input .mantine-TextInput-input::placeholder,
+.galaxy-glass-input .mantine-MultiSelect-input::placeholder {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.galaxy-glass-input .mantine-Input-input:focus,
+.galaxy-glass-input .mantine-TextInput-input:focus,
+.galaxy-glass-input .mantine-MultiSelect-input:focus {
+  border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* MultiSelect pills */
+.galaxy-glass-input .mantine-Pill-root {
+  background-color: #003DFF !important;
+  color: white !important;
+}
+
+/* Search icon */
+.galaxy-glass-input .mantine-Input-section {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Pagination for glass panels */
+.galaxy-pagination .mantine-Pagination-control {
+  background-color: rgba(30, 41, 59, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: white !important;
+}
+
+.galaxy-pagination .mantine-Pagination-control:hover {
+  background-color: rgba(50, 61, 79, 0.9) !important;
+}
+
+.galaxy-pagination .mantine-Pagination-control[data-active] {
+  background-color: #003DFF !important;
+  border-color: #003DFF !important;
 }

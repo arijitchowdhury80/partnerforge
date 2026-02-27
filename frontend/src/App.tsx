@@ -15,17 +15,16 @@ import { PartnerProvider } from './contexts/PartnerContext';
 // Layout
 import { AppShell } from './components/layout/AppShell';
 
-// Pages
-import { Dashboard } from './pages/Dashboard';
+// Pages - v2
+import { GalaxyExplorer } from './pages/GalaxyExplorer';
 import { TargetDetail } from './pages/TargetDetail';
-import { DashboardPage } from './pages/DashboardPage';
 import { ListsPage } from './pages/ListsPage';
 import { UploadPage } from './pages/UploadPage';
 import { CompanyPage } from './pages/CompanyPage';
 import { AlertsPage } from './pages/AlertsPage';
-import { CompaniesPage } from './pages/CompaniesPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { DocsPage } from './pages/DocsPage';
+import { ICPLandingPage } from './pages/ICPLandingPage';
 
 // Styles
 import '@mantine/core/styles.css';
@@ -114,17 +113,48 @@ function App() {
           <Notifications position="top-right" limit={5} />
           <BrowserRouter>
             <Routes>
+            {/* Root redirects to Dashboard (Galaxy Explorer) */}
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
             {/* Main Layout with Sidebar */}
             <Route element={<AppShell />}>
-              {/* Redirect root to dashboard */}
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              {/* ICP Overview - accessible from sidebar */}
+              <Route path="/icp" element={<ICPLandingPage />} />
 
-              {/* Dashboard - Use new premium Dashboard */}
-              <Route path="/dashboard" element={<Dashboard />} />
+              {/* Dashboard - Galaxy Explorer (v2) */}
+              <Route path="/dashboard" element={<GalaxyExplorer />} />
 
-              {/* Companies - List view with advanced filtering */}
-              <Route path="/companies" element={<CompaniesPage />} />
+              {/* Companies - Galaxy Explorer with company list */}
+              <Route path="/companies" element={<GalaxyExplorer />} />
               <Route path="/company/:domain" element={<TargetDetail />} />
+
+              {/* Layer 2: Whale Composite (Intent + Qualification) */}
+              <Route
+                path="/whale"
+                element={
+                  <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--mantine-color-dimmed)' }}>
+                    <h2>Layer 2: Whale Composite</h2>
+                    <p>776 accounts with Demandbase + ZoomInfo data</p>
+                    <p style={{ marginTop: '1rem', fontSize: '0.9rem' }}>
+                      Coming soon: Filter Galaxy accounts by intent signals
+                    </p>
+                  </div>
+                }
+              />
+
+              {/* Layer 3: Crossbeam Overlaps (Warm Intros) */}
+              <Route
+                path="/crossbeam"
+                element={
+                  <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--mantine-color-dimmed)' }}>
+                    <h2>Layer 3: Crossbeam Overlaps</h2>
+                    <p>489 accounts with partner warm intros</p>
+                    <p style={{ marginTop: '1rem', fontSize: '0.9rem' }}>
+                      Coming soon: View partner relationships and account owners
+                    </p>
+                  </div>
+                }
+              />
 
               {/* Lists */}
               <Route path="/lists" element={<ListsPage />} />

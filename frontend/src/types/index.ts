@@ -1,9 +1,144 @@
 /**
  * PartnerForge Type Definitions
+ * v2.0 - 5-Layer Funnel Architecture
  */
 
 // =============================================================================
-// Company Types
+// LAYER 0: PARTNER TECH GALAXY TYPES (v2)
+// =============================================================================
+
+/**
+ * Valid technology values for each galaxy
+ */
+export type CMSTech = 'AEM' | 'Contentful' | 'Contentstack' | 'Amplience' | 'Sitecore' | null;
+export type CommerceTech = 'SFCC' | 'Shopify+' | 'Magento' | 'BigCommerce' | 'Commercetools' | 'Spryker' | null;
+export type MartechTech = 'SFMC' | 'Marketo' | 'HubSpot' | 'Klaviyo' | null;
+export type SearchTech = 'Elastic' | 'Solr' | 'Coveo' | 'Bloomreach' | 'SearchSpring' | 'Lucidworks' | 'Klevu' | 'Constructor' | 'Native' | null;
+
+export type TechCohort = 'JACKPOT' | 'HIGH' | 'MEDIUM' | 'BASE';
+export type SalesPlay = 'DISPLACEMENT' | 'GREENFIELD';
+export type Galaxy = 'cms' | 'commerce' | 'martech' | 'search';
+
+/**
+ * Company record from the companies table (Layer 0)
+ */
+export interface GalaxyCompany {
+  domain: string;
+  company_name: string | null;
+
+  // The 4 Galaxies
+  cms_tech: CMSTech;
+  commerce_tech: CommerceTech;
+  martech_tech: MartechTech;
+  search_tech: SearchTech;
+
+  // Computed fields
+  tech_cohort: TechCohort;
+  sales_play: SalesPlay;
+
+  // Metadata
+  source: string;
+  source_date: string;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Technology option for dropdowns
+ */
+export interface TechOption {
+  id: number;
+  galaxy: Galaxy;
+  slug: string;
+  display_name: string;
+  partner_name: string | null;
+  is_competitor: boolean;
+  display_order: number;
+}
+
+/**
+ * Galaxy summary stats
+ */
+export interface GalaxySummary {
+  galaxy: Galaxy;
+  tech: string;
+  company_count: number;
+  displacement_count: number;
+  greenfield_count: number;
+}
+
+/**
+ * Cohort summary stats
+ */
+export interface CohortSummary {
+  tech_cohort: TechCohort;
+  company_count: number;
+  displacement_count: number;
+  greenfield_count: number;
+}
+
+/**
+ * Filter state for Galaxy Explorer
+ */
+export interface GalaxyFilterState {
+  cms_tech: CMSTech[];
+  commerce_tech: CommerceTech[];
+  martech_tech: MartechTech[];
+  search_tech: SearchTech[];
+  tech_cohort: TechCohort[];
+  sales_play: SalesPlay[];
+  search: string;
+}
+
+// =============================================================================
+// LAYER 2-5: FUNNEL TYPES (v2)
+// =============================================================================
+
+/**
+ * Funnel stage for an account
+ */
+export type FunnelStage = 'GALAXY_ONLY' | 'WHALE_QUALIFIED' | 'CROSSBEAM_ONLY' | 'CREAM_SET';
+
+/**
+ * Account with full funnel context
+ */
+export interface FunnelAccount extends GalaxyCompany {
+  // Layer 2: Whale data
+  in_whale: boolean;
+  journey_stage?: string;
+  engagement_points_3mo?: number;
+  revenue?: number;
+  demandbase_industry?: string;
+
+  // Layer 3: Crossbeam data
+  in_crossbeam: boolean;
+  crossbeam_partner?: string;
+  partner_account_owner?: string;
+
+  // Layer 4: ICP data
+  icp_confidence?: string;
+  icp_proof_points?: number;
+  icp_score_boost?: number;
+
+  // Computed
+  funnel_stage: FunnelStage;
+  composite_score: number;
+  tier: 'HOT' | 'WARM' | 'COLD';
+}
+
+/**
+ * Funnel summary stats
+ */
+export interface FunnelSummary {
+  layer0_galaxy: number;
+  layer2_whale: number;
+  layer3_crossbeam: number;
+  cream_set: number;
+  hot_targets: number;
+}
+
+// =============================================================================
+// Company Types (v1 - kept for backwards compatibility)
 // =============================================================================
 
 export interface Company {
