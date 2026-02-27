@@ -1,0 +1,48 @@
+{
+  "generated_at": "2026-02-27",
+  "description": "Mapping from Crossbeam/Adobe industry names to unified Demandbase taxonomy",
+  "coverage": {
+    "total_crossbeam_industries": 28,
+    "exact_matches": 5,
+    "close_matches": 23,
+    "unmapped": 0,
+    "coverage_percent": 100
+  },
+  "mapping": {
+    "Retail": "Retail",
+    "Financial Services": "Financial Services",
+    "Manufacturing - Consumer Goods": "Consumer Product Manufacturing",
+    "Manufacturing - Industrial": "Industrial Manufacturing and Services",
+    "Technology Software & Services": "Computer Software",
+    "Professional & Technical Services": "Corporate Services",
+    "Pharmaceuticals & Biotech": "Pharmaceuticals and Biotechnology",
+    "Telecommunications": "Telecommunications",
+    "Manufacturing - Automotive": "Automotive",
+    "Technology Hardware": "Computer Hardware",
+    "Insurance": "Insurance",
+    "Travel, Leisure & Hospitality": "Leisure, Sports and Recreation",
+    "Health Care": "Hospitals and Healthcare",
+    "Government - Federal": "Government",
+    "Media & Entertainment": "Media",
+    "Education - Higher Ed": "Schools and Education",
+    "Government - State": "Government",
+    "Utilities": "Energy and Environmental",
+    "Real Estate, Rental & Leasing": "Real Estate",
+    "Transportation & Warehousing": "Transportation",
+    "Non-Profit": "Civic, Non-Profit and Membership Groups",
+    "Manufacturing - Aerospace": "Aerospace and Defense",
+    "Agriculture & Forestry": "Agriculture and Forestry",
+    "Government - Military": "Government",
+    "Government - Local": "Government",
+    "Energy, Mining, Oil & Gas": "Energy and Environmental",
+    "Construction": "Construction and Building Materials",
+    "Advertising": "Media"
+  },
+  "exact_matches": [
+    "Retail",
+    "Financial Services",
+    "Telecommunications",
+    "Insurance",
+    "Agriculture & Forestry"
+  ]
+}
