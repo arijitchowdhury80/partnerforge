@@ -2,13 +2,13 @@
  * BuiltWith Source Module
  *
  * Provides: Tech stack, search provider, CMS, ecommerce platform
- * API: BuiltWith Free API
+ * API: BuiltWith Free API (via Edge Function proxy)
+ *
+ * SECURITY: API key is stored in Supabase Secrets, NOT in frontend bundle
  */
 
 import type { SourceModule, SourceResult, BuiltWithData, SourceOptions } from '../types';
-
-const API_KEY = import.meta.env.VITE_BUILTWITH_API_KEY;
-const BASE_URL = 'https://api.builtwith.com/free1/api.json';
+import { callEnrichProxy } from '@/services/supabase';
 
 // Partner tech patterns to detect
 const PARTNER_PATTERNS: Record<string, RegExp> = {
@@ -35,41 +35,40 @@ const SEARCH_PATTERNS: Record<string, RegExp> = {
   'Solr': /apache solr|solr/i,
 };
 
+interface RawTech {
+  Name?: string;
+  name?: string;
+  Tag?: string;
+  category?: string;
+  FirstDetected?: string;
+}
+
 export const builtwith: SourceModule<BuiltWithData> = {
   id: 'builtwith',
   name: 'BuiltWith',
 
-  isAvailable: () => !!API_KEY,
+  // Edge Function availability checked at runtime
+  isAvailable: () => true,
 
   async enrich(domain: string, _options?: SourceOptions): Promise<SourceResult<BuiltWithData>> {
     const startTime = Date.now();
 
-    if (!API_KEY) {
-      return {
-        source: 'builtwith',
-        success: false,
-        data: null,
-        error: 'No API key configured',
-        fetched_at: new Date().toISOString(),
-        cached: false,
-      };
-    }
-
     try {
-      const url = `${BASE_URL}?KEY=${API_KEY}&LOOKUP=${domain}`;
-      const response = await fetch(url, {
-        signal: AbortSignal.timeout(15000),
+      const { data: raw, error } = await callEnrichProxy<{
+        Results?: Array<{ Result?: { Paths?: Array<{ Technologies?: RawTech[] }> } }>;
+      }>({
+        source: 'builtwith',
+        domain,
       });
 
-      if (!response.ok) {
-        throw new Error(`API returned ${response.status}`);
+      if (error || !raw) {
+        throw new Error(error || 'No data returned');
       }
 
-      const raw = await response.json();
       const techs = raw.Results?.[0]?.Result?.Paths?.[0]?.Technologies || [];
 
       // Extract and categorize technologies
-      const technologies: BuiltWithData['technologies'] = techs.map((t: any) => ({
+      const technologies: BuiltWithData['technologies'] = techs.map((t: RawTech) => ({
         name: t.Name || t.name || 'Unknown',
         category: t.Tag || t.category || 'Other',
         first_detected: t.FirstDetected || undefined,
@@ -78,7 +77,7 @@ export const builtwith: SourceModule<BuiltWithData> = {
       // Detect partner tech
       const partnerTech: string[] = [];
       for (const [partner, pattern] of Object.entries(PARTNER_PATTERNS)) {
-        if (techs.some((t: any) => pattern.test(t.Name || ''))) {
+        if (techs.some((t: RawTech) => pattern.test(t.Name || ''))) {
           partnerTech.push(partner);
         }
       }
@@ -86,7 +85,7 @@ export const builtwith: SourceModule<BuiltWithData> = {
       // Detect search provider
       let searchProvider: string | undefined;
       for (const [provider, pattern] of Object.entries(SEARCH_PATTERNS)) {
-        if (techs.some((t: any) => pattern.test(t.Name || ''))) {
+        if (techs.some((t: RawTech) => pattern.test(t.Name || ''))) {
           searchProvider = provider;
           break;
         }
@@ -94,20 +93,20 @@ export const builtwith: SourceModule<BuiltWithData> = {
 
       // Detect CMS
       const cmsPatterns = [/wordpress/i, /drupal/i, /contentful/i, /sanity/i, /strapi/i];
-      const cms = techs.find((t: any) => cmsPatterns.some(p => p.test(t.Name || '')))?.Name;
+      const cms = techs.find((t: RawTech) => cmsPatterns.some(p => p.test(t.Name || '')))?.Name;
 
       // Detect ecommerce platform
       const ecomPatterns = [/shopify/i, /magento/i, /bigcommerce/i, /woocommerce/i, /salesforce commerce/i];
-      const ecommercePlatform = techs.find((t: any) => ecomPatterns.some(p => p.test(t.Name || '')))?.Name;
+      const ecommercePlatform = techs.find((t: RawTech) => ecomPatterns.some(p => p.test(t.Name || '')))?.Name;
 
       // Extract analytics and tag managers
       const analytics = techs
-        .filter((t: any) => /analytics|tracking|pixel/i.test(t.Tag || t.category || ''))
-        .map((t: any) => t.Name);
+        .filter((t: RawTech) => /analytics|tracking|pixel/i.test(t.Tag || t.category || ''))
+        .map((t: RawTech) => t.Name || '');
 
       const tagManagers = techs
-        .filter((t: any) => /tag manager|gtm|tealium|segment/i.test(t.Name || ''))
-        .map((t: any) => t.Name);
+        .filter((t: RawTech) => /tag manager|gtm|tealium|segment/i.test(t.Name || ''))
+        .map((t: RawTech) => t.Name || '');
 
       const data: BuiltWithData = {
         technologies,

@@ -294,20 +294,25 @@ function getCountryInfo(countryId: number): { code: string; name: string } {
 // SimilarWeb Client
 // ============================================================================
 
+/**
+ * @deprecated Use Edge Function proxy via callEnrichProxy() instead
+ * API keys are now stored in Supabase Secrets (server-side)
+ */
 export class SimilarWebClient {
-  private apiKey: string;
   private baseUrl = 'https://api.similarweb.com/v1/website';
   private timeout = 30000; // 30 seconds
+  private apiKey: string;
 
   constructor(apiKey?: string) {
     this.apiKey = apiKey || import.meta.env.VITE_SIMILARWEB_API_KEY || '';
+    console.warn('[SimilarWebClient] DEPRECATED: Use callEnrichProxy() from @/services/supabase instead. API keys are now server-side.');
   }
 
   /**
-   * Check if the client has a valid API key
+   * @deprecated Edge Function handles API key validation
    */
   hasApiKey(): boolean {
-    return this.apiKey.length > 0;
+    return true; // Edge Function handles this
   }
 
   /**

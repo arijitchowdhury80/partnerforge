@@ -104,7 +104,7 @@ Domains are mapped to tickers via internal lookup table:
 ## 3. SimilarWeb
 
 **Base URL:** `https://api.similarweb.com/v1/website`
-**Auth:** API key required (`VITE_SIMILARWEB_API_KEY`)
+**Auth:** API key stored in Supabase Secrets (server-side via Edge Function)
 **Rate Limit:** Varies by plan
 
 ### Endpoints
@@ -154,7 +154,7 @@ Domains are mapped to tickers via internal lookup table:
 - Social: `https://api.builtwith.com/soc1/api.json`
 - Trust: `https://api.builtwith.com/trust1/api.json`
 
-**Auth:** API key required (`VITE_BUILTWITH_API_KEY`)
+**Auth:** API key stored in Supabase Secrets (server-side via Edge Function)
 
 ### Endpoints
 
@@ -233,13 +233,25 @@ BuiltWith categorizes search technologies:
 
 ## Environment Variables
 
+### Frontend (.env)
 ```bash
-# frontend/.env
-VITE_SIMILARWEB_API_KEY=your_key_here
-VITE_BUILTWITH_API_KEY=your_key_here
+# Supabase - required
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_KEY=your-anon-key
+```
+
+### Supabase Secrets (Server-side)
+```bash
+# Configure via Supabase CLI or Dashboard
+supabase secrets set SIMILARWEB_API_KEY=your_key_here
+supabase secrets set BUILTWITH_API_KEY=your_key_here
+supabase secrets set JSEARCH_API_KEY=your_key_here
+
 # Yahoo Finance - no key needed (yahoo-finance2 handles auth)
 # SEC EDGAR - no key needed (free public API)
 ```
+
+**SECURITY:** External API keys are stored server-side in Supabase Secrets. The frontend calls the `enrich-proxy` Edge Function, which securely accesses these keys.
 
 ---
 

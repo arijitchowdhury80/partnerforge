@@ -2,13 +2,13 @@
  * JSearch Source Module
  *
  * Provides: Hiring signals, job postings analysis
- * API: JSearch via RapidAPI
+ * API: JSearch via RapidAPI (via Edge Function proxy)
+ *
+ * SECURITY: API key is stored in Supabase Secrets, NOT in frontend bundle
  */
 
 import type { SourceModule, SourceResult, JSearchData, SourceOptions } from '../types';
-
-const API_KEY = import.meta.env.VITE_JSEARCH_API_KEY;
-const BASE_URL = 'https://jsearch.p.rapidapi.com/search';
+import { callEnrichProxy } from '@/services/supabase';
 
 // Tier 1: Decision makers (VP, C-suite, Director)
 const TIER_1_PATTERNS = [
@@ -93,25 +93,21 @@ function getSignalStrength(score: number): 'strong' | 'moderate' | 'weak' | 'non
   return 'none';
 }
 
+interface RawJob {
+  job_title?: string;
+  employer_name?: string;
+  job_apply_link?: string;
+}
+
 export const jsearch: SourceModule<JSearchData> = {
   id: 'jsearch',
   name: 'Job Search',
 
-  isAvailable: () => !!API_KEY,
+  // Edge Function availability checked at runtime
+  isAvailable: () => true,
 
   async enrich(domain: string, options?: SourceOptions): Promise<SourceResult<JSearchData>> {
     const startTime = Date.now();
-
-    if (!API_KEY) {
-      return {
-        source: 'jsearch',
-        success: false,
-        data: null,
-        error: 'No API key configured',
-        fetched_at: new Date().toISOString(),
-        cached: false,
-      };
-    }
 
     // Extract company name from domain
     const companyName = options?.companyName || domain
@@ -121,23 +117,18 @@ export const jsearch: SourceModule<JSearchData> = {
       .replace(/\b\w/g, c => c.toUpperCase());
 
     try {
-      const query = encodeURIComponent(`${companyName} jobs`);
-      const url = `${BASE_URL}?query=${query}&num_pages=2`;
-
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'X-RapidAPI-Key': API_KEY,
-          'X-RapidAPI-Host': 'jsearch.p.rapidapi.com',
-        },
-        signal: AbortSignal.timeout(15000),
+      const { data: raw, error } = await callEnrichProxy<{
+        status?: string;
+        data?: RawJob[];
+      }>({
+        source: 'jsearch',
+        domain,
+        companyName,
       });
 
-      if (!response.ok) {
-        throw new Error(`API returned ${response.status}`);
+      if (error || !raw) {
+        throw new Error(error || 'No data returned');
       }
-
-      const raw = await response.json();
 
       if (raw.status !== 'OK' || !raw.data) {
         throw new Error('API returned no data');
@@ -145,7 +136,7 @@ export const jsearch: SourceModule<JSearchData> = {
 
       // Filter to company jobs only
       const companyLower = companyName.toLowerCase();
-      const companyJobs = raw.data.filter((job: any) =>
+      const companyJobs = raw.data.filter((job: RawJob) =>
         job.employer_name?.toLowerCase().includes(companyLower)
       );
 

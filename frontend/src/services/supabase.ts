@@ -569,6 +569,53 @@ export async function getPartners(): Promise<{
 /**
  * Simple supabase client interface for components that expect it
  */
+// =============================================================================
+// Edge Function Proxy - Secure API calls
+// =============================================================================
+
+export type EnrichSource = 'similarweb' | 'builtwith' | 'jsearch';
+
+interface EnrichProxyRequest {
+  source: EnrichSource;
+  domain: string;
+  companyName?: string;
+}
+
+/**
+ * Call the enrich-proxy Edge Function
+ * This proxies API calls to SimilarWeb, BuiltWith, and JSearch
+ * API keys are stored securely in Supabase Secrets (server-side)
+ */
+export async function callEnrichProxy<T>(request: EnrichProxyRequest): Promise<{
+  data: T | null;
+  error: string | null;
+}> {
+  try {
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/enrich-proxy`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return { data: null, error: data.error || `API returned ${response.status}` };
+    }
+
+    return { data, error: null };
+  } catch (err) {
+    return { data: null, error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
+
+// =============================================================================
+// Supabase client-like interface for compatibility
+// =============================================================================
+
 export const supabase = {
   from: (table: string) => ({
     insert: async (data: Record<string, unknown>) => {

@@ -13,11 +13,14 @@ import '@testing-library/jest-dom/vitest';
 // Environment Variables
 // =============================================================================
 
-vi.stubEnv('VITE_SIMILARWEB_API_KEY', 'test-api-key-123');
-vi.stubEnv('VITE_BUILTWITH_API_KEY', 'test-builtwith-key-456');
+// Supabase credentials for tests
 vi.stubEnv('VITE_SUPABASE_URL', 'https://test.supabase.co');
-vi.stubEnv('VITE_SUPABASE_ANON_KEY', 'test-anon-key');
-vi.stubEnv('VITE_SUPABASE_SERVICE_KEY', 'test-service-key');
+vi.stubEnv('VITE_SUPABASE_KEY', 'test-anon-key');
+
+// SECURITY NOTE: External API keys (SIMILARWEB, BUILTWITH, JSEARCH) are no longer
+// stored in frontend environment variables. They are now in Supabase Secrets
+// and accessed via the enrich-proxy Edge Function.
+// Tests should mock callEnrichProxy() instead of using API keys.
 
 // =============================================================================
 // Global Mocks

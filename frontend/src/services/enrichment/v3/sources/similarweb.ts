@@ -2,69 +2,57 @@
  * SimilarWeb Source Module
  *
  * Provides: Traffic, engagement, similar sites
- * API: SimilarWeb Addon API
+ * API: SimilarWeb Addon API (via Edge Function proxy)
+ *
+ * SECURITY: API key is stored in Supabase Secrets, NOT in frontend bundle
  */
 
 import type { SourceModule, SourceResult, SimilarWebData, SourceOptions } from '../types';
-
-const API_KEY = import.meta.env.VITE_SIMILARWEB_API_KEY;
-const BASE_URL = 'https://api.similarweb.com/v1/SimilarWebAddon';
+import { callEnrichProxy } from '@/services/supabase';
 
 export const similarweb: SourceModule<SimilarWebData> = {
   id: 'similarweb',
   name: 'SimilarWeb',
 
-  isAvailable: () => !!API_KEY,
+  // Edge Function availability checked at runtime
+  isAvailable: () => true,
 
   async enrich(domain: string, _options?: SourceOptions): Promise<SourceResult<SimilarWebData>> {
     const startTime = Date.now();
 
-    if (!API_KEY) {
-      return {
-        source: 'similarweb',
-        success: false,
-        data: null,
-        error: 'No API key configured',
-        fetched_at: new Date().toISOString(),
-        cached: false,
-      };
-    }
-
     try {
-      // Fetch all data from addon endpoint
-      const url = `${BASE_URL}/${domain}/all?api_key=${API_KEY}`;
-      const response = await fetch(url, {
-        signal: AbortSignal.timeout(15000),
+      const { data: raw, error } = await callEnrichProxy<Record<string, unknown>>({
+        source: 'similarweb',
+        domain,
       });
 
-      if (!response.ok) {
-        throw new Error(`API returned ${response.status}`);
+      if (error || !raw) {
+        throw new Error(error || 'No data returned');
       }
 
-      const raw = await response.json();
-
       // Transform to our standard format
+      const estimatedVisits = raw.EstimatedMonthlyVisits as Record<string, number> | undefined;
       const data: SimilarWebData = {
-        monthly_visits: raw.EstimatedMonthlyVisits?.[Object.keys(raw.EstimatedMonthlyVisits || {})[0]] || raw.visits || 0,
-        bounce_rate: raw.BounceRate || raw.bounce_rate || 0,
-        pages_per_visit: raw.PagesPerVisit || raw.pages_per_visit || 0,
-        avg_visit_duration: raw.TimeOnSite || raw.avg_visit_duration || 0,
-        global_rank: raw.GlobalRank?.Rank || raw.global_rank || undefined,
-        country_rank: raw.CountryRank?.Rank || undefined,
+        monthly_visits: estimatedVisits?.[Object.keys(estimatedVisits || {})[0]] || (raw.visits as number) || 0,
+        bounce_rate: (raw.BounceRate as number) || (raw.bounce_rate as number) || 0,
+        pages_per_visit: (raw.PagesPerVisit as number) || (raw.pages_per_visit as number) || 0,
+        avg_visit_duration: (raw.TimeOnSite as number) || (raw.avg_visit_duration as number) || 0,
+        global_rank: (raw.GlobalRank as { Rank?: number })?.Rank || (raw.global_rank as number) || undefined,
+        country_rank: (raw.CountryRank as { Rank?: number })?.Rank || undefined,
         traffic_sources: {
-          direct: raw.TrafficSources?.Direct || 0,
-          search: (raw.TrafficSources?.OrganicSearch || 0) + (raw.TrafficSources?.PaidSearch || 0),
-          referral: raw.TrafficSources?.Referrals || 0,
-          social: raw.TrafficSources?.Social || 0,
-          mail: raw.TrafficSources?.Mail || 0,
-          paid: raw.TrafficSources?.PaidSearch || 0,
+          direct: (raw.TrafficSources as Record<string, number>)?.Direct || 0,
+          search: ((raw.TrafficSources as Record<string, number>)?.OrganicSearch || 0) + ((raw.TrafficSources as Record<string, number>)?.PaidSearch || 0),
+          referral: (raw.TrafficSources as Record<string, number>)?.Referrals || 0,
+          social: (raw.TrafficSources as Record<string, number>)?.Social || 0,
+          mail: (raw.TrafficSources as Record<string, number>)?.Mail || 0,
+          paid: (raw.TrafficSources as Record<string, number>)?.PaidSearch || 0,
         },
-        top_countries: (raw.TopCountryShares || []).slice(0, 5).map((c: any) => ({
+        top_countries: ((raw.TopCountryShares as Array<{ CountryCode?: string; country?: string; Value?: number; share?: number }>) || []).slice(0, 5).map((c) => ({
           country: c.CountryCode || c.country || 'Unknown',
           percentage: c.Value || c.share || 0,
         })),
-        similar_sites: (raw.SimilarSites || []).slice(0, 10).map((s: any) => ({
-          domain: s.Site || s.domain || s,
+        similar_sites: ((raw.SimilarSites as Array<{ Site?: string; domain?: string; Score?: number; similarity?: number }>) || []).slice(0, 10).map((s) => ({
+          domain: s.Site || s.domain || String(s),
           similarity: s.Score || s.similarity || 0,
         })),
       };

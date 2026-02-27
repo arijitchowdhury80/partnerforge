@@ -11,12 +11,10 @@
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY;
-const SIMILARWEB_API_KEY = import.meta.env.VITE_SIMILARWEB_API_KEY;
-const BUILTWITH_API_KEY = import.meta.env.VITE_BUILTWITH_API_KEY;
 
-// JSearch API (RapidAPI) - Job postings for hiring signals
-// FREE TIER: 2,000 requests/month — included in selective enrichment
-const JSEARCH_API_KEY = import.meta.env.VITE_JSEARCH_API_KEY;
+// SECURITY: API keys are now stored in Supabase Secrets (server-side)
+// All external API calls go through the Edge Function proxy
+import { callEnrichProxy } from './supabase';
 
 // =============================================================================
 // Types
@@ -109,27 +107,31 @@ interface SimilarWebTrafficResponse {
 }
 
 async function fetchSimilarWebTraffic(domain: string): Promise<SimilarWebTrafficResponse | null> {
-  if (!SIMILARWEB_API_KEY) {
-    console.warn('[Enrichment] No SimilarWeb API key');
+  try {
+    const { data, error } = await callEnrichProxy<Record<string, unknown>>({
+      source: 'similarweb',
+      domain,
+    });
+
+    if (error || !data) {
+      console.warn(`[Enrichment] SimilarWeb traffic error:`, error);
+      return null;
+    }
+
+    // Map the Edge Function response to our expected format
+    return {
+      visits: (data.EstimatedMonthlyVisits as Record<string, number>)?.[Object.keys(data.EstimatedMonthlyVisits as Record<string, number> || {})[0]] || (data.visits as number),
+      category: data.Category as string,
+      global_rank: { rank: (data.GlobalRank as { Rank?: number })?.Rank },
+      category_rank: { rank: (data.CategoryRank as { Rank?: number })?.Rank },
+      pages_per_visit: data.PagesPerVisit as number,
+      time_on_site: data.TimeOnSite as number,
+      bounce_rate: data.BounceRate as number,
+    };
+  } catch (err) {
+    console.warn(`[Enrichment] SimilarWeb traffic error:`, err);
     return null;
   }
-
-  const endpoints = [
-    `https://api.similarweb.com/v1/SimilarWebAddon/${domain}/all`,
-    `https://api.similarweb.com/v1/website/${domain}/total-traffic-and-engagement/visits`,
-  ];
-
-  for (const url of endpoints) {
-    try {
-      const response = await fetch(`${url}?api_key=${SIMILARWEB_API_KEY}`);
-      if (response.ok) {
-        return await response.json();
-      }
-    } catch (err) {
-      console.warn(`[Enrichment] SimilarWeb traffic error:`, err);
-    }
-  }
-  return null;
 }
 
 // =============================================================================
@@ -142,21 +144,27 @@ interface SimilarWebSimilarSite {
 }
 
 async function fetchSimilarWebCompetitors(domain: string): Promise<SimilarWebSimilarSite[]> {
-  if (!SIMILARWEB_API_KEY) return [];
-
   try {
-    const url = `https://api.similarweb.com/v1/website/${domain}/similar-sites/similarsites?api_key=${SIMILARWEB_API_KEY}`;
-    const response = await fetch(url);
+    const { data, error } = await callEnrichProxy<Record<string, unknown>>({
+      source: 'similarweb',
+      domain,
+    });
 
-    if (response.ok) {
-      const data = await response.json();
-      // API returns { similar_sites: [{url, score}, ...] }
-      return data.similar_sites || [];
+    if (error || !data) {
+      console.warn(`[Enrichment] SimilarWeb competitors error:`, error);
+      return [];
     }
+
+    // Extract similar sites from the addon response
+    const similarSites = (data.SimilarSites as Array<{ Site?: string; Score?: number }>) || [];
+    return similarSites.map(site => ({
+      url: site.Site || '',
+      score: site.Score || 0,
+    }));
   } catch (err) {
     console.warn(`[Enrichment] SimilarWeb competitors error:`, err);
+    return [];
   }
-  return [];
 }
 
 // =============================================================================
@@ -192,21 +200,16 @@ interface TechStackResult {
 }
 
 async function fetchBuiltWithTechStack(domain: string): Promise<TechStackResult | null> {
-  if (!BUILTWITH_API_KEY) {
-    console.warn('[Enrichment] No BuiltWith API key');
-    return null;
-  }
-
   try {
-    const url = `https://api.builtwith.com/free1/api.json?KEY=${BUILTWITH_API_KEY}&LOOKUP=${domain}`;
-    const response = await fetch(url);
+    const { data, error } = await callEnrichProxy<BuiltWithResponse>({
+      source: 'builtwith',
+      domain,
+    });
 
-    if (!response.ok) {
-      console.warn(`[Enrichment] BuiltWith ${response.status}`);
+    if (error || !data) {
+      console.warn(`[Enrichment] BuiltWith error:`, error);
       return null;
     }
-
-    const data: BuiltWithResponse = await response.json();
     const techs = data.Results?.[0]?.Result?.Paths?.[0]?.Technologies || [];
 
     // Categorize technologies
@@ -504,31 +507,17 @@ function getSignalStrength(score: number): 'strong' | 'moderate' | 'weak' | 'non
  * @returns Hiring signal data or null if API unavailable
  */
 async function fetchHiringSignals(companyName: string): Promise<HiringSignalResponse | null> {
-  if (!JSEARCH_API_KEY) {
-    console.warn('[Enrichment] No JSearch API key configured');
-    return null;
-  }
-
   try {
-    // Search for jobs at this company
-    const query = encodeURIComponent(`${companyName} jobs`);
-    const url = `https://jsearch.p.rapidapi.com/search?query=${query}&num_pages=2`;
-
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'X-RapidAPI-Key': JSEARCH_API_KEY,
-        'X-RapidAPI-Host': 'jsearch.p.rapidapi.com',
-      },
-      signal: AbortSignal.timeout(15000),
+    const { data, error } = await callEnrichProxy<JSearchResponse>({
+      source: 'jsearch',
+      domain: companyName.toLowerCase().replace(/\s+/g, ''),
+      companyName,
     });
 
-    if (!response.ok) {
-      console.warn(`[Enrichment] JSearch API ${response.status}`);
+    if (error || !data) {
+      console.warn(`[Enrichment] JSearch API error:`, error);
       return null;
     }
-
-    const data: JSearchResponse = await response.json();
 
     if (data.status !== 'OK' || !data.data) {
       console.warn('[Enrichment] JSearch API returned no data');
@@ -607,9 +596,12 @@ async function fetchHiringSignals(companyName: string): Promise<HiringSignalResp
 
 /**
  * Check if the hiring service (JSearch API) is available
+ * Now checks via Edge Function proxy
  */
 export async function checkHiringServiceHealth(): Promise<boolean> {
-  return !!JSEARCH_API_KEY;
+  // Edge Function handles API key validation
+  // We assume it's available if the Edge Function is deployed
+  return true;
 }
 
 /**
