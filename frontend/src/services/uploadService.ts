@@ -115,7 +115,7 @@ async function checkExistingDomains(domains: string[]): Promise<Set<string>> {
 }
 
 /**
- * Insert rows to Supabase in batches
+ * Insert rows via Edge Function (secure server-side insert)
  */
 async function insertBatch(
   rows: Array<Record<string, unknown>>,
@@ -124,70 +124,50 @@ async function insertBatch(
   const errors: Array<{ row: number; message: string }> = [];
   let inserted = 0;
 
+  console.log('[Upload] insertBatch called with', rows.length, 'rows');
+  console.log('[Upload] First row sample:', rows[0]);
+
+  // Use Edge Function for secure server-side insert
+  const edgeFunctionUrl = `${SUPABASE_URL}/functions/v1/upload-targets`;
+  console.log('[Upload] Calling edge function:', edgeFunctionUrl);
+
   for (let i = 0; i < rows.length; i += BATCH_SIZE) {
     const batch = rows.slice(i, i + BATCH_SIZE);
+    console.log('[Upload] Inserting batch', i / BATCH_SIZE + 1, 'with', batch.length, 'rows');
 
     try {
-      const response = await fetch(`${SUPABASE_URL}/rest/v1/displacement_targets`, {
+      const response = await fetch(edgeFunctionUrl, {
         method: 'POST',
         headers: {
-          apikey: SUPABASE_KEY,
-          Authorization: `Bearer ${SUPABASE_KEY}`,
           'Content-Type': 'application/json',
-          Prefer: 'return=minimal,resolution=merge-duplicates',
+          Authorization: `Bearer ${SUPABASE_KEY}`,
         },
-        body: JSON.stringify(batch),
+        body: JSON.stringify({ rows: batch }),
       });
 
+      console.log('[Upload] Response status:', response.status, response.statusText);
+
       if (response.ok) {
-        inserted += batch.length;
+        const result = await response.json();
+        inserted += result.inserted || batch.length;
         onProgress?.(inserted);
+        console.log('[Upload] Batch inserted successfully, total:', inserted);
       } else {
         const errorText = await response.text();
-        console.error('Insert batch error:', errorText);
+        console.error('[Upload] Insert batch error:', response.status, errorText);
 
-        // Try inserting one by one to identify problematic rows
-        for (let j = 0; j < batch.length; j++) {
-          try {
-            const singleResponse = await fetch(
-              `${SUPABASE_URL}/rest/v1/displacement_targets`,
-              {
-                method: 'POST',
-                headers: {
-                  apikey: SUPABASE_KEY,
-                  Authorization: `Bearer ${SUPABASE_KEY}`,
-                  'Content-Type': 'application/json',
-                  Prefer: 'return=minimal,resolution=merge-duplicates',
-                },
-                body: JSON.stringify(batch[j]),
-              }
-            );
-
-            if (singleResponse.ok) {
-              inserted++;
-              onProgress?.(inserted);
-            } else {
-              errors.push({
-                row: i + j + 1,
-                message: await singleResponse.text(),
-              });
-            }
-          } catch (err) {
-            errors.push({
-              row: i + j + 1,
-              message: err instanceof Error ? err.message : 'Unknown error',
-            });
-          }
-        }
+        // Add error for the batch
+        errors.push({
+          row: i + 1,
+          message: `Batch insert failed: ${errorText}`,
+        });
       }
     } catch (err) {
       console.error('Insert batch exception:', err);
-      for (let j = 0; j < batch.length; j++) {
-        errors.push({
-          row: i + j + 1,
-          message: err instanceof Error ? err.message : 'Network error',
-        });
-      }
+      errors.push({
+        row: i + 1,
+        message: err instanceof Error ? err.message : 'Network error',
+      });
     }
   }
 
@@ -213,6 +193,8 @@ export async function uploadFile(
   const listId = generateListId();
   const warnings: string[] = [];
 
+  console.log('[Upload] Starting upload:', { fileName: file.name, fileSize: file.size, options });
+
   // Stage 1: Parse file
   onProgress?.({
     stage: 'parsing',
@@ -222,6 +204,16 @@ export async function uploadFile(
   });
 
   const parseResult: ParseResult = await parseFile(file);
+  console.log('[Upload] Parse result:', {
+    success: parseResult.success,
+    totalRows: parseResult.totalRows,
+    validRows: parseResult.validRows,
+    invalidRows: parseResult.invalidRows,
+    headers: parseResult.headers,
+    errors: parseResult.errors,
+    warnings: parseResult.warnings,
+    sampleRow: parseResult.rows[0],
+  });
 
   if (!parseResult.success && parseResult.errors.length > 0) {
     return {
@@ -257,10 +249,12 @@ export async function uploadFile(
 
   // Get valid rows (with valid domains)
   const validRows = getValidRows(parseResult);
+  console.log('[Upload] Valid rows:', validRows.length, 'Sample:', validRows.slice(0, 3));
 
   // Deduplicate within the file
   const { unique: dedupedRows, duplicates: inFileDuplicates } =
     deduplicateByDomain(validRows);
+  console.log('[Upload] After dedup:', dedupedRows.length, 'duplicates:', inFileDuplicates);
 
   if (inFileDuplicates > 0) {
     warnings.push(
@@ -304,8 +298,10 @@ export async function uploadFile(
   const rowsToInsert = dedupedRows.filter(
     (r) => r.domain && !existingDomains.has(r.domain.toLowerCase())
   );
+  console.log('[Upload] Rows to insert:', rowsToInsert.length, 'Sample:', rowsToInsert.slice(0, 3));
 
   if (rowsToInsert.length === 0) {
+    console.log('[Upload] No rows to insert - all filtered out or duplicates');
     return {
       success: true,
       totalRows: parseResult.totalRows,
@@ -326,21 +322,12 @@ export async function uploadFile(
     message: `Inserting ${rowsToInsert.length} rows...`,
   });
 
-  // Prepare rows for insertion
+  // Prepare rows for insertion (minimal columns that exist in table)
   const preparedRows = rowsToInsert.map((row) => ({
     domain: row.domain,
     company_name: row.company_name || null,
     partner_tech: partnerTech || row.partner_tech || null,
-    vertical: row.vertical || null,
-    country: row.country || null,
-    city: row.city || null,
-    state: row.state || null,
     icp_score: 50, // Default score for new uploads (warm)
-    enrichment_level: 'basic',
-    // Store original data as metadata
-    upload_source: source,
-    upload_list_id: listId,
-    upload_list_name: listName,
   }));
 
   // Insert in batches
