@@ -27,6 +27,13 @@ interface NavItem {
   description?: string;
 }
 
+// Dashboard
+const dashboardNavItem: NavItem = {
+  icon: IconChartBar,
+  label: 'Dashboard',
+  path: '/dashboard',
+};
+
 // 5-Layer Funnel Navigation
 const funnelNavItems: NavItem[] = [
   {
@@ -37,7 +44,7 @@ const funnelNavItems: NavItem[] = [
   {
     icon: IconPlanet,
     label: 'Partner Tech Galaxy',
-    path: '/dashboard',
+    path: '/galaxy',
   },
   {
     icon: IconFlame,
@@ -115,9 +122,14 @@ export function Sidebar() {
   return (
     <Stack h="100%" justify="space-between" p="md">
       <Box>
+        {/* Dashboard */}
+        {renderNavItem(dashboardNavItem, 'blue')}
+
+        <Divider my="md" />
+
         {/* Funnel Layers */}
         <Text size="xs" fw={600} c="#64748b" tt="uppercase" mb="sm">
-          5-Layer Funnel
+          Pipeline Layers
         </Text>
         <Stack gap="xs">
           {funnelNavItems.map((item) => renderNavItem(item, 'blue'))}

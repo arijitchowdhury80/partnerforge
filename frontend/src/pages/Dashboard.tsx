@@ -1,653 +1,603 @@
 /**
- * Dashboard Page - Algolia Brand
+ * Dashboard - Intelligence Brief Landing
  *
- * Clean, professional design matching Algolia's brand aesthetic.
- * Light theme with Algolia Blue (#003DFF) accents.
+ * Premium landing experience showing pipeline health and top opportunities.
+ * Hybrid of Option C (Intelligence Brief) with Option A (Mission Control) visuals.
  */
 
-import { useState, useMemo, useCallback } from 'react';
-import { motion } from 'framer-motion';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
 import {
   Container,
+  Title,
   Text,
   Group,
+  Stack,
   Paper,
   Badge,
-  Loader,
   Button,
-  ThemeIcon,
-  Select,
+  Progress,
   Box,
-  Notification,
-  Stack,
+  SimpleGrid,
+  ThemeIcon,
+  Divider,
+  Skeleton,
 } from '@mantine/core';
 import {
-  IconMinus,
-  IconEqual,
-  IconTarget,
   IconFlame,
+  IconRocket,
   IconTrendingUp,
-  IconSnowflake,
-  IconCheck,
-  IconX,
-  IconRefresh,
+  IconUsers,
+  IconPlanet,
+  IconTarget,
+  IconArrowRight,
+  IconSparkles,
+  IconBuildingSkyscraper,
 } from '@tabler/icons-react';
+import { useNavigate } from 'react-router-dom';
+import { COLORS } from '../lib/constants';
 
-// Note: getCompanies removed - now using allTargetsData for full client-side filtering
-import { enrichCompany, type EnrichmentProgress } from '@/services/enrichment';
-import { getTargets, type DisplacementTarget } from '@/services/supabase';
-import { TargetList } from '@/components/targets/TargetList';
-import { ViewModeToggle, DistributionGrid, AccountDrillDown, type ViewMode } from '@/components/dashboard';
-import { usePartner, getSelectionTechName } from '@/contexts/PartnerContext';
-import { AlgoliaLogo } from '@/components/common/AlgoliaLogo';
-import { getPartnerLogo } from '@/components/common/PartnerLogos';
-import { ProductSelector } from '@/components/common/ProductSelector';
-import type { Company } from '@/types';
-import { COLORS } from '@/lib/constants';
+// =============================================================================
+// Types
+// =============================================================================
 
-// Column filter type for TargetList
-interface ColumnFilter {
-  column: string;
-  values: string[];
+interface PipelineStats {
+  galaxy: number;
+  whale: number;
+  crossbeam: number;
+  hot: number;
+  jackpot: number;
+  displacement: number;
 }
 
-export function Dashboard() {
-  const { selectedPartner, selection, selectPartner, selectProduct, partners } = usePartner();
-  const queryClient = useQueryClient();
-  const [page, setPage] = useState(1);
-  const [columnFilters, setColumnFilters] = useState<ColumnFilter[]>([]);
+interface TopOpportunity {
+  domain: string;
+  company_name: string | null;
+  tech_cohort: string;
+  sales_play: string;
+  cms_tech: string | null;
+  commerce_tech: string | null;
+  martech_tech: string | null;
+  search_tech: string | null;
+}
 
-  // Enrichment state
-  const [enrichmentStatus, setEnrichmentStatus] = useState<EnrichmentProgress | null>(null);
+// =============================================================================
+// API
+// =============================================================================
 
-  // Check if a specific partner is selected (not "All Partners")
-  const hasPartnerSelected = selection.partner.key !== 'all';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY;
 
-  // Get proper tech name for filtering (moved up so queries can use it)
-  const partnerTechName = getSelectionTechName(selection);
-
-  // View mode for distribution grid (Partner/Product/Vertical/Account)
-  const [viewMode, setViewMode] = useState<ViewMode>('product');
-
-  // Drill-down state for when a cell is clicked
-  const [drillDown, setDrillDown] = useState<{
-    opened: boolean;
-    title: string;
-    targets: DisplacementTarget[];
-  }>({
-    opened: false,
-    title: '',
-    targets: [],
-  });
-
-  // PERFORMANCE: All targets for distribution grid - only fetch when partner selected
-  const { data: allTargetsData, isLoading: targetsLoading } = useQuery({
-    queryKey: ['allTargets', partnerTechName],
-    queryFn: async () => {
-      const result = await getTargets({
-        limit: 5000,
-        partner: partnerTechName,
-      });
-      return result.targets;
-    },
-    enabled: hasPartnerSelected, // Only fetch when a specific partner is selected
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-  });
-
-  // NOTE: Removed uniquePartners query - use static PARTNERS list for empty state
-  // This avoids an unnecessary network request on initial load
-
-  // Handle column filter changes from TargetList
-  const handleColumnFilterChange = (column: string, values: string[]) => {
-    setColumnFilters(prev => {
-      const existing = prev.filter(f => f.column !== column);
-      if (values.length > 0) {
-        return [...existing, { column, values }];
-      }
-      return existing;
-    });
-    // Reset to page 1 when filters change
-    setPage(1);
+async function fetchPipelineStats(): Promise<PipelineStats> {
+  const headers = {
+    'apikey': SUPABASE_KEY,
+    'Authorization': `Bearer ${SUPABASE_KEY}`,
   };
 
-  // Calculate stats from filtered allTargetsData (not global stats)
-  const filteredStats = useMemo(() => {
-    if (!allTargetsData) return { total: 0, hot: 0, warm: 0, cold: 0 };
-    let hot = 0, warm = 0, cold = 0;
-    // Thresholds: 70+ = Hot, 40-69 = Warm, 0-39 = Cold (matches composite scoring)
-    allTargetsData.forEach(t => {
-      const score = t.icp_score || 0;
-      if (score >= 70) hot++;
-      else if (score >= 40) warm++;
-      else cold++;
-    });
-    return { total: allTargetsData.length, hot, warm, cold };
-  }, [allTargetsData]);
+  const [galaxyRes, whaleRes, crossbeamRes, jackpotRes, displacementRes] = await Promise.all([
+    fetch(`${SUPABASE_URL}/rest/v1/companies?select=domain`, { headers, method: 'HEAD' }),
+    fetch(`${SUPABASE_URL}/rest/v1/whale_composite?select=domain`, { headers, method: 'HEAD' }),
+    fetch(`${SUPABASE_URL}/rest/v1/crossbeam_overlaps?select=domain`, { headers, method: 'HEAD' }),
+    fetch(`${SUPABASE_URL}/rest/v1/companies?select=domain&tech_cohort=eq.JACKPOT`, { headers, method: 'HEAD' }),
+    fetch(`${SUPABASE_URL}/rest/v1/companies?select=domain&sales_play=eq.DISPLACEMENT`, { headers, method: 'HEAD' }),
+  ]);
 
-  const { total, hot: hotCount, warm: warmCount, cold: coldCount } = filteredStats;
-
-  // Convert DisplacementTarget to Company format for TargetList
-  const allCompaniesFromTargets = useMemo((): Company[] => {
-    if (!allTargetsData) return [];
-    return allTargetsData.map(t => {
-      const icpScore = t.icp_score || 0;
-
-      // Parse JSON fields for full enrichment data
-      let competitorData = undefined;
-      let caseStudies = undefined;
-      let techStackData = undefined;
-
-      try {
-        if (t.competitors_json) {
-          const competitors = JSON.parse(t.competitors_json);
-          competitorData = {
-            domain: t.domain,
-            competitors: competitors,
-          };
-        }
-      } catch { /* ignore parse errors */ }
-
-      try {
-        if (t.case_studies_json) {
-          caseStudies = JSON.parse(t.case_studies_json);
-        }
-      } catch { /* ignore parse errors */ }
-
-      try {
-        if (t.tech_stack_json) {
-          const techStack = JSON.parse(t.tech_stack_json);
-          techStackData = {
-            domain: t.domain,
-            technologies: Object.entries(techStack).flatMap(([category, techs]) =>
-              Array.isArray(techs) ? techs.map((name: string) => ({ name, category })) : []
-            ),
-            partner_tech_detected: techStack.cms?.filter((c: string) =>
-              ['amplience', 'adobe', 'spryker', 'bloomreach'].some(p => c.toLowerCase().includes(p))
-            ) || [],
-            search_provider: t.current_search || undefined,
-            cms: t.cms || techStack.cms?.[0],
-            ecommerce_platform: t.ecommerce_platform || techStack.ecommerce?.[0],
-            cdn: t.cdn || techStack.cdn?.[0],
-          };
-        }
-      } catch { /* ignore parse errors */ }
-
-      return {
-        domain: t.domain,
-        company_name: t.company_name || t.domain,
-        ticker: t.ticker || undefined,
-        is_public: t.is_public || false,
-        headquarters: {
-          city: '',
-          state: '',
-          country: t.country || '',
-        },
-        industry: t.vertical || '', // Use vertical as industry
-        vertical: t.vertical || '',
-        icp_score: icpScore,
-        signal_score: icpScore, // Default to ICP score
-        priority_score: icpScore, // Default to ICP score
-        status: icpScore >= 70 ? 'hot' : icpScore >= 40 ? 'warm' : 'cold',
-        partner_tech: t.partner_tech ? [t.partner_tech] : [],
-        last_enriched: t.last_enriched || undefined,
-        sw_monthly_visits: t.sw_monthly_visits || undefined,
-        revenue: t.revenue || undefined,
-        current_search: t.current_search || undefined,
-        enrichment_level: t.enrichment_level || undefined,
-        // Full enrichment data for drawer
-        competitor_data: competitorData,
-        case_studies: caseStudies,
-        tech_stack_data: techStackData,
-        exec_quote: t.exec_quote || undefined,
-        exec_name: t.exec_name || undefined,
-        exec_title: t.exec_title || undefined,
-        displacement_angle: t.displacement_angle || undefined,
-      };
-    });
-  }, [allTargetsData]);
-
-  // Apply client-side filtering based on column filters - ON ALL DATA
-  const filteredCompanies = useMemo(() => {
-    if (!allCompaniesFromTargets.length) return [];
-
-    let filtered = allCompaniesFromTargets;
-
-    // Apply column filters
-    if (columnFilters.length > 0) {
-      filtered = filtered.filter(company => {
-        return columnFilters.every(filter => {
-          if (filter.values.length === 0) return true;
-
-          if (filter.column === 'status') {
-            return filter.values.includes(company.status);
-          }
-          if (filter.column === 'vertical') {
-            return filter.values.includes(company.vertical || '');
-          }
-          if (filter.column === 'partner_tech') {
-            // Match if any of the company's techs are in the filter
-            return company.partner_tech?.some(tech => filter.values.includes(tech)) || false;
-          }
-          return true;
-        });
-      });
-    }
-
-    return filtered;
-  }, [allCompaniesFromTargets, columnFilters]);
-
-  // Client-side pagination
-  const PAGE_SIZE = 50;
-  const paginatedCompanies = useMemo(() => {
-    const start = (page - 1) * PAGE_SIZE;
-    return filteredCompanies.slice(start, start + PAGE_SIZE);
-  }, [filteredCompanies, page]);
-
-  const clientPagination = useMemo(() => ({
-    page,
-    limit: PAGE_SIZE,
-    total: filteredCompanies.length,
-    total_pages: Math.ceil(filteredCompanies.length / PAGE_SIZE),
-  }), [filteredCompanies.length, page]);
-
-  // Handle grid cell click - opens drill-down drawer
-  const handleGridCellClick = (rowKey: string, colKey: string, targets: DisplacementTarget[]) => {
-    const title = viewMode === 'vertical'
-      ? `${rowKey} - ${colKey}`
-      : `${rowKey} in ${colKey}`;
-    setDrillDown({
-      opened: true,
-      title,
-      targets,
-    });
+  // Parse counts from content-range headers
+  const getCount = (res: Response) => {
+    const range = res.headers.get('content-range');
+    return range ? parseInt(range.split('/')[1]) || 0 : 0;
   };
 
-  // Handle target selection from drill-down
-  const handleSelectTarget = (domain: string) => {
-    // Navigate to target detail page
-    window.location.href = `/company/${domain}`;
+  // For proper counts, we need exact count
+  const [galaxyCount, whaleCount, crossbeamCount, jackpotCount, displacementCount] = await Promise.all([
+    fetch(`${SUPABASE_URL}/rest/v1/companies?select=domain`, {
+      headers: { ...headers, 'Prefer': 'count=exact', 'Range': '0-0' }
+    }).then(r => parseInt(r.headers.get('content-range')?.split('/')[1] || '0')),
+    fetch(`${SUPABASE_URL}/rest/v1/whale_composite?select=domain`, {
+      headers: { ...headers, 'Prefer': 'count=exact', 'Range': '0-0' }
+    }).then(r => parseInt(r.headers.get('content-range')?.split('/')[1] || '0')),
+    fetch(`${SUPABASE_URL}/rest/v1/crossbeam_overlaps?select=domain`, {
+      headers: { ...headers, 'Prefer': 'count=exact', 'Range': '0-0' }
+    }).then(r => parseInt(r.headers.get('content-range')?.split('/')[1] || '0')),
+    fetch(`${SUPABASE_URL}/rest/v1/companies?select=domain&tech_cohort=eq.JACKPOT`, {
+      headers: { ...headers, 'Prefer': 'count=exact', 'Range': '0-0' }
+    }).then(r => parseInt(r.headers.get('content-range')?.split('/')[1] || '0')),
+    fetch(`${SUPABASE_URL}/rest/v1/companies?select=domain&sales_play=eq.DISPLACEMENT`, {
+      headers: { ...headers, 'Prefer': 'count=exact', 'Range': '0-0' }
+    }).then(r => parseInt(r.headers.get('content-range')?.split('/')[1] || '0')),
+  ]);
+
+  return {
+    galaxy: galaxyCount,
+    whale: whaleCount,
+    crossbeam: crossbeamCount,
+    hot: jackpotCount, // Using JACKPOT as "hot" for now
+    jackpot: jackpotCount,
+    displacement: displacementCount,
+  };
+}
+
+async function fetchTopOpportunities(): Promise<TopOpportunity[]> {
+  const headers = {
+    'apikey': SUPABASE_KEY,
+    'Authorization': `Bearer ${SUPABASE_KEY}`,
   };
 
-  // Close drill-down drawer
-  const closeDrillDown = () => {
-    setDrillDown(prev => ({ ...prev, opened: false }));
-  };
+  // Get JACKPOT companies first, then HIGH cohort
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/companies?select=domain,company_name,tech_cohort,sales_play,cms_tech,commerce_tech,martech_tech,search_tech&or=(tech_cohort.eq.JACKPOT,tech_cohort.eq.HIGH)&order=tech_cohort.asc&limit=5`,
+    { headers }
+  );
 
-  // Handle company enrichment - THIS IS THE CALLBACK FOR "Enrich Now" BUTTON
-  const handleEnrichCompany = useCallback(async (domain: string) => {
-    console.log(`[Dashboard] Starting enrichment for ${domain}`);
+  if (!res.ok) return [];
+  return res.json();
+}
 
-    try {
-      const result = await enrichCompany(domain, (progress) => {
-        setEnrichmentStatus(progress);
-      });
+// =============================================================================
+// Components
+// =============================================================================
 
-      if (result.success) {
-        // Invalidate queries to refresh the data
-        queryClient.invalidateQueries({ queryKey: ['allTargets'] });
-        queryClient.invalidateQueries({ queryKey: ['companies'] });
-
-        // Show success for 3 seconds then clear
-        setTimeout(() => setEnrichmentStatus(null), 3000);
-      } else {
-        // Show error for 5 seconds then clear
-        setTimeout(() => setEnrichmentStatus(null), 5000);
-      }
-    } catch (err) {
-      setEnrichmentStatus({
-        domain,
-        status: 'error',
-        message: `Enrichment failed: ${err}`,
-      });
-      setTimeout(() => setEnrichmentStatus(null), 5000);
-    }
-  }, [queryClient]);
-
+function HeroStat({ value, label, trend }: { value: number; label: string; trend?: string }) {
   return (
-    <div style={{ background: COLORS.GRAY_50, height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-      {/* Sticky Header Section */}
-      <div style={{ flexShrink: 0, background: COLORS.GRAY_50, paddingTop: 24, paddingBottom: 0 }}>
-        <Container size="xl">
-        {/* Enrichment Status Notification */}
-        {enrichmentStatus && (
-          <Notification
-            icon={
-              enrichmentStatus.status === 'complete' ? <IconCheck size={18} /> :
-              enrichmentStatus.status === 'error' ? <IconX size={18} /> :
-              <IconRefresh size={18} className="animate-spin" />
-            }
-            color={
-              enrichmentStatus.status === 'complete' ? 'green' :
-              enrichmentStatus.status === 'error' ? 'red' :
-              'blue'
-            }
-            title={`Enriching ${enrichmentStatus.domain}`}
-            onClose={() => setEnrichmentStatus(null)}
-            mb="lg"
-            style={{
-              position: 'fixed',
-              top: 80,
-              right: 20,
-              zIndex: 1000,
-              width: 350,
-              boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-            }}
-          >
-            {enrichmentStatus.message}
-          </Notification>
-        )}
-
-        {/* Header with Partner Selection */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <Paper
-            p="lg"
-            radius="lg"
-            mb="xl"
-            style={{
-              background: 'white',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-              border: `1px solid ${COLORS.GRAY_200}`,
-            }}
-          >
-            <Group justify="space-between" align="flex-start" wrap="wrap" gap="lg">
-              <div>
-                <Text size="sm" c={COLORS.GRAY_500} fw={500} tt="uppercase" mb={4}>
-                  Partner Intelligence
-                </Text>
-                <Text size="xl" fw={700} c={COLORS.GRAY_900}>
-                  Displacement Targets
-                </Text>
-                <Text size="sm" c={COLORS.GRAY_500} mt={4}>
-                  Select a partner to see their tech stack targets minus Algolia customers
-                </Text>
-              </div>
-
-              {/* Partner and Product Selection */}
-              <Stack gap="sm" align="flex-end">
-                <Select
-                  label="Partner"
-                  placeholder="Select partner..."
-                  value={selection.partner.key === 'all' ? null : selection.partner.key}
-                  onChange={(value) => {
-                    if (value) {
-                      const partner = partners.find(p => p.key === value);
-                      if (partner) selectPartner(partner);
-                    } else {
-                      // Clear selection
-                      selectPartner(partners[0]); // All Partners
-                    }
-                  }}
-                  data={partners.filter(p => p.key !== 'all').map(p => ({
-                    value: p.key,
-                    label: p.name,
-                  }))}
-                  w={220}
-                  size="md"
-                  clearable
-                  styles={{
-                    input: {
-                      backgroundColor: '#ffffff',
-                      borderColor: COLORS.GRAY_200,
-                      color: COLORS.GRAY_900,
-                      fontSize: '14px',
-                    },
-                    label: {
-                      color: COLORS.GRAY_700,
-                      fontWeight: 600,
-                      marginBottom: 4,
-                    },
-                    dropdown: {
-                      backgroundColor: '#ffffff',
-                      borderColor: COLORS.GRAY_200,
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                    },
-                    option: {
-                      color: COLORS.GRAY_900,
-                      fontSize: '14px',
-                      padding: '10px 14px',
-                      '&[data-selected]': {
-                        backgroundColor: COLORS.ALGOLIA_NEBULA_BLUE,
-                        color: '#ffffff',
-                      },
-                      '&[data-hovered]': {
-                        backgroundColor: COLORS.GRAY_100,
-                        color: COLORS.GRAY_900,
-                      },
-                    },
-                  }}
-                />
-
-                {/* Product Selector - uses shared component with brand colors */}
-                {hasPartnerSelected && selection.partner.products.length > 1 && (
-                  <ProductSelector
-                    products={selection.partner.products}
-                    selectedProductKey={selection.product?.key || null}
-                    onSelectProduct={(productKey) => {
-                      if (productKey === null) {
-                        selectProduct(null);
-                      } else {
-                        const product = selection.partner.products.find(p => p.key === productKey);
-                        selectProduct(product || null);
-                      }
-                    }}
-                  />
-                )}
-              </Stack>
-            </Group>
-
-            {/* Formula Display - only show when partner selected */}
-            {hasPartnerSelected && (
-              <Box mt="lg" pt="lg" style={{ borderTop: `1px solid ${COLORS.GRAY_200}` }}>
-                <FormulaDisplay
-                  partnerName={selectedPartner.name}
-                  partnerKey={selectedPartner.key}
-                  productName={selection.product?.name}
-                />
-              </Box>
-            )}
-          </Paper>
-        </motion.div>
-        </Container>
-      </div>
-
-      {/* Scrollable Content Area */}
-      <div style={{ flex: 1, overflow: 'auto', paddingBottom: 24 }}>
-        <Container size="xl">
-
-        {/* Empty State - when no partner selected */}
-        {!hasPartnerSelected && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
-          >
-            <Paper
-              p="xl"
-              radius="lg"
-              mb="xl"
-              style={{
-                background: 'white',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                border: `1px solid ${COLORS.GRAY_200}`,
-                textAlign: 'center',
-              }}
-            >
-              <ThemeIcon size={64} radius="xl" variant="light" color="blue" mx="auto" mb="lg">
-                <IconTarget size={32} />
-              </ThemeIcon>
-              <Text size="xl" fw={600} c={COLORS.GRAY_900} mb="xs">
-                Select a Partner to Get Started
-              </Text>
-              <Text size="md" c={COLORS.GRAY_500} mb="lg" maw={500} mx="auto">
-                Choose a partner from the dropdown above to see displacement targets.
-                We'll show you companies using their tech stack who aren't using Algolia yet.
-              </Text>
-              <Group justify="center" gap="md" wrap="wrap">
-                {/* Use static partners list - no network request needed */}
-                {partners.filter(p => p.key !== 'all').map(partner => {
-                  const Logo = getPartnerLogo(partner.key);
-                  return (
-                    <Button
-                      key={partner.key}
-                      variant="light"
-                      leftSection={<Logo size={18} />}
-                      onClick={() => selectPartner(partner)}
-                      size="md"
-                    >
-                      {partner.name}
-                    </Button>
-                  );
-                })}
-              </Group>
-            </Paper>
-          </motion.div>
-        )}
-
-        {/* Distribution Section - Multi-Dimensional Grid (only when partner selected) */}
-        {hasPartnerSelected && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.2 }}
-          >
-            <Paper
-              p="lg"
-              radius="lg"
-              mb="xl"
-              style={{
-                background: 'white',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                border: `1px solid ${COLORS.GRAY_200}`,
-              }}
-            >
-              <Group justify="space-between" mb="lg">
-                <Group gap="lg">
-                  <div>
-                    <Text fw={600} c={COLORS.GRAY_900} size="lg">Target Distribution</Text>
-                    <Text size="sm" c={COLORS.GRAY_500}>
-                      {viewMode === 'partner' && 'By partner and vertical'}
-                      {viewMode === 'product' && 'By product and vertical'}
-                      {viewMode === 'vertical' && 'By vertical and ICP tier'}
-                      {viewMode === 'account' && 'All accounts'}
-                    </Text>
-                  </div>
-                  {/* Compact stats badges */}
-                  <Group gap="xs">
-                    <Badge size="lg" variant="filled" color="blue" styles={{ root: { fontWeight: 700 } }}>
-                      {total.toLocaleString()} Total
-                    </Badge>
-                    <Badge size="md" variant="filled" color="red" leftSection={<IconFlame size={12} />} styles={{ root: { fontWeight: 600 } }}>
-                      {hotCount} Hot
-                    </Badge>
-                    <Badge size="md" variant="filled" color="orange" leftSection={<IconTrendingUp size={12} />} styles={{ root: { fontWeight: 600 } }}>
-                      {warmCount} Warm
-                    </Badge>
-                    <Badge size="md" variant="filled" color="gray" leftSection={<IconSnowflake size={12} />} styles={{ root: { fontWeight: 600 } }}>
-                      {coldCount} Cold
-                    </Badge>
-                  </Group>
-                </Group>
-                <ViewModeToggle value={viewMode} onChange={setViewMode} />
-              </Group>
-
-              {allTargetsData ? (
-                <DistributionGrid
-                  viewMode={viewMode}
-                  targets={allTargetsData}
-                  onCellClick={handleGridCellClick}
-                  selectedPartner={selection.partner}
-                  onEnrichCompany={handleEnrichCompany}
-                />
-              ) : (
-                <div className="flex justify-center py-8">
-                  <Loader color={COLORS.ALGOLIA_NEBULA_BLUE} size="sm" />
-                </div>
-              )}
-            </Paper>
-          </motion.div>
-        )}
-
-        {/* Account Drill-Down Drawer */}
-        <AccountDrillDown
-          opened={drillDown.opened}
-          onClose={closeDrillDown}
-          title={drillDown.title}
-          targets={drillDown.targets}
-          onSelectTarget={handleSelectTarget}
-        />
-
-        {/* Targets Table (only when partner selected) */}
-        {hasPartnerSelected && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.3 }}
-          >
-            <Paper
-              p="lg"
-              radius="lg"
-              style={{
-                background: 'white',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                border: `1px solid ${COLORS.GRAY_200}`,
-              }}
-            >
-              <Group justify="space-between" mb="lg">
-                <div>
-                  <Text fw={600} c={COLORS.GRAY_900} size="lg">All Targets</Text>
-                  <Text size="sm" c={COLORS.GRAY_500}>Click Status column to filter by Hot/Warm/Cold</Text>
-                </div>
-              </Group>
-
-              <TargetList
-                companies={paginatedCompanies}
-                allCompanies={allCompaniesFromTargets}
-                isLoading={targetsLoading}
-                pagination={clientPagination}
-                onPageChange={setPage}
-                columnFilters={columnFilters}
-                onColumnFilterChange={handleColumnFilterChange}
-                onEnrichCompany={handleEnrichCompany}
-              />
-            </Paper>
-          </motion.div>
-        )}
-        </Container>
-      </div>
-    </div>
+    <Box ta="center">
+      <Text
+        size="4rem"
+        fw={700}
+        variant="gradient"
+        gradient={{ from: '#10b981', to: '#3b82f6', deg: 135 }}
+        style={{ lineHeight: 1 }}
+      >
+        {value.toLocaleString()}
+      </Text>
+      <Text size="xl" c="white" fw={500} mt="xs">
+        {label}
+      </Text>
+      {trend && (
+        <Group gap={4} justify="center" mt={4}>
+          <IconTrendingUp size={16} color="#10b981" />
+          <Text size="sm" c="green.4">{trend}</Text>
+        </Group>
+      )}
+    </Box>
   );
 }
 
-// Formula Display - compact
-interface FormulaDisplayProps {
-  partnerName: string;
-  partnerKey: string;
-  productName?: string;
-}
-
-function FormulaDisplay({ partnerName, partnerKey, productName }: FormulaDisplayProps) {
-  const PartnerLogo = getPartnerLogo(partnerKey);
-  const displayName = productName ? `${partnerName} ${productName}` : partnerName;
+function PipelineBar({
+  label,
+  value,
+  total,
+  color,
+  icon: Icon,
+  onClick
+}: {
+  label: string;
+  value: number;
+  total: number;
+  color: string;
+  icon: React.ElementType;
+  onClick?: () => void;
+}) {
+  const percent = total > 0 ? (value / total) * 100 : 0;
 
   return (
-    <Group gap="sm" style={{ background: COLORS.GRAY_100, padding: '8px 16px', borderRadius: 8 }}>
-      <Group gap={6}>
-        <PartnerLogo size={20} />
-        <Text size="sm" fw={500} c={COLORS.GRAY_700}>{displayName}</Text>
+    <Box
+      onClick={onClick}
+      style={{ cursor: onClick ? 'pointer' : 'default' }}
+      className={onClick ? 'hover-lift' : ''}
+    >
+      <Group justify="space-between" mb={8}>
+        <Group gap="sm">
+          <ThemeIcon size="md" color={color} variant="light">
+            <Icon size={16} />
+          </ThemeIcon>
+          <Text size="md" fw={500} c="white">{label}</Text>
+        </Group>
+        <Group gap="xs">
+          <Text size="lg" fw={700} c="white">{value.toLocaleString()}</Text>
+          <Text size="sm" c="dimmed">({percent.toFixed(1)}%)</Text>
+        </Group>
       </Group>
-      <IconMinus size={14} style={{ color: COLORS.GRAY_500 }} />
-      <Group gap={6}>
-        <AlgoliaLogo size={20} />
-        <Text size="sm" fw={500} c={COLORS.GRAY_700}>Algolia Customers</Text>
+      <Progress
+        value={percent}
+        size="lg"
+        radius="xl"
+        color={color}
+        styles={{
+          root: { backgroundColor: 'rgba(255,255,255,0.1)' },
+        }}
+      />
+    </Box>
+  );
+}
+
+function OpportunityCard({ opportunity }: { opportunity: TopOpportunity }) {
+  const techStack = [
+    opportunity.cms_tech,
+    opportunity.commerce_tech,
+    opportunity.martech_tech,
+    opportunity.search_tech,
+  ].filter(Boolean);
+
+  const isJackpot = opportunity.tech_cohort === 'JACKPOT';
+  const isDisplacement = opportunity.sales_play === 'DISPLACEMENT';
+
+  return (
+    <Paper
+      p="lg"
+      radius="md"
+      style={{
+        backgroundColor: isJackpot ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255,255,255,0.05)',
+        border: isJackpot ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(255,255,255,0.1)',
+      }}
+    >
+      <Group justify="space-between" mb="sm">
+        <Group gap="sm">
+          <ThemeIcon
+            size="lg"
+            radius="xl"
+            color={isJackpot ? 'green' : 'blue'}
+            variant="filled"
+          >
+            <IconBuildingSkyscraper size={18} />
+          </ThemeIcon>
+          <div>
+            <Text size="lg" fw={600} c="white">
+              {opportunity.domain}
+            </Text>
+            {opportunity.company_name && (
+              <Text size="sm" c="dimmed">{opportunity.company_name}</Text>
+            )}
+          </div>
+        </Group>
+        <Group gap="xs">
+          <Badge
+            size="lg"
+            color={isJackpot ? 'green' : 'blue'}
+            variant="filled"
+          >
+            {opportunity.tech_cohort}
+          </Badge>
+          <Badge
+            size="lg"
+            color={isDisplacement ? 'red' : 'teal'}
+            variant="outline"
+          >
+            {opportunity.sales_play}
+          </Badge>
+        </Group>
       </Group>
-      <IconEqual size={14} style={{ color: COLORS.GRAY_500 }} />
-      <Badge color="blue" variant="filled" size="sm" styles={{ root: { color: '#fff' } }}>TARGETS</Badge>
-    </Group>
+
+      <Group gap="xs" mb="md">
+        {techStack.map((tech, i) => (
+          <Badge key={i} size="md" variant="light" color="gray">
+            {tech}
+          </Badge>
+        ))}
+      </Group>
+
+      <Text size="md" c="gray.4">
+        {isJackpot && isDisplacement && '→ Full stack with competitor search. Prime displacement target.'}
+        {isJackpot && !isDisplacement && '→ Full stack, no search yet. Greenfield opportunity.'}
+        {!isJackpot && isDisplacement && '→ Has competitor search. Displacement opportunity.'}
+        {!isJackpot && !isDisplacement && '→ Strong partner tech presence.'}
+      </Text>
+    </Paper>
+  );
+}
+
+function JourneyStep({
+  step,
+  label,
+  value,
+  color,
+  icon: Icon,
+  active,
+  onClick,
+}: {
+  step: number;
+  label: string;
+  value: number;
+  color: string;
+  icon: React.ElementType;
+  active?: boolean;
+  onClick?: () => void;
+}) {
+  return (
+    <Box
+      onClick={onClick}
+      style={{
+        cursor: onClick ? 'pointer' : 'default',
+        transition: 'transform 0.2s',
+      }}
+      className="hover-lift"
+    >
+      <Paper
+        p="xl"
+        radius="lg"
+        style={{
+          backgroundColor: active ? `${color}20` : 'rgba(255,255,255,0.05)',
+          border: active ? `2px solid ${color}` : '1px solid rgba(255,255,255,0.1)',
+          textAlign: 'center',
+        }}
+      >
+        <ThemeIcon size={48} radius="xl" color={color} variant="light" mb="md" mx="auto">
+          <Icon size={24} />
+        </ThemeIcon>
+        <Text size="2rem" fw={700} c="white" style={{ lineHeight: 1 }}>
+          {value.toLocaleString()}
+        </Text>
+        <Text size="lg" c="dimmed" mt="xs">
+          {label}
+        </Text>
+      </Paper>
+    </Box>
+  );
+}
+
+// =============================================================================
+// Main Component
+// =============================================================================
+
+export function Dashboard() {
+  const navigate = useNavigate();
+  const [stats, setStats] = useState<PipelineStats | null>(null);
+  const [opportunities, setOpportunities] = useState<TopOpportunity[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      setLoading(true);
+      try {
+        const [statsResult, oppsResult] = await Promise.all([
+          fetchPipelineStats(),
+          fetchTopOpportunities(),
+        ]);
+        setStats(statsResult);
+        setOpportunities(oppsResult);
+      } catch (err) {
+        console.error('Failed to load dashboard:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
+
+  const today = new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
+  return (
+    <Box pos="relative" style={{ minHeight: '100vh' }}>
+      {/* Galaxy Background */}
+      <Box
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          zIndex: 0,
+          backgroundImage: 'url(/images/milky-way.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <Box
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'linear-gradient(180deg, rgba(15,23,42,0.7) 0%, rgba(15,23,42,0.9) 100%)',
+          }}
+        />
+      </Box>
+
+      {/* Content */}
+      <Container size="lg" py="xl" pos="relative" style={{ zIndex: 1 }}>
+        {/* Header */}
+        <Group justify="space-between" mb="xl">
+          <div>
+            <Text size="lg" c="dimmed">{today}</Text>
+            <Title order={1} c="white" mt="xs">
+              Partner Intelligence Brief
+            </Title>
+          </div>
+          <Button
+            size="lg"
+            rightSection={<IconArrowRight size={18} />}
+            variant="gradient"
+            gradient={{ from: COLORS.ALGOLIA_NEBULA_BLUE, to: COLORS.ALGOLIA_PURPLE }}
+            onClick={() => navigate('/galaxy')}
+          >
+            Enter Galaxy
+          </Button>
+        </Group>
+
+        {/* Hero Stat */}
+        <Paper
+          p="xl"
+          radius="lg"
+          mb="xl"
+          style={{
+            backgroundColor: 'rgba(15, 23, 42, 0.8)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            textAlign: 'center',
+          }}
+        >
+          {loading ? (
+            <Skeleton height={120} radius="md" />
+          ) : (
+            <>
+              <Group justify="center" gap={4} mb="md">
+                <IconSparkles size={24} color="#10b981" />
+                <Text size="lg" c="dimmed">Ready for Outreach</Text>
+              </Group>
+              <HeroStat
+                value={stats?.jackpot || 0}
+                label="JACKPOT Targets"
+                trend={stats?.jackpot && stats.jackpot > 0 ? "High-value opportunities" : undefined}
+              />
+              <Text size="md" c="dimmed" mt="lg">
+                Companies with CMS + Commerce + MarTech/Search
+              </Text>
+            </>
+          )}
+        </Paper>
+
+        {/* Journey Steps */}
+        <Text size="xl" fw={600} c="white" mb="lg">
+          Pipeline Journey
+        </Text>
+        <SimpleGrid cols={{ base: 2, md: 4 }} mb="xl">
+          <JourneyStep
+            step={1}
+            label="Galaxy"
+            value={stats?.galaxy || 0}
+            color={COLORS.ALGOLIA_PURPLE}
+            icon={IconPlanet}
+            onClick={() => navigate('/galaxy')}
+          />
+          <JourneyStep
+            step={2}
+            label="Whales"
+            value={stats?.whale || 0}
+            color="#f59e0b"
+            icon={IconFlame}
+            onClick={() => navigate('/whale')}
+          />
+          <JourneyStep
+            step={3}
+            label="Warm Intros"
+            value={stats?.crossbeam || 0}
+            color="#14b8a6"
+            icon={IconUsers}
+            onClick={() => navigate('/crossbeam')}
+          />
+          <JourneyStep
+            step={4}
+            label="JACKPOT"
+            value={stats?.jackpot || 0}
+            color="#10b981"
+            icon={IconTarget}
+            active
+          />
+        </SimpleGrid>
+
+        {/* Pipeline Health */}
+        <Paper
+          p="xl"
+          radius="lg"
+          mb="xl"
+          style={{
+            backgroundColor: 'rgba(15, 23, 42, 0.8)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255,255,255,0.1)',
+          }}
+        >
+          <Text size="xl" fw={600} c="white" mb="xl">
+            Pipeline Health
+          </Text>
+
+          {loading ? (
+            <Stack gap="lg">
+              <Skeleton height={50} radius="md" />
+              <Skeleton height={50} radius="md" />
+              <Skeleton height={50} radius="md" />
+            </Stack>
+          ) : (
+            <Stack gap="xl">
+              <PipelineBar
+                label="Partner Tech Galaxy"
+                value={stats?.galaxy || 0}
+                total={stats?.galaxy || 1}
+                color={COLORS.ALGOLIA_PURPLE}
+                icon={IconPlanet}
+                onClick={() => navigate('/galaxy')}
+              />
+              <PipelineBar
+                label="Whale Composite (Intent + Qualification)"
+                value={stats?.whale || 0}
+                total={stats?.galaxy || 1}
+                color="#f59e0b"
+                icon={IconFlame}
+                onClick={() => navigate('/whale')}
+              />
+              <PipelineBar
+                label="Crossbeam Overlap (Warm Intros)"
+                value={stats?.crossbeam || 0}
+                total={stats?.galaxy || 1}
+                color="#14b8a6"
+                icon={IconUsers}
+                onClick={() => navigate('/crossbeam')}
+              />
+              <PipelineBar
+                label="Displacement Targets (Competitor Search)"
+                value={stats?.displacement || 0}
+                total={stats?.galaxy || 1}
+                color="#ef4444"
+                icon={IconRocket}
+              />
+            </Stack>
+          )}
+        </Paper>
+
+        {/* Top Opportunities */}
+        <Paper
+          p="xl"
+          radius="lg"
+          style={{
+            backgroundColor: 'rgba(15, 23, 42, 0.8)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255,255,255,0.1)',
+          }}
+        >
+          <Group justify="space-between" mb="xl">
+            <Text size="xl" fw={600} c="white">
+              Top Opportunities
+            </Text>
+            <Button
+              variant="subtle"
+              color="gray"
+              rightSection={<IconArrowRight size={16} />}
+              onClick={() => navigate('/galaxy')}
+            >
+              View All
+            </Button>
+          </Group>
+
+          {loading ? (
+            <Stack gap="md">
+              <Skeleton height={120} radius="md" />
+              <Skeleton height={120} radius="md" />
+            </Stack>
+          ) : opportunities.length > 0 ? (
+            <Stack gap="md">
+              {opportunities.map((opp) => (
+                <OpportunityCard key={opp.domain} opportunity={opp} />
+              ))}
+            </Stack>
+          ) : (
+            <Text c="dimmed" ta="center" py="xl">
+              No JACKPOT or HIGH cohort targets yet. Keep building your galaxy!
+            </Text>
+          )}
+        </Paper>
+      </Container>
+
+      {/* Global styles */}
+      <style>{`
+        .hover-lift:hover {
+          transform: translateY(-2px);
+          transition: transform 0.2s ease;
+        }
+      `}</style>
+    </Box>
   );
 }
 

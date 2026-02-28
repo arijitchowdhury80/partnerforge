@@ -16,6 +16,7 @@ import { PartnerProvider } from './contexts/PartnerContext';
 import { AppShell } from './components/layout/AppShell';
 
 // Pages - v2
+import { Dashboard } from './pages/Dashboard';
 import { GalaxyExplorer } from './pages/GalaxyExplorer';
 import { TargetDetail } from './pages/TargetDetail';
 import { ListsPage } from './pages/ListsPage';
@@ -113,16 +114,19 @@ function App() {
           <Notifications position="top-right" limit={5} />
           <BrowserRouter>
             <Routes>
-            {/* Root redirects to Dashboard (Galaxy Explorer) */}
+            {/* Root redirects to Dashboard */}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
             {/* Main Layout with Sidebar */}
             <Route element={<AppShell />}>
+              {/* Dashboard - Intelligence Brief Landing */}
+              <Route path="/dashboard" element={<Dashboard />} />
+
               {/* ICP Overview - accessible from sidebar */}
               <Route path="/icp" element={<ICPLandingPage />} />
 
-              {/* Dashboard - Galaxy Explorer (v2) */}
-              <Route path="/dashboard" element={<GalaxyExplorer />} />
+              {/* Galaxy - Partner Tech Galaxy (Layer 0) */}
+              <Route path="/galaxy" element={<GalaxyExplorer />} />
 
               {/* Companies - Galaxy Explorer with company list */}
               <Route path="/companies" element={<GalaxyExplorer />} />
