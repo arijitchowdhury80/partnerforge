@@ -1,7 +1,7 @@
 /**
- * Dashboard - Intelligence Brief Landing
+ * Dashboard - Partner Intelligence BI Dashboard
  *
- * Premium landing experience showing pipeline health and top opportunities.
+ * Visual dashboard with KPIs, galaxy breakdowns, cohort charts, and filters.
  */
 
 import { useState, useEffect } from 'react';
@@ -11,66 +11,81 @@ import {
   Text,
   Group,
   Stack,
-  Paper,
   Badge,
   Button,
-  Progress,
   Box,
   SimpleGrid,
   ThemeIcon,
   Skeleton,
+  RingProgress,
+  Tooltip,
+  Progress,
 } from '@mantine/core';
 import {
-  IconFlame,
-  IconRocket,
-  IconTrendingUp,
-  IconUsers,
-  IconPlanet,
-  IconTarget,
+  IconDatabase,
+  IconCode,
+  IconShoppingCart,
+  IconMail,
+  IconTargetArrow,
   IconArrowRight,
-  IconSparkles,
-  IconBuildingSkyscraper,
+  IconTrophy,
+  IconFlame,
+  IconLeaf,
+  IconStack,
+  IconChartPie,
+  IconUsers,
+  IconCloud,
 } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
+import { GalaxyBackground } from '../components/common/GalaxyBackground';
 
 // =============================================================================
-// Styles - Explicit inline styles to override global CSS
+// Styles - Glassmorphism for galaxy background
 // =============================================================================
 
-const STYLES = {
-  card: {
-    backgroundColor: 'rgba(15, 23, 42, 0.85)',
-    backdropFilter: 'blur(12px)',
-    WebkitBackdropFilter: 'blur(12px)',
-    border: '1px solid rgba(255, 255, 255, 0.15)',
-    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-  } as React.CSSProperties,
-  textWhite: { color: '#ffffff' } as React.CSSProperties,
-  textGray: { color: '#94a3b8' } as React.CSSProperties,
-  textGreen: { color: '#10b981' } as React.CSSProperties,
+const GLASS_CARD: React.CSSProperties = {
+  backgroundColor: 'rgba(15, 23, 42, 0.85)',
+  backdropFilter: 'blur(16px) saturate(180%)',
+  WebkitBackdropFilter: 'blur(16px) saturate(180%)',
+  borderRadius: '16px',
+  padding: '24px',
+  border: '1px solid rgba(255, 255, 255, 0.12)',
+  borderTop: '1px solid rgba(255, 255, 255, 0.2)',
+  boxShadow: '0 4px 6px rgba(0,0,0,0.1), 0 10px 20px rgba(0,0,0,0.15), 0 25px 50px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.05) inset',
+};
+
+const DARK_CARD: React.CSSProperties = {
+  ...GLASS_CARD,
 };
 
 // =============================================================================
 // Types
 // =============================================================================
 
-interface PipelineStats {
-  galaxy: number;
-  whale: number;
-  crossbeam: number;
-  jackpot: number;
-  displacement: number;
+interface GalaxySummary {
+  galaxy: string;
+  tech: string;
+  company_count: number;
 }
 
-interface TopOpportunity {
-  domain: string;
-  company_name: string | null;
+interface CohortSummary {
   tech_cohort: string;
-  sales_play: string;
-  cms_tech: string | null;
-  commerce_tech: string | null;
-  martech_tech: string | null;
-  search_tech: string | null;
+  company_count: number;
+}
+
+interface Stats {
+  total: number;
+  cms: number;
+  commerce: number;
+  martech: number;
+  search: number;
+  cloud: number;  // Hyperscaler Galaxy
+  jackpot: number;
+  high: number;
+  medium: number;
+  base: number;
+  displacement: number;
+  greenfield: number;
 }
 
 // =============================================================================
@@ -80,7 +95,7 @@ interface TopOpportunity {
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY;
 
-async function fetchPipelineStats(): Promise<PipelineStats> {
+async function fetchStats(): Promise<Stats> {
   const headers = {
     'apikey': SUPABASE_KEY,
     'Authorization': `Bearer ${SUPABASE_KEY}`,
@@ -88,25 +103,36 @@ async function fetchPipelineStats(): Promise<PipelineStats> {
     'Range': '0-0',
   };
 
-  const [galaxyCount, whaleCount, crossbeamCount, jackpotCount, displacementCount] = await Promise.all([
-    fetch(`${SUPABASE_URL}/rest/v1/companies?select=domain`, { headers })
-      .then(r => parseInt(r.headers.get('content-range')?.split('/')[1] || '0')),
-    fetch(`${SUPABASE_URL}/rest/v1/whale_composite?select=domain`, { headers })
-      .then(r => parseInt(r.headers.get('content-range')?.split('/')[1] || '0')),
-    fetch(`${SUPABASE_URL}/rest/v1/crossbeam_overlaps?select=domain`, { headers })
-      .then(r => parseInt(r.headers.get('content-range')?.split('/')[1] || '0')),
-    fetch(`${SUPABASE_URL}/rest/v1/companies?select=domain&tech_cohort=eq.JACKPOT`, { headers })
-      .then(r => parseInt(r.headers.get('content-range')?.split('/')[1] || '0')),
-    fetch(`${SUPABASE_URL}/rest/v1/companies?select=domain&sales_play=eq.DISPLACEMENT`, { headers })
-      .then(r => parseInt(r.headers.get('content-range')?.split('/')[1] || '0')),
-  ]);
+  const queries = [
+    { key: 'total', query: 'companies?select=domain' },
+    { key: 'cms', query: 'companies?select=domain&cms_tech=not.is.null' },
+    { key: 'commerce', query: 'companies?select=domain&commerce_tech=not.is.null' },
+    { key: 'martech', query: 'companies?select=domain&martech_tech=not.is.null' },
+    { key: 'search', query: 'companies?select=domain&search_tech=not.is.null' },
+    { key: 'cloud', query: 'companies?select=domain&cloud_tech=not.is.null' },  // Hyperscaler Galaxy
+    { key: 'jackpot', query: 'companies?select=domain&tech_cohort=eq.JACKPOT' },
+    { key: 'high', query: 'companies?select=domain&tech_cohort=eq.HIGH' },
+    { key: 'medium', query: 'companies?select=domain&tech_cohort=eq.MEDIUM' },
+    { key: 'base', query: 'companies?select=domain&tech_cohort=eq.BASE' },
+    { key: 'displacement', query: 'companies?select=domain&sales_play=eq.DISPLACEMENT' },
+    { key: 'greenfield', query: 'companies?select=domain&sales_play=eq.GREENFIELD' },
+  ];
 
-  return { galaxy: galaxyCount, whale: whaleCount, crossbeam: crossbeamCount, jackpot: jackpotCount, displacement: displacementCount };
+  const results = await Promise.all(
+    queries.map(q =>
+      fetch(`${SUPABASE_URL}/rest/v1/${q.query}`, { headers })
+        .then(r => ({ key: q.key, count: parseInt(r.headers.get('content-range')?.split('/')[1] || '0') }))
+    )
+  );
+
+  const stats: any = {};
+  results.forEach(r => { stats[r.key] = r.count; });
+  return stats as Stats;
 }
 
-async function fetchTopOpportunities(): Promise<TopOpportunity[]> {
+async function fetchGalaxySummary(): Promise<GalaxySummary[]> {
   const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/companies?select=domain,company_name,tech_cohort,sales_play,cms_tech,commerce_tech,martech_tech,search_tech&or=(tech_cohort.eq.JACKPOT,tech_cohort.eq.HIGH)&order=tech_cohort.asc&limit=5`,
+    `${SUPABASE_URL}/rest/v1/galaxy_summary?select=*`,
     { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }
   );
   if (!res.ok) return [];
@@ -114,160 +140,372 @@ async function fetchTopOpportunities(): Promise<TopOpportunity[]> {
 }
 
 // =============================================================================
+// Tech Logos (using colored badges as placeholder - can add real logos later)
+// =============================================================================
+
+const TECH_COLORS: Record<string, string> = {
+  // CMS
+  'AEM': '#fa0f00',
+  'Contentful': '#2478cc',
+  'Contentstack': '#6c5ce7',
+  'Amplience': '#ff6b6b',
+  'Sitecore': '#eb1f1f',
+  // Commerce
+  'SFCC': '#00a1e0',
+  'Shopify+': '#7ab55c',
+  'Magento': '#f26322',
+  'BigCommerce': '#121118',
+  'Commercetools': '#6359e9',
+  'Spryker': '#29b6f6',
+  // MarTech
+  'SFMC': '#00a1e0',
+  'Marketo': '#5c4c9f',
+  'HubSpot': '#ff7a59',
+  'Klaviyo': '#000000',
+  // Search (Top competitors: Elastic, Bloomreach, Constructor, Coveo, SearchSpring, Yext)
+  'Elastic': '#fed10a',
+  'Bloomreach': '#002840',
+  'Constructor': '#6366f1',
+  'Coveo': '#f36f21',
+  'SearchSpring': '#00b4d8',
+  'Yext': '#0066cc',
+  'Solr': '#d9411e',
+  'Lucidworks': '#0066cc',
+  // Hyperscaler/Cloud (AWS & Azure only - GCP is a competitor)
+  'AWS': '#FF9900',
+  'Azure': '#0078D4',
+};
+
+// =============================================================================
 // Components
 // =============================================================================
 
-function JourneyCard({
-  label,
-  value,
-  color,
+function KPICard({
   icon: Icon,
-  active,
+  value,
+  label,
+  color,
   onClick,
 }: {
-  label: string;
-  value: number;
-  color: string;
   icon: React.ElementType;
-  active?: boolean;
+  value: number;
+  label: string;
+  color: string;
   onClick?: () => void;
 }) {
   return (
-    <Paper
-      p="xl"
-      radius="lg"
-      onClick={onClick}
+    <div
       style={{
-        ...STYLES.card,
+        ...GLASS_CARD,
         cursor: onClick ? 'pointer' : 'default',
-        border: active ? `2px solid ${color}` : '1px solid rgba(255,255,255,0.15)',
-        backgroundColor: active ? `${color}20` : 'rgba(15, 23, 42, 0.85)',
-        textAlign: 'center',
         transition: 'transform 0.2s, box-shadow 0.2s',
       }}
-      className="dashboard-card"
-    >
-      <ThemeIcon size={56} radius="xl" style={{ backgroundColor: color, margin: '0 auto 16px' }}>
-        <Icon size={28} color="white" />
-      </ThemeIcon>
-      <Text size="2.5rem" fw={700} style={{ ...STYLES.textWhite, lineHeight: 1 }}>
-        {value.toLocaleString()}
-      </Text>
-      <Text size="lg" mt="sm" style={STYLES.textGray}>
-        {label}
-      </Text>
-    </Paper>
-  );
-}
-
-function PipelineBar({
-  label,
-  value,
-  total,
-  color,
-  icon: Icon,
-  onClick,
-}: {
-  label: string;
-  value: number;
-  total: number;
-  color: string;
-  icon: React.ElementType;
-  onClick?: () => void;
-}) {
-  const percent = total > 0 ? (value / total) * 100 : 0;
-
-  return (
-    <Box
       onClick={onClick}
-      style={{ cursor: onClick ? 'pointer' : 'default' }}
-      className="dashboard-card"
     >
-      <Group justify="space-between" mb={12}>
-        <Group gap="sm">
-          <ThemeIcon size="lg" radius="md" style={{ backgroundColor: color }}>
-            <Icon size={18} color="white" />
-          </ThemeIcon>
-          <Text size="lg" fw={500} style={STYLES.textWhite}>{label}</Text>
-        </Group>
-        <Group gap="sm">
-          <Text size="xl" fw={700} style={STYLES.textWhite}>{value.toLocaleString()}</Text>
-          <Text size="md" style={STYLES.textGray}>({percent.toFixed(1)}%)</Text>
-        </Group>
+      <Group gap="md">
+        <ThemeIcon size={50} radius="md" style={{ backgroundColor: color }}>
+          <Icon size={26} color="white" />
+        </ThemeIcon>
+        <div>
+          <div style={{ fontSize: '32px', fontWeight: 700, color: '#ffffff', lineHeight: 1 }}>
+            {value.toLocaleString()}
+          </div>
+          <div style={{ fontSize: '14px', color: '#94a3b8', marginTop: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            {label}
+          </div>
+        </div>
       </Group>
-      <Progress
-        value={percent}
-        size="xl"
-        radius="xl"
-        color={color}
-        styles={{
-          root: { backgroundColor: 'rgba(255,255,255,0.1)', height: 12 },
-        }}
-      />
-    </Box>
+    </div>
   );
 }
 
-function OpportunityCard({ opportunity }: { opportunity: TopOpportunity }) {
-  const techStack = [
-    opportunity.cms_tech,
-    opportunity.commerce_tech,
-    opportunity.martech_tech,
-    opportunity.search_tech,
-  ].filter(Boolean);
+// Tech logo URLs - using Google favicon service (most reliable)
+const TECH_LOGOS: Record<string, string> = {
+  // CMS
+  'AEM': 'https://www.google.com/s2/favicons?domain=adobe.com&sz=64',
+  'Contentful': 'https://www.google.com/s2/favicons?domain=contentful.com&sz=64',
+  'Contentstack': 'https://www.google.com/s2/favicons?domain=contentstack.com&sz=64',
+  'Amplience': 'https://www.google.com/s2/favicons?domain=amplience.com&sz=64',
+  'Sitecore': 'https://www.google.com/s2/favicons?domain=sitecore.com&sz=64',
+  // Commerce
+  'SFCC': 'https://www.google.com/s2/favicons?domain=salesforce.com&sz=64',
+  'Shopify+': 'https://www.google.com/s2/favicons?domain=shopify.com&sz=64',
+  'Magento': 'https://www.google.com/s2/favicons?domain=magento.com&sz=64',
+  'BigCommerce': 'https://www.google.com/s2/favicons?domain=bigcommerce.com&sz=64',
+  'Commercetools': 'https://www.google.com/s2/favicons?domain=commercetools.com&sz=64',
+  'Spryker': 'https://www.google.com/s2/favicons?domain=spryker.com&sz=64',
+  // MarTech
+  'SFMC': 'https://www.google.com/s2/favicons?domain=salesforce.com&sz=64',
+  'Marketo': 'https://www.google.com/s2/favicons?domain=marketo.com&sz=64',
+  'HubSpot': 'https://www.google.com/s2/favicons?domain=hubspot.com&sz=64',
+  'Klaviyo': 'https://www.google.com/s2/favicons?domain=klaviyo.com&sz=64',
+  // Search (Top competitors: Elastic, Bloomreach, Constructor, Coveo, SearchSpring, Yext)
+  'Elastic': 'https://www.google.com/s2/favicons?domain=elastic.co&sz=64',
+  'Bloomreach': 'https://www.google.com/s2/favicons?domain=bloomreach.com&sz=64',
+  'Constructor': 'https://www.google.com/s2/favicons?domain=constructor.io&sz=64',
+  'Coveo': 'https://www.google.com/s2/favicons?domain=coveo.com&sz=64',
+  'SearchSpring': 'https://www.google.com/s2/favicons?domain=searchspring.com&sz=64',
+  'Yext': 'https://www.google.com/s2/favicons?domain=yext.com&sz=64',
+  'Solr': 'https://www.google.com/s2/favicons?domain=solr.apache.org&sz=64',
+  'Lucidworks': 'https://www.google.com/s2/favicons?domain=lucidworks.com&sz=64',
+  'Doofinder': 'https://www.google.com/s2/favicons?domain=doofinder.com&sz=64',
+  'Searchanise': 'https://www.google.com/s2/favicons?domain=searchanise.io&sz=64',
+  'AddSearch': 'https://www.google.com/s2/favicons?domain=addsearch.com&sz=64',
+  'Cludo': 'https://www.google.com/s2/favicons?domain=cludo.com&sz=64',
+  // Cloud
+  'AWS': 'https://www.google.com/s2/favicons?domain=aws.amazon.com&sz=64',
+  'Azure': 'https://www.google.com/s2/favicons?domain=azure.microsoft.com&sz=64',
+};
 
-  const isJackpot = opportunity.tech_cohort === 'JACKPOT';
-  const isDisplacement = opportunity.sales_play === 'DISPLACEMENT';
+function TechLogo({ tech, color }: { tech: string; color: string }) {
+  const [imgError, setImgError] = useState(false);
+  const logoUrl = TECH_LOGOS[tech];
+  const bgColor = TECH_COLORS[tech] || color;
 
+  if (logoUrl && !imgError) {
+    return (
+      <div
+        style={{
+          width: 42,
+          height: 42,
+          borderRadius: 8,
+          backgroundColor: 'white',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 6,
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        }}
+      >
+        <img
+          src={logoUrl}
+          alt={tech}
+          style={{ width: 30, height: 30, objectFit: 'contain' }}
+          onError={() => setImgError(true)}
+        />
+      </div>
+    );
+  }
+
+  // Fallback to colored initial
   return (
-    <Paper
-      p="xl"
-      radius="lg"
+    <div
       style={{
-        ...STYLES.card,
-        backgroundColor: isJackpot ? 'rgba(16, 185, 129, 0.15)' : 'rgba(15, 23, 42, 0.85)',
-        border: isJackpot ? '2px solid rgba(16, 185, 129, 0.5)' : '1px solid rgba(255,255,255,0.15)',
+        width: 42,
+        height: 42,
+        borderRadius: 8,
+        backgroundColor: bgColor,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: 'white',
+        fontSize: 20,
+        fontWeight: 700,
       }}
     >
-      <Group justify="space-between" mb="md">
-        <Group gap="md">
-          <ThemeIcon size={48} radius="xl" color={isJackpot ? 'green' : 'blue'}>
-            <IconBuildingSkyscraper size={24} />
-          </ThemeIcon>
-          <div>
-            <Text size="xl" fw={700} style={STYLES.textWhite}>
-              {opportunity.domain}
-            </Text>
-            {opportunity.company_name && (
-              <Text size="md" style={STYLES.textGray}>{opportunity.company_name}</Text>
-            )}
+      {tech.charAt(0).toUpperCase()}
+    </div>
+  );
+}
+
+function GalaxyCard({
+  title,
+  icon: Icon,
+  color,
+  total,
+  techData,
+  onClick,
+}: {
+  title: string;
+  icon: React.ElementType;
+  color: string;
+  total: number;
+  techData: { tech: string; count: number }[];
+  onClick?: () => void;
+}) {
+  return (
+    <div style={{ ...DARK_CARD, cursor: onClick ? 'pointer' : 'default', minHeight: 340 }} onClick={onClick}>
+      {/* Header */}
+      <Group gap="md" mb="lg">
+        <ThemeIcon size={52} radius="md" style={{ backgroundColor: color }}>
+          <Icon size={28} color="white" />
+        </ThemeIcon>
+        <div style={{ fontSize: '22px', fontWeight: 700, color: '#ffffff' }}>{title}</div>
+      </Group>
+
+      {/* Big Total */}
+      <div style={{ marginBottom: '24px' }}>
+        <div style={{ fontSize: '42px', fontWeight: 700, color: '#ffffff', lineHeight: 1 }}>{total.toLocaleString()}</div>
+      </div>
+
+      {/* Tech breakdown with logos */}
+      <Stack gap="xs">
+        {techData.slice(0, 5).map((item) => (
+          <div key={item.tech} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+              <TechLogo tech={item.tech} color={color} />
+              <span style={{ fontSize: '16px', fontWeight: 500, color: '#e2e8f0', whiteSpace: 'nowrap' }}>{item.tech}</span>
+            </div>
+            <span style={{ fontSize: '16px', fontWeight: 600, color: 'white', whiteSpace: 'nowrap' }}>{item.count.toLocaleString()}</span>
           </div>
-        </Group>
-        <Group gap="sm">
-          <Badge size="lg" color={isJackpot ? 'green' : 'blue'}>
-            {opportunity.tech_cohort}
-          </Badge>
-          <Badge size="lg" color={isDisplacement ? 'red' : 'teal'} variant="outline">
-            {opportunity.sales_play}
-          </Badge>
-        </Group>
-      </Group>
-
-      <Group gap="sm" mb="md">
-        {techStack.map((tech, i) => (
-          <Badge key={i} size="lg" variant="light" color="gray">
-            {tech}
-          </Badge>
         ))}
-      </Group>
+      </Stack>
+    </div>
+  );
+}
 
-      <Text size="md" style={STYLES.textGray}>
-        {isJackpot && isDisplacement && '→ Full stack with competitor search. Prime displacement target.'}
-        {isJackpot && !isDisplacement && '→ Full stack, no search yet. Greenfield opportunity.'}
-        {!isJackpot && isDisplacement && '→ Has competitor search. Displacement opportunity.'}
-        {!isJackpot && !isDisplacement && '→ Strong partner tech presence.'}
-      </Text>
-    </Paper>
+function CohortChart({ stats, onCohortClick }: { stats: Stats; onCohortClick?: (cohort: string) => void }) {
+  const [hoveredCohort, setHoveredCohort] = useState<string | null>(null);
+  const total = stats.jackpot + stats.high + stats.medium + stats.base;
+  const cohorts = [
+    { label: 'JACKPOT', value: stats.jackpot, color: '#10b981', desc: 'CMS + Commerce + MarTech/Search' },
+    { label: 'HIGH', value: stats.high, color: '#3b82f6', desc: 'CMS + Commerce' },
+    { label: 'MEDIUM', value: stats.medium, color: '#f59e0b', desc: 'Premium Commerce only' },
+    { label: 'BASE', value: stats.base, color: '#64748b', desc: 'Any partner tech' },
+  ];
+
+  const hoveredData = hoveredCohort ? cohorts.find(c => c.label === hoveredCohort) : null;
+
+  return (
+    <div style={GLASS_CARD}>
+      <div style={{ fontSize: '22px', fontWeight: 700, color: '#ffffff', marginBottom: '24px' }}>
+        <IconChartPie size={24} style={{ verticalAlign: 'middle', marginRight: '10px' }} />
+        Tech Cohort Distribution
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '40px' }}>
+        {/* Donut Chart */}
+        <RingProgress
+          size={220}
+          thickness={28}
+          roundCaps
+          sections={cohorts.map(c => ({
+            value: total > 0 ? (c.value / total) * 100 : 0,
+            color: hoveredCohort === c.label ? c.color : (hoveredCohort ? `${c.color}66` : c.color),
+            tooltip: `${c.label}: ${c.value.toLocaleString()} (${((c.value / total) * 100).toFixed(1)}%)`,
+          }))}
+          label={
+            <div style={{ textAlign: 'center' }}>
+              {hoveredData ? (
+                <>
+                  <div style={{ fontSize: '32px', fontWeight: 700, color: hoveredData.color }}>{hoveredData.value.toLocaleString()}</div>
+                  <div style={{ fontSize: '14px', fontWeight: 600, color: '#ffffff' }}>{hoveredData.label}</div>
+                </>
+              ) : (
+                <>
+                  <div style={{ fontSize: '36px', fontWeight: 700, color: '#ffffff' }}>{total.toLocaleString()}</div>
+                  <div style={{ fontSize: '16px', color: '#94a3b8' }}>Total</div>
+                </>
+              )}
+            </div>
+          }
+        />
+
+        {/* Compact Legend */}
+        <div style={{ flex: 1 }}>
+          {cohorts.map((c) => (
+            <div
+              key={c.label}
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '12px 16px',
+                marginBottom: '8px',
+                borderRadius: '10px',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+                backgroundColor: hoveredCohort === c.label ? `${c.color}25` : 'rgba(255,255,255,0.03)',
+                border: hoveredCohort === c.label ? `2px solid ${c.color}` : '2px solid rgba(255,255,255,0.1)',
+              }}
+              onMouseEnter={() => setHoveredCohort(c.label)}
+              onMouseLeave={() => setHoveredCohort(null)}
+              onClick={() => onCohortClick?.(c.label)}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ width: '18px', height: '18px', borderRadius: '4px', backgroundColor: c.color }} />
+                <div>
+                  <div style={{ fontSize: '16px', fontWeight: 600, color: '#ffffff' }}>{c.label}</div>
+                  <div style={{ fontSize: '14px', color: '#94a3b8' }}>{c.desc}</div>
+                </div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: '20px', fontWeight: 700, color: hoveredCohort === c.label ? c.color : '#ffffff' }}>
+                  {c.value.toLocaleString()}
+                </div>
+                <div style={{ fontSize: '14px', color: '#94a3b8' }}>
+                  {total > 0 ? ((c.value / total) * 100).toFixed(1) : 0}%
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SalesPlayChart({ stats, onPlayClick }: { stats: Stats; onPlayClick?: (play: string) => void }) {
+  const [hoveredPlay, setHoveredPlay] = useState<string | null>(null);
+  const total = stats.displacement + stats.greenfield;
+  const plays = [
+    { label: 'DISPLACEMENT', value: stats.displacement, color: '#ef4444', desc: 'Has competitor search', icon: IconFlame },
+    { label: 'GREENFIELD', value: stats.greenfield, color: '#10b981', desc: 'No search yet', icon: IconLeaf },
+  ];
+
+  return (
+    <div style={GLASS_CARD}>
+      <div style={{ fontSize: '22px', fontWeight: 700, color: '#ffffff', marginBottom: '24px' }}>
+        <IconTargetArrow size={24} style={{ verticalAlign: 'middle', marginRight: '10px' }} />
+        Sales Play Distribution
+      </div>
+
+      <Stack gap="lg">
+        {plays.map((p) => {
+          const percent = total > 0 ? (p.value / total) * 100 : 0;
+          const isHovered = hoveredPlay === p.label;
+          return (
+            <div
+              key={p.label}
+              style={{
+                padding: '20px',
+                borderRadius: '12px',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+                backgroundColor: isHovered ? `${p.color}20` : 'rgba(255,255,255,0.03)',
+                border: isHovered ? `2px solid ${p.color}` : '2px solid rgba(255,255,255,0.1)',
+              }}
+              onMouseEnter={() => setHoveredPlay(p.label)}
+              onMouseLeave={() => setHoveredPlay(null)}
+              onClick={() => onPlayClick?.(p.label)}
+            >
+              <Group justify="space-between" mb="md">
+                <Group gap="md">
+                  <ThemeIcon size={48} radius="md" style={{ backgroundColor: p.color }}>
+                    <p.icon size={26} />
+                  </ThemeIcon>
+                  <div>
+                    <div style={{ fontSize: '18px', fontWeight: 700, color: isHovered ? p.color : '#ffffff' }}>{p.label}</div>
+                    <div style={{ fontSize: '14px', color: '#94a3b8' }}>{p.desc}</div>
+                  </div>
+                </Group>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: '32px', fontWeight: 700, color: isHovered ? p.color : '#ffffff' }}>{p.value.toLocaleString()}</div>
+                  <div style={{ fontSize: '16px', color: '#94a3b8' }}>{percent.toFixed(1)}%</div>
+                </div>
+              </Group>
+              <Progress
+                value={percent}
+                size="xl"
+                radius="xl"
+                color={p.color}
+                styles={{ root: { backgroundColor: 'rgba(255,255,255,0.1)' } }}
+              />
+            </div>
+          );
+        })}
+      </Stack>
+    </div>
   );
 }
 
@@ -277,20 +515,20 @@ function OpportunityCard({ opportunity }: { opportunity: TopOpportunity }) {
 
 export function Dashboard() {
   const navigate = useNavigate();
-  const [stats, setStats] = useState<PipelineStats | null>(null);
-  const [opportunities, setOpportunities] = useState<TopOpportunity[]>([]);
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [galaxyData, setGalaxyData] = useState<GalaxySummary[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
       setLoading(true);
       try {
-        const [statsResult, oppsResult] = await Promise.all([
-          fetchPipelineStats(),
-          fetchTopOpportunities(),
+        const [statsResult, galaxyResult] = await Promise.all([
+          fetchStats(),
+          fetchGalaxySummary(),
         ]);
         setStats(statsResult);
-        setOpportunities(oppsResult);
+        setGalaxyData(galaxyResult);
       } catch (err) {
         console.error('Failed to load dashboard:', err);
       } finally {
@@ -300,51 +538,21 @@ export function Dashboard() {
     load();
   }, []);
 
-  const today = new Date().toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
+  // Group galaxy data by type
+  const cmsData = galaxyData.filter(g => g.galaxy === 'cms').map(g => ({ tech: g.tech, count: g.company_count }));
+  const commerceData = galaxyData.filter(g => g.galaxy === 'commerce').map(g => ({ tech: g.tech, count: g.company_count }));
+  const martechData = galaxyData.filter(g => g.galaxy === 'martech').map(g => ({ tech: g.tech, count: g.company_count }));
+  const searchData = galaxyData.filter(g => g.galaxy === 'search').map(g => ({ tech: g.tech, count: g.company_count }));
+  const cloudData = galaxyData.filter(g => g.galaxy === 'cloud').map(g => ({ tech: g.tech, count: g.company_count }));
 
   return (
-    <Box pos="relative" style={{ minHeight: '100vh' }}>
-      {/* Galaxy Background */}
-      <Box
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          zIndex: 0,
-          backgroundImage: 'url(/images/milky-way.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      >
-        <Box
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            background: 'linear-gradient(180deg, rgba(15,23,42,0.75) 0%, rgba(15,23,42,0.95) 100%)',
-          }}
-        />
-      </Box>
-
-      {/* Content */}
-      <Container size="lg" py="xl" pos="relative" style={{ zIndex: 1 }}>
+    <GalaxyBackground>
+      <Container size="xl" py="lg">
         {/* Header */}
         <Group justify="space-between" mb="xl">
-          <div>
-            <Text size="lg" style={STYLES.textGray}>{today}</Text>
-            <Title order={1} mt="xs" style={{ color: '#ffffff', fontSize: '2.5rem' }}>
-              Partner Intelligence Brief
-            </Title>
-          </div>
+          <Title order={1} style={{ color: '#ffffff', fontSize: '32px' }}>
+            Partner Intelligence Dashboard
+          </Title>
           <Button
             size="lg"
             rightSection={<IconArrowRight size={20} />}
@@ -352,174 +560,121 @@ export function Dashboard() {
             gradient={{ from: '#003DFF', to: '#5468FF' }}
             onClick={() => navigate('/galaxy')}
           >
-            Enter Galaxy
+            Explore Galaxy
           </Button>
         </Group>
 
-        {/* Hero Stat */}
-        <Paper p="xl" radius="lg" mb="xl" style={{ ...STYLES.card, textAlign: 'center' }}>
-          {loading ? (
-            <Skeleton height={150} radius="md" />
-          ) : (
-            <>
-              <Group justify="center" gap="sm" mb="lg">
-                <IconSparkles size={28} color="#10b981" />
-                <Text size="xl" style={STYLES.textGray}>Ready for Outreach</Text>
-              </Group>
-              <Text
-                style={{
-                  fontSize: '5rem',
-                  fontWeight: 700,
-                  background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  lineHeight: 1,
-                }}
-              >
-                {stats?.jackpot || 0}
-              </Text>
-              <Text size="xl" fw={600} mt="md" style={STYLES.textWhite}>
-                JACKPOT Targets
-              </Text>
-              <Group justify="center" gap="xs" mt="sm">
-                <IconTrendingUp size={18} color="#10b981" />
-                <Text size="md" style={STYLES.textGreen}>High-value opportunities</Text>
-              </Group>
-              <Text size="lg" mt="lg" style={STYLES.textGray}>
-                Companies with CMS + Commerce + MarTech/Search
-              </Text>
-            </>
-          )}
-        </Paper>
-
-        {/* Journey Steps */}
-        <Text size="xl" fw={600} mb="lg" style={STYLES.textWhite}>
-          Pipeline Journey
-        </Text>
-        <SimpleGrid cols={{ base: 2, md: 4 }} mb="xl">
-          <JourneyCard
-            label="Galaxy"
-            value={stats?.galaxy || 0}
-            color="#5468FF"
-            icon={IconPlanet}
-            onClick={() => navigate('/galaxy')}
-          />
-          <JourneyCard
-            label="Whales"
-            value={stats?.whale || 0}
-            color="#f59e0b"
-            icon={IconFlame}
-            onClick={() => navigate('/whale')}
-          />
-          <JourneyCard
-            label="Warm Intros"
-            value={stats?.crossbeam || 0}
-            color="#14b8a6"
-            icon={IconUsers}
-            onClick={() => navigate('/crossbeam')}
-          />
-          <JourneyCard
-            label="JACKPOT"
-            value={stats?.jackpot || 0}
-            color="#10b981"
-            icon={IconTarget}
-            active
-          />
-        </SimpleGrid>
-
-        {/* Pipeline Health */}
-        <Paper p="xl" radius="lg" mb="xl" style={STYLES.card}>
-          <Text size="xl" fw={600} mb="xl" style={STYLES.textWhite}>
-            Pipeline Health
-          </Text>
-
-          {loading ? (
-            <Stack gap="xl">
-              <Skeleton height={60} radius="md" />
-              <Skeleton height={60} radius="md" />
-              <Skeleton height={60} radius="md" />
-            </Stack>
-          ) : (
-            <Stack gap="xl">
-              <PipelineBar
-                label="Partner Tech Galaxy"
-                value={stats?.galaxy || 0}
-                total={stats?.galaxy || 1}
-                color="#5468FF"
-                icon={IconPlanet}
-                onClick={() => navigate('/galaxy')}
-              />
-              <PipelineBar
-                label="Demandbase + Zoominfo"
-                value={stats?.whale || 0}
-                total={stats?.galaxy || 1}
-                color="#f59e0b"
-                icon={IconFlame}
-                onClick={() => navigate('/whale')}
-              />
-              <PipelineBar
-                label="Crossbeam Overlap"
-                value={stats?.crossbeam || 0}
-                total={stats?.galaxy || 1}
-                color="#14b8a6"
-                icon={IconUsers}
-                onClick={() => navigate('/crossbeam')}
-              />
-              <PipelineBar
-                label="Displacement Targets"
-                value={stats?.displacement || 0}
-                total={stats?.galaxy || 1}
-                color="#ef4444"
-                icon={IconRocket}
-              />
-            </Stack>
-          )}
-        </Paper>
-
-        {/* Top Opportunities */}
-        <Paper p="xl" radius="lg" style={STYLES.card}>
+        {/* Galaxy Cards - Main KPI display with tech breakdowns */}
+        <div style={{ marginBottom: '32px' }}>
           <Group justify="space-between" mb="xl">
-            <Text size="xl" fw={600} style={STYLES.textWhite}>
-              Top Opportunities
-            </Text>
-            <Button
-              variant="subtle"
-              color="gray"
-              rightSection={<IconArrowRight size={18} />}
-              onClick={() => navigate('/galaxy')}
-              styles={{ root: { color: '#94a3b8' } }}
-            >
-              View All
-            </Button>
+            <div style={{ fontSize: '24px', fontWeight: 700, color: '#ffffff' }}>
+              Partner Tech Galaxies
+            </div>
+            <Group gap="md">
+              <Badge size="xl" variant="filled" color="blue" style={{ fontSize: 18, padding: '12px 20px', fontWeight: 700 }}>
+                {stats?.total.toLocaleString() || 0} Total Companies
+              </Badge>
+            </Group>
           </Group>
-
           {loading ? (
-            <Stack gap="lg">
-              <Skeleton height={140} radius="md" />
-              <Skeleton height={140} radius="md" />
-            </Stack>
-          ) : opportunities.length > 0 ? (
-            <Stack gap="lg">
-              {opportunities.map((opp) => (
-                <OpportunityCard key={opp.domain} opportunity={opp} />
-              ))}
-            </Stack>
+            <SimpleGrid cols={{ base: 1, sm: 2, lg: 5 }}>
+              {[1, 2, 3, 4, 5].map(i => <Skeleton key={i} height={280} radius="md" />)}
+            </SimpleGrid>
           ) : (
-            <Text size="lg" ta="center" py="xl" style={STYLES.textGray}>
-              No JACKPOT or HIGH cohort targets yet. Keep building your galaxy!
-            </Text>
+            <SimpleGrid cols={{ base: 1, sm: 2, lg: 5 }}>
+              <GalaxyCard
+                title="CMS"
+                icon={IconCode}
+                color="#6366f1"
+                total={stats?.cms || 0}
+                techData={cmsData}
+                onClick={() => navigate('/galaxy?filter=cms')}
+              />
+              <GalaxyCard
+                title="Commerce"
+                icon={IconShoppingCart}
+                color="#3b82f6"
+                total={stats?.commerce || 0}
+                techData={commerceData}
+                onClick={() => navigate('/galaxy?filter=commerce')}
+              />
+              <GalaxyCard
+                title="MarTech"
+                icon={IconMail}
+                color="#10b981"
+                total={stats?.martech || 0}
+                techData={martechData}
+                onClick={() => navigate('/galaxy?filter=martech')}
+              />
+              <GalaxyCard
+                title="Hyperscalers"
+                icon={IconCloud}
+                color="#FF9900"
+                total={stats?.cloud || 0}
+                techData={cloudData}
+                onClick={() => navigate('/galaxy?filter=cloud')}
+              />
+              <GalaxyCard
+                title="Search"
+                icon={IconTargetArrow}
+                color="#ef4444"
+                total={stats?.search || 0}
+                techData={searchData}
+                onClick={() => navigate('/galaxy?filter=search')}
+              />
+            </SimpleGrid>
           )}
-        </Paper>
-      </Container>
+        </div>
 
-      {/* Hover styles */}
-      <style>{`
-        .dashboard-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-        }
-      `}</style>
-    </Box>
+        {/* Charts Row */}
+        {loading ? (
+          <SimpleGrid cols={{ base: 1, md: 2 }}>
+            <Skeleton height={380} radius="md" />
+            <Skeleton height={380} radius="md" />
+          </SimpleGrid>
+        ) : stats && (
+          <SimpleGrid cols={{ base: 1, md: 2 }}>
+            <CohortChart stats={stats} onCohortClick={(cohort) => navigate(`/galaxy?cohort=${cohort}`)} />
+            <SalesPlayChart stats={stats} onPlayClick={(play) => navigate(`/galaxy?play=${play}`)} />
+          </SimpleGrid>
+        )}
+
+        {/* Call to Action */}
+        {stats && stats.jackpot > 0 && (
+          <div
+            style={{
+              marginTop: '24px',
+              padding: '24px',
+              borderRadius: '12px',
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              color: 'white',
+              textAlign: 'center',
+            }}
+          >
+            <Group justify="center" gap="md">
+              <IconTrophy size={32} />
+              <div>
+                <div style={{ fontSize: '24px', fontWeight: 700 }}>
+                  {stats.jackpot} JACKPOT Targets Ready
+                </div>
+                <div style={{ fontSize: '16px', opacity: 0.9 }}>
+                  Companies with CMS + Commerce + MarTech/Search - Full stack displacement opportunities
+                </div>
+              </div>
+              <Button
+                size="lg"
+                variant="white"
+                color="green"
+                rightSection={<IconArrowRight size={20} />}
+                onClick={() => navigate('/galaxy?cohort=JACKPOT')}
+              >
+                View JACKPOT List
+              </Button>
+            </Group>
+          </div>
+        )}
+      </Container>
+    </GalaxyBackground>
   );
 }
 
