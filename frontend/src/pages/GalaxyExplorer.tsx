@@ -111,31 +111,31 @@ function GalaxyCard({ galaxy, data, onFilterClick }: GalaxyCardProps) {
   const displacementCount = data.reduce((sum, d) => sum + d.displacement_count, 0);
 
   return (
-    <Paper p="md" radius="md" className="galaxy-glass-panel">
-      <Group justify="space-between" mb="sm">
-        <Group gap="xs">
+    <Paper p="lg" radius="md" className="galaxy-glass-panel">
+      <Group justify="space-between" mb="md">
+        <Group gap="sm">
           <ThemeIcon
-            size="lg"
+            size="xl"
             radius="md"
             style={{ backgroundColor: GALAXY_COLORS[galaxy] }}
           >
             {GALAXY_ICONS[galaxy]}
           </ThemeIcon>
           <div>
-            <Text size="sm" fw={600} tt="uppercase" c="white">
+            <Text size="lg" fw={600} tt="uppercase" c="white">
               {galaxy}
             </Text>
-            <Text size="xs" c="gray.3">
+            <Text size="md" c="gray.3">
               {totalCount.toLocaleString()} companies
             </Text>
           </div>
         </Group>
-        <Badge size="sm" color={displacementCount > 0 ? 'red' : 'gray'}>
+        <Badge size="lg" color={displacementCount > 0 ? 'red' : 'gray'}>
           {displacementCount} displacement
         </Badge>
       </Group>
 
-      <Stack gap={4}>
+      <Stack gap={8}>
         {data.slice(0, 5).map((item) => (
           <Group
             key={item.tech}
@@ -143,16 +143,16 @@ function GalaxyCard({ galaxy, data, onFilterClick }: GalaxyCardProps) {
             style={{ cursor: 'pointer' }}
             onClick={() => onFilterClick(item.tech)}
           >
-            <Text size="sm" c="white">{item.tech}</Text>
+            <Text size="md" c="white">{item.tech}</Text>
             <Group gap="xs">
-              <Badge size="xs" variant="light">
+              <Badge size="md" variant="light">
                 {item.company_count.toLocaleString()}
               </Badge>
             </Group>
           </Group>
         ))}
         {data.length > 5 && (
-          <Text size="xs" c="gray.3" ta="center">
+          <Text size="sm" c="gray.3" ta="center">
             +{data.length - 5} more
           </Text>
         )}
@@ -323,15 +323,15 @@ export function GalaxyExplorer() {
       {/* Content */}
       <Container size="xl" py="md" pos="relative" style={{ zIndex: 1 }}>
       {/* Header */}
-      <Group justify="space-between" mb="lg">
+      <Group justify="space-between" mb="xl">
         <div>
-          <Title order={2} c="white">
-            <Group gap="xs">
-              <IconDatabase size={28} />
+          <Title order={1} c="white">
+            <Group gap="sm">
+              <IconDatabase size={36} />
               Partner Tech Galaxy
             </Group>
           </Title>
-          <Text c="gray.3" size="sm">
+          <Text c="gray.3" size="lg" mt="xs">
             Layer 0: All companies using partner technologies (excluding Algolia customers)
           </Text>
         </div>
@@ -374,11 +374,11 @@ export function GalaxyExplorer() {
       </SimpleGrid>
 
       {/* Cohort Summary */}
-      <Paper p="md" radius="md" mb="lg" className="galaxy-glass-panel">
-        <Text size="sm" fw={600} mb="sm" c="white">
+      <Paper p="lg" radius="md" mb="lg" className="galaxy-glass-panel">
+        <Text size="lg" fw={600} mb="md" c="white">
           Tech Cohorts
         </Text>
-        <Group>
+        <Group gap="md">
           {cohortSummary.map((c) => (
             <Box
               key={c.tech_cohort}
@@ -386,11 +386,11 @@ export function GalaxyExplorer() {
               onClick={() => setFilters((f) => ({ ...f, tech_cohort: [c.tech_cohort] }))}
             >
               <Badge
-                size="lg"
+                size="xl"
                 variant="filled"
-                style={{ backgroundColor: COHORT_COLORS[c.tech_cohort] }}
+                style={{ backgroundColor: COHORT_COLORS[c.tech_cohort], padding: '12px 16px' }}
                 rightSection={
-                  <Text size="xs" fw={700}>
+                  <Text size="md" fw={700}>
                     {c.company_count.toLocaleString()}
                   </Text>
                 }
@@ -458,9 +458,9 @@ export function GalaxyExplorer() {
       </Paper>
 
       {/* Results */}
-      <Paper p="md" radius="md" className="galaxy-glass-panel">
+      <Paper p="lg" radius="md" className="galaxy-glass-panel">
         <Group justify="space-between" mb="md">
-          <Text size="sm" c="gray.3">
+          <Text size="md" c="gray.3">
             Showing {((page - 1) * ITEMS_PER_PAGE) + 1}-{Math.min(page * ITEMS_PER_PAGE, totalCount)} of{' '}
             {totalCount.toLocaleString()} companies
           </Text>
@@ -496,47 +496,47 @@ export function GalaxyExplorer() {
               {companies.map((company) => (
                 <Table.Tr key={company.domain}>
                   <Table.Td>
-                    <Text size="sm" fw={500} c="white">
+                    <Text size="md" fw={500} c="white">
                       {company.domain}
                     </Text>
                   </Table.Td>
                   <Table.Td>
-                    <Text size="sm" c="gray.3">{company.company_name || '—'}</Text>
+                    <Text size="md" c="gray.3">{company.company_name || '—'}</Text>
                   </Table.Td>
                   <Table.Td>
                     {company.cms_tech ? (
-                      <Badge size="xs" variant="light" color="violet">
+                      <Badge size="sm" variant="light" color="violet">
                         {company.cms_tech}
                       </Badge>
                     ) : (
-                      <Text size="xs" c="gray.4">—</Text>
+                      <Text size="sm" c="gray.4">—</Text>
                     )}
                   </Table.Td>
                   <Table.Td>
                     {company.commerce_tech ? (
-                      <Badge size="xs" variant="light" color="blue">
+                      <Badge size="sm" variant="light" color="blue">
                         {company.commerce_tech}
                       </Badge>
                     ) : (
-                      <Text size="xs" c="gray.4">—</Text>
+                      <Text size="sm" c="gray.4">—</Text>
                     )}
                   </Table.Td>
                   <Table.Td>
                     {company.martech_tech ? (
-                      <Badge size="xs" variant="light" color="teal">
+                      <Badge size="sm" variant="light" color="teal">
                         {company.martech_tech}
                       </Badge>
                     ) : (
-                      <Text size="xs" c="gray.4">—</Text>
+                      <Text size="sm" c="gray.4">—</Text>
                     )}
                   </Table.Td>
                   <Table.Td>
                     {company.search_tech ? (
-                      <Badge size="xs" variant="light" color="orange">
+                      <Badge size="sm" variant="light" color="orange">
                         {company.search_tech}
                       </Badge>
                     ) : (
-                      <Text size="xs" c="gray.4">—</Text>
+                      <Text size="sm" c="gray.4">—</Text>
                     )}
                   </Table.Td>
                   <Table.Td>

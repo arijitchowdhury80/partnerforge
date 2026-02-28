@@ -33,13 +33,11 @@ const funnelNavItems: NavItem[] = [
     icon: IconTarget,
     label: 'ICP Definition',
     path: '/icp',
-    description: 'Customer evidence & personas'
   },
   {
     icon: IconPlanet,
     label: 'Partner Tech Galaxy',
     path: '/dashboard',
-    description: 'CMS • Commerce • MarTech • Search'
   },
   {
     icon: IconFlame,
@@ -47,7 +45,6 @@ const funnelNavItems: NavItem[] = [
     path: '/whale',
     badge: '776',
     badgeColor: 'orange',
-    description: 'Intent + qualification'
   },
   {
     icon: IconUsers,
@@ -55,7 +52,6 @@ const funnelNavItems: NavItem[] = [
     path: '/crossbeam',
     badge: '489',
     badgeColor: 'teal',
-    description: 'Warm intros'
   },
 ];
 
