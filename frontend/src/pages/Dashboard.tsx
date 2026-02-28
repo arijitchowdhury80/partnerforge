@@ -2,7 +2,6 @@
  * Dashboard - Intelligence Brief Landing
  *
  * Premium landing experience showing pipeline health and top opportunities.
- * Hybrid of Option C (Intelligence Brief) with Option A (Mission Control) visuals.
  */
 
 import { useState, useEffect } from 'react';
@@ -19,7 +18,6 @@ import {
   Box,
   SimpleGrid,
   ThemeIcon,
-  Divider,
   Skeleton,
 } from '@mantine/core';
 import {
@@ -34,7 +32,23 @@ import {
   IconBuildingSkyscraper,
 } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
-import { COLORS } from '../lib/constants';
+
+// =============================================================================
+// Styles - Explicit inline styles to override global CSS
+// =============================================================================
+
+const STYLES = {
+  card: {
+    backgroundColor: 'rgba(15, 23, 42, 0.85)',
+    backdropFilter: 'blur(12px)',
+    WebkitBackdropFilter: 'blur(12px)',
+    border: '1px solid rgba(255, 255, 255, 0.15)',
+    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+  } as React.CSSProperties,
+  textWhite: { color: '#ffffff' } as React.CSSProperties,
+  textGray: { color: '#94a3b8' } as React.CSSProperties,
+  textGreen: { color: '#10b981' } as React.CSSProperties,
+};
 
 // =============================================================================
 // Types
@@ -44,7 +58,6 @@ interface PipelineStats {
   galaxy: number;
   whale: number;
   crossbeam: number;
-  hot: number;
   jackpot: number;
   displacement: number;
 }
@@ -71,63 +84,31 @@ async function fetchPipelineStats(): Promise<PipelineStats> {
   const headers = {
     'apikey': SUPABASE_KEY,
     'Authorization': `Bearer ${SUPABASE_KEY}`,
+    'Prefer': 'count=exact',
+    'Range': '0-0',
   };
 
-  const [galaxyRes, whaleRes, crossbeamRes, jackpotRes, displacementRes] = await Promise.all([
-    fetch(`${SUPABASE_URL}/rest/v1/companies?select=domain`, { headers, method: 'HEAD' }),
-    fetch(`${SUPABASE_URL}/rest/v1/whale_composite?select=domain`, { headers, method: 'HEAD' }),
-    fetch(`${SUPABASE_URL}/rest/v1/crossbeam_overlaps?select=domain`, { headers, method: 'HEAD' }),
-    fetch(`${SUPABASE_URL}/rest/v1/companies?select=domain&tech_cohort=eq.JACKPOT`, { headers, method: 'HEAD' }),
-    fetch(`${SUPABASE_URL}/rest/v1/companies?select=domain&sales_play=eq.DISPLACEMENT`, { headers, method: 'HEAD' }),
-  ]);
-
-  // Parse counts from content-range headers
-  const getCount = (res: Response) => {
-    const range = res.headers.get('content-range');
-    return range ? parseInt(range.split('/')[1]) || 0 : 0;
-  };
-
-  // For proper counts, we need exact count
   const [galaxyCount, whaleCount, crossbeamCount, jackpotCount, displacementCount] = await Promise.all([
-    fetch(`${SUPABASE_URL}/rest/v1/companies?select=domain`, {
-      headers: { ...headers, 'Prefer': 'count=exact', 'Range': '0-0' }
-    }).then(r => parseInt(r.headers.get('content-range')?.split('/')[1] || '0')),
-    fetch(`${SUPABASE_URL}/rest/v1/whale_composite?select=domain`, {
-      headers: { ...headers, 'Prefer': 'count=exact', 'Range': '0-0' }
-    }).then(r => parseInt(r.headers.get('content-range')?.split('/')[1] || '0')),
-    fetch(`${SUPABASE_URL}/rest/v1/crossbeam_overlaps?select=domain`, {
-      headers: { ...headers, 'Prefer': 'count=exact', 'Range': '0-0' }
-    }).then(r => parseInt(r.headers.get('content-range')?.split('/')[1] || '0')),
-    fetch(`${SUPABASE_URL}/rest/v1/companies?select=domain&tech_cohort=eq.JACKPOT`, {
-      headers: { ...headers, 'Prefer': 'count=exact', 'Range': '0-0' }
-    }).then(r => parseInt(r.headers.get('content-range')?.split('/')[1] || '0')),
-    fetch(`${SUPABASE_URL}/rest/v1/companies?select=domain&sales_play=eq.DISPLACEMENT`, {
-      headers: { ...headers, 'Prefer': 'count=exact', 'Range': '0-0' }
-    }).then(r => parseInt(r.headers.get('content-range')?.split('/')[1] || '0')),
+    fetch(`${SUPABASE_URL}/rest/v1/companies?select=domain`, { headers })
+      .then(r => parseInt(r.headers.get('content-range')?.split('/')[1] || '0')),
+    fetch(`${SUPABASE_URL}/rest/v1/whale_composite?select=domain`, { headers })
+      .then(r => parseInt(r.headers.get('content-range')?.split('/')[1] || '0')),
+    fetch(`${SUPABASE_URL}/rest/v1/crossbeam_overlaps?select=domain`, { headers })
+      .then(r => parseInt(r.headers.get('content-range')?.split('/')[1] || '0')),
+    fetch(`${SUPABASE_URL}/rest/v1/companies?select=domain&tech_cohort=eq.JACKPOT`, { headers })
+      .then(r => parseInt(r.headers.get('content-range')?.split('/')[1] || '0')),
+    fetch(`${SUPABASE_URL}/rest/v1/companies?select=domain&sales_play=eq.DISPLACEMENT`, { headers })
+      .then(r => parseInt(r.headers.get('content-range')?.split('/')[1] || '0')),
   ]);
 
-  return {
-    galaxy: galaxyCount,
-    whale: whaleCount,
-    crossbeam: crossbeamCount,
-    hot: jackpotCount, // Using JACKPOT as "hot" for now
-    jackpot: jackpotCount,
-    displacement: displacementCount,
-  };
+  return { galaxy: galaxyCount, whale: whaleCount, crossbeam: crossbeamCount, jackpot: jackpotCount, displacement: displacementCount };
 }
 
 async function fetchTopOpportunities(): Promise<TopOpportunity[]> {
-  const headers = {
-    'apikey': SUPABASE_KEY,
-    'Authorization': `Bearer ${SUPABASE_KEY}`,
-  };
-
-  // Get JACKPOT companies first, then HIGH cohort
   const res = await fetch(
     `${SUPABASE_URL}/rest/v1/companies?select=domain,company_name,tech_cohort,sales_play,cms_tech,commerce_tech,martech_tech,search_tech&or=(tech_cohort.eq.JACKPOT,tech_cohort.eq.HIGH)&order=tech_cohort.asc&limit=5`,
-    { headers }
+    { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } }
   );
-
   if (!res.ok) return [];
   return res.json();
 }
@@ -136,28 +117,46 @@ async function fetchTopOpportunities(): Promise<TopOpportunity[]> {
 // Components
 // =============================================================================
 
-function HeroStat({ value, label, trend }: { value: number; label: string; trend?: string }) {
+function JourneyCard({
+  label,
+  value,
+  color,
+  icon: Icon,
+  active,
+  onClick,
+}: {
+  label: string;
+  value: number;
+  color: string;
+  icon: React.ElementType;
+  active?: boolean;
+  onClick?: () => void;
+}) {
   return (
-    <Box ta="center">
-      <Text
-        size="4rem"
-        fw={700}
-        variant="gradient"
-        gradient={{ from: '#10b981', to: '#3b82f6', deg: 135 }}
-        style={{ lineHeight: 1 }}
-      >
+    <Paper
+      p="xl"
+      radius="lg"
+      onClick={onClick}
+      style={{
+        ...STYLES.card,
+        cursor: onClick ? 'pointer' : 'default',
+        border: active ? `2px solid ${color}` : '1px solid rgba(255,255,255,0.15)',
+        backgroundColor: active ? `${color}20` : 'rgba(15, 23, 42, 0.85)',
+        textAlign: 'center',
+        transition: 'transform 0.2s, box-shadow 0.2s',
+      }}
+      className="dashboard-card"
+    >
+      <ThemeIcon size={56} radius="xl" style={{ backgroundColor: color, margin: '0 auto 16px' }}>
+        <Icon size={28} color="white" />
+      </ThemeIcon>
+      <Text size="2.5rem" fw={700} style={{ ...STYLES.textWhite, lineHeight: 1 }}>
         {value.toLocaleString()}
       </Text>
-      <Text size="xl" c="white" fw={500} mt="xs">
+      <Text size="lg" mt="sm" style={STYLES.textGray}>
         {label}
       </Text>
-      {trend && (
-        <Group gap={4} justify="center" mt={4}>
-          <IconTrendingUp size={16} color="#10b981" />
-          <Text size="sm" c="green.4">{trend}</Text>
-        </Group>
-      )}
-    </Box>
+    </Paper>
   );
 }
 
@@ -167,7 +166,7 @@ function PipelineBar({
   total,
   color,
   icon: Icon,
-  onClick
+  onClick,
 }: {
   label: string;
   value: number;
@@ -182,27 +181,27 @@ function PipelineBar({
     <Box
       onClick={onClick}
       style={{ cursor: onClick ? 'pointer' : 'default' }}
-      className={onClick ? 'hover-lift' : ''}
+      className="dashboard-card"
     >
-      <Group justify="space-between" mb={8}>
+      <Group justify="space-between" mb={12}>
         <Group gap="sm">
-          <ThemeIcon size="md" color={color} variant="light">
-            <Icon size={16} />
+          <ThemeIcon size="lg" radius="md" style={{ backgroundColor: color }}>
+            <Icon size={18} color="white" />
           </ThemeIcon>
-          <Text size="md" fw={500} c="white">{label}</Text>
+          <Text size="lg" fw={500} style={STYLES.textWhite}>{label}</Text>
         </Group>
-        <Group gap="xs">
-          <Text size="lg" fw={700} c="white">{value.toLocaleString()}</Text>
-          <Text size="sm" c="dimmed">({percent.toFixed(1)}%)</Text>
+        <Group gap="sm">
+          <Text size="xl" fw={700} style={STYLES.textWhite}>{value.toLocaleString()}</Text>
+          <Text size="md" style={STYLES.textGray}>({percent.toFixed(1)}%)</Text>
         </Group>
       </Group>
       <Progress
         value={percent}
-        size="lg"
+        size="xl"
         radius="xl"
         color={color}
         styles={{
-          root: { backgroundColor: 'rgba(255,255,255,0.1)' },
+          root: { backgroundColor: 'rgba(255,255,255,0.1)', height: 12 },
         }}
       />
     </Box>
@@ -222,114 +221,53 @@ function OpportunityCard({ opportunity }: { opportunity: TopOpportunity }) {
 
   return (
     <Paper
-      p="lg"
-      radius="md"
+      p="xl"
+      radius="lg"
       style={{
-        backgroundColor: isJackpot ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255,255,255,0.05)',
-        border: isJackpot ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(255,255,255,0.1)',
+        ...STYLES.card,
+        backgroundColor: isJackpot ? 'rgba(16, 185, 129, 0.15)' : 'rgba(15, 23, 42, 0.85)',
+        border: isJackpot ? '2px solid rgba(16, 185, 129, 0.5)' : '1px solid rgba(255,255,255,0.15)',
       }}
     >
-      <Group justify="space-between" mb="sm">
-        <Group gap="sm">
-          <ThemeIcon
-            size="lg"
-            radius="xl"
-            color={isJackpot ? 'green' : 'blue'}
-            variant="filled"
-          >
-            <IconBuildingSkyscraper size={18} />
+      <Group justify="space-between" mb="md">
+        <Group gap="md">
+          <ThemeIcon size={48} radius="xl" color={isJackpot ? 'green' : 'blue'}>
+            <IconBuildingSkyscraper size={24} />
           </ThemeIcon>
           <div>
-            <Text size="lg" fw={600} c="white">
+            <Text size="xl" fw={700} style={STYLES.textWhite}>
               {opportunity.domain}
             </Text>
             {opportunity.company_name && (
-              <Text size="sm" c="dimmed">{opportunity.company_name}</Text>
+              <Text size="md" style={STYLES.textGray}>{opportunity.company_name}</Text>
             )}
           </div>
         </Group>
-        <Group gap="xs">
-          <Badge
-            size="lg"
-            color={isJackpot ? 'green' : 'blue'}
-            variant="filled"
-          >
+        <Group gap="sm">
+          <Badge size="lg" color={isJackpot ? 'green' : 'blue'}>
             {opportunity.tech_cohort}
           </Badge>
-          <Badge
-            size="lg"
-            color={isDisplacement ? 'red' : 'teal'}
-            variant="outline"
-          >
+          <Badge size="lg" color={isDisplacement ? 'red' : 'teal'} variant="outline">
             {opportunity.sales_play}
           </Badge>
         </Group>
       </Group>
 
-      <Group gap="xs" mb="md">
+      <Group gap="sm" mb="md">
         {techStack.map((tech, i) => (
-          <Badge key={i} size="md" variant="light" color="gray">
+          <Badge key={i} size="lg" variant="light" color="gray">
             {tech}
           </Badge>
         ))}
       </Group>
 
-      <Text size="md" c="gray.4">
+      <Text size="md" style={STYLES.textGray}>
         {isJackpot && isDisplacement && '→ Full stack with competitor search. Prime displacement target.'}
         {isJackpot && !isDisplacement && '→ Full stack, no search yet. Greenfield opportunity.'}
         {!isJackpot && isDisplacement && '→ Has competitor search. Displacement opportunity.'}
         {!isJackpot && !isDisplacement && '→ Strong partner tech presence.'}
       </Text>
     </Paper>
-  );
-}
-
-function JourneyStep({
-  step,
-  label,
-  value,
-  color,
-  icon: Icon,
-  active,
-  onClick,
-}: {
-  step: number;
-  label: string;
-  value: number;
-  color: string;
-  icon: React.ElementType;
-  active?: boolean;
-  onClick?: () => void;
-}) {
-  return (
-    <Box
-      onClick={onClick}
-      style={{
-        cursor: onClick ? 'pointer' : 'default',
-        transition: 'transform 0.2s',
-      }}
-      className="hover-lift"
-    >
-      <Paper
-        p="xl"
-        radius="lg"
-        style={{
-          backgroundColor: active ? `${color}20` : 'rgba(255,255,255,0.05)',
-          border: active ? `2px solid ${color}` : '1px solid rgba(255,255,255,0.1)',
-          textAlign: 'center',
-        }}
-      >
-        <ThemeIcon size={48} radius="xl" color={color} variant="light" mb="md" mx="auto">
-          <Icon size={24} />
-        </ThemeIcon>
-        <Text size="2rem" fw={700} c="white" style={{ lineHeight: 1 }}>
-          {value.toLocaleString()}
-        </Text>
-        <Text size="lg" c="dimmed" mt="xs">
-          {label}
-        </Text>
-      </Paper>
-    </Box>
   );
 }
 
@@ -392,7 +330,7 @@ export function Dashboard() {
             left: 0,
             width: '100%',
             height: '100%',
-            background: 'linear-gradient(180deg, rgba(15,23,42,0.7) 0%, rgba(15,23,42,0.9) 100%)',
+            background: 'linear-gradient(180deg, rgba(15,23,42,0.75) 0%, rgba(15,23,42,0.95) 100%)',
           }}
         />
       </Box>
@@ -402,16 +340,16 @@ export function Dashboard() {
         {/* Header */}
         <Group justify="space-between" mb="xl">
           <div>
-            <Text size="lg" c="dimmed">{today}</Text>
-            <Title order={1} c="white" mt="xs">
+            <Text size="lg" style={STYLES.textGray}>{today}</Text>
+            <Title order={1} mt="xs" style={{ color: '#ffffff', fontSize: '2.5rem' }}>
               Partner Intelligence Brief
             </Title>
           </div>
           <Button
             size="lg"
-            rightSection={<IconArrowRight size={18} />}
+            rightSection={<IconArrowRight size={20} />}
             variant="gradient"
-            gradient={{ from: COLORS.ALGOLIA_NEBULA_BLUE, to: COLORS.ALGOLIA_PURPLE }}
+            gradient={{ from: '#003DFF', to: '#5468FF' }}
             onClick={() => navigate('/galaxy')}
           >
             Enter Galaxy
@@ -419,31 +357,35 @@ export function Dashboard() {
         </Group>
 
         {/* Hero Stat */}
-        <Paper
-          p="xl"
-          radius="lg"
-          mb="xl"
-          style={{
-            backgroundColor: 'rgba(15, 23, 42, 0.8)',
-            backdropFilter: 'blur(12px)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            textAlign: 'center',
-          }}
-        >
+        <Paper p="xl" radius="lg" mb="xl" style={{ ...STYLES.card, textAlign: 'center' }}>
           {loading ? (
-            <Skeleton height={120} radius="md" />
+            <Skeleton height={150} radius="md" />
           ) : (
             <>
-              <Group justify="center" gap={4} mb="md">
-                <IconSparkles size={24} color="#10b981" />
-                <Text size="lg" c="dimmed">Ready for Outreach</Text>
+              <Group justify="center" gap="sm" mb="lg">
+                <IconSparkles size={28} color="#10b981" />
+                <Text size="xl" style={STYLES.textGray}>Ready for Outreach</Text>
               </Group>
-              <HeroStat
-                value={stats?.jackpot || 0}
-                label="JACKPOT Targets"
-                trend={stats?.jackpot && stats.jackpot > 0 ? "High-value opportunities" : undefined}
-              />
-              <Text size="md" c="dimmed" mt="lg">
+              <Text
+                style={{
+                  fontSize: '5rem',
+                  fontWeight: 700,
+                  background: 'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  lineHeight: 1,
+                }}
+              >
+                {stats?.jackpot || 0}
+              </Text>
+              <Text size="xl" fw={600} mt="md" style={STYLES.textWhite}>
+                JACKPOT Targets
+              </Text>
+              <Group justify="center" gap="xs" mt="sm">
+                <IconTrendingUp size={18} color="#10b981" />
+                <Text size="md" style={STYLES.textGreen}>High-value opportunities</Text>
+              </Group>
+              <Text size="lg" mt="lg" style={STYLES.textGray}>
                 Companies with CMS + Commerce + MarTech/Search
               </Text>
             </>
@@ -451,36 +393,32 @@ export function Dashboard() {
         </Paper>
 
         {/* Journey Steps */}
-        <Text size="xl" fw={600} c="white" mb="lg">
+        <Text size="xl" fw={600} mb="lg" style={STYLES.textWhite}>
           Pipeline Journey
         </Text>
         <SimpleGrid cols={{ base: 2, md: 4 }} mb="xl">
-          <JourneyStep
-            step={1}
+          <JourneyCard
             label="Galaxy"
             value={stats?.galaxy || 0}
-            color={COLORS.ALGOLIA_PURPLE}
+            color="#5468FF"
             icon={IconPlanet}
             onClick={() => navigate('/galaxy')}
           />
-          <JourneyStep
-            step={2}
+          <JourneyCard
             label="Whales"
             value={stats?.whale || 0}
             color="#f59e0b"
             icon={IconFlame}
             onClick={() => navigate('/whale')}
           />
-          <JourneyStep
-            step={3}
+          <JourneyCard
             label="Warm Intros"
             value={stats?.crossbeam || 0}
             color="#14b8a6"
             icon={IconUsers}
             onClick={() => navigate('/crossbeam')}
           />
-          <JourneyStep
-            step={4}
+          <JourneyCard
             label="JACKPOT"
             value={stats?.jackpot || 0}
             color="#10b981"
@@ -490,25 +428,16 @@ export function Dashboard() {
         </SimpleGrid>
 
         {/* Pipeline Health */}
-        <Paper
-          p="xl"
-          radius="lg"
-          mb="xl"
-          style={{
-            backgroundColor: 'rgba(15, 23, 42, 0.8)',
-            backdropFilter: 'blur(12px)',
-            border: '1px solid rgba(255,255,255,0.1)',
-          }}
-        >
-          <Text size="xl" fw={600} c="white" mb="xl">
+        <Paper p="xl" radius="lg" mb="xl" style={STYLES.card}>
+          <Text size="xl" fw={600} mb="xl" style={STYLES.textWhite}>
             Pipeline Health
           </Text>
 
           {loading ? (
-            <Stack gap="lg">
-              <Skeleton height={50} radius="md" />
-              <Skeleton height={50} radius="md" />
-              <Skeleton height={50} radius="md" />
+            <Stack gap="xl">
+              <Skeleton height={60} radius="md" />
+              <Skeleton height={60} radius="md" />
+              <Skeleton height={60} radius="md" />
             </Stack>
           ) : (
             <Stack gap="xl">
@@ -516,12 +445,12 @@ export function Dashboard() {
                 label="Partner Tech Galaxy"
                 value={stats?.galaxy || 0}
                 total={stats?.galaxy || 1}
-                color={COLORS.ALGOLIA_PURPLE}
+                color="#5468FF"
                 icon={IconPlanet}
                 onClick={() => navigate('/galaxy')}
               />
               <PipelineBar
-                label="Whale Composite (Intent + Qualification)"
+                label="Demandbase + Zoominfo"
                 value={stats?.whale || 0}
                 total={stats?.galaxy || 1}
                 color="#f59e0b"
@@ -529,7 +458,7 @@ export function Dashboard() {
                 onClick={() => navigate('/whale')}
               />
               <PipelineBar
-                label="Crossbeam Overlap (Warm Intros)"
+                label="Crossbeam Overlap"
                 value={stats?.crossbeam || 0}
                 total={stats?.galaxy || 1}
                 color="#14b8a6"
@@ -537,7 +466,7 @@ export function Dashboard() {
                 onClick={() => navigate('/crossbeam')}
               />
               <PipelineBar
-                label="Displacement Targets (Competitor Search)"
+                label="Displacement Targets"
                 value={stats?.displacement || 0}
                 total={stats?.galaxy || 1}
                 color="#ef4444"
@@ -548,53 +477,46 @@ export function Dashboard() {
         </Paper>
 
         {/* Top Opportunities */}
-        <Paper
-          p="xl"
-          radius="lg"
-          style={{
-            backgroundColor: 'rgba(15, 23, 42, 0.8)',
-            backdropFilter: 'blur(12px)',
-            border: '1px solid rgba(255,255,255,0.1)',
-          }}
-        >
+        <Paper p="xl" radius="lg" style={STYLES.card}>
           <Group justify="space-between" mb="xl">
-            <Text size="xl" fw={600} c="white">
+            <Text size="xl" fw={600} style={STYLES.textWhite}>
               Top Opportunities
             </Text>
             <Button
               variant="subtle"
               color="gray"
-              rightSection={<IconArrowRight size={16} />}
+              rightSection={<IconArrowRight size={18} />}
               onClick={() => navigate('/galaxy')}
+              styles={{ root: { color: '#94a3b8' } }}
             >
               View All
             </Button>
           </Group>
 
           {loading ? (
-            <Stack gap="md">
-              <Skeleton height={120} radius="md" />
-              <Skeleton height={120} radius="md" />
+            <Stack gap="lg">
+              <Skeleton height={140} radius="md" />
+              <Skeleton height={140} radius="md" />
             </Stack>
           ) : opportunities.length > 0 ? (
-            <Stack gap="md">
+            <Stack gap="lg">
               {opportunities.map((opp) => (
                 <OpportunityCard key={opp.domain} opportunity={opp} />
               ))}
             </Stack>
           ) : (
-            <Text c="dimmed" ta="center" py="xl">
+            <Text size="lg" ta="center" py="xl" style={STYLES.textGray}>
               No JACKPOT or HIGH cohort targets yet. Keep building your galaxy!
             </Text>
           )}
         </Paper>
       </Container>
 
-      {/* Global styles */}
+      {/* Hover styles */}
       <style>{`
-        .hover-lift:hover {
-          transform: translateY(-2px);
-          transition: transform 0.2s ease;
+        .dashboard-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
         }
       `}</style>
     </Box>

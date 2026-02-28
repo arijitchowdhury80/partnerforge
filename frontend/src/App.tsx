@@ -132,14 +132,14 @@ function App() {
               <Route path="/companies" element={<GalaxyExplorer />} />
               <Route path="/company/:domain" element={<TargetDetail />} />
 
-              {/* Layer 2: Whale Composite (Intent + Qualification) */}
+              {/* Layer 2: Demandbase + Zoominfo (Intent + Qualification) */}
               <Route
                 path="/whale"
                 element={
-                  <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--mantine-color-dimmed)' }}>
-                    <h2>Layer 2: Whale Composite</h2>
-                    <p>776 accounts with Demandbase + ZoomInfo data</p>
-                    <p style={{ marginTop: '1rem', fontSize: '0.9rem' }}>
+                  <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--mantine-color-dimmed)', fontSize: '18px' }}>
+                    <h2 style={{ fontSize: '28px' }}>Layer 2: Demandbase + Zoominfo</h2>
+                    <p style={{ fontSize: '18px' }}>776 accounts with Demandbase + ZoomInfo data</p>
+                    <p style={{ marginTop: '1rem', fontSize: '16px' }}>
                       Coming soon: Filter Galaxy accounts by intent signals
                     </p>
                   </div>
@@ -150,10 +150,10 @@ function App() {
               <Route
                 path="/crossbeam"
                 element={
-                  <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--mantine-color-dimmed)' }}>
-                    <h2>Layer 3: Crossbeam Overlaps</h2>
-                    <p>489 accounts with partner warm intros</p>
-                    <p style={{ marginTop: '1rem', fontSize: '0.9rem' }}>
+                  <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--mantine-color-dimmed)', fontSize: '18px' }}>
+                    <h2 style={{ fontSize: '28px' }}>Layer 3: Crossbeam Overlaps</h2>
+                    <p style={{ fontSize: '18px' }}>489 accounts with partner warm intros</p>
+                    <p style={{ marginTop: '1rem', fontSize: '16px' }}>
                       Coming soon: View partner relationships and account owners
                     </p>
                   </div>
@@ -179,7 +179,7 @@ function App() {
               <Route
                 path="/settings"
                 element={
-                  <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--mantine-color-dimmed)' }}>
+                  <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--mantine-color-dimmed)', fontSize: '20px' }}>
                     Settings coming soon...
                   </div>
                 }

@@ -48,7 +48,7 @@ const funnelNavItems: NavItem[] = [
   },
   {
     icon: IconFlame,
-    label: 'Whale Composite',
+    label: 'Demandbase+Zoominfo',
     path: '/whale',
     badge: '776',
     badgeColor: 'orange',
@@ -80,15 +80,14 @@ export function Sidebar() {
     <NavLink
       key={item.path}
       label={item.label}
-      description={item.description}
       leftSection={
-        <ThemeIcon variant="light" size="md" color={color}>
-          <item.icon size={16} />
+        <ThemeIcon variant="light" size={44} radius="md" color={color}>
+          <item.icon size={24} />
         </ThemeIcon>
       }
       rightSection={
         item.badge ? (
-          <Badge size="sm" variant="filled" color={item.badgeColor || 'blue'}>
+          <Badge size="lg" variant="filled" color={item.badgeColor || 'blue'} style={{ fontSize: '14px', padding: '8px 12px' }}>
             {item.badge}
           </Badge>
         ) : null
@@ -99,59 +98,58 @@ export function Sidebar() {
         root: {
           borderRadius: 'var(--mantine-radius-md)',
           backgroundColor: 'transparent',
+          padding: '14px 16px',
+          marginBottom: '8px',
           '&:hover': {
             backgroundColor: '#f1f5f9',
           },
           '&[data-active]': {
             backgroundColor: 'rgba(0, 61, 255, 0.1)',
-            borderLeft: '3px solid var(--mantine-color-blue-6)',
+            borderLeft: '4px solid var(--mantine-color-blue-6)',
           },
         },
         label: {
           color: '#334155',
-          fontWeight: 500,
-        },
-        description: {
-          color: '#94a3b8',
-          fontSize: '11px',
+          fontWeight: 600,
+          fontSize: '18px',
         },
       }}
     />
   );
 
   return (
-    <Stack h="100%" justify="space-between" p="md">
+    <Stack h="100%" justify="space-between" p="lg">
       <Box>
         {/* Dashboard */}
         {renderNavItem(dashboardNavItem, 'blue')}
 
-        <Divider my="md" />
+        <Divider my="lg" />
 
         {/* Funnel Layers */}
-        <Text size="xs" fw={600} c="#64748b" tt="uppercase" mb="sm">
+        <Text size="md" fw={700} c="#64748b" tt="uppercase" mb="md" style={{ letterSpacing: '0.5px' }}>
           Pipeline Layers
         </Text>
-        <Stack gap="xs">
+        <Stack gap="sm">
           {funnelNavItems.map((item) => renderNavItem(item, 'blue'))}
         </Stack>
 
-        <Divider my="lg" />
+        <Divider my="xl" />
 
         {/* Tools */}
-        <Text size="xs" fw={600} c="#64748b" tt="uppercase" mb="sm">
+        <Text size="md" fw={700} c="#64748b" tt="uppercase" mb="md" style={{ letterSpacing: '0.5px' }}>
           Tools
         </Text>
-        <Stack gap="xs">
+        <Stack gap="sm">
           {toolsNavItems.map((item) => renderNavItem(item, 'violet'))}
         </Stack>
 
-        <Divider my="lg" />
+        <Divider my="xl" />
 
         {/* Configuration */}
-        <Text size="xs" fw={600} c="#64748b" tt="uppercase" mb="sm">
+        <Text size="md" fw={700} c="#64748b" tt="uppercase" mb="md" style={{ letterSpacing: '0.5px' }}>
           Configuration
         </Text>
-        <Stack gap="xs">
+        <Stack gap="sm">
           {secondaryNavItems.map((item) => renderNavItem(item, 'gray'))}
         </Stack>
       </Box>

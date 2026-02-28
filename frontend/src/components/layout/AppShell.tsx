@@ -63,16 +63,16 @@ export function AppShell() {
 
   return (
     <MantineAppShell
-      header={{ height: 64 }}
+      header={{ height: 70 }}
       navbar={{
-        width: 260,
+        width: 300,
         breakpoint: 'sm',
         collapsed: { mobile: !opened },
       }}
       padding="md"
       styles={{
         main: {
-          background: ALGOLIA_LIGHT_GRAY,
+          background: 'transparent',
           minHeight: '100vh',
           fontFamily: "'Source Sans 3', 'Source Sans Pro', -apple-system, BlinkMacSystemFont, sans-serif",
         },
