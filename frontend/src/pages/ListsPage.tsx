@@ -27,6 +27,7 @@ import {
 } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
 
+import { GalaxyBackground } from '@/components/common/GalaxyBackground';
 import { ListUpload, ListTable, ListProgress, sampleWaveProgress } from '@/components/lists';
 import { useLists, useDeleteList, useStartEnrichment, useExportList } from '@/hooks/useLists';
 import type { UploadedListItem } from '@/components/lists/ListTable';
@@ -78,15 +79,16 @@ export function ListsPage() {
   };
 
   return (
-    <Container size="xl" py="md">
-      {/* Header */}
-      <Group justify="space-between" mb="lg">
-        <div>
-          <Title order={2}>List Management</Title>
-          <Text c="dimmed" size="sm">
-            Upload and manage company lists for enrichment
-          </Text>
-        </div>
+    <GalaxyBackground>
+      <Container size="xl" py="md">
+        {/* Header */}
+        <Group justify="space-between" mb="lg">
+          <div>
+            <Title order={2} c="white">List Management</Title>
+            <Text c="gray.4" size="sm">
+              Upload and manage company lists for enrichment
+            </Text>
+          </div>
         <Button leftSection={<IconPlus size={16} />} onClick={openUploadModal}>
           Upload New List
         </Button>
@@ -258,6 +260,7 @@ export function ListsPage() {
       >
         <ListUpload />
       </Modal>
-    </Container>
+      </Container>
+    </GalaxyBackground>
   );
 }

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PartnerForge: Enhanced ICP Scoring Model
+Arian: Enhanced ICP Scoring Model
 
 Based on Algolia's ICP Tier definitions:
 - Tier 1 (Commerce): Fashion & General Retail E-commerce
@@ -26,7 +26,7 @@ import sqlite3
 import json
 from typing import Dict, List, Tuple
 
-DB_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/PartnerForge/data/partnerforge.db"
+DB_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/Arian/data/arian.db"
 
 # ICP Tier definitions from PDFs
 ICP_TIERS = {
@@ -408,7 +408,7 @@ def get_matching_case_studies(conn: sqlite3.Connection, vertical: str, partner_t
 
 
 if __name__ == "__main__":
-    print("🎯 PartnerForge ICP Scoring Module")
+    print("🎯 Arian ICP Scoring Module")
     print("="*50)
 
     conn = sqlite3.connect(DB_PATH)

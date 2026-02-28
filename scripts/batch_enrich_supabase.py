@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PartnerForge: Batch Enrichment to Supabase
+Arian: Batch Enrichment to Supabase
 ==========================================
 
 Reads enrichment JSON files and batch-updates Supabase displacement_targets table.
@@ -279,7 +279,7 @@ def main():
     args = parser.parse_args()
 
     print("=" * 60)
-    print("PartnerForge: Batch Enrichment to Supabase")
+    print("Arian: Batch Enrichment to Supabase")
     print("=" * 60)
     print(f"Supabase URL: {SUPABASE_URL}")
     print(f"Enrichments dir: {ENRICHMENTS_DIR}")

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PartnerForge: Populate Sample Intelligence Data
+Arian: Populate Sample Intelligence Data
 
 Creates realistic sample intelligence data for the top 20 companies by lead_score.
 This script:
@@ -11,7 +11,7 @@ This script:
 import sqlite3
 import json
 
-DB_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/PartnerForge/data/partnerforge.db"
+DB_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/Arian/data/arian.db"
 
 # Sample intelligence data for top 20 companies
 SAMPLE_DATA = {
@@ -510,7 +510,7 @@ def verify_data():
 
 def main():
     print("=" * 60)
-    print("PartnerForge: Populate Sample Intelligence Data")
+    print("Arian: Populate Sample Intelligence Data")
     print("=" * 60)
 
     # Step 1: Add missing columns

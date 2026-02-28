@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Migrate PartnerForge data from SQLite to Supabase
+Migrate Arian data from SQLite to Supabase
 """
 
 import sqlite3
@@ -13,7 +13,7 @@ SUPABASE_URL = "https://xbitqeejsgqnwvxlnjra.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhiaXRxZWVqc2dxbnd2eGxuanJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwODU1NDAsImV4cCI6MjA4NzY2MTU0MH0.XoEOx8rHo_1EyCF4yJ3g2S3tXUX_XepQu9PSfUWvyIg"
 
 # SQLite path
-SQLITE_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/PartnerForge/data/partnerforge.db"
+SQLITE_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/Arian/data/arian.db"
 
 def get_sqlite_data():
     """Export all data from SQLite."""
@@ -175,7 +175,7 @@ def insert_to_supabase(data):
 
 def main():
     print("=" * 60)
-    print("PartnerForge: SQLite to Supabase Migration")
+    print("Arian: SQLite to Supabase Migration")
     print("=" * 60)
 
     # Step 1: Get SQLite data

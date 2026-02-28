@@ -89,6 +89,8 @@ const COMPANY_COLUMN_NAMES = [
 const PARTNER_TECH_COLUMN_NAMES = [
   'partner',
   'partner_tech',
+  'partner 1',
+  'partner1',
   'technology',
   'tech',
   'platform',
@@ -147,11 +149,15 @@ function autoDetectColumns(headers: string[]): Record<string, string> {
   const mapping: Record<string, string> = {};
   const lowerHeaders = headers.map((h) => h.toLowerCase().trim());
 
+  console.log('[FileParser] Headers:', headers);
+  console.log('[FileParser] Lower headers:', lowerHeaders);
+
   // Find domain column
   for (const name of DOMAIN_COLUMN_NAMES) {
     const idx = lowerHeaders.indexOf(name);
     if (idx !== -1) {
       mapping.domain = headers[idx];
+      console.log('[FileParser] Found domain column:', headers[idx], 'at index', idx);
       break;
     }
   }
@@ -174,6 +180,7 @@ function autoDetectColumns(headers: string[]): Record<string, string> {
     }
   }
 
+  console.log('[FileParser] Column mapping:', mapping);
   return mapping;
 }
 

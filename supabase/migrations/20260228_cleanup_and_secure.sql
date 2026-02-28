@@ -1,4 +1,4 @@
--- PartnerForge: Cleanup Unused Tables + Enable Security
+-- Arian: Cleanup Unused Tables + Enable Security
 -- =============================================================================
 -- SECURITY PRINCIPLE: RLS enabled on ALL tables. Only service_role can write.
 -- Anon key gets read-only access for frontend queries.

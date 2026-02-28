@@ -59,7 +59,7 @@ export function AppShell() {
                 <rect width="24" height="24" rx="6" fill={ALGOLIA_BLUE} />
                 <path d="M7 8H11L12 12L13 8H17L14 16H10L7 8Z" fill="white" />
               </svg>
-              <Title order={4} c={GRAY_900} fw={600}>PartnerForge</Title>
+              <Title order={4} c={GRAY_900} fw={600}>Arian</Title>
             </Group>
 
             <Divider orientation="vertical" color={GRAY_200} />

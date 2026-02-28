@@ -17,7 +17,6 @@ import {
   SimpleGrid,
   ThemeIcon,
   Skeleton,
-  RingProgress,
   Tooltip,
   Progress,
 } from '@mantine/core';
@@ -266,21 +265,22 @@ function TechLogo({ tech, color }: { tech: string; color: string }) {
     return (
       <div
         style={{
-          width: 42,
-          height: 42,
-          borderRadius: 8,
+          width: 36,
+          height: 36,
+          borderRadius: 6,
           backgroundColor: 'white',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: 6,
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          padding: 4,
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+          flexShrink: 0,
         }}
       >
         <img
           src={logoUrl}
           alt={tech}
-          style={{ width: 30, height: 30, objectFit: 'contain' }}
+          style={{ width: 26, height: 26, objectFit: 'contain' }}
           onError={() => setImgError(true)}
         />
       </div>
@@ -291,16 +291,17 @@ function TechLogo({ tech, color }: { tech: string; color: string }) {
   return (
     <div
       style={{
-        width: 42,
-        height: 42,
-        borderRadius: 8,
+        width: 36,
+        height: 36,
+        borderRadius: 6,
         backgroundColor: bgColor,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         color: 'white',
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: 700,
+        flexShrink: 0,
       }}
     >
       {tech.charAt(0).toUpperCase()}
@@ -312,43 +313,51 @@ function GalaxyCard({
   title,
   icon: Icon,
   color,
-  total,
   techData,
   onClick,
 }: {
   title: string;
   icon: React.ElementType;
   color: string;
-  total: number;
   techData: { tech: string; count: number }[];
   onClick?: () => void;
 }) {
+  // Calculate total from ALL techData items (not just displayed ones)
+  const total = techData.reduce((sum, item) => sum + item.count, 0);
+  const displayedItems = techData.slice(0, 5);
+  const hiddenCount = techData.length - 5;
+
   return (
-    <div style={{ ...DARK_CARD, cursor: onClick ? 'pointer' : 'default', minHeight: 340 }} onClick={onClick}>
+    <div style={{ ...DARK_CARD, cursor: onClick ? 'pointer' : 'default', padding: '20px' }} onClick={onClick}>
       {/* Header */}
-      <Group gap="md" mb="lg">
-        <ThemeIcon size={52} radius="md" style={{ backgroundColor: color }}>
-          <Icon size={28} color="white" />
+      <Group gap="sm" mb="md">
+        <ThemeIcon size={44} radius="md" style={{ backgroundColor: color }}>
+          <Icon size={24} color="white" />
         </ThemeIcon>
-        <div style={{ fontSize: '22px', fontWeight: 700, color: '#ffffff' }}>{title}</div>
+        <div style={{ fontSize: '18px', fontWeight: 700, color: '#ffffff' }}>{title}</div>
       </Group>
 
-      {/* Big Total */}
-      <div style={{ marginBottom: '24px' }}>
-        <div style={{ fontSize: '42px', fontWeight: 700, color: '#ffffff', lineHeight: 1 }}>{total.toLocaleString()}</div>
+      {/* Total */}
+      <div style={{ marginBottom: '16px' }}>
+        <div style={{ fontSize: '28px', fontWeight: 700, color: '#ffffff', lineHeight: 1 }}>{total.toLocaleString()}</div>
       </div>
 
       {/* Tech breakdown with logos */}
-      <Stack gap="xs">
-        {techData.slice(0, 5).map((item) => (
+      <Stack gap={8}>
+        {displayedItems.map((item) => (
           <div key={item.tech} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
               <TechLogo tech={item.tech} color={color} />
-              <span style={{ fontSize: '16px', fontWeight: 500, color: '#e2e8f0', whiteSpace: 'nowrap' }}>{item.tech}</span>
+              <span style={{ fontSize: '15px', fontWeight: 500, color: '#e2e8f0', whiteSpace: 'nowrap' }}>{item.tech}</span>
             </div>
-            <span style={{ fontSize: '16px', fontWeight: 600, color: 'white', whiteSpace: 'nowrap' }}>{item.count.toLocaleString()}</span>
+            <span style={{ fontSize: '15px', fontWeight: 600, color: 'white', whiteSpace: 'nowrap' }}>{item.count.toLocaleString()}</span>
           </div>
         ))}
+        {hiddenCount > 0 && (
+          <div style={{ fontSize: '13px', color: '#94a3b8', textAlign: 'center', marginTop: 4 }}>
+            +{hiddenCount} more
+          </div>
+        )}
       </Stack>
     </div>
   );
@@ -366,6 +375,64 @@ function CohortChart({ stats, onCohortClick }: { stats: Stats; onCohortClick?: (
 
   const hoveredData = hoveredCohort ? cohorts.find(c => c.label === hoveredCohort) : null;
 
+  // Custom SVG donut with minimum segment visibility
+  const size = 220;
+  const strokeWidth = 32;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const center = size / 2;
+
+  // Calculate segments with minimum 3% visibility for small segments
+  const MIN_PERCENT = 3;
+  let segments: { label: string; value: number; percent: number; visualPercent: number; color: string; offset: number }[] = [];
+  let usedPercent = 0;
+
+  // First pass: identify segments that need minimum boost
+  const rawPercents = cohorts.map(c => total > 0 ? (c.value / total) * 100 : 0);
+  const needsBoost = rawPercents.map(p => p > 0 && p < MIN_PERCENT);
+  const boostCount = needsBoost.filter(Boolean).length;
+  const boostTotal = boostCount * MIN_PERCENT - rawPercents.filter((p, i) => needsBoost[i]).reduce((a, b) => a + b, 0);
+
+  // Second pass: redistribute from large segments
+  let currentOffset = 0;
+  cohorts.forEach((c, i) => {
+    const rawPercent = rawPercents[i];
+    let visualPercent = rawPercent;
+
+    if (rawPercent > 0 && rawPercent < MIN_PERCENT) {
+      visualPercent = MIN_PERCENT; // Boost small segments
+    } else if (rawPercent >= MIN_PERCENT && boostTotal > 0) {
+      // Reduce large segments proportionally
+      const largeTotal = rawPercents.filter((p, j) => !needsBoost[j]).reduce((a, b) => a + b, 0);
+      visualPercent = rawPercent - (boostTotal * (rawPercent / largeTotal));
+    }
+
+    segments.push({
+      label: c.label,
+      value: c.value,
+      percent: rawPercent,
+      visualPercent,
+      color: c.color,
+      offset: currentOffset,
+    });
+    currentOffset += visualPercent;
+  });
+
+  // SVG arc path for donut segment
+  const describeArc = (startPercent: number, endPercent: number, r: number) => {
+    const startAngle = (startPercent / 100) * 360 - 90;
+    const endAngle = (endPercent / 100) * 360 - 90;
+    const start = polarToCartesian(center, center, r, endAngle);
+    const end = polarToCartesian(center, center, r, startAngle);
+    const largeArc = endPercent - startPercent > 50 ? 1 : 0;
+    return `M ${start.x} ${start.y} A ${r} ${r} 0 ${largeArc} 0 ${end.x} ${end.y}`;
+  };
+
+  const polarToCartesian = (cx: number, cy: number, r: number, angle: number) => {
+    const rad = (angle * Math.PI) / 180;
+    return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+  };
+
   return (
     <div style={GLASS_CARD}>
       <div style={{ fontSize: '22px', fontWeight: 700, color: '#ffffff', marginBottom: '24px' }}>
@@ -374,32 +441,77 @@ function CohortChart({ stats, onCohortClick }: { stats: Stats; onCohortClick?: (
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '40px' }}>
-        {/* Donut Chart */}
-        <RingProgress
-          size={220}
-          thickness={28}
-          roundCaps
-          sections={cohorts.map(c => ({
-            value: total > 0 ? (c.value / total) * 100 : 0,
-            color: hoveredCohort === c.label ? c.color : (hoveredCohort ? `${c.color}66` : c.color),
-            tooltip: `${c.label}: ${c.value.toLocaleString()} (${((c.value / total) * 100).toFixed(1)}%)`,
-          }))}
-          label={
-            <div style={{ textAlign: 'center' }}>
-              {hoveredData ? (
-                <>
-                  <div style={{ fontSize: '32px', fontWeight: 700, color: hoveredData.color }}>{hoveredData.value.toLocaleString()}</div>
-                  <div style={{ fontSize: '14px', fontWeight: 600, color: '#ffffff' }}>{hoveredData.label}</div>
-                </>
-              ) : (
-                <>
-                  <div style={{ fontSize: '36px', fontWeight: 700, color: '#ffffff' }}>{total.toLocaleString()}</div>
-                  <div style={{ fontSize: '16px', color: '#94a3b8' }}>Total</div>
-                </>
-              )}
-            </div>
-          }
-        />
+        {/* Custom SVG Donut Chart */}
+        <div style={{ position: 'relative', width: size, height: size, flexShrink: 0 }}>
+          <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+            {/* Background circle */}
+            <circle
+              cx={center}
+              cy={center}
+              r={radius}
+              fill="none"
+              stroke="rgba(255,255,255,0.1)"
+              strokeWidth={strokeWidth}
+            />
+            {/* Segments */}
+            {segments.map((seg, i) => {
+              const isHovered = hoveredCohort === seg.label;
+              const startPercent = seg.offset;
+              const endPercent = seg.offset + seg.visualPercent;
+
+              if (seg.visualPercent <= 0) return null;
+
+              return (
+                <path
+                  key={seg.label}
+                  d={describeArc(startPercent, endPercent, radius)}
+                  fill="none"
+                  stroke={seg.color}
+                  strokeWidth={isHovered ? strokeWidth + 8 : strokeWidth}
+                  strokeLinecap="round"
+                  style={{
+                    transition: 'all 0.2s ease',
+                    opacity: hoveredCohort && !isHovered ? 0.4 : 1,
+                    filter: isHovered ? 'brightness(1.2) drop-shadow(0 0 8px ' + seg.color + ')' : 'none',
+                    cursor: 'pointer',
+                  }}
+                  onMouseEnter={() => setHoveredCohort(seg.label)}
+                  onMouseLeave={() => setHoveredCohort(null)}
+                  onClick={() => onCohortClick?.(seg.label)}
+                />
+              );
+            })}
+          </svg>
+          {/* Center label */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              textAlign: 'center',
+              pointerEvents: 'none',
+            }}
+          >
+            {hoveredData ? (
+              <>
+                <div style={{ fontSize: '32px', fontWeight: 700, color: hoveredData.color, lineHeight: 1 }}>
+                  {hoveredData.value.toLocaleString()}
+                </div>
+                <div style={{ fontSize: '14px', fontWeight: 600, color: '#ffffff', marginTop: 4 }}>
+                  {hoveredData.label}
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ fontSize: '36px', fontWeight: 700, color: '#ffffff', lineHeight: 1 }}>
+                  {total.toLocaleString()}
+                </div>
+                <div style={{ fontSize: '16px', color: '#94a3b8', marginTop: 4 }}>Total</div>
+              </>
+            )}
+          </div>
+        </div>
 
         {/* Compact Legend */}
         <div style={{ flex: 1 }}>
@@ -586,7 +698,6 @@ export function Dashboard() {
                 title="CMS"
                 icon={IconCode}
                 color="#6366f1"
-                total={stats?.cms || 0}
                 techData={cmsData}
                 onClick={() => navigate('/galaxy?filter=cms')}
               />
@@ -594,7 +705,6 @@ export function Dashboard() {
                 title="Commerce"
                 icon={IconShoppingCart}
                 color="#3b82f6"
-                total={stats?.commerce || 0}
                 techData={commerceData}
                 onClick={() => navigate('/galaxy?filter=commerce')}
               />
@@ -602,7 +712,6 @@ export function Dashboard() {
                 title="MarTech"
                 icon={IconMail}
                 color="#10b981"
-                total={stats?.martech || 0}
                 techData={martechData}
                 onClick={() => navigate('/galaxy?filter=martech')}
               />
@@ -610,7 +719,6 @@ export function Dashboard() {
                 title="Hyperscalers"
                 icon={IconCloud}
                 color="#FF9900"
-                total={stats?.cloud || 0}
                 techData={cloudData}
                 onClick={() => navigate('/galaxy?filter=cloud')}
               />
@@ -618,7 +726,6 @@ export function Dashboard() {
                 title="Search"
                 icon={IconTargetArrow}
                 color="#ef4444"
-                total={stats?.search || 0}
                 techData={searchData}
                 onClick={() => navigate('/galaxy?filter=search')}
               />

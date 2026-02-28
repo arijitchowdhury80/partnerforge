@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PartnerForge - Fetch ALL Partner Technology Targets
+Arian - Fetch ALL Partner Technology Targets
 
 This script fetches displacement targets for ALL Algolia partners:
 - Adobe Experience Manager (AEM)
@@ -166,7 +166,7 @@ async def check_uses_algolia(domain: str) -> bool:
 async def main():
     """Main function to fetch all partner data."""
     print("=" * 60)
-    print("PartnerForge - Fetching ALL Partner Technology Targets")
+    print("Arian - Fetching ALL Partner Technology Targets")
     print("=" * 60)
     print(f"API Key: {BUILTWITH_API_KEY[:8]}...")
     print(f"Partners: {len(PARTNER_TECHNOLOGIES)}")

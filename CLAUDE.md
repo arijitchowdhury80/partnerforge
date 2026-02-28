@@ -1,4 +1,4 @@
-# PartnerForge - Development Guidelines
+# Arian - Development Guidelines
 
 ## CRITICAL: Use Shared Libraries
 
@@ -101,5 +101,5 @@ Frontend (React) → Supabase REST API → PostgreSQL
 ## Deployment
 
 - **Frontend**: Vercel (auto-deploys from main branch)
-- **URL**: https://partnerforge.vercel.app
+- **URL**: https://arian.vercel.app
 - **Database**: Supabase (project: xbitqeejsgqnwvxlnjra)

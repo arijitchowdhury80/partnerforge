@@ -2,15 +2,15 @@
  * Investor Data Transformer
  *
  * Transforms WebSearch investor intelligence into the InvestorData type
- * used throughout the PartnerForge application.
+ * used throughout the Arian application.
  */
 
 import type { InvestorData, SecFiling, RiskFactor, EarningsHighlight } from '@/types';
 import type {
   InvestorData as WebSearchInvestorData,
-  SecFiling as WebSearchFiling,
   RiskFactor as WebSearchRiskFactor,
   EarningsHighlight as WebSearchEarningsHighlight,
+  WebSearchSecFiling as WebSearchFiling,
 } from '../clients/websearch';
 
 // ============================================================================

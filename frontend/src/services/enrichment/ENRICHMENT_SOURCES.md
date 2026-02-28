@@ -1,6 +1,6 @@
-# PartnerForge Enrichment Data Sources
+# Arian Enrichment Data Sources
 
-This document describes all data sources used by the PartnerForge enrichment pipeline, including APIs, endpoints, and the specific data retrieved from each source.
+This document describes all data sources used by the Arian enrichment pipeline, including APIs, endpoints, and the specific data retrieved from each source.
 
 ---
 

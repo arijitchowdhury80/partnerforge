@@ -79,7 +79,7 @@ export const websearch: SourceModule<WebSearchData> = {
 
   async enrich(domain: string, options?: SourceOptions): Promise<SourceResult<WebSearchData>> {
     // Note: This source requires a search executor to function
-    // In PartnerForge browser context, we would need a backend API
+    // In Arian browser context, we would need a backend API
     // to proxy web searches
 
     const companyName = options?.companyName || domain.split('.')[0];

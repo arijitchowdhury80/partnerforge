@@ -184,7 +184,7 @@ function MermaidDiagram({ code, index }: { code: string; index: number }) {
         <Group justify="space-between" mb="xs">
           <Badge size="sm" color="yellow" variant="light">Mermaid (view on GitHub)</Badge>
           <Anchor
-            href="https://github.com/arijitchowdhury80/partnerforge/blob/main/docs/architecture/diagrams.md"
+            href="https://github.com/arijitchowdhury80/arian/blob/main/docs/architecture/diagrams.md"
             target="_blank"
             size="xs"
             c="dimmed"
@@ -829,7 +829,7 @@ export function DocsPage() {
 
       try {
         // Fetch from GitHub raw content
-        const url = `https://raw.githubusercontent.com/arijitchowdhury80/partnerforge/main/${currentSection.path}`;
+        const url = `https://raw.githubusercontent.com/arijitchowdhury80/arian/main/${currentSection.path}`;
         const response = await fetch(url);
 
         if (!response.ok) {
@@ -919,7 +919,7 @@ export function DocsPage() {
           <Text size="xs" fw={500} c="dimmed" mb="xs">External Links</Text>
           <Stack gap={4}>
             <Anchor
-              href="https://github.com/arijitchowdhury80/partnerforge"
+              href="https://github.com/arijitchowdhury80/arian"
               target="_blank"
               size="sm"
               c="dimmed"
@@ -930,7 +930,7 @@ export function DocsPage() {
               </Group>
             </Anchor>
             <Anchor
-              href="https://partnerforge-production.up.railway.app/docs"
+              href="https://arian-production.up.railway.app/docs"
               target="_blank"
               size="sm"
               c="dimmed"
@@ -969,7 +969,7 @@ export function DocsPage() {
                   </ActionIcon>
                 </Tooltip>
                 <Anchor
-                  href={`https://github.com/arijitchowdhury80/partnerforge/blob/main/${currentSection.path}`}
+                  href={`https://github.com/arijitchowdhury80/arian/blob/main/${currentSection.path}`}
                   target="_blank"
                 >
                   <ActionIcon variant="subtle">

@@ -85,7 +85,7 @@ export function ExportModal({
   // Check which preset matches current selection
   const currentPreset = useMemo(() => {
     for (const [key, columns] of Object.entries(EXPORT_PRESETS)) {
-      const presetSet = new Set(columns);
+      const presetSet = new Set<string>(columns);
       if (
         selectedColumns.size === presetSet.size &&
         [...selectedColumns].every((col) => presetSet.has(col))

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-PartnerForge: Import Customer Evidence Excel into Database
+Arian: Import Customer Evidence Excel into Database
 
 This script reads the "Customer Evidence - Algolia.xlsx" file and imports
-all relevant data into the PartnerForge database.
+all relevant data into the Arian database.
 
 Usage:
     python import_customer_evidence.py [--db sqlite|supabase] [--supabase-url URL] [--supabase-key KEY]
@@ -29,7 +29,7 @@ import argparse
 
 # Path to Excel file
 EXCEL_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/Customer Evidence - Algolia.xlsx"
-DB_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/PartnerForge/data/partnerforge.db"
+DB_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/Arian/data/arian.db"
 
 
 def extract_domain(url_or_name: str) -> Optional[str]:
@@ -85,7 +85,7 @@ def parse_features(row: pd.Series, feature_columns: List[str]) -> List[str]:
     return features
 
 
-class PartnerForgeImporter:
+class ArianImporter:
     def __init__(self, db_type: str = 'sqlite', supabase_url: str = None, supabase_key: str = None):
         self.db_type = db_type
         self.supabase_url = supabase_url
@@ -771,7 +771,7 @@ class PartnerForgeImporter:
 
     def run(self):
         """Run full import."""
-        print("🚀 PartnerForge Data Import")
+        print("🚀 Arian Data Import")
         print(f"   Source: {EXCEL_PATH}")
         print(f"   Target: {DB_PATH}")
 
@@ -800,14 +800,14 @@ class PartnerForgeImporter:
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Import Customer Evidence into PartnerForge database')
+    parser = argparse.ArgumentParser(description='Import Customer Evidence into Arian database')
     parser.add_argument('--db', choices=['sqlite', 'supabase'], default='sqlite', help='Database type')
     parser.add_argument('--supabase-url', help='Supabase project URL')
     parser.add_argument('--supabase-key', help='Supabase service role key')
 
     args = parser.parse_args()
 
-    importer = PartnerForgeImporter(
+    importer = ArianImporter(
         db_type=args.db,
         supabase_url=args.supabase_url,
         supabase_key=args.supabase_key

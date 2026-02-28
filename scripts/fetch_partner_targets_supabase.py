@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PartnerForge: Fetch Displacement Targets from BuiltWith (Supabase Version)
+Arian: Fetch Displacement Targets from BuiltWith (Supabase Version)
 
 Fetches companies using partner technologies and stores in Supabase.
 
@@ -405,7 +405,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    print("🚀 PartnerForge: Displacement Target Fetcher (Supabase)")
+    print("🚀 Arian: Displacement Target Fetcher (Supabase)")
     print(f"   Partner: {args.partner}")
     print(f"   Pages: {args.pages}")
 

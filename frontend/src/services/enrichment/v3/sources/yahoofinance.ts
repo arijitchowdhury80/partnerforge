@@ -84,12 +84,12 @@ export const yahoofinance: SourceModule<YahooFinanceData> = {
         ],
       });
 
-      const profile = result.summaryProfile || {};
-      const financial = result.financialData || {};
-      const keyStats = result.defaultKeyStatistics || {};
-      const price = result.price || {};
+      const profile = (result.summaryProfile || {}) as any;
+      const financial = (result.financialData || {}) as any;
+      const keyStats = (result.defaultKeyStatistics || {}) as any;
+      const price = (result.price || {}) as any;
       const income = result.incomeStatementHistory?.incomeStatementHistory || [];
-      const recommendations = result.recommendationTrend?.trend?.[0] || {};
+      const recommendations = (result.recommendationTrend?.trend?.[0] || {}) as any;
 
       // Build revenue history from income statements
       const revenueHistory = income.slice(0, 3).map((stmt: any) => ({

@@ -83,7 +83,7 @@ export const secedgar: SourceModule<SecEdgarData> = {
       const url = `${BASE_URL}/submissions/CIK${cik}.json`;
       const response = await fetch(url, {
         headers: {
-          'User-Agent': 'PartnerForge/1.0 (support@algolia.com)',
+          'User-Agent': 'Arian/1.0 (support@algolia.com)',
           'Accept': 'application/json',
         },
         signal: AbortSignal.timeout(15000),

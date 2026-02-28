@@ -294,7 +294,7 @@ export class SecEdgarClient {
   private searchUrl = 'https://efts.sec.gov/LATEST/search-index';
 
   private headers = {
-    'User-Agent': 'PartnerForge/1.0 (contact@algolia.com)',
+    'User-Agent': 'Arian/1.0 (contact@algolia.com)',
     'Accept': 'application/json',
   };
 

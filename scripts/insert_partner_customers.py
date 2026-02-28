@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PartnerForge: Insert Known Partner Customers into Supabase
+Arian: Insert Known Partner Customers into Supabase
 
 This script inserts verified Amplience and Spryker customers into the
 displacement_targets table. These are known customers from case studies.
@@ -150,7 +150,7 @@ def insert_targets(targets: list, partner_tech: str):
 
 
 def main():
-    print("🚀 PartnerForge: Inserting Known Partner Customers")
+    print("🚀 Arian: Inserting Known Partner Customers")
     print("=" * 50)
 
     # Insert Amplience customers

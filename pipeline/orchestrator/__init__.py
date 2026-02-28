@@ -1,5 +1,5 @@
 """
-PartnerForge Intelligence Orchestrator
+Arian Intelligence Orchestrator
 ======================================
 
 Parallel execution engine for the 15-module intelligence pipeline.

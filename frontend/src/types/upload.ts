@@ -46,7 +46,7 @@ export type ListItemStatus =
 // =============================================================================
 
 /**
- * Mapping of PartnerForge fields to CSV column headers.
+ * Mapping of Arian fields to CSV column headers.
  * Each field maps to the original CSV column name.
  */
 export interface ColumnMapping {

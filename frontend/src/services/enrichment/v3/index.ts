@@ -274,8 +274,8 @@ export async function saveToSupabase(
     // JSearch data
     hiring_signal_score: result.jsearch?.data?.signal_score,
     hiring_signal_strength: result.jsearch?.data?.signal_strength,
-    hiring_has_search_roles: result.jsearch?.data?.category_breakdown?.search > 0,
-    hiring_has_ecommerce_roles: result.jsearch?.data?.category_breakdown?.ecommerce > 0,
+    hiring_has_search_roles: (result.jsearch?.data?.category_breakdown?.search ?? 0) > 0,
+    hiring_has_ecommerce_roles: (result.jsearch?.data?.category_breakdown?.ecommerce ?? 0) > 0,
     // WebSearch data
     exec_quote: result.websearch?.data?.executive_quotes?.[0]?.quote,
     exec_quotes_count: result.websearch?.data?.executive_quotes?.length,
@@ -408,11 +408,8 @@ export function listAvailableSources(): { id: SourceId; name: string; available:
 }
 
 // =============================================================================
-// Exports
+// Re-exports
 // =============================================================================
-
-// Main functions
-export { enrich, saveToSupabase, enrichAndSave, enrichBatch, listAvailableSources };
 
 // Sources
 export { SOURCES, getSource, getAvailableSources } from './sources';

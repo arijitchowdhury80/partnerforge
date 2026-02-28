@@ -1,4 +1,4 @@
--- PartnerForge: Fix RLS and Seed Data
+-- Arian: Fix RLS and Seed Data
 -- =============================================================================
 
 -- Disable RLS on our new tables (they have it enabled somehow)

@@ -1,5 +1,5 @@
 -- ============================================================================
--- PARTNERFORGE HIRING SIGNALS MIGRATION
+-- ARIAN HIRING SIGNALS MIGRATION
 -- Run this entire file in Supabase SQL Editor:
 -- https://supabase.com/dashboard/project/xbitqeejsgqnwvxlnjra/sql/new
 -- ============================================================================

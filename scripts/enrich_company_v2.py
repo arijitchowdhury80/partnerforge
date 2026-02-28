@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PartnerForge: Full Company Enrichment Pipeline v2.0
+Arian: Full Company Enrichment Pipeline v2.0
 
 Enhanced pipeline with:
 1. BuiltWith - Tech stack
@@ -42,7 +42,7 @@ if missing:
     raise ValueError(f"Missing required environment variables: {', '.join(missing)}. Check .env file.")
 
 # Output directory
-OUTPUT_DIR = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/PartnerForge/data/enrichments"
+OUTPUT_DIR = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/Arian/data/enrichments"
 
 # =============================================================================
 # Database-driven customer verification (self-sufficient system)
@@ -540,7 +540,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    print("🚀 PartnerForge: Full Enrichment Pipeline v2.1")
+    print("🚀 Arian: Full Enrichment Pipeline v2.1")
     print(f"   Features: Tech Stack + Traffic + Financials + Hiring + Competitors")
     print(f"   Verification: Database-driven (self-sufficient)")
 

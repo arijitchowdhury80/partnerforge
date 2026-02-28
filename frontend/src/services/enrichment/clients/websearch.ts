@@ -72,7 +72,8 @@ export interface ExecutiveData {
 // Types - Investor Intelligence
 // =============================================================================
 
-export interface SecFiling {
+// Note: SecFiling is in secedgar.ts - this is a websearch-specific variant
+export interface WebSearchSecFiling {
   type: '10-K' | '10-Q' | '8-K' | 'DEF 14A';
   filing_date: string;
   url: string;
@@ -93,7 +94,7 @@ export interface EarningsHighlight {
 
 export interface InvestorData {
   domain: string;
-  sec_filings: SecFiling[];
+  sec_filings: WebSearchSecFiling[];
   risk_factors: RiskFactor[];
   earnings_highlights: EarningsHighlight[];
 }
@@ -858,7 +859,7 @@ export function parseExecutiveResults(results: SearchResult[], domain: string): 
  * Parse search results into InvestorData
  */
 export function parseInvestorResults(results: SearchResult[], domain: string): InvestorData | null {
-  const secFilings: SecFiling[] = [];
+  const secFilings: WebSearchSecFiling[] = [];
   const riskFactors: RiskFactor[] = [];
   const earningsHighlights: EarningsHighlight[] = [];
 

@@ -1,5 +1,5 @@
 /**
- * PartnerForge - Partner Intelligence Platform
+ * Arian - Partner Intelligence Platform
  *
  * Main application entry point with routing, providers, and theme configuration.
  */

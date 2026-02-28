@@ -1,4 +1,4 @@
--- PartnerForge Data Fix: Known Algolia Customers
+-- Arian Data Fix: Known Algolia Customers
 -- Run these in Supabase SQL Editor
 -- Generated: 2026-02-26
 

@@ -19,7 +19,7 @@ import type { ColumnMapping } from '@/types';
 // =============================================================================
 
 /**
- * Mapping of PartnerForge fields to common CSV header variations.
+ * Mapping of Arian fields to common CSV header variations.
  * Order matters - first match wins.
  */
 const COLUMN_MAPPING_CANDIDATES: Record<keyof ColumnMapping, string[]> = {

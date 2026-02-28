@@ -1,4 +1,4 @@
--- PartnerForge Seed Data: Technologies
+-- Arian Seed Data: Technologies
 -- Partners and Competitors that Algolia cares about
 
 -- ============================================

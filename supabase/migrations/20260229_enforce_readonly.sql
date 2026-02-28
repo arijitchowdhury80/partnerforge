@@ -1,4 +1,4 @@
--- PartnerForge: Enforce Read-Only Access for Anon
+-- Arian: Enforce Read-Only Access for Anon
 -- =============================================================================
 -- PROBLEM: RLS with only SELECT policy still allows INSERT/UPDATE/DELETE
 -- FIX: Explicitly deny write operations for anon role

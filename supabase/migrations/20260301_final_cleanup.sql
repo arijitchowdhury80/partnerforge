@@ -1,4 +1,4 @@
--- PartnerForge: Final Cleanup - Drop v2 View & Ensure Security
+-- Arian: Final Cleanup - Drop v2 View & Ensure Security
 -- =============================================================================
 
 -- 1. DROP the displacement_targets_v2 view

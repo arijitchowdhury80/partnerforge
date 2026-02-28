@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PartnerForge: Fetch Displacement Targets from BuiltWith
+Arian: Fetch Displacement Targets from BuiltWith
 
 This script fetches companies using partner technologies (Shopify, Adobe Commerce, etc.)
 and filters out existing Algolia customers to create displacement target lists.
@@ -15,7 +15,7 @@ import subprocess
 import argparse
 
 import os
-DB_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/PartnerForge/data/partnerforge.db"
+DB_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/Arian/data/arian.db"
 BUILTWITH_API_KEY = os.getenv("BUILTWITH_API_KEY")
 if not BUILTWITH_API_KEY:
     raise ValueError("BUILTWITH_API_KEY environment variable is required")
@@ -300,7 +300,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    print("🚀 PartnerForge: Displacement Target Fetcher")
+    print("🚀 Arian: Displacement Target Fetcher")
     print(f"   Partner: {args.partner}")
     print(f"   Pages: {args.pages}")
 

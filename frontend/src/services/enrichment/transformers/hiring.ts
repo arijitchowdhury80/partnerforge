@@ -2,7 +2,7 @@
  * Hiring Data Transformer
  *
  * Transforms WebSearch hiring signals into the HiringData type
- * used throughout the PartnerForge application.
+ * used throughout the Arian application.
  */
 
 import type { HiringData, Job } from '@/types';

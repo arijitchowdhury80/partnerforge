@@ -1,0 +1,72 @@
+{
+  "analysis_date": "2026-02-28",
+  "source": "BuiltWith Lists API with NextOffset pagination",
+  "since_days": 365,
+
+  "raw_counts": {
+    "cms": {
+      "AEM": { "builtwith_name": "Adobe-Experience-Manager", "raw_count": 20995, "pages": 24 },
+      "Contentful": { "builtwith_name": "Contentful", "raw_count": 21718, "pages": 25 },
+      "Contentstack": { "builtwith_name": "Contentstack", "raw_count": 2791, "pages": 4 },
+      "Amplience": { "builtwith_name": "Amplience", "raw_count": 4682, "pages": 6 },
+      "Sitecore": { "builtwith_name": "Sitecore CMS", "raw_count": 4562, "pages": 6 }
+    },
+    "commerce": {
+      "SFCC": { "builtwith_name": "Salesforce-Commerce-Cloud", "raw_count": 13238, "pages": 16 },
+      "Shopify+": { "builtwith_name": "Shopify-Plus", "raw_count": 32890, "pages": 38 },
+      "Magento": { "builtwith_name": "Magento", "raw_count": 17815, "pages": 21 },
+      "BigCommerce": { "builtwith_name": "BigCommerce", "raw_count": 5247, "pages": 7 },
+      "Commercetools": { "builtwith_name": "commercetools", "raw_count": 859, "pages": 2 },
+      "Spryker": { "builtwith_name": "Spryker", "raw_count": 21, "pages": 1 }
+    },
+    "martech": {
+      "SFMC": { "builtwith_name": "ExactTarget", "raw_count": 4187, "pages": 5 },
+      "Marketo": { "builtwith_name": "Marketo", "raw_count": 6994, "pages": 9 },
+      "HubSpot": { "builtwith_name": "Hubspot", "raw_count": 146002, "pages": 163 },
+      "Klaviyo": { "builtwith_name": "Klaviyo", "raw_count": 220043, "pages": 247 }
+    },
+    "search": {
+      "Coveo": { "builtwith_name": "Coveo", "raw_count": 1072, "pages": 2 },
+      "Bloomreach": { "builtwith_name": "BloomReach", "raw_count": 148, "pages": 1 },
+      "Constructor": { "builtwith_name": "Constructor-IO", "raw_count": 172, "pages": 1 },
+      "Yext": { "builtwith_name": "Yext", "raw_count": 2960, "pages": 4 },
+      "SearchSpring": { "builtwith_name": "Searchspring", "raw_count": 0, "pages": 1, "note": "NOT available in Lists API" }
+    }
+  },
+
+  "quality_analysis": {
+    "note": "Sampled first 900 results. R=Rank field (0=no traffic data, higher=more traffic)",
+    "AEM": { "total": 900, "with_rank": 44, "high_rank_10k": 21, "quality_pct": 4.9 },
+    "SFCC": { "total": 900, "with_rank": 96, "high_rank_10k": 70, "quality_pct": 10.7 },
+    "Shopify+": { "total": 900, "with_rank": 628, "high_rank_10k": 521, "quality_pct": 69.8 },
+    "Coveo": { "total": 900, "with_rank": 62, "high_rank_10k": 59, "quality_pct": 6.9 }
+  },
+
+  "key_findings": [
+    "BuiltWith counts DOMAINS, not companies. One company = multiple domains.",
+    "Lists API includes HISTORICAL detections - tech may no longer be in use.",
+    "CMS/Search techs have many FALSE POSITIVES from third-party embeds/widgets.",
+    "MarTech techs (HubSpot/Klaviyo) include TRACKING PIXEL detections - not real customers.",
+    "Commerce techs (Shopify+) are MORE ACCURATE because you can't embed a commerce platform.",
+    "~95% of AEM 'detections' are tiny/unknown sites - likely false positives.",
+    "Only ~5-10% of CMS/Search detections are on sites with measurable traffic."
+  ],
+
+  "realistic_estimates": {
+    "note": "Estimated REAL customer counts based on quality analysis",
+    "AEM": { "raw": 20995, "estimated_real": 1050, "method": "5% quality rate" },
+    "Contentful": { "raw": 21718, "estimated_real": 2172, "method": "10% quality rate (dev-friendly)" },
+    "SFCC": { "raw": 13238, "estimated_real": 1415, "method": "10.7% quality rate" },
+    "Shopify+": { "raw": 32890, "estimated_real": 22957, "method": "69.8% quality rate" },
+    "Coveo": { "raw": 1072, "estimated_real": 74, "method": "6.9% quality rate" },
+    "HubSpot": { "raw": 146002, "estimated_real": 7300, "method": "5% quality rate (tracking pixel inflation)" },
+    "Klaviyo": { "raw": 220043, "estimated_real": 11002, "method": "5% quality rate (tracking pixel inflation)" }
+  },
+
+  "recommendations": [
+    "For Arian, filter by Rank > 0 to get only sites with measurable traffic.",
+    "Commerce galaxy (Shopify+, SFCC) data is most reliable.",
+    "CMS/Search galaxy needs additional validation via Domain API.",
+    "MarTech galaxy should be treated as marketing lists, not customer lists."
+  ]
+}

@@ -28,7 +28,7 @@ Or via Supabase Dashboard:
 ### 2. Deploy the Edge Function
 
 ```bash
-cd /path/to/PartnerForge
+cd /path/to/Arian
 supabase functions deploy enrich-proxy
 ```
 

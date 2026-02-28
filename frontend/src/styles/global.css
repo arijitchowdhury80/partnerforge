@@ -1066,24 +1066,46 @@ a:hover, .algolia-link:hover {
 
 /* =============================================================================
  * MANTINE PAPER OVERRIDES
- * Consistent card/paper styling
+ * Consistent card/paper styling - NO !important to allow inline style overrides
  * ============================================================================= */
 
 .mantine-Paper-root {
-  background-color: #ffffff !important;
+  background-color: #ffffff;
 }
 
 .mantine-Paper-root[data-with-border] {
-  border-color: #e2e8f0 !important;
+  border-color: #e2e8f0;
 }
 
-/* Galaxy glass panels - override default white background */
+/* Galaxy glass panels - for dark themed pages with 3D shadow effect */
+.galaxy-glass-panel,
 .galaxy-glass-panel.mantine-Paper-root {
   background-color: rgba(15, 23, 42, 0.85) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 16px !important;
+  /* 3D Shadow Stack - creates depth illusion */
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.1),
+    0 10px 20px rgba(0, 0, 0, 0.15),
+    0 25px 50px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+    0 1px 0 rgba(255, 255, 255, 0.1) inset !important;
+  transform: translateZ(0);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.galaxy-glass-panel:hover,
+.galaxy-glass-panel.mantine-Paper-root:hover {
+  box-shadow:
+    0 6px 8px rgba(0, 0, 0, 0.12),
+    0 15px 30px rgba(0, 0, 0, 0.18),
+    0 30px 60px rgba(0, 0, 0, 0.28),
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+    0 1px 0 rgba(255, 255, 255, 0.12) inset !important;
 }
 
 /* =============================================================================
@@ -1130,12 +1152,27 @@ a:hover, .algolia-link:hover {
   background-color: rgba(30, 41, 59, 0.9) !important;
   border-color: rgba(255, 255, 255, 0.3) !important;
   color: #ffffff !important;
+  font-size: 16px !important;
+  min-height: 48px !important;
+  padding: 12px 16px !important;
 }
 
 .galaxy-glass-input .mantine-Input-input::placeholder,
 .galaxy-glass-input .mantine-TextInput-input::placeholder,
 .galaxy-glass-input .mantine-MultiSelect-input::placeholder {
   color: rgba(255, 255, 255, 0.7) !important;
+  font-size: 16px !important;
+}
+
+/* MultiSelect input wrapper */
+.galaxy-glass-input .mantine-MultiSelect-inputField {
+  font-size: 16px !important;
+  color: #ffffff !important;
+}
+
+.galaxy-glass-input .mantine-MultiSelect-inputField::placeholder {
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-size: 16px !important;
 }
 
 .galaxy-glass-input .mantine-Input-input:focus,
@@ -1160,6 +1197,9 @@ a:hover, .algolia-link:hover {
   background-color: rgba(30, 41, 59, 0.9) !important;
   border-color: rgba(255, 255, 255, 0.3) !important;
   color: white !important;
+  font-size: 16px !important;
+  min-width: 40px !important;
+  min-height: 40px !important;
 }
 
 .galaxy-pagination .mantine-Pagination-control:hover {
@@ -1169,4 +1209,201 @@ a:hover, .algolia-link:hover {
 .galaxy-pagination .mantine-Pagination-control[data-active] {
   background-color: #003DFF !important;
   border-color: #003DFF !important;
+}
+
+/* =============================================================================
+ * GALAXY EXPLORER TABLE - Large readable fonts
+ * ============================================================================= */
+
+.galaxy-glass-panel .mantine-Table-root {
+  font-size: 18px !important;
+}
+
+.galaxy-glass-panel .mantine-Table-th {
+  background-color: rgba(15, 23, 42, 0.95) !important;
+  color: #94a3b8 !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  padding: 16px 20px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+.galaxy-glass-panel .mantine-Table-td {
+  color: white !important;
+  font-size: 18px !important;
+  padding: 16px 20px !important;
+  border-bottom: none !important;
+}
+
+.galaxy-glass-panel .mantine-Table-tr {
+  background-color: rgba(30, 41, 59, 0.7) !important;
+  transition: background-color 0.15s ease !important;
+}
+
+.galaxy-glass-panel .mantine-Table-tr:hover {
+  background-color: rgba(51, 65, 85, 0.9) !important;
+}
+
+/* Larger badges in galaxy tables */
+.galaxy-glass-panel .mantine-Badge-root {
+  font-size: 14px !important;
+  padding: 8px 12px !important;
+  font-weight: 600 !important;
+}
+
+/* =============================================================================
+ * SIDEBAR 3D GLASSMORPHISM ANIMATIONS
+ * ============================================================================= */
+
+@keyframes shine {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Sidebar nav item hover lift effect */
+.sidebar-glass-item {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-glass-item:hover {
+  transform: translateY(-2px) scale(1.02);
+}
+
+.sidebar-glass-item:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* =============================================================================
+ * ANIMATED SPACE BACKGROUND
+ * ============================================================================= */
+
+/* Slow pan animation for the base galaxy image */
+@keyframes galaxyPan {
+  0% {
+    transform: translate(0, 0) scale(1.1);
+  }
+  25% {
+    transform: translate(-2%, -1%) scale(1.12);
+  }
+  50% {
+    transform: translate(-1%, -2%) scale(1.1);
+  }
+  75% {
+    transform: translate(1%, -1%) scale(1.12);
+  }
+  100% {
+    transform: translate(0, 0) scale(1.1);
+  }
+}
+
+.galaxy-base {
+  animation: galaxyPan 120s ease-in-out infinite;
+}
+
+/* Star layers */
+.stars-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Small stars - many, subtle, slow drift */
+.stars-small {
+  background-image:
+    radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 30% 40%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 50% 10%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 70% 60%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 90% 30%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 15% 70%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 35% 85%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 55% 50%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 75% 15%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 95% 80%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 5% 45%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 25% 95%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 45% 25%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 65% 75%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 85% 55%, rgba(255,255,255,0.4), transparent);
+  background-size: 200px 200px;
+  animation: starsDrift 80s linear infinite;
+}
+
+/* Medium stars - fewer, brighter */
+.stars-medium {
+  background-image:
+    radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,0.8), transparent),
+    radial-gradient(2px 2px at 40% 70%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(2px 2px at 60% 20%, rgba(255,255,255,0.8), transparent),
+    radial-gradient(2px 2px at 80% 60%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(2px 2px at 10% 80%, rgba(255,255,255,0.8), transparent),
+    radial-gradient(2px 2px at 50% 90%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(2px 2px at 90% 40%, rgba(255,255,255,0.8), transparent);
+  background-size: 300px 300px;
+  animation: starsDrift 60s linear infinite reverse;
+}
+
+/* Large twinkling stars */
+.stars-large {
+  background-image:
+    radial-gradient(3px 3px at 25% 25%, rgba(255,255,255,0.9), transparent),
+    radial-gradient(3px 3px at 75% 75%, rgba(255,255,255,0.9), transparent),
+    radial-gradient(3px 3px at 50% 50%, rgba(84,104,255,0.9), transparent),
+    radial-gradient(3px 3px at 15% 85%, rgba(255,255,255,0.9), transparent),
+    radial-gradient(3px 3px at 85% 15%, rgba(255,255,255,0.9), transparent);
+  background-size: 400px 400px;
+  animation: starsTwinkle 4s ease-in-out infinite, starsDrift 100s linear infinite;
+}
+
+@keyframes starsDrift {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(-50px, -50px);
+  }
+}
+
+@keyframes starsTwinkle {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Nebula glow effect */
+.nebula-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 80%, rgba(84,104,255,0.15), transparent),
+    radial-gradient(ellipse 60% 40% at 80% 20%, rgba(139,92,246,0.1), transparent),
+    radial-gradient(ellipse 50% 30% at 50% 50%, rgba(0,61,255,0.08), transparent);
+  animation: nebulaShift 30s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes nebulaShift {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
 }

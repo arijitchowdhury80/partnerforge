@@ -1,4 +1,4 @@
--- PartnerForge: User Feedback System
+-- Arian: User Feedback System
 -- Self-sufficient data verification via user feedback loop
 --
 -- Design principle: System relies on data sources + user verification

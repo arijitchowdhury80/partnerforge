@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PartnerForge: Import Adobe Commerce (Magento) Targets
+Arian: Import Adobe Commerce (Magento) Targets
 =====================================================
 
 Imports a curated list of Adobe Commerce/Magento enterprise customers,
@@ -288,7 +288,7 @@ def main():
     args = parser.parse_args()
 
     print("=" * 60)
-    print("PartnerForge: Adobe Commerce Target Import")
+    print("Arian: Adobe Commerce Target Import")
     print("=" * 60)
     print(f"Total targets in list: {len(ADOBE_COMMERCE_TARGETS)}")
     print(f"Validation: {'Skipped' if args.skip_validation else 'Enabled'}")

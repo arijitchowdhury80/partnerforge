@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PartnerForge SQLite to PostgreSQL Migration Script
+Arian SQLite to PostgreSQL Migration Script
 
 Migrates all data from the local SQLite database to Supabase PostgreSQL.
 
@@ -9,7 +9,7 @@ Usage:
 
 Environment:
     DATABASE_URL: PostgreSQL connection string (Supabase)
-    SQLITE_PATH: Path to SQLite database (default: data/partnerforge.db)
+    SQLITE_PATH: Path to SQLite database (default: data/arian.db)
 """
 
 import os
@@ -45,7 +45,7 @@ logger = logging.getLogger(__name__)
 # Configuration
 # =============================================================================
 
-SQLITE_PATH = os.getenv("SQLITE_PATH", "data/partnerforge.db")
+SQLITE_PATH = os.getenv("SQLITE_PATH", "data/arian.db")
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 # Table mappings: SQLite table -> PostgreSQL table
@@ -88,7 +88,7 @@ COLUMN_MAPPINGS = {
 # =============================================================================
 
 POSTGRES_SCHEMA = """
--- PartnerForge PostgreSQL Schema
+-- Arian PostgreSQL Schema
 -- Run this in Supabase SQL Editor before migration
 
 -- Create schemas
@@ -696,7 +696,7 @@ def record_migration(
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Migrate PartnerForge data from SQLite to PostgreSQL"
+        description="Migrate Arian data from SQLite to PostgreSQL"
     )
     parser.add_argument(
         "--dry-run",

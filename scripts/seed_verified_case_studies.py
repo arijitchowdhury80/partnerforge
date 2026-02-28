@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PartnerForge: Seed Verified Algolia Case Studies
+Arian: Seed Verified Algolia Case Studies
 
 Fetches and verifies Algolia customer case study URLs.
 Only stores URLs that return HTTP 200.
@@ -10,7 +10,7 @@ import sqlite3
 import subprocess
 from datetime import datetime
 
-DB_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/PartnerForge/data/partnerforge.db"
+DB_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/Arian/data/arian.db"
 
 # Known Algolia case studies with verified URLs (as of Feb 2026)
 # Updated with real working URLs from algolia.com

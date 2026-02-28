@@ -71,7 +71,7 @@ serve(async (req: Request) => {
 
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-    // Insert rows with upsert (skip duplicates)
+    // Insert rows with upsert (update existing records if partner_tech provided)
     const { data, error, count } = await supabase
       .from('displacement_targets')
       .upsert(
@@ -83,7 +83,7 @@ serve(async (req: Request) => {
         })),
         {
           onConflict: 'domain',
-          ignoreDuplicates: true,
+          ignoreDuplicates: false, // Update existing records
         }
       )
       .select('domain');

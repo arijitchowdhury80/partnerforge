@@ -102,7 +102,7 @@ export function AppShell() {
               {/* Algolia Logo */}
               <AlgoliaLogo size={32} />
               <Title order={3} c={ALGOLIA_SPACE_GRAY} fw={700} style={{ fontFamily: "'Source Sans 3', sans-serif" }}>
-                PartnerForge
+                Arian
               </Title>
             </Group>
           </Group>

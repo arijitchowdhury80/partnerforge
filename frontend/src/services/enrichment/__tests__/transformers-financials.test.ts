@@ -2,7 +2,7 @@
  * Transformer Tests for Financials, Hiring, Executive, and Investor
  *
  * Tests all transformer functions for data transformations
- * from raw API responses to PartnerForge-standardized types.
+ * from raw API responses to Arian-standardized types.
  */
 
 import { describe, it, expect } from 'vitest';

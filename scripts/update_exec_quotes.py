@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PartnerForge: Update Executive Quotes
+Arian: Update Executive Quotes
 ======================================
 
 Updates displacement_targets with executive intelligence data:
@@ -380,7 +380,7 @@ Examples:
 
     # Banner
     print("=" * 60)
-    print("PartnerForge: Update Executive Quotes")
+    print("Arian: Update Executive Quotes")
     print("=" * 60)
     print(f"Supabase URL: {SUPABASE_URL}")
     print(f"Input file:   {args.json_file}")

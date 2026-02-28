@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arian Sales Machinery | GTM Strategy Proposal</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --algolia-blue: #003DFF;
+            --algolia-purple: #5468FF;
+            --algolia-dark: #21243D;
+            --algolia-gray: #5A5E9A;
+            --success-green: #10B981;
+            --warning-yellow: #F59E0B;
+            --danger-red: #EF4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8fafc;
+            color: var(--algolia-dark);
+            line-height: 1.6;
+        }
+
+        /* Page structure for printing */
+        .page {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto 60px;
+            background: white;
+            padding: 60px 80px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            page-break-after: always;
+        }
+
+        @media print {
+            .page {
+                box-shadow: none;
+                margin: 0;
+                padding: 40px 60px;
+            }
+        }
+
+        /* Cover page */
+        .cover {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, var(--algolia-blue) 0%, var(--algolia-purple) 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .cover h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .cover h2 {
+            font-size: 1.8rem;
+            font-weight: 400;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+
+        .cover .meta {
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+
+        .cover .logo {
+            width: 200px;
+            margin-bottom: 40px;
+        }
+
+        /* Section headers */
+        .section-header {
+            background: var(--algolia-blue);
+            color: white;
+            padding: 30px 80px;
+            margin: -60px -80px 40px;
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        .section-header .section-number {
+            font-size: 3rem;
+            font-weight: 700;
+            opacity: 0.3;
+            float: right;
+            margin-top: -10px;
+        }
+
+        /* Content styles */
+        h3 {
+            font-size: 1.5rem;
+            color: var(--algolia-blue);
+            margin: 30px 0 15px;
+            border-bottom: 2px solid var(--algolia-blue);
+            padding-bottom: 8px;
+        }
+
+        h4 {
+            font-size: 1.2rem;
+            color: var(--algolia-dark);
+            margin: 25px 0 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, var(--algolia-blue) 0%, var(--algolia-purple) 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin: 30px 0;
+        }
+
+        .highlight h3 {
+            color: white;
+            border-bottom-color: rgba(255,255,255,0.3);
+        }
+
+        .highlight p {
+            font-size: 1.2rem;
+            margin-bottom: 0;
+        }
+
+        /* Key insight box */
+        .insight {
+            background: #EEF2FF;
+            border-left: 4px solid var(--algolia-purple);
+            padding: 20px 25px;
+            margin: 25px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .insight h4 {
+            color: var(--algolia-purple);
+            margin-top: 0;
+        }
+
+        /* Data callout */
+        .data-callout {
+            display: flex;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .data-card {
+            flex: 1;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .data-card .number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--algolia-blue);
+        }
+
+        .data-card .label {
+            font-size: 0.95rem;
+            color: var(--algolia-gray);
+            margin-top: 5px;
+        }
+
+        .data-card.green .number { color: var(--success-green); }
+        .data-card.yellow .number { color: var(--warning-yellow); }
+        .data-card.red .number { color: var(--danger-red); }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background: var(--algolia-dark);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        tr:hover {
+            background: #EEF2FF;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-jackpot { background: #10B981; color: white; }
+        .badge-high { background: #3B82F6; color: white; }
+        .badge-medium { background: #F59E0B; color: white; }
+        .badge-low { background: #6B7280; color: white; }
+        .badge-tier1 { background: var(--algolia-blue); color: white; }
+        .badge-tier2 { background: var(--algolia-purple); color: white; }
+        .badge-tier3 { background: #94A3B8; color: white; }
+
+        /* Funnel diagram */
+        .funnel-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 40px 0;
+        }
+
+        .funnel-stage {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 5px 0;
+            padding: 20px;
+            color: white;
+            font-weight: 600;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .funnel-stage .count {
+            position: absolute;
+            right: -120px;
+            color: var(--algolia-dark);
+            font-weight: 400;
+            font-size: 0.9rem;
+        }
+
+        .funnel-stage.l1 { width: 100%; background: #94A3B8; }
+        .funnel-stage.l2 { width: 75%; background: var(--algolia-gray); }
+        .funnel-stage.l3 { width: 50%; background: var(--algolia-purple); }
+        .funnel-stage.l4 { width: 30%; background: var(--algolia-blue); }
+        .funnel-stage.l5 { width: 15%; background: var(--success-green); }
+
+        .funnel-arrow {
+            font-size: 2rem;
+            color: #CBD5E1;
+            margin: 5px 0;
+        }
+
+        /* Charts container */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 30px 0;
+        }
+
+        .chart-row {
+            display: flex;
+            gap: 40px;
+            margin: 30px 0;
+        }
+
+        .chart-row .chart-container {
+            flex: 1;
+        }
+
+        /* Layer box */
+        .layer-box {
+            border: 2px solid var(--algolia-blue);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .layer-box.jackpot {
+            border-color: var(--success-green);
+            background: #ECFDF5;
+        }
+
+        .layer-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .layer-number {
+            width: 40px;
+            height: 40px;
+            background: var(--algolia-blue);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .layer-box.jackpot .layer-number {
+            background: var(--success-green);
+        }
+
+        .layer-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--algolia-dark);
+        }
+
+        /* Flow diagram */
+        .flow-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin: 40px 0;
+            padding: 30px;
+            background: #f8fafc;
+            border-radius: 12px;
+        }
+
+        .flow-step {
+            flex: 1;
+            text-align: center;
+            padding: 0 15px;
+        }
+
+        .flow-step .icon {
+            width: 60px;
+            height: 60px;
+            background: var(--algolia-blue);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 1.5rem;
+        }
+
+        .flow-step h5 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+
+        .flow-step p {
+            font-size: 0.85rem;
+            color: var(--algolia-gray);
+        }
+
+        .flow-arrow {
+            font-size: 2rem;
+            color: #CBD5E1;
+            margin-top: 20px;
+        }
+
+        /* Comparison table */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .comparison-card {
+            padding: 25px;
+            border-radius: 12px;
+        }
+
+        .comparison-card.old {
+            background: #FEE2E2;
+            border: 2px solid var(--danger-red);
+        }
+
+        .comparison-card.new {
+            background: #ECFDF5;
+            border: 2px solid var(--success-green);
+        }
+
+        .comparison-card h4 {
+            margin-top: 0;
+        }
+
+        .comparison-card.old h4 { color: var(--danger-red); }
+        .comparison-card.new h4 { color: var(--success-green); }
+
+        /* Quote block */
+        blockquote {
+            font-size: 1.3rem;
+            font-style: italic;
+            color: var(--algolia-gray);
+            border-left: 4px solid var(--algolia-purple);
+            padding-left: 25px;
+            margin: 30px 0;
+        }
+
+        blockquote cite {
+            display: block;
+            font-size: 1rem;
+            font-style: normal;
+            margin-top: 10px;
+            color: var(--algolia-dark);
+        }
+
+        /* Footer */
+        .page-footer {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            font-size: 0.85rem;
+            color: var(--algolia-gray);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* List styles */
+        ul, ol {
+            margin: 15px 0 15px 25px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page {
+                padding: 30px;
+            }
+            .section-header {
+                margin: -30px -30px 30px;
+                padding: 20px 30px;
+            }
+            .data-callout {
+                flex-direction: column;
+            }
+            .chart-row {
+                flex-direction: column;
+            }
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- COVER PAGE -->
+<div class="page cover">
+    <svg class="logo" viewBox="0 0 200 50" fill="white">
+        <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-size="24" font-weight="700">algolia</text>
+    </svg>
+    <h1>Arian</h1>
+    <h2>A Data-Driven Sales Machinery for Partner-Led GTM</h2>
+    <p class="meta">
+        GTM Strategy Proposal<br>
+        February 2026<br><br>
+        <strong>CONFIDENTIAL</strong>
+    </p>
+</div>
+
+<!-- EXECUTIVE SUMMARY -->
+<div class="page">
+    <div class="section-header">
+        <span class="section-number">01</span>
+        <h2>Executive Summary</h2>
+    </div>
+
+    <div class="highlight">
+        <h3>The Opportunity</h3>
+        <p>We have access to thousands of accounts using our partner technologies (Adobe, Amplience, Spryker). But which ones should we prioritize? This proposal introduces a <strong>data-driven cascading funnel</strong> that systematically identifies the highest-value accounts and assigns the right sales plays and campaigns.</p>
+    </div>
+
+    <h3>The Problem</h3>
+    <p>Traditional lead scoring treats all accounts equally. A SaaS company with high traffic scores the same as a Fashion retailer with high traffic. But our data shows Fashion delivers <strong>65% of all proof points</strong>. They are NOT equal.</p>
+
+    <h3>The Solution</h3>
+    <p>A four-layer cascading funnel that filters accounts through:</p>
+    <ol>
+        <li><strong>Partner Tech Cohort</strong> - What tech stack do they have?</li>
+        <li><strong>ICP Filter</strong> - Do they match our Ideal Customer Profile?</li>
+        <li><strong>Sales Play Intersection</strong> - What plays can we run?</li>
+        <li><strong>GTM Campaign</strong> - How do we engage?</li>
+    </ol>
+
+    <h3>The Result</h3>
+    <div class="data-callout">
+        <div class="data-card">
+            <div class="number">2,800</div>
+            <div class="label">Partner Tech Accounts</div>
+        </div>
+        <div class="data-card green">
+            <div class="number">~200</div>
+            <div class="label">JACKPOT Cohort</div>
+        </div>
+        <div class="data-card green">
+            <div class="number">~60</div>
+            <div class="label">ICP Tier 1</div>
+        </div>
+        <div class="data-card green">
+            <div class="number">10-15</div>
+            <div class="label">Triple Play (ABM 1:1)</div>
+        </div>
+    </div>
+
+    <p><strong>The 10-15 accounts that survive all filters are the crème de la crème.</strong> They get hyper-personalized ABM treatment and are most likely to close.</p>
+
+    <div class="page-footer">
+        <span>Arian Sales Machinery</span>
+        <span>Page 1</span>
+    </div>
+</div>
+
+<!-- THE DATA FOUNDATION -->
+<div class="page">
+    <div class="section-header">
+        <span class="section-number">02</span>
+        <h2>The Data Foundation</h2>
+    </div>
+
+    <p>This strategy is not theoretical. It's derived from <strong>actual customer evidence</strong>:</p>
+
+    <div class="data-callout">
+        <div class="data-card">
+            <div class="number">1,306</div>
+            <div class="label">Customer Logos</div>
+        </div>
+        <div class="data-card">
+            <div class="number">379</div>
+            <div class="label">Customer Quotes</div>
+        </div>
+        <div class="data-card">
+            <div class="number">82</div>
+            <div class="label">Customer Stories</div>
+        </div>
+        <div class="data-card">
+            <div class="number">81</div>
+            <div class="label">Proof Points</div>
+        </div>
+    </div>
+
+    <h3>Key Finding: Where Do Proof Points Come From?</h3>
+    <p>We analyzed all 81 quantified proof points (conversion uplift, revenue increase, etc.) to see which verticals deliver measurable results:</p>
+
+    <div class="chart-container">
+        <canvas id="proofPointsChart"></canvas>
+    </div>
+
+    <div class="insight">
+        <h4>The Data Says:</h4>
+        <p><strong>Fashion (65%) and Grocery (35%) account for 100% of proof points.</strong> No other vertical has quantified success metrics. This is not opinion—it's evidence.</p>
+    </div>
+
+    <h3>Customer Distribution by Vertical</h3>
+    <div class="chart-row">
+        <div class="chart-container">
+            <canvas id="logosChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="quotesChart"></canvas>
+        </div>
+    </div>
+
+    <div class="page-footer">
+        <span>Arian Sales Machinery</span>
+        <span>Page 2</span>
+    </div>
+</div>
+
+<!-- ICP VALIDATION -->
+<div class="page">
+    <div class="section-header">
+        <span class="section-number">03</span>
+        <h2>Data-Derived ICP</h2>
+    </div>
+
+    <p>Based on the evidence, we define our Ideal Customer Profile across six dimensions:</p>
+
+    <h3>ICP Dimensions & Scores</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Dimension</th>
+                <th>Tier 1 (Score: 100)</th>
+                <th>Tier 2 (Score: 70-85)</th>
+                <th>Tier 3 (Score: &lt;70)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Vertical (25%)</strong></td>
+                <td>Fashion, Grocery</td>
+                <td>General Retail, SaaS, B2B</td>
+                <td>Media, Healthcare, Education</td>
+            </tr>
+            <tr>
+                <td><strong>Competitor (20%)</strong></td>
+                <td>Elastic, Solr, SearchSpring</td>
+                <td>Klevu, Bloomreach, Constructor</td>
+                <td>Unknown, Native platform</td>
+            </tr>
+            <tr>
+                <td><strong>Size (15%)</strong></td>
+                <td>Enterprise ($500M+)</td>
+                <td>Mid-Market ($50M-500M)</td>
+                <td>SMB (&lt;$50M)</td>
+            </tr>
+            <tr>
+                <td><strong>Tech Stack (15%)</strong></td>
+                <td>SFCC, Magento, Shopify Plus</td>
+                <td>Commercetools, BigCommerce</td>
+                <td>Custom, Unknown</td>
+            </tr>
+            <tr>
+                <td><strong>Persona (15%)</strong></td>
+                <td>CTO, VP Engineering</td>
+                <td>Director E-Commerce</td>
+                <td>Manager, Individual</td>
+            </tr>
+            <tr>
+                <td><strong>Geography (10%)</strong></td>
+                <td>US, UK</td>
+                <td>EMEA, Australia</td>
+                <td>APAC, LATAM</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Traditional ICP vs. Data-Derived ICP</h3>
+    <div class="comparison">
+        <div class="comparison-card old">
+            <h4>Traditional ICP</h4>
+            <ul>
+                <li>"E-commerce, Media, SaaS"</li>
+                <li>No vertical specificity</li>
+                <li>Media in Tier 2</li>
+                <li>No geographic guidance</li>
+                <li>Technical buyers only</li>
+            </ul>
+            <p><strong>Match Rate: 63%</strong></p>
+        </div>
+        <div class="comparison-card new">
+            <h4>Data-Derived ICP</h4>
+            <ul>
+                <li><strong>Fashion (65%) + Grocery (35%)</strong></li>
+                <li>Specific sub-verticals</li>
+                <li>Media downgraded to Tier 3</li>
+                <li>US + EMEA = 85% of success</li>
+                <li>Technical + Business buyers</li>
+            </ul>
+            <p><strong>Based on 1,848 records</strong></p>
+        </div>
+    </div>
+
+    <h3>Persona Distribution (from 379 Quotes)</h3>
+    <div class="chart-container">
+        <canvas id="personaChart"></canvas>
+    </div>
+
+    <div class="page-footer">
+        <span>Arian Sales Machinery</span>
+        <span>Page 3</span>
+    </div>
+</div>
+
+<!-- LAYER 1: PARTNER TECH COHORT -->
+<div class="page">
+    <div class="section-header">
+        <span class="section-number">04</span>
+        <h2>Layer 1: Partner Tech Cohort</h2>
+    </div>
+
+    <p>The first filter classifies accounts by their tech stack. Accounts with multiple partner technologies signal enterprise-grade investment and higher deal potential.</p>
+
+    <div class="layer-box jackpot">
+        <div class="layer-header">
+            <div class="layer-number">1</div>
+            <div class="layer-title">JACKPOT: CMS + Commerce + Hyperscaler</div>
+        </div>
+        <p>Accounts using a CMS (Adobe AEM, Contentful, Amplience), a Commerce platform (SFCC, Magento, Shopify Plus), AND a Hyperscaler (AWS, Azure, GCP). These represent the most sophisticated tech stacks and highest deal potential.</p>
+    </div>
+
+    <h3>Cohort Hierarchy</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Cohort</th>
+                <th>Components</th>
+                <th>Score</th>
+                <th>Priority</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>CMS + Commerce + Hyperscaler</strong></td>
+                <td>AEM + SFCC + AWS</td>
+                <td>100</td>
+                <td><span class="badge badge-jackpot">JACKPOT</span></td>
+            </tr>
+            <tr>
+                <td><strong>CMS + Commerce + Marketing</strong></td>
+                <td>Contentful + Magento + SFMC</td>
+                <td>95</td>
+                <td><span class="badge badge-jackpot">JACKPOT</span></td>
+            </tr>
+            <tr>
+                <td><strong>CMS + Commerce</strong></td>
+                <td>Amplience + Shopify</td>
+                <td>85</td>
+                <td><span class="badge badge-high">HIGH</span></td>
+            </tr>
+            <tr>
+                <td><strong>Commerce + Marketing</strong></td>
+                <td>SFCC + Adobe Target</td>
+                <td>80</td>
+                <td><span class="badge badge-high">HIGH</span></td>
+            </tr>
+            <tr>
+                <td><strong>Commerce Only</strong></td>
+                <td>Shopify, SFCC, Magento</td>
+                <td>60</td>
+                <td><span class="badge badge-medium">STANDARD</span></td>
+            </tr>
+            <tr>
+                <td><strong>CMS Only</strong></td>
+                <td>Adobe AEM, Contentful</td>
+                <td>50</td>
+                <td><span class="badge badge-medium">STANDARD</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Why Focus on JACKPOT?</h3>
+    <div class="insight">
+        <h4>The Logic:</h4>
+        <ul>
+            <li><strong>Enterprise-grade investment</strong> - They've paid for expensive tools</li>
+            <li><strong>Complex stack</strong> - They value best-of-breed solutions (Algolia fits)</li>
+            <li><strong>Multiple decision-makers</strong> - Multi-threading opportunity</li>
+            <li><strong>High ACV potential</strong> - Complex deals = larger contracts</li>
+        </ul>
+    </div>
+
+    <h3>Expected Distribution</h3>
+    <div class="chart-container">
+        <canvas id="cohortChart"></canvas>
+    </div>
+
+    <div class="page-footer">
+        <span>Arian Sales Machinery</span>
+        <span>Page 4</span>
+    </div>
+</div>
+
+<!-- LAYER 2: ICP FILTER -->
+<div class="page">
+    <div class="section-header">
+        <span class="section-number">05</span>
+        <h2>Layer 2: ICP Filter</h2>
+    </div>
+
+    <p>Once we identify JACKPOT accounts, we apply the ICP filter to further prioritize based on vertical fit, competitor displacement opportunity, and other dimensions.</p>
+
+    <div class="layer-box">
+        <div class="layer-header">
+            <div class="layer-number">2</div>
+            <div class="layer-title">ICP Scoring Formula</div>
+        </div>
+        <pre style="background: #f8fafc; padding: 15px; border-radius: 8px; font-size: 0.95rem;">
+ICP_Score = (
+    Vertical × 0.25 +      // Fashion/Grocery = 100
+    Competitor × 0.20 +    // Elastic/Solr = 100
+    Size × 0.15 +          // Enterprise = 100
+    TechStack × 0.15 +     // SFCC/Magento = 90-100
+    Persona × 0.15 +       // CTO access = 100
+    Geography × 0.10       // US/UK = 100
+)
+        </pre>
+    </div>
+
+    <h3>ICP Tier Definitions</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Tier</th>
+                <th>Score Range</th>
+                <th>Characteristics</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="badge badge-tier1">Tier 1</span></td>
+                <td>85-100</td>
+                <td>Fashion/Grocery + Enterprise + US/EMEA + Elastic</td>
+                <td><strong>Advance to Layer 3</strong></td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-tier2">Tier 2</span></td>
+                <td>70-84</td>
+                <td>General Retail + Mid-Market + Known competitor</td>
+                <td>Nurture pipeline</td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-tier3">Tier 3</span></td>
+                <td>50-69</td>
+                <td>SaaS/B2B + Growth stage</td>
+                <td>Long-term</td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-low">Tier 4+</span></td>
+                <td>&lt;50</td>
+                <td>Weak fit</td>
+                <td>Deprioritize/Exclude</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Example: Scoring Under Armour</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Dimension</th>
+                <th>Value</th>
+                <th>Score</th>
+                <th>Weight</th>
+                <th>Weighted</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>Vertical</td><td>Fashion</td><td>100</td><td>0.25</td><td>25.0</td></tr>
+            <tr><td>Size</td><td>Enterprise ($5B+)</td><td>100</td><td>0.15</td><td>15.0</td></tr>
+            <tr><td>Geography</td><td>US</td><td>100</td><td>0.10</td><td>10.0</td></tr>
+            <tr><td>Tech Stack</td><td>SFCC</td><td>90</td><td>0.15</td><td>13.5</td></tr>
+            <tr><td>Competitor</td><td>Unknown</td><td>50</td><td>0.20</td><td>10.0</td></tr>
+            <tr><td>Persona</td><td>VP Digital</td><td>95</td><td>0.15</td><td>14.25</td></tr>
+            <tr style="background: #ECFDF5; font-weight: 600;">
+                <td colspan="4">TOTAL ICP SCORE</td>
+                <td>87.75</td>
+            </tr>
+        </tbody>
+    </table>
+    <p><strong>Result:</strong> ICP Tier 1 - Advances to Layer 3</p>
+
+    <div class="page-footer">
+        <span>Arian Sales Machinery</span>
+        <span>Page 5</span>
+    </div>
+</div>
+
+<!-- LAYER 3: SALES PLAY INTERSECTION -->
+<div class="page">
+    <div class="section-header">
+        <span class="section-number">06</span>
+        <h2>Layer 3: Sales Play Intersection</h2>
+    </div>
+
+    <p>For ICP Tier 1 accounts, we apply the Sales Play filter. Accounts can be tagged with multiple plays, and intersections are the highest priority.</p>
+
+    <h3>The Three Sales Plays</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Play</th>
+                <th>Code</th>
+                <th>Definition</th>
+                <th>Source</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Tech Partner</strong></td>
+                <td>S1</td>
+                <td>Uses partner tech (Adobe, Amplience, Spryker)</td>
+                <td>BuiltWith, Crossbeam</td>
+            </tr>
+            <tr>
+                <td><strong>Target List</strong></td>
+                <td>S2</td>
+                <td>On marketing/ABM target list</td>
+                <td>CSV upload, Marketing</td>
+            </tr>
+            <tr>
+                <td><strong>SI Connected</strong></td>
+                <td>S3</td>
+                <td>Has relationship with SI partner (EPAM, Valtech)</td>
+                <td>Crossbeam, Manual</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>The Intersection Model</h3>
+    <div class="insight">
+        <h4>Key Insight:</h4>
+        <p>Accounts tagged with <strong>multiple plays</strong> are validated from multiple angles. The more plays, the higher the confidence.</p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Intersection</th>
+                <th>Plays</th>
+                <th>Priority</th>
+                <th>Multiplier</th>
+                <th>Campaign Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="background: #ECFDF5;">
+                <td><strong>Triple Play</strong></td>
+                <td>S1 + S2 + S3</td>
+                <td><span class="badge badge-jackpot">JACKPOT</span></td>
+                <td>1.5x</td>
+                <td><strong>ABM 1:1</strong></td>
+            </tr>
+            <tr>
+                <td><strong>Tech + Target</strong></td>
+                <td>S1 + S2</td>
+                <td><span class="badge badge-high">HIGH</span></td>
+                <td>1.25x</td>
+                <td>ABM 1:Few</td>
+            </tr>
+            <tr>
+                <td><strong>Target + SI</strong></td>
+                <td>S2 + S3</td>
+                <td><span class="badge badge-high">HIGH</span></td>
+                <td>1.25x</td>
+                <td>ABM 1:Few</td>
+            </tr>
+            <tr>
+                <td><strong>Tech + SI</strong></td>
+                <td>S1 + S3</td>
+                <td><span class="badge badge-medium">MEDIUM</span></td>
+                <td>1.25x</td>
+                <td>ABM 1:Few</td>
+            </tr>
+            <tr>
+                <td><strong>Single Play</strong></td>
+                <td>S1, S2, or S3</td>
+                <td><span class="badge badge-low">STANDARD</span></td>
+                <td>1.0x</td>
+                <td>ABM 1:Many</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Final Priority Calculation</h3>
+    <div class="layer-box">
+        <pre style="background: #f8fafc; padding: 15px; border-radius: 8px; font-size: 1rem;">
+Final Priority = ICP Score × Play Multiplier
+
+Example (Under Armour with S1+S2):
+Final Priority = 87.75 × 1.25 = <strong>109.7</strong>
+
+Example (Costco with S1+S2+S3):
+Final Priority = 92.0 × 1.5 = <strong>138.0</strong>
+        </pre>
+    </div>
+
+    <div class="page-footer">
+        <span>Arian Sales Machinery</span>
+        <span>Page 6</span>
+    </div>
+</div>
+
+<!-- LAYER 4: GTM CAMPAIGN -->
+<div class="page">
+    <div class="section-header">
+        <span class="section-number">07</span>
+        <h2>Layer 4: GTM Campaign</h2>
+    </div>
+
+    <p>The final layer assigns specific campaign treatments based on the account's position in the funnel.</p>
+
+    <h3>Campaign Types</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Campaign</th>
+                <th>Target Accounts</th>
+                <th>Approach</th>
+                <th>Resources</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="background: #ECFDF5;">
+                <td><strong>ABM 1:1</strong></td>
+                <td>10-15 (Triple Play + ICP Tier 1)</td>
+                <td>Hyper-personalized, executive engagement</td>
+                <td>Dedicated AE, custom research, SI intro</td>
+            </tr>
+            <tr>
+                <td><strong>ABM 1:Few</strong></td>
+                <td>25-40 (Double Play + ICP Tier 1)</td>
+                <td>Segment-based, vertical messaging</td>
+                <td>Shared AE, segment content</td>
+            </tr>
+            <tr>
+                <td><strong>ABM 1:Many</strong></td>
+                <td>50-100 (Single Play + ICP Tier 1)</td>
+                <td>Programmatic, automated sequences</td>
+                <td>SDR team, scaled outreach</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>ABM 1:1 Campaign Elements</h3>
+    <div class="flow-container">
+        <div class="flow-step">
+            <div class="icon">1</div>
+            <h5>Persona</h5>
+            <p>CTO + COO + VP Digital</p>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+            <div class="icon">2</div>
+            <h5>Job Profile</h5>
+            <p>Named executives from LinkedIn/ZoomInfo</p>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+            <div class="icon">3</div>
+            <h5>Messaging</h5>
+            <p>"Your stack is AI-ready"</p>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+            <div class="icon">4</div>
+            <h5>Channel</h5>
+            <p>Direct + LinkedIn + Executive Event</p>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+            <div class="icon">5</div>
+            <h5>Sequence</h5>
+            <p>8-touch, 45 days</p>
+        </div>
+    </div>
+
+    <h3>Proof Points by Persona</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Persona</th>
+                <th>Primary Message</th>
+                <th>Proof Points</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>CTO / Technical</strong></td>
+                <td>"Stop managing search infrastructure"</td>
+                <td>99.999% uptime, &lt;50ms latency, Elastic displacement</td>
+            </tr>
+            <tr>
+                <td><strong>COO / Operations</strong></td>
+                <td>"Small team, big results"</td>
+                <td>"You don't need a lot of people" - Zeeman</td>
+            </tr>
+            <tr>
+                <td><strong>VP Digital / E-Commerce</strong></td>
+                <td>"Conversion that compounds"</td>
+                <td>3-8% CVR uplift, 5-20% revenue increase</td>
+            </tr>
+            <tr>
+                <td><strong>Merchandising</strong></td>
+                <td>"AI does the work"</td>
+                <td>30-75% Black Friday growth, DRR ROI in 30 days</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="page-footer">
+        <span>Arian Sales Machinery</span>
+        <span>Page 7</span>
+    </div>
+</div>
+
+<!-- THE COMPLETE FUNNEL -->
+<div class="page">
+    <div class="section-header">
+        <span class="section-number">08</span>
+        <h2>The Complete Funnel</h2>
+    </div>
+
+    <h3>Visual: Cascading Funnel</h3>
+    <div class="funnel-container">
+        <div class="funnel-stage l1">
+            All Partner Tech Accounts
+            <span class="count">~2,800</span>
+        </div>
+        <div class="funnel-arrow">↓</div>
+        <div class="funnel-stage l2">
+            Layer 1: JACKPOT Cohort
+            <span class="count">~200 (7%)</span>
+        </div>
+        <div class="funnel-arrow">↓</div>
+        <div class="funnel-stage l3">
+            Layer 2: ICP Tier 1
+            <span class="count">~60 (2%)</span>
+        </div>
+        <div class="funnel-arrow">↓</div>
+        <div class="funnel-stage l4">
+            Layer 3: Triple Play
+            <span class="count">~15 (0.5%)</span>
+        </div>
+        <div class="funnel-arrow">↓</div>
+        <div class="funnel-stage l5">
+            Layer 4: ABM 1:1 Campaign
+            <span class="count">10-15 accounts</span>
+        </div>
+    </div>
+
+    <h3>Funnel Math</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Stage</th>
+                <th>Filter</th>
+                <th>Input</th>
+                <th>Output</th>
+                <th>% Remaining</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Raw</td>
+                <td>None</td>
+                <td>~2,800</td>
+                <td>2,800</td>
+                <td>100%</td>
+            </tr>
+            <tr>
+                <td>Layer 1</td>
+                <td>JACKPOT Cohort</td>
+                <td>2,800</td>
+                <td>~200</td>
+                <td>7%</td>
+            </tr>
+            <tr>
+                <td>Layer 2</td>
+                <td>ICP Tier 1</td>
+                <td>200</td>
+                <td>~60</td>
+                <td>2%</td>
+            </tr>
+            <tr>
+                <td>Layer 3</td>
+                <td>Triple Play</td>
+                <td>60</td>
+                <td>~15</td>
+                <td>0.5%</td>
+            </tr>
+            <tr style="background: #ECFDF5; font-weight: 600;">
+                <td>Final</td>
+                <td>ABM 1:1</td>
+                <td>15</td>
+                <td>10-15</td>
+                <td>0.4%</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="highlight">
+        <h3>The Result</h3>
+        <p>From 2,800 partner tech accounts, we systematically identify <strong>10-15 accounts</strong> that are the absolute highest priority. These accounts get hyper-personalized treatment and are most likely to convert to revenue.</p>
+    </div>
+
+    <div class="page-footer">
+        <span>Arian Sales Machinery</span>
+        <span>Page 8</span>
+    </div>
+</div>
+
+<!-- IMPLEMENTATION PLAN -->
+<div class="page">
+    <div class="section-header">
+        <span class="section-number">09</span>
+        <h2>Implementation Plan</h2>
+    </div>
+
+    <h3>Phase 1: Data Foundation (Week 1-2)</h3>
+    <ul>
+        <li>Query BuiltWith for all partner tech accounts</li>
+        <li>Classify each into cohort (JACKPOT/HIGH/MEDIUM/STANDARD/LOW)</li>
+        <li>Store cohort classification in database</li>
+        <li>Build dashboard showing cohort distribution</li>
+    </ul>
+
+    <h3>Phase 2: ICP Scoring (Week 2-3)</h3>
+    <ul>
+        <li>For JACKPOT accounts, extract ICP dimensions (vertical, size, geography, etc.)</li>
+        <li>Calculate composite ICP score</li>
+        <li>Assign ICP tier</li>
+        <li>Dashboard: Show ICP tier distribution within JACKPOT</li>
+    </ul>
+
+    <h3>Phase 3: Play Tagging (Week 3-4)</h3>
+    <ul>
+        <li>Tag accounts with plays (S1 from BuiltWith, S2 from marketing, S3 from Crossbeam)</li>
+        <li>Calculate intersection</li>
+        <li>Apply play multiplier</li>
+        <li>Dashboard: Show play intersection matrix</li>
+    </ul>
+
+    <h3>Phase 4: Campaign Execution (Week 4+)</h3>
+    <ul>
+        <li>Assign campaign type based on priority</li>
+        <li>Generate persona/job profile targets</li>
+        <li>Create messaging templates</li>
+        <li>Set up sequences in outreach tool</li>
+        <li>Track engagement and conversion</li>
+    </ul>
+
+    <h3>Success Metrics</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Metric</th>
+                <th>Target</th>
+                <th>Measurement</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>JACKPOT accounts identified</td>
+                <td>150-250</td>
+                <td>Cohort classification complete</td>
+            </tr>
+            <tr>
+                <td>ICP Tier 1 accounts</td>
+                <td>50-80</td>
+                <td>ICP scoring complete</td>
+            </tr>
+            <tr>
+                <td>Triple Play accounts</td>
+                <td>10-20</td>
+                <td>Play tagging complete</td>
+            </tr>
+            <tr>
+                <td>ABM 1:1 response rate</td>
+                <td>&gt;15%</td>
+                <td>Outreach tracking</td>
+            </tr>
+            <tr>
+                <td>Pipeline generated</td>
+                <td>$X M</td>
+                <td>Salesforce</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="page-footer">
+        <span>Arian Sales Machinery</span>
+        <span>Page 9</span>
+    </div>
+</div>
+
+<!-- SUMMARY -->
+<div class="page">
+    <div class="section-header">
+        <span class="section-number">10</span>
+        <h2>Summary & Recommendation</h2>
+    </div>
+
+    <h3>What We're Proposing</h3>
+    <p>A <strong>four-layer cascading funnel</strong> that transforms thousands of partner tech accounts into a focused list of the highest-priority opportunities:</p>
+
+    <ol>
+        <li><strong>Layer 1: Partner Tech Cohort</strong> - Filter by tech stack complexity (JACKPOT = CMS + Commerce + Hyperscaler)</li>
+        <li><strong>Layer 2: ICP Filter</strong> - Score against data-derived ICP (Fashion/Grocery + Enterprise + Elastic displacement)</li>
+        <li><strong>Layer 3: Sales Play Intersection</strong> - Apply play multipliers (Triple Play = S1 + S2 + S3)</li>
+        <li><strong>Layer 4: GTM Campaign</strong> - Assign ABM treatment (1:1, 1:Few, 1:Many)</li>
+    </ol>
+
+    <h3>Why This Approach</h3>
+    <div class="comparison">
+        <div class="comparison-card old">
+            <h4>Without This Machinery</h4>
+            <ul>
+                <li>2,800 accounts treated equally</li>
+                <li>Spray-and-pray outreach</li>
+                <li>Low response rates</li>
+                <li>Wasted AE time</li>
+                <li>Unclear prioritization</li>
+            </ul>
+        </div>
+        <div class="comparison-card new">
+            <h4>With This Machinery</h4>
+            <ul>
+                <li>10-15 accounts get ABM 1:1</li>
+                <li>Data-driven prioritization</li>
+                <li>Higher response rates</li>
+                <li>Focused AE effort</li>
+                <li>Clear pipeline stages</li>
+            </ul>
+        </div>
+    </div>
+
+    <h3>The Ask</h3>
+    <div class="highlight">
+        <p>We request approval to implement this sales machinery as the foundation for Arian. The approach is:</p>
+        <ul style="color: white; margin-top: 15px;">
+            <li><strong>Data-driven</strong> - Based on 1,848 customer evidence records</li>
+            <li><strong>Systematic</strong> - Four clear layers with defined filters</li>
+            <li><strong>Scalable</strong> - Can be automated and repeated</li>
+            <li><strong>Measurable</strong> - Clear metrics at each stage</li>
+        </ul>
+    </div>
+
+    <blockquote>
+        "We are not scoring leads. We are building a sales machine. The accounts that survive all four layers are the crème de la crème. They get our best effort. They are most likely to close."
+    </blockquote>
+
+    <div class="page-footer">
+        <span>Arian Sales Machinery</span>
+        <span>Page 10</span>
+    </div>
+</div>
+
+<!-- APPENDIX: DATA TABLES -->
+<div class="page">
+    <div class="section-header">
+        <span class="section-number">A</span>
+        <h2>Appendix: Data Tables</h2>
+    </div>
+
+    <h3>A.1 Proof Points by Industry (N=81)</h3>
+    <table>
+        <thead>
+            <tr><th>Industry</th><th>Count</th><th>%</th><th>ICP Score</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><strong>Fashion</strong></td><td>53</td><td>65.4%</td><td>100</td></tr>
+            <tr><td><strong>Grocery</strong></td><td>28</td><td>34.6%</td><td>95</td></tr>
+            <tr><td>SaaS</td><td>0</td><td>0%</td><td>70</td></tr>
+            <tr><td>Media</td><td>0</td><td>0%</td><td>40</td></tr>
+        </tbody>
+    </table>
+
+    <h3>A.2 Customer Logos by Vertical (N=1,306)</h3>
+    <table>
+        <thead>
+            <tr><th>Vertical</th><th>Count</th><th>%</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>E-Commerce (General)</td><td>470</td><td>36.0%</td></tr>
+            <tr><td>E-Commerce (Fashion)</td><td>143</td><td>10.9%</td></tr>
+            <tr><td>B2B E-Commerce</td><td>134</td><td>10.3%</td></tr>
+            <tr><td>SaaS / Tech</td><td>102</td><td>7.8%</td></tr>
+            <tr><td>Media / Publishing</td><td>72</td><td>5.5%</td></tr>
+            <tr><td>E-Commerce (Grocery)</td><td>46</td><td>3.5%</td></tr>
+        </tbody>
+    </table>
+
+    <h3>A.3 Top Competitor Displacements (N=167)</h3>
+    <table>
+        <thead>
+            <tr><th>Competitor</th><th>Count</th><th>ICP Score</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><strong>Elasticsearch / Elastic</strong></td><td>67</td><td>100</td></tr>
+            <tr><td><strong>Solr</strong></td><td>23</td><td>95</td></tr>
+            <tr><td><strong>SearchSpring</strong></td><td>19</td><td>90</td></tr>
+            <tr><td>Klevu</td><td>12</td><td>85</td></tr>
+            <tr><td>Bloomreach</td><td>8</td><td>80</td></tr>
+            <tr><td>Constructor</td><td>8</td><td>80</td></tr>
+        </tbody>
+    </table>
+
+    <h3>A.4 Geography Distribution (N=379 quotes)</h3>
+    <table>
+        <thead>
+            <tr><th>Country</th><th>Count</th><th>%</th><th>ICP Score</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><strong>United States</strong></td><td>126</td><td>33.2%</td><td>100</td></tr>
+            <tr><td><strong>United Kingdom</strong></td><td>47</td><td>12.4%</td><td>95</td></tr>
+            <tr><td>Netherlands</td><td>22</td><td>5.8%</td><td>85</td></tr>
+            <tr><td>Australia</td><td>22</td><td>5.8%</td><td>85</td></tr>
+            <tr><td>France</td><td>18</td><td>4.7%</td><td>80</td></tr>
+            <tr><td>Germany</td><td>11</td><td>2.9%</td><td>75</td></tr>
+        </tbody>
+    </table>
+
+    <div class="page-footer">
+        <span>Arian Sales Machinery</span>
+        <span>Appendix A</span>
+    </div>
+</div>
+
+<!-- Charts JavaScript -->
+<script>
+    // Proof Points Chart
+    new Chart(document.getElementById('proofPointsChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Fashion (65%)', 'Grocery (35%)'],
+            datasets: [{
+                data: [65, 35],
+                backgroundColor: ['#003DFF', '#5468FF'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Proof Points by Industry (N=81)',
+                    font: { size: 16, weight: 'bold' }
+                },
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    // Logos Chart
+    new Chart(document.getElementById('logosChart'), {
+        type: 'bar',
+        data: {
+            labels: ['E-Comm General', 'Fashion', 'B2B', 'SaaS', 'Media', 'Grocery'],
+            datasets: [{
+                label: 'Customer Logos',
+                data: [470, 143, 134, 102, 72, 46],
+                backgroundColor: '#003DFF'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Logos by Vertical (N=1,306)',
+                    font: { size: 14, weight: 'bold' }
+                },
+                legend: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    // Quotes Chart
+    new Chart(document.getElementById('quotesChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Retail', 'SaaS', 'B2B', 'Media', 'Marketplace'],
+            datasets: [{
+                label: 'Customer Quotes',
+                data: [202, 56, 31, 18, 6],
+                backgroundColor: '#5468FF'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Quotes by Industry (N=379)',
+                    font: { size: 14, weight: 'bold' }
+                },
+                legend: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    // Persona Chart
+    new Chart(document.getElementById('personaChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Manager/Lead', 'C-Level Tech', 'Engineering', 'Head of/Lead', 'C-Level Exec', 'Founder', 'Marketing', 'Product'],
+            datasets: [{
+                label: 'Quotes',
+                data: [91, 87, 50, 30, 25, 24, 14, 9],
+                backgroundColor: ['#003DFF', '#003DFF', '#5468FF', '#5468FF', '#94A3B8', '#94A3B8', '#CBD5E1', '#CBD5E1']
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Persona Distribution (N=379)',
+                    font: { size: 16, weight: 'bold' }
+                },
+                legend: { display: false }
+            },
+            scales: {
+                x: { beginAtZero: true }
+            }
+        }
+    });
+
+    // Cohort Chart
+    new Chart(document.getElementById('cohortChart'), {
+        type: 'pie',
+        data: {
+            labels: ['JACKPOT (7%)', 'HIGH (18%)', 'MEDIUM (22%)', 'STANDARD (33%)', 'LOW (20%)'],
+            datasets: [{
+                data: [7, 18, 22, 33, 20],
+                backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#6B7280', '#CBD5E1']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Expected Cohort Distribution',
+                    font: { size: 16, weight: 'bold' }
+                },
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

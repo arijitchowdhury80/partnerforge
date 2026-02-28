@@ -1,0 +1,8 @@
+# Documentation Ignore File
+# Files and directories listed here should NOT be published to the documentation site
+
+# Internal system documentation
+system/
+
+# Any README files (typically navigation, not content)
+README.md

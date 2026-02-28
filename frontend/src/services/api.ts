@@ -1,5 +1,5 @@
 /**
- * PartnerForge API Service
+ * Arian API Service
  *
  * Now powered by Supabase
  */
@@ -90,7 +90,7 @@ export async function getHealth(): Promise<{
 
   return {
     status: error ? 'unhealthy' : 'healthy',
-    app: 'PartnerForge',
+    app: 'Arian',
     version: '3.0.0-supabase',
     database: { status: error ? 'error' : 'connected', latency_ms: latency },
   };

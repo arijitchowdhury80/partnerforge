@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PartnerForge: Company Intelligence Enrichment
+Arian: Company Intelligence Enrichment
 
 Enriches a target company with:
 - Financial data (3-year trends via Yahoo Finance)
@@ -24,7 +24,7 @@ import argparse
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 
-DB_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/PartnerForge/data/partnerforge.db"
+DB_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/Arian/data/arian.db"
 
 # Signal weights for priority scoring
 SIGNAL_WEIGHTS = {

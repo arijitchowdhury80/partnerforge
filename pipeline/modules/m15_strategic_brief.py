@@ -332,7 +332,7 @@ class M15StrategicBrief(BaseModule):
             # Create primary citation
             primary_citation = self._create_citation(
                 source_type=SourceType.MANUAL_ENTRY,
-                source_url=f"https://partnerforge.internal/brief/{domain}",
+                source_url=f"https://arian.internal/brief/{domain}",
                 api_endpoint="strategic_brief",
                 confidence=0.9,
                 notes=f"Strategic brief for {company_name}, Priority: {priority_status}",

@@ -39,6 +39,7 @@ import {
   IconTargetArrow,
 } from '@tabler/icons-react';
 import { COLORS } from '../lib/constants';
+import { GalaxyBackground } from '../components/common/GalaxyBackground';
 import {
   getCompanies,
   getGalaxySummary,
@@ -86,6 +87,16 @@ const SALES_PLAY_COLORS: Record<SalesPlay, string> = {
   DISPLACEMENT: '#ef4444',
   GREENFIELD: '#10b981',
 };
+
+// User's preferred search competitors to display
+const PREFERRED_SEARCH_COMPETITORS = [
+  'Elastic',
+  'Bloomreach',
+  'Constructor',
+  'Coveo',
+  'SearchSpring',
+  'Yext',
+];
 
 // Glassmorphism style for cards - more opaque for readability
 const GLASS_STYLE: React.CSSProperties = {
@@ -136,24 +147,24 @@ function GalaxyCard({ galaxy, data, onFilterClick }: GalaxyCardProps) {
       </Group>
 
       <Stack gap={8}>
-        {data.slice(0, 5).map((item) => (
+        {data.slice(0, galaxy === 'search' ? 6 : 5).map((item) => (
           <Group
             key={item.tech}
             justify="space-between"
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', opacity: item.company_count === 0 ? 0.5 : 1 }}
             onClick={() => onFilterClick(item.tech)}
           >
             <Text size="md" c="white">{item.tech}</Text>
             <Group gap="xs">
-              <Badge size="md" variant="light">
+              <Badge size="md" variant="light" color={item.company_count === 0 ? 'gray' : undefined}>
                 {item.company_count.toLocaleString()}
               </Badge>
             </Group>
           </Group>
         ))}
-        {data.length > 5 && (
+        {data.length > (galaxy === 'search' ? 6 : 5) && (
           <Text size="sm" c="gray.3" ta="center">
-            +{data.length - 5} more
+            +{data.length - (galaxy === 'search' ? 6 : 5)} more
           </Text>
         )}
       </Stack>
@@ -168,8 +179,8 @@ interface CohortBadgeProps {
 function CohortBadge({ cohort }: CohortBadgeProps) {
   return (
     <Badge
-      size="sm"
-      style={{ backgroundColor: COHORT_COLORS[cohort], color: 'white' }}
+      size="lg"
+      style={{ backgroundColor: COHORT_COLORS[cohort], color: 'white', fontSize: 14, padding: '8px 12px' }}
     >
       {cohort}
     </Badge>
@@ -183,9 +194,9 @@ interface SalesPlayBadgeProps {
 function SalesPlayBadge({ play }: SalesPlayBadgeProps) {
   return (
     <Badge
-      size="sm"
+      size="lg"
       variant="outline"
-      style={{ borderColor: SALES_PLAY_COLORS[play], color: SALES_PLAY_COLORS[play] }}
+      style={{ borderColor: SALES_PLAY_COLORS[play], color: SALES_PLAY_COLORS[play], fontSize: 14, padding: '8px 12px' }}
     >
       {play}
     </Badge>
@@ -259,7 +270,19 @@ export function GalaxyExplorer() {
   const cmsData = galaxySummary.filter((s) => s.galaxy === 'cms');
   const commerceData = galaxySummary.filter((s) => s.galaxy === 'commerce');
   const martechData = galaxySummary.filter((s) => s.galaxy === 'martech');
-  const searchData = galaxySummary.filter((s) => s.galaxy === 'search');
+  const rawSearchData = galaxySummary.filter((s) => s.galaxy === 'search');
+
+  // Build search data with user's preferred 6 competitors (show 0 if not in DB)
+  const searchData: GalaxySummary[] = PREFERRED_SEARCH_COMPETITORS.map((tech) => {
+    const found = rawSearchData.find((s) => s.tech.toLowerCase() === tech.toLowerCase());
+    return found || {
+      galaxy: 'search',
+      tech,
+      company_count: 0,
+      displacement_count: 0,
+      greenfield_count: 0,
+    };
+  });
 
   // Build filter options from tech_options
   const cmsOptions = techOptions
@@ -290,38 +313,9 @@ export function GalaxyExplorer() {
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
   return (
-    <Box pos="relative" style={{ minHeight: '100vh' }}>
-      {/* Galaxy Background Image */}
-      <Box
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          zIndex: 0,
-          overflow: 'hidden',
-          backgroundImage: 'url(/images/milky-way.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-        }}
-      >
-        {/* Dark overlay for better readability */}
-        <Box
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            background: 'linear-gradient(180deg, rgba(15,23,42,0.4) 0%, rgba(15,23,42,0.75) 100%)',
-          }}
-        />
-      </Box>
-
+    <GalaxyBackground>
       {/* Content */}
-      <Container size="xl" py="md" pos="relative" style={{ zIndex: 1 }}>
+      <Container size="xl" py="md">
       {/* Header */}
       <Group justify="space-between" mb="xl">
         <div>
@@ -460,7 +454,7 @@ export function GalaxyExplorer() {
       {/* Results */}
       <Paper p="lg" radius="md" className="galaxy-glass-panel">
         <Group justify="space-between" mb="md">
-          <Text size="md" c="gray.3">
+          <Text style={{ fontSize: 18, color: '#94a3b8' }}>
             Showing {((page - 1) * ITEMS_PER_PAGE) + 1}-{Math.min(page * ITEMS_PER_PAGE, totalCount)} of{' '}
             {totalCount.toLocaleString()} companies
           </Text>
@@ -475,10 +469,33 @@ export function GalaxyExplorer() {
             <Text c="gray.3">No companies found. Run the migration and import data.</Text>
           </Center>
         ) : (
-          <Table striped highlightOnHover styles={{
-            th: { color: 'white', borderColor: 'rgba(255,255,255,0.1)' },
-            td: { borderColor: 'rgba(255,255,255,0.1)' },
-            tr: { '&[data-striped]': { backgroundColor: 'rgba(255,255,255,0.05)' } },
+          <Table highlightOnHover styles={{
+            table: { borderCollapse: 'separate', borderSpacing: '0 6px' },
+            thead: {
+              tr: { backgroundColor: 'rgba(15, 23, 42, 0.95)' }
+            },
+            th: {
+              color: '#94a3b8',
+              fontWeight: 600,
+              fontSize: 16,
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
+              borderBottom: '1px solid rgba(255,255,255,0.15)',
+              padding: '16px 20px',
+            },
+            tbody: {
+              tr: {
+                backgroundColor: 'rgba(30, 41, 59, 0.7)',
+                transition: 'background-color 0.15s ease',
+                '&:hover': { backgroundColor: 'rgba(51, 65, 85, 0.9)' },
+              }
+            },
+            td: {
+              borderBottom: 'none',
+              padding: '16px 20px',
+              color: 'white',
+              fontSize: 16,
+            },
           }}>
             <Table.Thead>
               <Table.Tr>
@@ -496,47 +513,47 @@ export function GalaxyExplorer() {
               {companies.map((company) => (
                 <Table.Tr key={company.domain}>
                   <Table.Td>
-                    <Text size="md" fw={500} c="white">
+                    <Text style={{ fontSize: 18, fontWeight: 500, color: 'white' }}>
                       {company.domain}
                     </Text>
                   </Table.Td>
                   <Table.Td>
-                    <Text size="md" c="gray.3">{company.company_name || '—'}</Text>
+                    <Text style={{ fontSize: 18, color: '#94a3b8' }}>{company.company_name || '—'}</Text>
                   </Table.Td>
                   <Table.Td>
                     {company.cms_tech ? (
-                      <Badge size="sm" variant="light" color="violet">
+                      <Badge size="lg" variant="light" color="violet" style={{ fontSize: 14, padding: '8px 12px' }}>
                         {company.cms_tech}
                       </Badge>
                     ) : (
-                      <Text size="sm" c="gray.4">—</Text>
+                      <Text style={{ fontSize: 16, color: '#64748b' }}>—</Text>
                     )}
                   </Table.Td>
                   <Table.Td>
                     {company.commerce_tech ? (
-                      <Badge size="sm" variant="light" color="blue">
+                      <Badge size="lg" variant="light" color="blue" style={{ fontSize: 14, padding: '8px 12px' }}>
                         {company.commerce_tech}
                       </Badge>
                     ) : (
-                      <Text size="sm" c="gray.4">—</Text>
+                      <Text style={{ fontSize: 16, color: '#64748b' }}>—</Text>
                     )}
                   </Table.Td>
                   <Table.Td>
                     {company.martech_tech ? (
-                      <Badge size="sm" variant="light" color="teal">
+                      <Badge size="lg" variant="light" color="teal" style={{ fontSize: 14, padding: '8px 12px' }}>
                         {company.martech_tech}
                       </Badge>
                     ) : (
-                      <Text size="sm" c="gray.4">—</Text>
+                      <Text style={{ fontSize: 16, color: '#64748b' }}>—</Text>
                     )}
                   </Table.Td>
                   <Table.Td>
                     {company.search_tech ? (
-                      <Badge size="sm" variant="light" color="orange">
+                      <Badge size="lg" variant="light" color="orange" style={{ fontSize: 14, padding: '8px 12px' }}>
                         {company.search_tech}
                       </Badge>
                     ) : (
-                      <Text size="sm" c="gray.4">—</Text>
+                      <Text style={{ fontSize: 16, color: '#64748b' }}>—</Text>
                     )}
                   </Table.Td>
                   <Table.Td>
@@ -564,7 +581,7 @@ export function GalaxyExplorer() {
         )}
       </Paper>
       </Container>
-    </Box>
+    </GalaxyBackground>
   );
 }
 

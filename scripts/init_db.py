@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PartnerForge Database Initialization Script
+Arian Database Initialization Script
 
 Initializes the PostgreSQL database with all required tables and indexes.
 Can be run standalone or as part of the setup process.
@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 
 SCHEMA_SQL = """
 -- =============================================================================
--- PartnerForge Database Schema
+-- Arian Database Schema
 -- =============================================================================
 -- Version: 3.0.0
 -- Database: PostgreSQL 15+
@@ -661,11 +661,11 @@ def get_database_url() -> str:
 
     if not url:
         # Try to construct from individual vars
-        user = os.getenv("POSTGRES_USER", "partnerforge")
-        password = os.getenv("POSTGRES_PASSWORD", "partnerforge_dev_password")
+        user = os.getenv("POSTGRES_USER", "arian")
+        password = os.getenv("POSTGRES_PASSWORD", "arian_dev_password")
         host = os.getenv("POSTGRES_HOST", "localhost")
         port = os.getenv("POSTGRES_PORT", "5432")
-        db = os.getenv("POSTGRES_DB", "partnerforge")
+        db = os.getenv("POSTGRES_DB", "arian")
         url = f"postgresql://{user}:{password}@{host}:{port}/{db}"
 
     return url
@@ -677,7 +677,7 @@ def get_database_url() -> str:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Initialize PartnerForge database"
+        description="Initialize Arian database"
     )
     parser.add_argument(
         "--drop-existing",

@@ -2,7 +2,7 @@
 Base Intelligence Module
 ========================
 
-Abstract base class for all 15 intelligence modules in PartnerForge.
+Abstract base class for all 15 intelligence modules in Arian.
 
 Key Requirements:
 - Every module MUST return ModuleResult with SourceCitation attached (P0)
@@ -246,7 +246,7 @@ class ModuleResult(BaseModel):
         # Create a placeholder citation for error results
         placeholder_citation = SourceCitation(
             source_type=SourceType.MANUAL_ENTRY,
-            source_url=f"https://partnerforge.internal/error/{module_id}/{domain}",
+            source_url=f"https://arian.internal/error/{module_id}/{domain}",
             retrieved_at=datetime.utcnow(),
             notes=f"Error placeholder: {str(error)[:200]}",
             confidence_score=0.0,

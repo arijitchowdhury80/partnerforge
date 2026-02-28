@@ -1,4 +1,4 @@
-# PartnerForge CI/CD Pipeline
+# Arian CI/CD Pipeline
 # Runs tests, builds Docker image, and deploys to Railway
 
 name: CI/CD Pipeline
@@ -25,9 +25,9 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_USER: partnerforge
+          POSTGRES_USER: arian
           POSTGRES_PASSWORD: test_password
-          POSTGRES_DB: partnerforge_test
+          POSTGRES_DB: arian_test
         ports:
           - 5432:5432
         options: >-
@@ -64,7 +64,7 @@ jobs:
 
       - name: Run tests
         env:
-          DATABASE_URL: postgresql://partnerforge:test_password@localhost:5432/partnerforge_test
+          DATABASE_URL: postgresql://arian:test_password@localhost:5432/arian_test
           REDIS_URL: redis://localhost:6379
           BUILTWITH_API_KEY: ${{ secrets.BUILTWITH_API_KEY }}
           SIMILARWEB_API_KEY: ${{ secrets.SIMILARWEB_API_KEY }}
@@ -126,7 +126,7 @@ jobs:
         with:
           context: .
           push: false
-          tags: partnerforge:${{ github.sha }}
+          tags: arian:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -140,7 +140,7 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     environment:
       name: production
-      url: https://partnerforge.up.railway.app
+      url: https://arian.up.railway.app
 
     steps:
       - name: Checkout code
@@ -152,7 +152,7 @@ jobs:
       - name: Deploy to Railway
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: railway up --service partnerforge-api
+        run: railway up --service arian-api
 
       - name: Notify deployment
         if: success()
@@ -169,7 +169,7 @@ jobs:
     if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
     environment:
       name: staging
-      url: https://partnerforge-staging.up.railway.app
+      url: https://arian-staging.up.railway.app
 
     steps:
       - name: Checkout code
@@ -181,7 +181,7 @@ jobs:
       - name: Deploy to Railway Staging
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN_STAGING }}
-        run: railway up --service partnerforge-api-staging
+        run: railway up --service arian-api-staging
 
   # ===========================================================================
   # Database Migration

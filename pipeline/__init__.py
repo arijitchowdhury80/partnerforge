@@ -1,5 +1,5 @@
 """
-PartnerForge Data Pipeline
+Arian Data Pipeline
 ==========================
 
 Enterprise-grade enrichment pipeline for ABM intelligence gathering.

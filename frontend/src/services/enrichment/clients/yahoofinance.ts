@@ -328,10 +328,10 @@ export class YahooFinanceClient {
         modules: ['summaryProfile', 'financialData', 'defaultKeyStatistics', 'price'],
       });
 
-      const profile = result.summaryProfile || {};
-      const financial = result.financialData || {};
-      const keyStats = result.defaultKeyStatistics || {};
-      const price = result.price || {};
+      const profile = (result.summaryProfile || {}) as any;
+      const financial = (result.financialData || {}) as any;
+      const keyStats = (result.defaultKeyStatistics || {}) as any;
+      const price = (result.price || {}) as any;
 
       return {
         ticker,
@@ -512,8 +512,8 @@ export class YahooFinanceClient {
         modules: ['recommendationTrend', 'financialData'],
       });
 
-      const trend = result.recommendationTrend?.trend?.[0] || {};
-      const financial = result.financialData || {};
+      const trend = (result.recommendationTrend?.trend?.[0] || {}) as any;
+      const financialData = (result.financialData || {}) as any;
 
       return {
         strong_buy: trend.strongBuy || 0,
@@ -522,9 +522,9 @@ export class YahooFinanceClient {
         sell: trend.sell || 0,
         strong_sell: trend.strongSell || 0,
         mean_rating: 0,
-        target_mean_price: financial.targetMeanPrice || 0,
-        target_high_price: financial.targetHighPrice || 0,
-        target_low_price: financial.targetLowPrice || 0,
+        target_mean_price: financialData.targetMeanPrice || 0,
+        target_high_price: financialData.targetHighPrice || 0,
+        target_low_price: financialData.targetLowPrice || 0,
         recent_changes: [],
       };
     } catch (error) {

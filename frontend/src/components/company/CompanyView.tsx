@@ -128,7 +128,7 @@ const generateMockModuleData = (overview: Record<string, { status: string; last_
         freshness: status.last_updated ? 'fresh' : undefined,
       },
       source: status.last_updated ? {
-        url: `https://api.partnerforge.com/intel/${config.id}`,
+        url: `https://api.arian.com/intel/${config.id}`,
         date: status.last_updated,
         type: 'api',
       } : undefined,

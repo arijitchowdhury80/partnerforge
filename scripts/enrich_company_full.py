@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PartnerForge: Full Company Enrichment Pipeline
+Arian: Full Company Enrichment Pipeline
 
 Pipeline:
 1. BuiltWith → Get company tech stack
@@ -288,7 +288,7 @@ def enrich_company(domain: str) -> dict:
     print(f"   Competitors using Algolia: {enrichment['competitors'].get('algolia_competitors', [])}")
 
     # Save to local JSON as backup (Supabase writes need service_role key)
-    output_dir = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/PartnerForge/data/enrichments"
+    output_dir = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/Arian/data/enrichments"
     import os
     os.makedirs(output_dir, exist_ok=True)
     output_file = f"{output_dir}/{domain.replace('.', '_')}.json"
@@ -313,7 +313,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    print("🚀 PartnerForge: Full Enrichment Pipeline")
+    print("🚀 Arian: Full Enrichment Pipeline")
     print(f"   BuiltWith API: {BUILTWITH_API_KEY[:8]}...")
     print(f"   SimilarWeb API: {SIMILARWEB_API_KEY[:8]}...")
 

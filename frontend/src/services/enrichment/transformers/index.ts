@@ -2,7 +2,7 @@
  * Enrichment Data Transformers
  *
  * Transforms raw API data from SimilarWeb and BuiltWith into
- * the normalized types used throughout PartnerForge.
+ * the normalized types used throughout Arian.
  *
  * @module transformers
  */

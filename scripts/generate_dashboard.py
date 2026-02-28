@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PartnerForge: Enhanced Dashboard Generator v3.0
+Arian: Enhanced Dashboard Generator v3.0
 
 Generates an interactive dashboard with:
 - Live search/filtering
@@ -20,8 +20,8 @@ import sqlite3
 import json
 from datetime import datetime
 
-DB_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/PartnerForge/data/partnerforge.db"
-OUTPUT_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/PartnerForge/index.html"
+DB_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/Arian/data/arian.db"
+OUTPUT_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/Arian/index.html"
 
 def fetch_data():
     """Fetch all data from SQLite."""
@@ -235,7 +235,7 @@ def generate_html(data):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PartnerForge | Executive Dashboard</title>
+    <title>Arian | Executive Dashboard</title>
     <style>
         * {{ margin: 0; padding: 0; box-sizing: border-box; }}
 
@@ -1207,7 +1207,7 @@ def generate_html(data):
 </head>
 <body>
     <div class="header">
-        <h1>📊 PartnerForge</h1>
+        <h1>📊 Arian</h1>
         <div class="subtitle">Partner Intelligence Platform for Algolia Sales</div>
         <div class="date">Executive Dashboard | {date_str}</div>
     </div>
@@ -1374,14 +1374,14 @@ def generate_html(data):
         <div class="section" style="background: #f0fdf4; border: 2px solid #10b981;">
             <h2 style="color: #166534;">💾 Data Persistence</h2>
             <p style="color: #166534; font-size: 1.05em;">
-                All data is cached in <strong>SQLite database</strong> (partnerforge.db).
+                All data is cached in <strong>SQLite database</strong> (arian.db).
                 API calls are only made once per company, then stored locally. This saves BuiltWith/SimilarWeb credits.
             </p>
         </div>
     </div>
 
     <footer>
-        <p><strong>PartnerForge v2.0</strong> | Partner Intelligence Platform | Built with Claude Code</p>
+        <p><strong>Arian v2.0</strong> | Partner Intelligence Platform | Built with Claude Code</p>
     </footer>
 
     <!-- Full-Page Company Detail View -->
@@ -2014,7 +2014,7 @@ def generate_html(data):
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `partnerforge_targets_${{new Date().toISOString().split('T')[0]}}.csv`;
+            a.download = `arian_targets_${{new Date().toISOString().split('T')[0]}}.csv`;
             a.click();
             URL.revokeObjectURL(url);
         }}
@@ -2357,7 +2357,7 @@ def generate_html(data):
 
 
 def main():
-    print("🔧 Generating enhanced PartnerForge dashboard...")
+    print("🔧 Generating enhanced Arian dashboard...")
 
     # Fetch data
     print("   📥 Fetching data from SQLite...")

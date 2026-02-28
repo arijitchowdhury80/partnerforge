@@ -22,7 +22,7 @@ const BUILTWITH_API_KEY = process.env.VITE_BUILTWITH_API_KEY;
 const JSEARCH_API_KEY = process.env.VITE_JSEARCH_API_KEY;
 
 console.log('='.repeat(60));
-console.log('PARTNERFORGE BATCH ENRICHMENT - AMPLIENCE CUSTOMERS');
+console.log('ARIAN BATCH ENRICHMENT - AMPLIENCE CUSTOMERS');
 console.log('='.repeat(60));
 console.log(`Supabase: ${SUPABASE_URL ? '✓' : '✗'}`);
 console.log(`SimilarWeb API: ${SIMILARWEB_API_KEY ? '✓' : '✗'}`);

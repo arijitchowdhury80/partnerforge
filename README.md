@@ -1,4 +1,4 @@
-# PartnerForge
+# Arian
 
 Partner Intelligence Platform for Algolia Sales. Finds companies using partner technologies (Adobe AEM, Shopify, Amplience, Spryker, etc.) who are NOT using Algolia — displacement opportunities for co-sell motions.
 
@@ -12,9 +12,9 @@ Displacement Targets = Companies Using Partner Tech − Existing Algolia Custome
 
 | Service | URL |
 |---------|-----|
-| **Frontend** | https://partnerforge.vercel.app |
+| **Frontend** | https://arian.vercel.app |
 | **Database** | Supabase (PostgreSQL + REST API) |
-| **Repository** | https://github.com/arijitchowdhury80/partnerforge |
+| **Repository** | https://github.com/arijitchowdhury80/arian |
 
 ## Architecture
 
@@ -26,7 +26,7 @@ Displacement Targets = Companies Using Partner Tech − Existing Algolia Custome
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                    Vercel (Frontend)                             │
-│                 partnerforge.vercel.app                          │
+│                 arian.vercel.app                          │
 │              React 18 + TypeScript + Mantine                     │
 └─────────────────────────────────────────────────────────────────┘
                               │
@@ -97,7 +97,7 @@ cd frontend && npm install && npm run dev
 ## Project Structure
 
 ```
-PartnerForge/
+Arian/
 ├── README.md                 # This file
 ├── PROJECT_TRACKER.md        # Project status and milestones
 ├── ARCHITECTURE.md           # Technical architecture

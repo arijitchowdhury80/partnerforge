@@ -288,7 +288,7 @@ function getColumnValue(company: Company, columnKey: string): string {
   const column = COLUMN_MAP.get(columnKey);
   if (!column) return '';
 
-  const rawValue = (company as Record<string, unknown>)[columnKey];
+  const rawValue = (company as unknown as Record<string, unknown>)[columnKey];
 
   // Use formatter if available
   if (column.formatter) {
@@ -366,7 +366,7 @@ export function exportToJSON(companies: Company[], options: ExportOptions): stri
  */
 export function generateFilename(
   format: ExportFormat,
-  prefix = 'partnerforge-export'
+  prefix = 'arian-export'
 ): string {
   // Sanitize prefix - replace invalid characters with dashes, lowercase
   const sanitizedPrefix = prefix

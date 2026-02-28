@@ -2,7 +2,7 @@
  * Traffic Data Transformer
  *
  * Transforms SimilarWeb API data into the TrafficData type
- * used throughout the PartnerForge application.
+ * used throughout the Arian application.
  */
 
 import type { TrafficData, TrafficSource, CountryTraffic } from '@/types';

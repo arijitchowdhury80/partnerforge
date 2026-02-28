@@ -133,7 +133,7 @@ export function ErrorNotification({
   );
 
   // Determine if retry should be disabled (rate limit with retryAfter)
-  const isRetryDisabled = error.type === 'rate_limit' && error.retryAfter && error.retryAfter > 0;
+  const isRetryDisabled = Boolean(error.type === 'rate_limit' && error.retryAfter && error.retryAfter > 0);
 
   return (
     <Alert

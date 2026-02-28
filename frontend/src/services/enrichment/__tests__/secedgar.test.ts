@@ -223,7 +223,7 @@ describe('SecEdgarClient', () => {
         expect.any(String),
         expect.objectContaining({
           headers: expect.objectContaining({
-            'User-Agent': expect.stringContaining('PartnerForge'),
+            'User-Agent': expect.stringContaining('Arian'),
           }),
         })
       );

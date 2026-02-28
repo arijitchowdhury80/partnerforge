@@ -2,7 +2,7 @@
 Source Citation Models (P0 Requirement)
 =======================================
 
-Every data point in PartnerForge MUST have a source citation.
+Every data point in Arian MUST have a source citation.
 This is a non-negotiable enterprise requirement for:
 - Audit trails
 - Data freshness validation
@@ -233,7 +233,7 @@ class SourcedDataPoint(BaseModel, Generic[T]):
     """
     Base class for all data points that must have source citations.
 
-    Every piece of data in PartnerForge extends this class to ensure
+    Every piece of data in Arian extends this class to ensure
     mandatory source tracking.
 
     Example:

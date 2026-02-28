@@ -1,5 +1,5 @@
 /**
- * PartnerForge API Client
+ * Arian API Client
  *
  * JavaScript client for the FastAPI backend.
  * Include this file in index.html to enable API integration.
@@ -242,4 +242,4 @@ function onDetailOpened(target) {
 }
 
 // Log that API client is loaded
-console.log('PartnerForge API Client loaded. API endpoint:', API_BASE_URL);
+console.log('Arian API Client loaded. API endpoint:', API_BASE_URL);

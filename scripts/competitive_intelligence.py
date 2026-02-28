@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PartnerForge: Competitive Intelligence Pipeline
+Arian: Competitive Intelligence Pipeline
 
 This pipeline combines:
 1. SimilarWeb - Get competitors for a target company
@@ -27,7 +27,7 @@ BUILTWITH_API_KEY = os.getenv("BUILTWITH_API_KEY")
 if not SIMILARWEB_API_KEY or not BUILTWITH_API_KEY:
     raise ValueError("SIMILARWEB_API_KEY and BUILTWITH_API_KEY environment variables are required")
 
-DB_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/PartnerForge/data/partnerforge.db"
+DB_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/Arian/data/arian.db"
 
 
 def fetch_similarweb_competitors(domain: str) -> List[Dict]:
@@ -350,7 +350,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    print("🚀 PartnerForge Competitive Intelligence")
+    print("🚀 Arian Competitive Intelligence")
 
     results = run_competitive_analysis(
         target_domain=args.domain,

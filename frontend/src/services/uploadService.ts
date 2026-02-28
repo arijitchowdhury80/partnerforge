@@ -179,7 +179,7 @@ async function insertBatch(
 // =============================================================================
 
 /**
- * Upload a file to PartnerForge
+ * Upload a file to Arian
  *
  * @param file - The file to upload (CSV or Excel)
  * @param options - Upload options including partner tech and callbacks

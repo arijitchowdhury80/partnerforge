@@ -1,5 +1,5 @@
 /**
- * GalaxyBackground - Shared cosmic background for all PartnerForge pages
+ * GalaxyBackground - Shared cosmic background for all Arian pages
  *
  * Single source of truth for the galaxy background.
  * All pages should import and use this component.

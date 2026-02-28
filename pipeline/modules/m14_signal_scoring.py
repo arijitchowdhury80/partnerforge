@@ -349,7 +349,7 @@ class M14SignalScoring(BaseModule):
             supporting_citations = self._collect_supporting_citations(context)
             primary_citation = self._create_citation(
                 source_type=SourceType.MANUAL_ENTRY,
-                source_url=f"https://partnerforge.internal/signals/{domain}",
+                source_url=f"https://arian.internal/signals/{domain}",
                 api_endpoint="signal_scoring",
                 confidence=quality_score,
                 notes=f"Signal Score: {composite.priority_score}, Priority: {priority_status}",

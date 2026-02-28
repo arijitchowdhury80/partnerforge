@@ -1,4 +1,4 @@
--- PartnerForge Initial Schema
+-- Arian Initial Schema
 -- Run this in Supabase SQL Editor or via CLI
 
 -- Enable UUID extension

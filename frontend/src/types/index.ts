@@ -1,5 +1,5 @@
 /**
- * PartnerForge Type Definitions
+ * Arian Type Definitions
  * v2.0 - 5-Layer Funnel Architecture
  */
 
@@ -14,10 +14,11 @@ export type CMSTech = 'AEM' | 'Contentful' | 'Contentstack' | 'Amplience' | 'Sit
 export type CommerceTech = 'SFCC' | 'Shopify+' | 'Magento' | 'BigCommerce' | 'Commercetools' | 'Spryker' | null;
 export type MartechTech = 'SFMC' | 'Marketo' | 'HubSpot' | 'Klaviyo' | null;
 export type SearchTech = 'Elastic' | 'Solr' | 'Coveo' | 'Bloomreach' | 'SearchSpring' | 'Lucidworks' | 'Klevu' | 'Constructor' | 'Native' | null;
+export type CloudTech = 'AWS' | 'Azure' | null;
 
 export type TechCohort = 'JACKPOT' | 'HIGH' | 'MEDIUM' | 'BASE';
 export type SalesPlay = 'DISPLACEMENT' | 'GREENFIELD';
-export type Galaxy = 'cms' | 'commerce' | 'martech' | 'search';
+export type Galaxy = 'cms' | 'commerce' | 'martech' | 'search' | 'cloud';
 
 /**
  * Company record from the companies table (Layer 0)
@@ -26,11 +27,12 @@ export interface GalaxyCompany {
   domain: string;
   company_name: string | null;
 
-  // The 4 Galaxies
+  // The 5 Galaxies
   cms_tech: CMSTech;
   commerce_tech: CommerceTech;
   martech_tech: MartechTech;
   search_tech: SearchTech;
+  cloud_tech: CloudTech;  // Hyperscaler Galaxy (AWS/Azure/GCP)
 
   // Computed fields
   tech_cohort: TechCohort;
@@ -85,6 +87,7 @@ export interface GalaxyFilterState {
   commerce_tech: CommerceTech[];
   martech_tech: MartechTech[];
   search_tech: SearchTech[];
+  cloud_tech: CloudTech[];  // Hyperscaler Galaxy filter
   tech_cohort: TechCohort[];
   sales_play: SalesPlay[];
   search: string;

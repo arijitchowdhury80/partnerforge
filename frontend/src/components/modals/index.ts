@@ -1,7 +1,7 @@
 /**
  * Modals Barrel Export
  *
- * All confirmation modals for PartnerForge.
+ * All confirmation modals for Arian.
  */
 
 export { EnrichConfirmModal } from './EnrichConfirmModal';

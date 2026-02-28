@@ -1,5 +1,5 @@
 """
-PartnerForge Test Suite
+Arian Test Suite
 =======================
 
 Testing structure following the 70/25/5 pyramid:

@@ -2,7 +2,7 @@
  * Executive Data Transformer
  *
  * Transforms WebSearch executive data into the ExecutiveData type
- * used throughout the PartnerForge application.
+ * used throughout the Arian application.
  */
 
 import type { ExecutiveData, ExecutiveQuote, ExecutiveTheme } from '@/types';

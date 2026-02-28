@@ -318,7 +318,7 @@ class M13ICPPriorityMapping(BaseModule):
             supporting_citations = self._collect_supporting_citations(context)
             primary_citation = self._create_citation(
                 source_type=SourceType.MANUAL_ENTRY,
-                source_url=f"https://partnerforge.internal/icp/{domain}",
+                source_url=f"https://arian.internal/icp/{domain}",
                 api_endpoint="icp_scoring",
                 confidence=quality_score,
                 notes=f"ICP Score: {lead_score.total}, Priority: {priority.status}",

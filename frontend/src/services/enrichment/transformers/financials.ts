@@ -2,7 +2,7 @@
  * Financial Data Transformer
  *
  * Transforms Yahoo Finance API data into the FinancialData type
- * used throughout the PartnerForge application.
+ * used throughout the Arian application.
  */
 
 import type { FinancialData, FinancialMetric, RoiEstimate } from '@/types';

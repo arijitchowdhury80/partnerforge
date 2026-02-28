@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PartnerForge: Intelligence Schema Migration
+Arian: Intelligence Schema Migration
 
 Creates new tables for the Search Audit Intelligence merger:
 - company_financials: 3-year financial trends from Yahoo Finance
@@ -12,7 +12,7 @@ Creates new tables for the Search Audit Intelligence merger:
 
 import sqlite3
 
-DB_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/PartnerForge/data/partnerforge.db"
+DB_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/Arian/data/arian.db"
 
 
 def run_migration():
@@ -20,7 +20,7 @@ def run_migration():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    print("🔧 Running PartnerForge Intelligence Schema Migration...")
+    print("🔧 Running Arian Intelligence Schema Migration...")
 
     # 1. Company Financials
     print("   📊 Creating company_financials table...")

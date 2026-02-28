@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arian | The Sales Machinery</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --algolia-blue: #003DFF;
+            --algolia-purple: #5468FF;
+            --algolia-dark: #21243D;
+            --algolia-light: #F5F5FA;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --gold: #FFD700;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--algolia-dark);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(33, 36, 61, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--algolia-blue), var(--algolia-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-steps {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-step {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.5);
+            text-decoration: none;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-step:hover, .nav-step.active {
+            color: white;
+        }
+
+        .nav-step.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--algolia-blue);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 120px 40px 80px;
+            background: linear-gradient(180deg, var(--algolia-dark) 0%, #1a1d35 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 30%, rgba(0, 61, 255, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 70%, rgba(84, 104, 255, 0.1) 0%, transparent 50%);
+            animation: rotate 30s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+        }
+
+        .hero h1 {
+            font-size: 4.5rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, var(--algolia-blue), var(--algolia-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.4rem;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 50px;
+            line-height: 1.6;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-bottom: 60px;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat-value {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--algolia-blue);
+        }
+
+        .hero-stat-label {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.5);
+            margin-top: 5px;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 40px;
+            background: linear-gradient(135deg, var(--algolia-blue), var(--algolia-purple));
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            transition: all 0.3s;
+            box-shadow: 0 10px 40px rgba(0, 61, 255, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 50px rgba(0, 61, 255, 0.4);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+
+        /* Section Styles */
+        .section {
+            min-height: 100vh;
+            padding: 120px 80px;
+            position: relative;
+        }
+
+        .section-dark {
+            background: var(--algolia-dark);
+        }
+
+        .section-gradient {
+            background: linear-gradient(180deg, #1a1d35 0%, var(--algolia-dark) 100%);
+        }
+
+        .section-blue {
+            background: linear-gradient(135deg, var(--algolia-blue) 0%, var(--algolia-purple) 100%);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .section-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background: rgba(0, 61, 255, 0.2);
+            border: 1px solid rgba(0, 61, 255, 0.3);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--algolia-blue);
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.6);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Problem Section */
+        .problem-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .problem-visual {
+            position: relative;
+        }
+
+        .chaos-container {
+            position: relative;
+            height: 400px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chaos-dot {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(var(--tx, 10px), var(--ty, -10px)); }
+        }
+
+        .chaos-text {
+            font-size: 4rem;
+            font-weight: 900;
+            color: rgba(255,255,255,0.1);
+        }
+
+        .problem-content h3 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--danger);
+        }
+
+        .problem-content p {
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.7);
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        .problem-list {
+            list-style: none;
+        }
+
+        .problem-list li {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 1.05rem;
+        }
+
+        .problem-list li::before {
+            content: '✕';
+            color: var(--danger);
+            font-weight: bold;
+        }
+
+        /* Data Section */
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto 80px;
+        }
+
+        .data-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .data-card:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-5px);
+        }
+
+        .data-card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .data-card-value {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--algolia-blue), var(--algolia-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .data-card-label {
+            font-size: 0.95rem;
+            color: rgba(255,255,255,0.6);
+            margin-top: 10px;
+        }
+
+        /* Proof Points Chart */
+        .proof-chart-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 50px;
+        }
+
+        .proof-chart-title {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+        }
+
+        .proof-bar-container {
+            margin-bottom: 30px;
+        }
+
+        .proof-bar-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .proof-bar {
+            height: 50px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .proof-bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            padding-left: 20px;
+            font-weight: 700;
+            transition: width 1s ease-out;
+        }
+
+        .proof-bar-fill.fashion {
+            background: linear-gradient(90deg, var(--algolia-blue), var(--algolia-purple));
+            width: 0;
+        }
+
+        .proof-bar-fill.fashion.animate {
+            width: 65%;
+        }
+
+        .proof-bar-fill.grocery {
+            background: linear-gradient(90deg, var(--success), #34D399);
+            width: 0;
+        }
+
+        .proof-bar-fill.grocery.animate {
+            width: 35%;
+        }
+
+        .proof-bar-fill.other {
+            background: rgba(255,255,255,0.2);
+            width: 0;
+        }
+
+        .proof-insight {
+            background: linear-gradient(135deg, rgba(0, 61, 255, 0.2), rgba(84, 104, 255, 0.1));
+            border: 1px solid rgba(0, 61, 255, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .proof-insight h4 {
+            color: var(--algolia-blue);
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        /* Funnel Section */
+        .funnel-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .funnel-layer {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease-out;
+        }
+
+        .funnel-layer.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .funnel-bar {
+            height: 80px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            position: relative;
+            transition: all 0.5s;
+            cursor: pointer;
+        }
+
+        .funnel-bar:hover {
+            transform: scale(1.02);
+        }
+
+        .funnel-bar.l0 { width: 100%; background: linear-gradient(90deg, #64748B, #94A3B8); }
+        .funnel-bar.l1 { width: 75%; background: linear-gradient(90deg, #6366F1, #8B5CF6); margin-left: 12.5%; }
+        .funnel-bar.l2 { width: 50%; background: linear-gradient(90deg, var(--algolia-blue), var(--algolia-purple)); margin-left: 25%; }
+        .funnel-bar.l3 { width: 30%; background: linear-gradient(90deg, #059669, var(--success)); margin-left: 35%; }
+        .funnel-bar.l4 { width: 15%; background: linear-gradient(90deg, #D97706, var(--gold)); margin-left: 42.5%; }
+
+        .funnel-meta {
+            position: absolute;
+            right: -250px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 200px;
+        }
+
+        .funnel-count {
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        .funnel-percent {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .funnel-arrow {
+            text-align: center;
+            font-size: 2rem;
+            color: rgba(255,255,255,0.3);
+            margin: 10px 0;
+        }
+
+        /* Interactive Layer Section */
+        .layer-section {
+            padding: 100px 80px;
+            position: relative;
+        }
+
+        .layer-number {
+            position: absolute;
+            top: 100px;
+            left: 80px;
+            font-size: 15rem;
+            font-weight: 900;
+            color: rgba(255,255,255,0.03);
+            line-height: 1;
+        }
+
+        .layer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .layer-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .layer-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--algolia-blue), var(--algolia-purple));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .layer-title-group h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+        }
+
+        .layer-title-group p {
+            color: rgba(255,255,255,0.6);
+            font-size: 1.1rem;
+            margin-top: 5px;
+        }
+
+        /* Partner Tech Selector */
+        .partner-selector {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+        }
+
+        .partner-selector h3 {
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .partner-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .partner-category {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid transparent;
+            border-radius: 15px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .partner-category:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .partner-category.selected {
+            border-color: var(--algolia-blue);
+            background: rgba(0, 61, 255, 0.1);
+        }
+
+        .partner-category h4 {
+            font-size: 1rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .partner-category h4 .check {
+            width: 24px;
+            height: 24px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+
+        .partner-category.selected h4 .check {
+            background: var(--algolia-blue);
+            border-color: var(--algolia-blue);
+        }
+
+        .partner-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .partner-chip {
+            padding: 6px 12px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.7);
+        }
+
+        /* Cohort Result */
+        .cohort-result {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.05));
+            border: 2px solid var(--success);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: all 0.5s;
+        }
+
+        .cohort-result.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .cohort-badge {
+            display: inline-block;
+            padding: 10px 30px;
+            background: var(--success);
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            50% { box-shadow: 0 0 0 20px rgba(16, 185, 129, 0); }
+        }
+
+        .cohort-result h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .cohort-result p {
+            color: rgba(255,255,255,0.7);
+        }
+
+        /* ICP Filter Visual */
+        .icp-filter-container {
+            display: grid;
+            grid-template-columns: 1fr 80px 1fr;
+            gap: 30px;
+            align-items: center;
+            margin: 60px 0;
+        }
+
+        .icp-input, .icp-output {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 30px;
+        }
+
+        .icp-input h4, .icp-output h4 {
+            font-size: 1rem;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 20px;
+        }
+
+        .account-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .account-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .account-item.filtered-out {
+            opacity: 0.3;
+            transform: scale(0.95);
+        }
+
+        .account-item.highlight {
+            background: rgba(0, 61, 255, 0.2);
+            border: 1px solid var(--algolia-blue);
+        }
+
+        .account-logo {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+
+        .account-info {
+            flex: 1;
+        }
+
+        .account-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .account-meta {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .account-score {
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .account-score.high { background: var(--success); }
+        .account-score.medium { background: var(--warning); color: #000; }
+        .account-score.low { background: var(--danger); }
+
+        .filter-arrow {
+            text-align: center;
+        }
+
+        .filter-arrow-icon {
+            font-size: 3rem;
+            color: var(--algolia-blue);
+            animation: arrowPulse 1.5s infinite;
+        }
+
+        @keyframes arrowPulse {
+            0%, 100% { transform: translateX(0); opacity: 1; }
+            50% { transform: translateX(10px); opacity: 0.5; }
+        }
+
+        /* Sales Play Section */
+        .plays-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin: 60px 0;
+        }
+
+        .play-card {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid transparent;
+            border-radius: 20px;
+            padding: 35px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .play-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--algolia-blue), var(--algolia-purple));
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .play-card:hover::before,
+        .play-card.active::before {
+            transform: scaleX(1);
+        }
+
+        .play-card.active {
+            border-color: var(--algolia-blue);
+            background: rgba(0, 61, 255, 0.1);
+        }
+
+        .play-code {
+            display: inline-block;
+            padding: 5px 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .play-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+        }
+
+        .play-card p {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Intersection Matrix */
+        .intersection-matrix {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px 0;
+        }
+
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .matrix-cell {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .matrix-cell:hover {
+            transform: scale(1.05);
+        }
+
+        .matrix-cell.triple {
+            background: linear-gradient(135deg, var(--gold), #FFA500);
+            color: #000;
+        }
+
+        .matrix-cell.double {
+            background: linear-gradient(135deg, var(--success), #34D399);
+        }
+
+        .matrix-cell.single {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .matrix-plays {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .matrix-priority {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin-bottom: 15px;
+        }
+
+        .matrix-count {
+            font-size: 2rem;
+            font-weight: 800;
+        }
+
+        .matrix-label {
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+
+        /* Campaign Section */
+        .campaign-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin: 60px 0;
+        }
+
+        .campaign-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .campaign-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .campaign-card.premium {
+            border: 2px solid var(--gold);
+        }
+
+        .campaign-header {
+            padding: 30px;
+            background: linear-gradient(135deg, var(--algolia-blue), var(--algolia-purple));
+        }
+
+        .campaign-card.premium .campaign-header {
+            background: linear-gradient(135deg, var(--gold), #FFA500);
+            color: #000;
+        }
+
+        .campaign-type {
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        .campaign-accounts {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .campaign-body {
+            padding: 30px;
+        }
+
+        .campaign-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .campaign-item:last-child {
+            border-bottom: none;
+        }
+
+        .campaign-item-label {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+        }
+
+        .campaign-item-value {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* Final Result */
+        .final-result {
+            text-align: center;
+            padding: 100px 40px;
+            background: linear-gradient(135deg, rgba(0, 61, 255, 0.1), rgba(84, 104, 255, 0.05));
+            border-radius: 30px;
+            margin: 60px 0;
+        }
+
+        .final-number {
+            font-size: 10rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--gold), #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        .final-label {
+            font-size: 2rem;
+            color: rgba(255,255,255,0.8);
+            margin-top: 20px;
+        }
+
+        .final-subtitle {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.5);
+            margin-top: 10px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            text-align: center;
+            padding: 150px 40px;
+            background: linear-gradient(135deg, var(--algolia-blue), var(--algolia-purple));
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.1) 0%, transparent 50%);
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-section h2 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+        }
+
+        .cta-section p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button-white {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 20px 50px;
+            background: white;
+            color: var(--algolia-blue);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            transition: all 0.3s;
+        }
+
+        .cta-button-white:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero h1 { font-size: 3rem; }
+            .data-grid { grid-template-columns: repeat(2, 1fr); }
+            .partner-grid { grid-template-columns: 1fr; }
+            .plays-container { grid-template-columns: 1fr; }
+            .campaign-cards { grid-template-columns: 1fr; }
+            .matrix-grid { grid-template-columns: repeat(2, 1fr); }
+            .icp-filter-container { grid-template-columns: 1fr; }
+            .filter-arrow { transform: rotate(90deg); }
+        }
+
+        @media (max-width: 768px) {
+            .section { padding: 80px 30px; }
+            .hero-stats { flex-direction: column; gap: 30px; }
+            .nav-steps { display: none; }
+            .problem-grid { grid-template-columns: 1fr; }
+            .layer-number { font-size: 8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="nav">
+    <div class="nav-logo">Arian</div>
+    <div class="nav-steps">
+        <a href="#problem" class="nav-step">The Problem</a>
+        <a href="#data" class="nav-step">The Data</a>
+        <a href="#layer1" class="nav-step">Layer 1</a>
+        <a href="#layer2" class="nav-step">Layer 2</a>
+        <a href="#layer3" class="nav-step">Layer 3</a>
+        <a href="#layer4" class="nav-step">Layer 4</a>
+        <a href="#result" class="nav-step">Result</a>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>From 2,800 Accounts to <span>10-15 Winners</span></h1>
+        <p>A data-driven sales machinery that systematically identifies the highest-value partner tech accounts through a four-layer cascading funnel.</p>
+
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="hero-stat-value">2,800</div>
+                <div class="hero-stat-label">Partner Tech Accounts</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-value">4</div>
+                <div class="hero-stat-label">Filter Layers</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-value">10-15</div>
+                <div class="hero-stat-label">ABM 1:1 Targets</div>
+            </div>
+        </div>
+
+        <a href="#problem" class="cta-button">
+            See How It Works
+            <span>↓</span>
+        </a>
+    </div>
+
+    <div class="scroll-indicator">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2">
+            <path d="M12 5v14M5 12l7 7 7-7"/>
+        </svg>
+    </div>
+</section>
+
+<!-- Problem Section -->
+<section id="problem" class="section section-gradient">
+    <div class="section-header">
+        <span class="section-badge">THE CHALLENGE</span>
+        <h2 class="section-title">Why Traditional Scoring Fails</h2>
+        <p class="section-subtitle">Flat scoring treats all accounts equally. They are not equal.</p>
+    </div>
+
+    <div class="problem-grid">
+        <div class="problem-visual">
+            <div class="chaos-container" id="chaosContainer">
+                <div class="chaos-text">2,800</div>
+            </div>
+        </div>
+
+        <div class="problem-content">
+            <h3>The Spray-and-Pray Problem</h3>
+            <p>We have 2,800 accounts using partner technologies. Traditional lead scoring assigns a single score to each based on traffic, size, and tech signals.</p>
+            <p>But a SaaS company with high traffic scores the same as a Fashion retailer with high traffic. The data shows Fashion delivers 65% of all proof points. SaaS delivers zero.</p>
+
+            <ul class="problem-list">
+                <li>All accounts treated equally</li>
+                <li>Wasted AE time on low-fit accounts</li>
+                <li>Unclear prioritization</li>
+                <li>Low response rates</li>
+                <li>Missed high-value opportunities</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- Data Section -->
+<section id="data" class="section section-dark">
+    <div class="section-header">
+        <span class="section-badge">THE EVIDENCE</span>
+        <h2 class="section-title">Data-Driven ICP</h2>
+        <p class="section-subtitle">We analyzed actual customer evidence to define who we should target.</p>
+    </div>
+
+    <div class="data-grid">
+        <div class="data-card">
+            <div class="data-card-icon">📋</div>
+            <div class="data-card-value">1,306</div>
+            <div class="data-card-label">Customer Logos</div>
+        </div>
+        <div class="data-card">
+            <div class="data-card-icon">💬</div>
+            <div class="data-card-value">379</div>
+            <div class="data-card-label">Customer Quotes</div>
+        </div>
+        <div class="data-card">
+            <div class="data-card-icon">📖</div>
+            <div class="data-card-value">82</div>
+            <div class="data-card-label">Customer Stories</div>
+        </div>
+        <div class="data-card">
+            <div class="data-card-icon">📊</div>
+            <div class="data-card-value">81</div>
+            <div class="data-card-label">Proof Points</div>
+        </div>
+    </div>
+
+    <div class="proof-chart-container">
+        <div class="proof-chart-title">Where Do Proof Points Come From?</div>
+
+        <div class="proof-bar-container">
+            <div class="proof-bar-label">
+                <span>Fashion</span>
+                <span>65% (53 proof points)</span>
+            </div>
+            <div class="proof-bar">
+                <div class="proof-bar-fill fashion" id="fashionBar">65%</div>
+            </div>
+        </div>
+
+        <div class="proof-bar-container">
+            <div class="proof-bar-label">
+                <span>Grocery</span>
+                <span>35% (28 proof points)</span>
+            </div>
+            <div class="proof-bar">
+                <div class="proof-bar-fill grocery" id="groceryBar">35%</div>
+            </div>
+        </div>
+
+        <div class="proof-bar-container">
+            <div class="proof-bar-label">
+                <span>SaaS, Media, B2B, Other</span>
+                <span>0% (0 proof points)</span>
+            </div>
+            <div class="proof-bar">
+                <div class="proof-bar-fill other">0%</div>
+            </div>
+        </div>
+
+        <div class="proof-insight">
+            <h4>The Key Insight</h4>
+            <p>Fashion and Grocery account for 100% of quantified proof points. This is not opinion—it's evidence.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Layer 1: Partner Tech Cohort -->
+<section id="layer1" class="layer-section section-gradient">
+    <div class="layer-number">01</div>
+    <div class="layer-content">
+        <div class="layer-header">
+            <div class="layer-icon">🔧</div>
+            <div class="layer-title-group">
+                <h2>Layer 1: Partner Tech Cohort</h2>
+                <p>What tech stack do they have?</p>
+            </div>
+        </div>
+
+        <div class="partner-selector">
+            <h3>Select Partner Technologies</h3>
+            <div class="partner-grid">
+                <div class="partner-category selected" onclick="toggleCategory(this)">
+                    <h4><span class="check">✓</span> CMS</h4>
+                    <div class="partner-chips">
+                        <span class="partner-chip">Adobe AEM</span>
+                        <span class="partner-chip">Contentful</span>
+                        <span class="partner-chip">Amplience</span>
+                        <span class="partner-chip">Sitecore</span>
+                    </div>
+                </div>
+                <div class="partner-category selected" onclick="toggleCategory(this)">
+                    <h4><span class="check">✓</span> Commerce</h4>
+                    <div class="partner-chips">
+                        <span class="partner-chip">SFCC</span>
+                        <span class="partner-chip">Magento</span>
+                        <span class="partner-chip">Shopify Plus</span>
+                        <span class="partner-chip">SAP Commerce</span>
+                    </div>
+                </div>
+                <div class="partner-category selected" onclick="toggleCategory(this)">
+                    <h4><span class="check">✓</span> Hyperscaler</h4>
+                    <div class="partner-chips">
+                        <span class="partner-chip">AWS</span>
+                        <span class="partner-chip">Azure</span>
+                        <span class="partner-chip">Google Cloud</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cohort-result visible" id="cohortResult">
+            <div class="cohort-badge">🏆 JACKPOT</div>
+            <h3>CMS + Commerce + Hyperscaler</h3>
+            <p>Enterprise-grade stack signals highest deal potential</p>
+        </div>
+
+        <div class="funnel-container" style="margin-top: 60px;">
+            <div class="funnel-layer visible">
+                <div class="funnel-bar l0">
+                    All Partner Tech Accounts
+                    <div class="funnel-meta">
+                        <span class="funnel-count">2,800</span>
+                        <span class="funnel-percent">100%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="funnel-arrow">↓</div>
+            <div class="funnel-layer visible">
+                <div class="funnel-bar l1">
+                    JACKPOT Cohort (CMS + Commerce + Hyperscaler)
+                    <div class="funnel-meta">
+                        <span class="funnel-count">~200</span>
+                        <span class="funnel-percent">7%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Layer 2: ICP Filter -->
+<section id="layer2" class="layer-section section-dark">
+    <div class="layer-number">02</div>
+    <div class="layer-content">
+        <div class="layer-header">
+            <div class="layer-icon">🎯</div>
+            <div class="layer-title-group">
+                <h2>Layer 2: ICP Filter</h2>
+                <p>Do they match our Ideal Customer Profile?</p>
+            </div>
+        </div>
+
+        <p style="font-size: 1.1rem; color: rgba(255,255,255,0.7); margin-bottom: 40px; max-width: 800px;">
+            We score JACKPOT accounts against six dimensions: Vertical (25%), Competitor (20%), Size (15%), Tech Stack (15%), Persona (15%), Geography (10%).
+        </p>
+
+        <div class="icp-filter-container">
+            <div class="icp-input">
+                <h4>JACKPOT Accounts (~200)</h4>
+                <div class="account-list">
+                    <div class="account-item highlight">
+                        <div class="account-logo">UA</div>
+                        <div class="account-info">
+                            <div class="account-name">Under Armour</div>
+                            <div class="account-meta">Fashion • Enterprise • US</div>
+                        </div>
+                        <div class="account-score high">92</div>
+                    </div>
+                    <div class="account-item highlight">
+                        <div class="account-logo">CO</div>
+                        <div class="account-info">
+                            <div class="account-name">Costco</div>
+                            <div class="account-meta">Grocery • Enterprise • US</div>
+                        </div>
+                        <div class="account-score high">89</div>
+                    </div>
+                    <div class="account-item highlight">
+                        <div class="account-logo">GP</div>
+                        <div class="account-info">
+                            <div class="account-name">Gap Inc</div>
+                            <div class="account-meta">Fashion • Enterprise • US</div>
+                        </div>
+                        <div class="account-score high">87</div>
+                    </div>
+                    <div class="account-item filtered-out">
+                        <div class="account-logo">TS</div>
+                        <div class="account-info">
+                            <div class="account-name">TechStartup</div>
+                            <div class="account-meta">SaaS • Growth • US</div>
+                        </div>
+                        <div class="account-score medium">68</div>
+                    </div>
+                    <div class="account-item filtered-out">
+                        <div class="account-logo">NP</div>
+                        <div class="account-info">
+                            <div class="account-name">NewsPortal</div>
+                            <div class="account-meta">Media • Mid-Market • UK</div>
+                        </div>
+                        <div class="account-score low">45</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-arrow">
+                <div class="filter-arrow-icon">→</div>
+            </div>
+
+            <div class="icp-output">
+                <h4>ICP Tier 1 (~60)</h4>
+                <div class="account-list">
+                    <div class="account-item highlight">
+                        <div class="account-logo">UA</div>
+                        <div class="account-info">
+                            <div class="account-name">Under Armour</div>
+                            <div class="account-meta">Fashion • Enterprise • Elastic</div>
+                        </div>
+                        <div class="account-score high">92</div>
+                    </div>
+                    <div class="account-item highlight">
+                        <div class="account-logo">CO</div>
+                        <div class="account-info">
+                            <div class="account-name">Costco</div>
+                            <div class="account-meta">Grocery • Enterprise • Solr</div>
+                        </div>
+                        <div class="account-score high">89</div>
+                    </div>
+                    <div class="account-item highlight">
+                        <div class="account-logo">GP</div>
+                        <div class="account-info">
+                            <div class="account-name">Gap Inc</div>
+                            <div class="account-meta">Fashion • Enterprise • SearchSpring</div>
+                        </div>
+                        <div class="account-score high">87</div>
+                    </div>
+                </div>
+                <p style="margin-top: 20px; color: rgba(255,255,255,0.5); font-size: 0.9rem;">
+                    Only accounts with ICP Score ≥85 advance
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Layer 3: Sales Play Intersection -->
+<section id="layer3" class="layer-section section-gradient">
+    <div class="layer-number">03</div>
+    <div class="layer-content">
+        <div class="layer-header">
+            <div class="layer-icon">🎮</div>
+            <div class="layer-title-group">
+                <h2>Layer 3: Sales Play Intersection</h2>
+                <p>What plays can we run?</p>
+            </div>
+        </div>
+
+        <div class="plays-container">
+            <div class="play-card active" onclick="togglePlay(this)">
+                <span class="play-code">S1</span>
+                <h3>Tech Partner</h3>
+                <p>Account uses partner technology (Adobe, Amplience, Spryker). Detected via BuiltWith and Crossbeam.</p>
+            </div>
+            <div class="play-card active" onclick="togglePlay(this)">
+                <span class="play-code">S2</span>
+                <h3>Target List</h3>
+                <p>Account is on marketing or ABM target list. Uploaded via CSV from marketing campaigns.</p>
+            </div>
+            <div class="play-card active" onclick="togglePlay(this)">
+                <span class="play-code">S3</span>
+                <h3>SI Connected</h3>
+                <p>Account has relationship with SI partner (EPAM, Valtech, Isobar). Enables warm introductions.</p>
+            </div>
+        </div>
+
+        <div class="intersection-matrix">
+            <h3 style="font-size: 1.3rem; margin-bottom: 10px;">Play Intersection Matrix</h3>
+            <p style="color: rgba(255,255,255,0.6);">More plays = higher confidence = higher priority</p>
+
+            <div class="matrix-grid">
+                <div class="matrix-cell triple">
+                    <div class="matrix-plays">S1 + S2 + S3</div>
+                    <div class="matrix-priority">TRIPLE PLAY</div>
+                    <div class="matrix-count">~15</div>
+                    <div class="matrix-label">accounts</div>
+                </div>
+                <div class="matrix-cell double">
+                    <div class="matrix-plays">S1 + S2</div>
+                    <div class="matrix-priority">DOUBLE PLAY</div>
+                    <div class="matrix-count">~20</div>
+                    <div class="matrix-label">accounts</div>
+                </div>
+                <div class="matrix-cell double">
+                    <div class="matrix-plays">S2 + S3</div>
+                    <div class="matrix-priority">DOUBLE PLAY</div>
+                    <div class="matrix-count">~10</div>
+                    <div class="matrix-label">accounts</div>
+                </div>
+                <div class="matrix-cell single">
+                    <div class="matrix-plays">Single Play</div>
+                    <div class="matrix-priority">STANDARD</div>
+                    <div class="matrix-count">~15</div>
+                    <div class="matrix-label">accounts</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Layer 4: GTM Campaign -->
+<section id="layer4" class="layer-section section-dark">
+    <div class="layer-number">04</div>
+    <div class="layer-content">
+        <div class="layer-header">
+            <div class="layer-icon">🚀</div>
+            <div class="layer-title-group">
+                <h2>Layer 4: GTM Campaign</h2>
+                <p>How do we engage?</p>
+            </div>
+        </div>
+
+        <div class="campaign-cards">
+            <div class="campaign-card premium">
+                <div class="campaign-header">
+                    <div class="campaign-type">ABM 1:1</div>
+                    <div class="campaign-accounts">10-15 accounts</div>
+                </div>
+                <div class="campaign-body">
+                    <div class="campaign-item">
+                        <span class="campaign-item-label">Personas</span>
+                        <span class="campaign-item-value">CTO + COO + VP Digital</span>
+                    </div>
+                    <div class="campaign-item">
+                        <span class="campaign-item-label">Message</span>
+                        <span class="campaign-item-value">"Your stack is AI-ready"</span>
+                    </div>
+                    <div class="campaign-item">
+                        <span class="campaign-item-label">Channels</span>
+                        <span class="campaign-item-value">Direct + LinkedIn + Events</span>
+                    </div>
+                    <div class="campaign-item">
+                        <span class="campaign-item-label">Sequence</span>
+                        <span class="campaign-item-value">8-touch, 45 days</span>
+                    </div>
+                    <div class="campaign-item">
+                        <span class="campaign-item-label">Resources</span>
+                        <span class="campaign-item-value">Dedicated AE + SI intro</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="campaign-card">
+                <div class="campaign-header">
+                    <div class="campaign-type">ABM 1:Few</div>
+                    <div class="campaign-accounts">25-40 accounts</div>
+                </div>
+                <div class="campaign-body">
+                    <div class="campaign-item">
+                        <span class="campaign-item-label">Personas</span>
+                        <span class="campaign-item-value">VP Engineering</span>
+                    </div>
+                    <div class="campaign-item">
+                        <span class="campaign-item-label">Message</span>
+                        <span class="campaign-item-value">"Join [competitor] displacement"</span>
+                    </div>
+                    <div class="campaign-item">
+                        <span class="campaign-item-label">Channels</span>
+                        <span class="campaign-item-value">LinkedIn + Email + Paid</span>
+                    </div>
+                    <div class="campaign-item">
+                        <span class="campaign-item-label">Sequence</span>
+                        <span class="campaign-item-value">6-touch, 30 days</span>
+                    </div>
+                    <div class="campaign-item">
+                        <span class="campaign-item-label">Resources</span>
+                        <span class="campaign-item-value">Shared AE + segment content</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="campaign-card">
+                <div class="campaign-header">
+                    <div class="campaign-type">ABM 1:Many</div>
+                    <div class="campaign-accounts">50-100 accounts</div>
+                </div>
+                <div class="campaign-body">
+                    <div class="campaign-item">
+                        <span class="campaign-item-label">Personas</span>
+                        <span class="campaign-item-value">Engineering Manager</span>
+                    </div>
+                    <div class="campaign-item">
+                        <span class="campaign-item-label">Message</span>
+                        <span class="campaign-item-value">"AI search that works"</span>
+                    </div>
+                    <div class="campaign-item">
+                        <span class="campaign-item-label">Channels</span>
+                        <span class="campaign-item-value">Email + Content</span>
+                    </div>
+                    <div class="campaign-item">
+                        <span class="campaign-item-label">Sequence</span>
+                        <span class="campaign-item-value">5-touch, 21 days</span>
+                    </div>
+                    <div class="campaign-item">
+                        <span class="campaign-item-label">Resources</span>
+                        <span class="campaign-item-value">SDR team + automation</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Result Section -->
+<section id="result" class="section section-gradient">
+    <div class="section-header">
+        <span class="section-badge">THE RESULT</span>
+        <h2 class="section-title">The Crème de la Crème</h2>
+    </div>
+
+    <div class="final-result">
+        <div class="final-number">10-15</div>
+        <div class="final-label">Accounts Get ABM 1:1 Treatment</div>
+        <div class="final-subtitle">From 2,800 partner tech accounts, we systematically identify the absolute highest-priority opportunities.</div>
+    </div>
+
+    <div class="funnel-container" style="margin-top: 60px;">
+        <div class="funnel-layer visible">
+            <div class="funnel-bar l0">All Partner Tech Accounts<span style="margin-left: 20px; opacity: 0.7;">2,800</span></div>
+        </div>
+        <div class="funnel-arrow">↓</div>
+        <div class="funnel-layer visible">
+            <div class="funnel-bar l1">Layer 1: JACKPOT Cohort<span style="margin-left: 20px; opacity: 0.7;">~200 (7%)</span></div>
+        </div>
+        <div class="funnel-arrow">↓</div>
+        <div class="funnel-layer visible">
+            <div class="funnel-bar l2">Layer 2: ICP Tier 1<span style="margin-left: 20px; opacity: 0.7;">~60 (2%)</span></div>
+        </div>
+        <div class="funnel-arrow">↓</div>
+        <div class="funnel-layer visible">
+            <div class="funnel-bar l3">Layer 3: Triple Play<span style="margin-left: 20px; opacity: 0.7;">~15 (0.5%)</span></div>
+        </div>
+        <div class="funnel-arrow">↓</div>
+        <div class="funnel-layer visible">
+            <div class="funnel-bar l4">Layer 4: ABM 1:1<span style="margin-left: 20px; opacity: 0.7;">10-15</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="cta-content">
+        <h2>This is Arian</h2>
+        <p>A data-driven sales machinery that transforms partner tech data into focused, high-converting opportunities.</p>
+        <a href="#" class="cta-button-white">
+            Request Approval
+            <span>→</span>
+        </a>
+    </div>
+</section>
+
+<script>
+    // Intersection Observer for animations
+    const observerOptions = {
+        threshold: 0.2,
+        rootMargin: '0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+
+                // Animate proof bars
+                if (entry.target.id === 'fashionBar' || entry.target.closest('#data')) {
+                    document.getElementById('fashionBar')?.classList.add('animate');
+                    document.getElementById('groceryBar')?.classList.add('animate');
+                }
+            }
+        });
+    }, observerOptions);
+
+    // Observe elements
+    document.querySelectorAll('.funnel-layer, .data-card, .layer-section').forEach(el => {
+        observer.observe(el);
+    });
+
+    // Generate chaos dots
+    const chaosContainer = document.getElementById('chaosContainer');
+    if (chaosContainer) {
+        for (let i = 0; i < 50; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'chaos-dot';
+            dot.style.left = Math.random() * 100 + '%';
+            dot.style.top = Math.random() * 100 + '%';
+            dot.style.setProperty('--tx', (Math.random() * 40 - 20) + 'px');
+            dot.style.setProperty('--ty', (Math.random() * 40 - 20) + 'px');
+            dot.style.animationDelay = Math.random() * 2 + 's';
+            chaosContainer.appendChild(dot);
+        }
+    }
+
+    // Toggle functions
+    function toggleCategory(el) {
+        el.classList.toggle('selected');
+        updateCohortResult();
+    }
+
+    function togglePlay(el) {
+        el.classList.toggle('active');
+    }
+
+    function updateCohortResult() {
+        const selected = document.querySelectorAll('.partner-category.selected').length;
+        const result = document.getElementById('cohortResult');
+        const badge = result.querySelector('.cohort-badge');
+        const title = result.querySelector('h3');
+
+        if (selected >= 3) {
+            badge.textContent = '🏆 JACKPOT';
+            badge.style.background = 'var(--success)';
+            title.textContent = 'CMS + Commerce + Hyperscaler';
+        } else if (selected === 2) {
+            badge.textContent = '⭐ HIGH';
+            badge.style.background = 'var(--algolia-blue)';
+            title.textContent = 'Two Categories Selected';
+        } else {
+            badge.textContent = '○ STANDARD';
+            badge.style.background = '#64748B';
+            title.textContent = 'Single Category';
+        }
+    }
+
+    // Navigation active state
+    const sections = document.querySelectorAll('section[id]');
+    const navSteps = document.querySelectorAll('.nav-step');
+
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            if (scrollY >= sectionTop - 200) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        navSteps.forEach(step => {
+            step.classList.remove('active');
+            if (step.getAttribute('href') === '#' + current) {
+                step.classList.add('active');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

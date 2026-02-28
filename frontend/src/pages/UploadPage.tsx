@@ -1,70 +1,155 @@
 /**
- * UploadPage - Simple Upload Interface
- *
- * Clean, simple upload page. Drop a file, click upload, done.
+ * UploadPage - Dead Simple Upload
  */
 
-import { useCallback } from 'react';
-import { Container, Title, Text, Paper, Button, Group } from '@mantine/core';
+import { useState, useRef } from 'react';
+import { Container, Title, Text, Paper, Button, Group, Select, TextInput, Progress, Alert } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
-import { IconArrowLeft } from '@tabler/icons-react';
-import { notifications } from '@mantine/notifications';
-
-import { CSVUploader } from '@/components/upload/CSVUploader';
-import type { UploadResponse } from '@/types';
+import { IconUpload, IconArrowLeft, IconCheck, IconX } from '@tabler/icons-react';
+import { GalaxyBackground } from '@/components/common/GalaxyBackground';
+import { uploadFile } from '@/services/uploadService';
 
 export function UploadPage() {
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Handle successful upload - navigate to companies page
-  const handleUploadComplete = useCallback(
-    (listId: string, response: UploadResponse) => {
-      notifications.show({
-        title: 'Upload Complete',
-        message: `${response.total_rows} companies imported. Redirecting to Companies page...`,
-        color: 'green',
+  const [file, setFile] = useState<File | null>(null);
+  const [listName, setListName] = useState('');
+  const [partnerTech, setPartnerTech] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0];
+    if (selected) {
+      setFile(selected);
+      setListName(selected.name.replace(/\.(csv|xlsx|xls)$/i, ''));
+      setError(null);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!file) return;
+
+    setIsUploading(true);
+    setError(null);
+    setProgress(0);
+
+    try {
+      const result = await uploadFile(file, {
+        partnerTech,
+        listName: listName || file.name,
+        source: 'manual',
+        onProgress: (p) => {
+          const pct = p.total > 0 ? Math.round((p.current / p.total) * 100) : 0;
+          setProgress(pct);
+        },
       });
 
-      // Navigate to companies page after short delay
-      setTimeout(() => {
-        navigate('/companies');
-      }, 1500);
-    },
-    [navigate]
-  );
+      if (result.success) {
+        setSuccess(true);
+        setTimeout(() => navigate('/companies'), 1500);
+      } else {
+        setError(result.errors[0]?.message || 'Upload failed');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Upload failed');
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f8fafc', padding: '24px' }}>
-      <Container size="md">
-        {/* Header */}
+    <GalaxyBackground>
+      <Container size="sm" py="lg">
         <Group justify="space-between" mb="xl">
-          <div>
-            <Title order={2}>Upload Companies</Title>
-            <Text c="dimmed" size="sm" mt={4}>
-              Import a CSV or Excel file with company domains
-            </Text>
-          </div>
-          <Button
-            variant="subtle"
-            leftSection={<IconArrowLeft size={16} />}
-            onClick={() => navigate(-1)}
-          >
+          <Title order={2} c="white">Upload Companies</Title>
+          <Button variant="subtle" leftSection={<IconArrowLeft size={16} />} onClick={() => navigate(-1)}>
             Back
           </Button>
         </Group>
 
-        {/* Upload Area */}
-        <Paper p="xl" radius="md" withBorder>
-          <CSVUploader onUploadComplete={handleUploadComplete} />
-        </Paper>
+        <Paper p="xl" radius="md" className="galaxy-glass-panel">
+          {/* Hidden file input */}
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileSelect}
+            accept=".csv,.xlsx,.xls"
+            style={{ display: 'none' }}
+          />
 
-        {/* Help Text */}
-        <Text size="sm" c="dimmed" mt="lg" ta="center">
-          Your file should have a column named "domain", "website", or "url".
-          <br />
-          Company names and other data will be auto-detected if present.
-        </Text>
+          {/* Step 1: Select File */}
+          <Group mb="md">
+            <Button
+              onClick={() => fileInputRef.current?.click()}
+              variant="outline"
+              disabled={isUploading}
+            >
+              Browse...
+            </Button>
+            <Text c="dimmed">{file ? file.name : 'No file selected'}</Text>
+          </Group>
+
+          {/* Step 2: Options (only show after file selected) */}
+          {file && (
+            <>
+              <TextInput
+                label="List Name"
+                value={listName}
+                onChange={(e) => setListName(e.target.value)}
+                mb="md"
+              />
+              <Select
+                label="Partner Technology"
+                placeholder="Select partner"
+                value={partnerTech}
+                onChange={(v) => setPartnerTech(v || '')}
+                data={[
+                  { value: '', label: '(None)' },
+                  { value: 'Lucidworks', label: 'Lucidworks' },
+                  { value: 'Adobe Experience Manager', label: 'Adobe AEM' },
+                  { value: 'Amplience', label: 'Amplience' },
+                  { value: 'Spryker', label: 'Spryker' },
+                ]}
+                mb="md"
+              />
+
+              {/* Progress */}
+              {isUploading && (
+                <Progress value={progress} mb="md" animated />
+              )}
+
+              {/* Error */}
+              {error && (
+                <Alert color="red" icon={<IconX size={16} />} mb="md">
+                  {error}
+                </Alert>
+              )}
+
+              {/* Success */}
+              {success && (
+                <Alert color="green" icon={<IconCheck size={16} />} mb="md">
+                  Upload complete! Redirecting...
+                </Alert>
+              )}
+
+              {/* Upload Button */}
+              <Button
+                onClick={handleUpload}
+                loading={isUploading}
+                disabled={success}
+                leftSection={<IconUpload size={16} />}
+                fullWidth
+              >
+                Upload
+              </Button>
+            </>
+          )}
+        </Paper>
       </Container>
-    </div>
+    </GalaxyBackground>
   );
 }

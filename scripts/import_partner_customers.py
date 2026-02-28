@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PartnerForge: Import Known Partner Customers
+Arian: Import Known Partner Customers
 
 This script imports known customers of partner technologies (Amplience, Spryker, Adobe Commerce)
 by verifying them with BuiltWith and adding them as displacement targets.
@@ -15,7 +15,7 @@ import subprocess
 import os
 import time
 
-DB_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/PartnerForge/data/partnerforge.db"
+DB_PATH = "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/AI/MarketingProject/Arian/data/arian.db"
 BUILTWITH_API_KEY = os.getenv("BUILTWITH_API_KEY", "8fd992ef-88d0-4554-a20b-364e97b2d302")
 
 # Known customers by partner technology (from public sources)
@@ -188,7 +188,7 @@ def insert_displacement_target(conn: sqlite3.Connection, target: dict, partner_t
 
 
 def main():
-    print("🚀 PartnerForge: Import Known Partner Customers")
+    print("🚀 Arian: Import Known Partner Customers")
     print("=" * 60)
 
     conn = sqlite3.connect(DB_PATH)

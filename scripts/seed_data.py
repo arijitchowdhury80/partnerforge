@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PartnerForge Data Seeding Script
+Arian Data Seeding Script
 
 Seeds the PostgreSQL database with sample data from the existing SQLite database.
 Migrates displacement targets, case studies, and other entities.
@@ -10,7 +10,7 @@ Usage:
 
 Environment:
     DATABASE_URL: PostgreSQL connection string
-    SQLITE_PATH: Path to source SQLite database (default: data/partnerforge.db)
+    SQLITE_PATH: Path to source SQLite database (default: data/arian.db)
 """
 
 import os
@@ -48,7 +48,7 @@ logger = logging.getLogger(__name__)
 # Configuration
 # =============================================================================
 
-SQLITE_PATH = os.getenv("SQLITE_PATH", "data/partnerforge.db")
+SQLITE_PATH = os.getenv("SQLITE_PATH", "data/arian.db")
 
 # Sample data for when SQLite isn't available
 SAMPLE_ACCOUNTS = [
@@ -570,11 +570,11 @@ def get_database_url() -> str:
     url = os.getenv("DATABASE_URL")
 
     if not url:
-        user = os.getenv("POSTGRES_USER", "partnerforge")
-        password = os.getenv("POSTGRES_PASSWORD", "partnerforge_dev_password")
+        user = os.getenv("POSTGRES_USER", "arian")
+        password = os.getenv("POSTGRES_PASSWORD", "arian_dev_password")
         host = os.getenv("POSTGRES_HOST", "localhost")
         port = os.getenv("POSTGRES_PORT", "5432")
-        db = os.getenv("POSTGRES_DB", "partnerforge")
+        db = os.getenv("POSTGRES_DB", "arian")
         url = f"postgresql://{user}:{password}@{host}:{port}/{db}"
 
     return url
@@ -586,7 +586,7 @@ def get_database_url() -> str:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Seed PartnerForge database with data"
+        description="Seed Arian database with data"
     )
     parser.add_argument(
         "--source",

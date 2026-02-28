@@ -1,5 +1,5 @@
 /**
- * Supabase Client for PartnerForge
+ * Supabase Client for Arian
  *
  * Direct connection to Supabase for all data operations.
  * No more Railway headaches!

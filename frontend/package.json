@@ -1,7 +1,7 @@
 {
-  "name": "partnerforge-frontend",
+  "name": "arian-frontend",
   "version": "2.0.0",
-  "description": "PartnerForge - Enterprise ABM Intelligence Platform",
+  "description": "Arian - Enterprise ABM Intelligence Platform",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -38,6 +38,7 @@
     "react-dom": "^18.2.0",
     "react-dropzone": "^15.0.0",
     "react-router-dom": "^6.21.2",
+    "reactflow": "^11.11.4",
     "tailwind-merge": "^2.2.0",
     "xlsx": "^0.18.5",
     "yahoo-finance2": "^3.13.1"

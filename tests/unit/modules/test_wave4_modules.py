@@ -232,7 +232,7 @@ def mock_full_context(mock_wave1_context) -> Dict[str, ModuleResult]:
     """
     base_citation = SourceCitation(
         source_type=SourceType.MANUAL_ENTRY,
-        source_url="https://partnerforge.internal/test",
+        source_url="https://arian.internal/test",
         retrieved_at=datetime.utcnow(),
     )
 

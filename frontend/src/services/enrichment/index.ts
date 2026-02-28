@@ -57,9 +57,6 @@ export {
   // Yahoo Finance
   YahooFinanceClient,
   yahooFinanceClient,
-  formatFinancialNumber as formatYahooFinancialNumber,
-  formatPercentage as formatYahooPercentage,
-  isPublicCompany,
   type YahooQuoteSummary,
   type YahooIncomeStatement,
   type YahooBalanceSheet,

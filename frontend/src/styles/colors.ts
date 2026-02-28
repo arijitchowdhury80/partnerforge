@@ -1,5 +1,5 @@
 /**
- * PartnerForge Color System
+ * Arian Color System
  *
  * Single source of truth for all colors in the application.
  * Uses Algolia brand colors as foundation with enterprise-grade contrast.

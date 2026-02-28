@@ -337,7 +337,7 @@ describe('generateFilename', () => {
   it('creates valid filename with date', () => {
     const filename = generateFilename('csv');
 
-    expect(filename).toContain('partnerforge-export');
+    expect(filename).toContain('arian-export');
     expect(filename).toContain('2026-02-26');
     expect(filename).toMatch(/\.csv$/);
   });
@@ -352,7 +352,7 @@ describe('generateFilename', () => {
     const filename = generateFilename('csv', 'hot-leads');
 
     expect(filename).toContain('hot-leads');
-    expect(filename).not.toContain('partnerforge-export');
+    expect(filename).not.toContain('arian-export');
   });
 
   it('sanitizes prefix to be filename-safe', () => {
