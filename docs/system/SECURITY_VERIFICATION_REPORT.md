@@ -36,7 +36,7 @@ The following issues from the initial audit have been properly remediated:
 ### HIGH-2: CORS Configuration (VERIFIED ✅)
 **File:** `backend/app/config.py:80`
 ```python
-CORS_ORIGINS: str = "https://arian.vercel.app"
+CORS_ORIGINS: str = "https://algolia-arian.vercel.app"
 ```
 - Defaults to production URL instead of wildcard
 
@@ -222,7 +222,7 @@ self.send_header('Access-Control-Allow-Origin', '*')
 
 **Remediation Required:**
 ```python
-allowed_origin = os.getenv("CORS_ORIGIN", "https://arian.vercel.app")
+allowed_origin = os.getenv("CORS_ORIGIN", "https://algolia-arian.vercel.app")
 self.send_header('Access-Control-Allow-Origin', allowed_origin)
 ```
 

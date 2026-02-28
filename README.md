@@ -12,7 +12,7 @@ Displacement Targets = Companies Using Partner Tech − Existing Algolia Custome
 
 | Service | URL |
 |---------|-----|
-| **Frontend** | https://arian.vercel.app |
+| **Frontend** | https://algolia-arian.vercel.app |
 | **Database** | Supabase (PostgreSQL + REST API) |
 | **Repository** | https://github.com/arijitchowdhury80/arian |
 
@@ -26,7 +26,7 @@ Displacement Targets = Companies Using Partner Tech − Existing Algolia Custome
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                    Vercel (Frontend)                             │
-│                 arian.vercel.app                          │
+│             algolia-arian.vercel.app                       │
 │              React 18 + TypeScript + Mantine                     │
 └─────────────────────────────────────────────────────────────────┘
                               │

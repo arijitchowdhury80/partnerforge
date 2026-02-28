@@ -22,7 +22,7 @@ Displacement Targets = Companies Using Partner Tech − Existing Algolia Custome
 
 | Service | URL | Status |
 |---------|-----|--------|
-| **Frontend** | https://arian.vercel.app | ✅ Live |
+| **Frontend** | https://algolia-arian.vercel.app | ✅ Live |
 | **Database** | Supabase (xbitqeejsgqnwvxlnjra) | ✅ Live |
 | **Repository** | https://github.com/arijitchowdhury80/arian | ✅ Active |
 

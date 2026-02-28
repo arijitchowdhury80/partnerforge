@@ -251,12 +251,12 @@ CREATE POLICY "authenticated_read_feedback" ON data_feedback
 
 1. **Update config.py** default:
    ```python
-   CORS_ORIGINS: str = "https://arian.vercel.app"
+   CORS_ORIGINS: str = "https://algolia-arian.vercel.app"
    ```
 
 2. **Add development origins via environment:**
    ```
-   CORS_ORIGINS=http://localhost:5173,http://localhost:3000,https://arian.vercel.app
+   CORS_ORIGINS=http://localhost:5173,http://localhost:3000,https://algolia-arian.vercel.app
    ```
 
 **Files to Modify:**

@@ -15,7 +15,7 @@ Users → Vercel (React) → Supabase (PostgreSQL + PostgREST)
 ```
 
 **Live URLs:**
-- Frontend: https://arian.vercel.app
+- Frontend: https://algolia-arian.vercel.app
 - Database: Supabase project `xbitqeejsgqnwvxlnjra`
 
 ---

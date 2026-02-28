@@ -10,7 +10,7 @@
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                    Vercel (Frontend)                             │
-│                 arian.vercel.app                          │
+│             algolia-arian.vercel.app                       │
 │              React 18 + TypeScript + Mantine                     │
 └─────────────────────────────────────────────────────────────────┘
                               │
@@ -141,7 +141,7 @@ python scripts/migrate_to_supabase.py
 
 | Environment | Database | Frontend |
 |-------------|----------|----------|
-| Production | `xbitqeejsgqnwvxlnjra.supabase.co` | `arian.vercel.app` |
+| Production | `xbitqeejsgqnwvxlnjra.supabase.co` | `algolia-arian.vercel.app` |
 | Local | Supabase (same) | `localhost:5173` |
 
 ---

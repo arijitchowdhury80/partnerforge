@@ -101,5 +101,5 @@ Frontend (React) → Supabase REST API → PostgreSQL
 ## Deployment
 
 - **Frontend**: Vercel (auto-deploys from main branch)
-- **URL**: https://arian.vercel.app
+- **URL**: https://algolia-arian.vercel.app
 - **Database**: Supabase (project: xbitqeejsgqnwvxlnjra)

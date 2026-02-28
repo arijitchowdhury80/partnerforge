@@ -2,7 +2,7 @@
 
 **Date:** 2026-02-26
 **Auditor:** Claude (Code-Based Analysis)
-**App URL:** https://arian.vercel.app
+**App URL:** https://algolia-arian.vercel.app
 **Version:** Post-Performance Cleanup
 
 ---
