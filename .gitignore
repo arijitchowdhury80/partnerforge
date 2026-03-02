@@ -68,6 +68,15 @@ temp/
 *.csv
 !output/*.csv
 
+# Enrichment outputs - temporary files, do not commit
+data/enrichment*.json
+data/enrichments/
+data/*.sql
+data/*_batch.json
+data/*_insights.json
+data/*_financials.json
+data/*_enrichment.json
+
 # Node.js
 node_modules/
 .npm/

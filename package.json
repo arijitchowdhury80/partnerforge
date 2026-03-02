@@ -1,5 +1,10 @@
 {
   "devDependencies": {
-    "@supabase/supabase-js": "^2.98.0"
+    "@supabase/supabase-js": "^2.98.0",
+    "@types/node": "^25.3.3",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "yahoo-finance2": "^3.13.1"
   }
 }
