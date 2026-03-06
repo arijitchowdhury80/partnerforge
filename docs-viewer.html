@@ -1,0 +1,2376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algolia Arian - Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --algolia-blue: #003DFF;
+            --algolia-space-gray: #21243D;
+            --algolia-purple: #5468FF;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-700: #374151;
+            --gray-900: #111827;
+            --sidebar-width: 280px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+            line-height: 1.6;
+            color: var(--gray-900);
+            background: var(--gray-50);
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: white;
+            border-right: 1px solid var(--gray-200);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid var(--gray-200);
+            background: linear-gradient(135deg, var(--algolia-blue) 0%, var(--algolia-purple) 100%);
+        }
+
+        .sidebar-header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .sidebar-header p {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .nav-section {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .nav-section-title {
+            padding: 8px 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gray-700);
+        }
+
+        .nav-item {
+            display: block;
+            padding: 10px 20px 10px 32px;
+            font-size: 14px;
+            color: var(--gray-700);
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: var(--gray-50);
+            color: var(--algolia-blue);
+        }
+
+        .nav-item.active {
+            background: var(--gray-100);
+            color: var(--algolia-blue);
+            font-weight: 600;
+            border-left: 3px solid var(--algolia-blue);
+            padding-left: 29px;
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--algolia-blue);
+            border-radius: 50%;
+        }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 40px 60px;
+            max-width: 1200px;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--algolia-space-gray);
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--algolia-space-gray);
+            margin-top: 48px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        h3 {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--algolia-space-gray);
+            margin-top: 32px;
+            margin-bottom: 16px;
+        }
+
+        h4 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-top: 24px;
+            margin-bottom: 12px;
+        }
+
+        p {
+            margin-bottom: 16px;
+            color: var(--gray-700);
+            font-size: 16px;
+        }
+
+        /* Status Badges */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-left: 12px;
+            vertical-align: middle;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-pending {
+            background: #f3e8ff;
+            color: #6b21a8;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        th {
+            background: var(--gray-100);
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--gray-700);
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--gray-200);
+            font-size: 15px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: var(--gray-50);
+        }
+
+        /* Code Blocks */
+        pre {
+            background: var(--algolia-space-gray);
+            color: #e5e7eb;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        code {
+            background: var(--gray-100);
+            color: var(--algolia-purple);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: 'Monaco', 'Menlo', monospace;
+        }
+
+        pre code {
+            background: transparent;
+            color: inherit;
+            padding: 0;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 16px 0 16px 24px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            color: var(--gray-700);
+            font-size: 15px;
+        }
+
+        /* Checkboxes */
+        li input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        /* Blockquotes */
+        blockquote {
+            border-left: 4px solid var(--algolia-blue);
+            padding: 16px 20px;
+            margin: 20px 0;
+            background: var(--gray-50);
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* Info Boxes */
+        .info-box {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-left: 4px solid var(--algolia-blue);
+            padding: 20px;
+            margin: 24px 0;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-box h4 {
+            margin-top: 0;
+            color: var(--algolia-blue);
+        }
+
+        .warning-box {
+            border-left-color: #f59e0b;
+        }
+
+        .warning-box h4 {
+            color: #f59e0b;
+        }
+
+        .success-box {
+            border-left-color: #10b981;
+        }
+
+        .success-box h4 {
+            color: #10b981;
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 64px;
+            padding-top: 32px;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .nav-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 24px;
+            background: var(--algolia-blue);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-button:hover {
+            background: var(--algolia-purple);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 61, 255, 0.3);
+        }
+
+        .nav-button-secondary {
+            background: white;
+            color: var(--algolia-blue);
+            border: 2px solid var(--algolia-blue);
+        }
+
+        .nav-button-secondary:hover {
+            background: var(--gray-50);
+        }
+
+        /* Print Styles */
+        @media print {
+            .sidebar {
+                display: none;
+            }
+            .main {
+                margin-left: 0;
+                max-width: 100%;
+            }
+            .nav-buttons {
+                display: none;
+            }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .mobile-toggle {
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                z-index: 200;
+                background: var(--algolia-blue);
+                color: white;
+                border: none;
+                padding: 12px 16px;
+                border-radius: 8px;
+                cursor: pointer;
+                display: block;
+            }
+        }
+
+        .mobile-toggle {
+            display: none;
+        }
+
+        /* Horizontal Rule */
+        hr {
+            border: none;
+            border-top: 1px solid var(--gray-200);
+            margin: 32px 0;
+        }
+
+        /* Links */
+        a {
+            color: var(--algolia-blue);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Metric Cards */
+        .metric-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 24px 0;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--gray-200);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-label {
+            font-size: 13px;
+            color: var(--gray-700);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--algolia-blue);
+        }
+
+        .metric-subtext {
+            font-size: 13px;
+            color: var(--gray-700);
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <button class="mobile-toggle" onclick="toggleSidebar()">☰ Menu</button>
+
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1>Algolia Arian</h1>
+                <p>Partner Intelligence Platform</p>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Getting Started</div>
+                <a class="nav-item active" onclick="showSection('overview')">Overview & Welcome</a>
+                <a class="nav-item" onclick="showSection('quickstart')">Quick Start Guide</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Architecture</div>
+                <a class="nav-item" onclick="showSection('architecture')">System Architecture</a>
+                <a class="nav-item" onclick="showSection('database')">Database Design</a>
+                <a class="nav-item" onclick="showSection('backend')">Backend Setup</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Implementation</div>
+                <a class="nav-item" onclick="showSection('roadmap')">Implementation Roadmap</a>
+                <a class="nav-item" onclick="showSection('code-standards')">Code Standards</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Business</div>
+                <a class="nav-item" onclick="showSection('executive-summary')">Executive Summary</a>
+                <a class="nav-item" onclick="showSection('budget')">Budget & ROI</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Reference</div>
+                <a class="nav-item" onclick="showSection('documentation-audit')">Documentation Audit</a>
+                <a class="nav-item" onclick="showSection('folder-structure')">Folder Structure</a>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Overview Section -->
+            <section id="overview" class="content-section active">
+                <h1>Welcome to Algolia Arian <span class="badge badge-success">Production Ready</span></h1>
+                <p style="font-size: 18px; color: var(--gray-700); margin-bottom: 32px;">
+                    Partner Intelligence Platform for finding companies using partner technologies who aren't using Algolia — displacement opportunities for co-sell motions.
+                </p>
+
+                <div class="metric-cards">
+                    <div class="metric-card">
+                        <div class="metric-label">Annual Cost</div>
+                        <div class="metric-value">$1,066</div>
+                        <div class="metric-subtext">$1.07 per audit</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Expected ROI</div>
+                        <div class="metric-value">704x</div>
+                        <div class="metric-subtext">$750K pipeline</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Capacity</div>
+                        <div class="metric-value">1,000</div>
+                        <div class="metric-subtext">audits/year</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Payback Period</div>
+                        <div class="metric-value">&lt;1</div>
+                        <div class="metric-subtext">month</div>
+                    </div>
+                </div>
+
+                <h2>What is Algolia Arian?</h2>
+                <p>
+                    Algolia Arian is a comprehensive partner intelligence platform designed to identify and prioritize displacement opportunities. It helps sales teams find companies using partner technologies (Adobe AEM, Shopify, Amplience, Spryker, etc.) who are NOT using Algolia.
+                </p>
+
+                <div class="info-box">
+                    <h4>Core Formula</h4>
+                    <pre>Displacement Targets = Companies Using Partner Tech − Existing Algolia Customers</pre>
+                </div>
+
+                <h2>Key Features</h2>
+                <ul>
+                    <li><strong>Multi-Source Enrichment</strong> - Integrates data from SimilarWeb, BuiltWith, Yahoo Finance, SEC Edgar, and JSearch</li>
+                    <li><strong>Composite Scoring</strong> - 4-factor scoring model (Fit, Intent, Value, Displacement) with 0-100 point scale</li>
+                    <li><strong>Partner Coverage</strong> - Tracks ~2,700 Adobe AEM targets, 32 Amplience, 28 Spryker, and more</li>
+                    <li><strong>Real-Time Enrichment</strong> - Background job processing with progress tracking</li>
+                    <li><strong>Smart Caching</strong> - 7-day TTL cache saves 25% on API costs</li>
+                    <li><strong>Security First</strong> - Google SSO, Row Level Security, server-side API keys</li>
+                </ul>
+
+                <h2>Architecture Overview</h2>
+                <pre>
+┌─────────────────────────────────────────────────────────────────┐
+│                         Users                                    │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    Vercel (Frontend)                             │
+│             https://algolia-arian.vercel.app                     │
+│              React 18 + TypeScript + Mantine                     │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼ Direct REST API Calls
+┌─────────────────────────────────────────────────────────────────┐
+│                    Supabase (Database + API)                     │
+│              xbitqeejsgqnwvxlnjra.supabase.co                    │
+│            PostgreSQL + PostgREST + Row Level Security           │
+└─────────────────────────────────────────────────────────────────┘
+                </pre>
+
+                <h2>Project Status</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Status</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Frontend (Partner Intelligence)</td>
+                            <td><span class="badge badge-success">Production</span></td>
+                            <td>Live at algolia-arian.vercel.app</td>
+                        </tr>
+                        <tr>
+                            <td>Database Schema</td>
+                            <td><span class="badge badge-success">Complete</span></td>
+                            <td>PostgreSQL on Supabase</td>
+                        </tr>
+                        <tr>
+                            <td>Backend Infrastructure</td>
+                            <td><span class="badge badge-pending">Week 1-2</span></td>
+                            <td>Edge Functions + Workers to be built</td>
+                        </tr>
+                        <tr>
+                            <td>Search Audit Feature</td>
+                            <td><span class="badge badge-info">Planned</span></td>
+                            <td>Complete specification ready</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>Quick Links</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Resource</th>
+                            <th>URL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Live Dashboard</strong></td>
+                            <td><a href="https://algolia-arian.vercel.app" target="_blank">https://algolia-arian.vercel.app</a></td>
+                        </tr>
+                        <tr>
+                            <td><strong>GitHub Repository</strong></td>
+                            <td><a href="https://github.com/arijitchowdhury80/arian" target="_blank">github.com/arijitchowdhury80/arian</a></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Supabase Project</strong></td>
+                            <td><a href="https://supabase.com/dashboard/project/xbitqeejsgqnwvxlnjra" target="_blank">supabase.com/dashboard</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="nav-buttons">
+                    <span></span>
+                    <a class="nav-button" onclick="showSection('quickstart')">Next: Quick Start →</a>
+                </div>
+            </section>
+
+            <!-- Quick Start Section -->
+            <section id="quickstart" class="content-section">
+                <h1>Quick Start Guide</h1>
+
+                <h2>For Users</h2>
+                <p>Access the live platform at <a href="https://algolia-arian.vercel.app" target="_blank">https://algolia-arian.vercel.app</a></p>
+
+                <ol>
+                    <li><strong>Sign In</strong> - Use your @algolia.com Google account</li>
+                    <li><strong>Select Partner</strong> - Choose from Adobe AEM, Amplience, Spryker, etc.</li>
+                    <li><strong>View Targets</strong> - Browse displacement opportunities sorted by ICP score</li>
+                    <li><strong>Enrich Companies</strong> - Click on any company to trigger enrichment</li>
+                    <li><strong>Review Data</strong> - View traffic, tech stack, financials, hiring signals</li>
+                </ol>
+
+                <h2>For Developers</h2>
+
+                <h3>Prerequisites</h3>
+                <ul>
+                    <li>Node.js 20+</li>
+                    <li>npm or yarn</li>
+                    <li>Git</li>
+                </ul>
+
+                <h3>Local Development Setup</h3>
+                <pre>
+# Clone repository
+git clone https://github.com/arijitchowdhury80/arian.git
+cd arian
+
+# Install dependencies
+cd frontend
+npm install
+
+# Set up environment variables
+cp .env.example .env.local
+# Edit .env.local with your Supabase credentials
+
+# Start development server
+npm run dev
+
+# Open browser
+# http://localhost:5173
+                </pre>
+
+                <h3>Environment Variables</h3>
+                <pre>
+# Frontend (.env.local)
+VITE_SUPABASE_URL=https://xbitqeejsgqnwvxlnjra.supabase.co
+VITE_SUPABASE_ANON_KEY=your_anon_key_here
+
+# Backend (Week 1-2 - to be created)
+SUPABASE_SERVICE_KEY=your_service_key_here
+REDIS_URL=redis://localhost:6379
+SIMILARWEB_API_KEY=your_key_here
+BUILTWITH_API_KEY=your_key_here
+                </pre>
+
+                <h3>Project Structure</h3>
+                <pre>
+algolia-arian/
+├── frontend/                 # React application (Production)
+│   ├── src/
+│   │   ├── pages/           # Dashboard, TargetList, CompanyDrawer
+│   │   ├── components/      # UI components
+│   │   ├── services/        # API clients, enrichment, scoring
+│   │   └── lib/             # Constants, utilities
+│   └── package.json
+│
+├── backend/                  # Server-side code (Week 1-2)
+│   ├── api/                 # Express routes
+│   ├── services/            # API clients (SimilarWeb, BuiltWith, etc.)
+│   ├── workers/             # Background jobs (BullMQ)
+│   └── cache/               # Redis client
+│
+├── data/                     # Database migrations & seeds
+│   ├── migrations/
+│   └── seeds/
+│
+├── docs/                     # Documentation
+│   ├── ARCHITECTURE.md
+│   ├── CODE_STANDARDS.md
+│   ├── EXECUTIVE_SUMMARY.md
+│   └── ...
+│
+└── prototypes/               # UI mockups
+    └── index-v2.html        # Search Audit prototype
+                </pre>
+
+                <h2>Common Commands</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Command</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>npm run dev</code></td>
+                            <td>Start development server</td>
+                        </tr>
+                        <tr>
+                            <td><code>npm run build</code></td>
+                            <td>Build for production</td>
+                        </tr>
+                        <tr>
+                            <td><code>npm run preview</code></td>
+                            <td>Preview production build</td>
+                        </tr>
+                        <tr>
+                            <td><code>npm run lint</code></td>
+                            <td>Run ESLint</td>
+                        </tr>
+                        <tr>
+                            <td><code>npm test</code></td>
+                            <td>Run tests (Week 5-6)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="warning-box info-box">
+                    <h4>⚠️ Important Notes</h4>
+                    <ul>
+                        <li>Backend infrastructure (Week 1-2) is not yet implemented</li>
+                        <li>API keys are currently in frontend (will be moved to Edge Functions)</li>
+                        <li>No job queue yet (enrichment blocks UI)</li>
+                        <li>Security improvements needed before production use</li>
+                    </ul>
+                </div>
+
+                <div class="nav-buttons">
+                    <a class="nav-button nav-button-secondary" onclick="showSection('overview')">← Previous: Overview</a>
+                    <a class="nav-button" onclick="showSection('architecture')">Next: Architecture →</a>
+                </div>
+            </section>
+
+            <!-- Architecture Section -->
+            <section id="architecture" class="content-section">
+                <h1>System Architecture <span class="badge badge-info">Version 4.0</span></h1>
+
+                <p style="font-size: 18px;">
+                    Clean, scalable architecture designed for 1,000 audits/year with free tier infrastructure.
+                </p>
+
+                <h2>Two Projects, Shared Infrastructure</h2>
+
+                <div class="info-box">
+                    <h4>Algolia Arian (Partner Intelligence Platform)</h4>
+                    <p><strong>Location:</strong> <code>/frontend/</code></p>
+                    <p><strong>Purpose:</strong> Find companies using partner tech who aren't using Algolia</p>
+                    <p><strong>URL:</strong> <a href="https://algolia-arian.vercel.app" target="_blank">https://algolia-arian.vercel.app</a></p>
+                    <p><strong>Status:</strong> <span class="badge badge-success">Production</span></p>
+                </div>
+
+                <div class="info-box warning-box">
+                    <h4>Search Audit Dashboard (SaaS Platform)</h4>
+                    <p><strong>Location:</strong> <code>/dashboard/</code></p>
+                    <p><strong>Purpose:</strong> Automated search audit platform</p>
+                    <p><strong>Status:</strong> <span class="badge badge-info">Planning Phase</span></p>
+                </div>
+
+                <h2>Database Strategy</h2>
+
+                <h3>Recommendation: PostgreSQL Only (for 1,000 audits/year)</h3>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Criteria</th>
+                            <th>PostgreSQL Only</th>
+                            <th>Hybrid (+ Neo4j)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Annual Cost</strong></td>
+                            <td style="color: green;">$0 (free tier)</td>
+                            <td style="color: orange;">$780</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Query Performance</strong></td>
+                            <td>Fast for 1K audits</td>
+                            <td>Faster for complex relationships</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Team Expertise</strong></td>
+                            <td style="color: green;">High (SQL)</td>
+                            <td style="color: orange;">Low (Cypher)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Maintenance</strong></td>
+                            <td style="color: green;">Low</td>
+                            <td style="color: orange;">Medium (ETL jobs)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="success-box info-box">
+                    <h4>✅ Decision: PostgreSQL Only</h4>
+                    <p>Use PostgreSQL for the first year. Add Neo4j when you scale to 5,000+ audits/year and graph queries become critical.</p>
+                </div>
+
+                <h2>Backend Architecture</h2>
+
+                <h3>Current State (Insecure)</h3>
+                <pre>
+React Frontend → External APIs (API keys exposed in browser!)
+                </pre>
+
+                <h3>Target State (Secure)</h3>
+                <pre>
+React Frontend
+    ↓ POST /enrich-company
+Supabase Edge Function (Deno)
+    ↓ Queue job
+Redis (BullMQ)
+    ↓ Process job
+Background Worker → External APIs (keys secure on server)
+    ↓ Store result
+PostgreSQL (Supabase)
+                </pre>
+
+                <h2>Key Technologies</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Technology</th>
+                            <th>Why</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Frontend</strong></td>
+                            <td>React + TypeScript + Vite</td>
+                            <td>Team expertise, fast development</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Database</strong></td>
+                            <td>PostgreSQL (Supabase)</td>
+                            <td>Mature, cost-effective, JSONB flexibility</td>
+                        </tr>
+                        <tr>
+                            <td><strong>API</strong></td>
+                            <td>Supabase REST API + Edge Functions</td>
+                            <td>Auto-generated, serverless</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cache</strong></td>
+                            <td>Redis (Upstash)</td>
+                            <td>Fast, serverless, free tier</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Queue</strong></td>
+                            <td>BullMQ</td>
+                            <td>Reliable, feature-rich</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Logging</strong></td>
+                            <td>Pino + OpenTelemetry</td>
+                            <td>Structured, distributed tracing</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Monitoring</strong></td>
+                            <td>Grafana + Loki</td>
+                            <td>Free, powerful</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Hosting</strong></td>
+                            <td>Vercel</td>
+                            <td>Auto-deploy, free tier</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>Security Architecture</h2>
+
+                <h3>Authentication</h3>
+                <ul>
+                    <li><strong>Google OAuth SSO</strong> - Restricted to @algolia.com domain</li>
+                    <li><strong>Row Level Security (RLS)</strong> - Database-level access control</li>
+                    <li><strong>User Roles</strong> - Admin, User, Viewer with granular permissions</li>
+                </ul>
+
+                <h3>API Key Management</h3>
+                <div class="warning-box info-box">
+                    <h4>❌ NEVER: API Keys in Frontend</h4>
+                    <pre>
+// ❌ WRONG - Exposed in browser bundle
+const SIMILARWEB_API_KEY = 'sk_live_abc123';
+                    </pre>
+                </div>
+
+                <div class="success-box info-box">
+                    <h4>✅ ALWAYS: API Keys Server-Side</h4>
+                    <pre>
+// ✅ CORRECT - Server-side only
+// Edge Function
+const apiKey = Deno.env.get('SIMILARWEB_API_KEY')!;
+                    </pre>
+                </div>
+
+                <h2>Caching Strategy</h2>
+
+                <h3>Two-Tier Caching</h3>
+                <ol>
+                    <li><strong>Redis (Hot Cache)</strong> - 7 day TTL, sub-50ms response</li>
+                    <li><strong>PostgreSQL (Permanent Storage)</strong> - Historical analysis</li>
+                </ol>
+
+                <h3>Cache Hit Rate at 1,000 Audits/Year</h3>
+                <ul>
+                    <li><strong>With 7-day TTL:</strong> ~25% hit rate</li>
+                    <li><strong>API cost savings:</strong> $350/year (25% of $1,400)</li>
+                    <li><strong>Net API cost:</strong> $1,051/year</li>
+                </ul>
+
+                <h2>Critical Decisions Made</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Decision</th>
+                            <th>Choice</th>
+                            <th>Rationale</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Database</strong></td>
+                            <td>PostgreSQL only</td>
+                            <td>Sufficient for 1K audits, free tier</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Graph DB</strong></td>
+                            <td>Defer to 5K+ audits</td>
+                            <td>Not needed at current scale</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Caching TTL</strong></td>
+                            <td>7 days</td>
+                            <td>25% savings, acceptable freshness</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Infrastructure</strong></td>
+                            <td>Free tier</td>
+                            <td>Using 0.5% of capacity</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Backend</strong></td>
+                            <td>Edge Functions + Workers</td>
+                            <td>Serverless, secure, cost-effective</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="nav-buttons">
+                    <a class="nav-button nav-button-secondary" onclick="showSection('quickstart')">← Previous: Quick Start</a>
+                    <a class="nav-button" onclick="showSection('database')">Next: Database Design →</a>
+                </div>
+            </section>
+
+            <!-- Database Section -->
+            <section id="database" class="content-section">
+                <h1>Database Design <span class="badge badge-pending">Week 1</span></h1>
+
+                <h2>Time-Series Architecture</h2>
+                <p>
+                    Algolia Arian uses a lightweight time-series architecture where companies are minimal entities and all enrichment data is stored as point-in-time snapshots in audits.
+                </p>
+
+                <div class="info-box">
+                    <h4>Design Philosophy</h4>
+                    <ul>
+                        <li><strong>Companies are lightweight entities</strong> - Just domain + name</li>
+                        <li><strong>Audits are point-in-time snapshots</strong> - All enrichment data in JSONB</li>
+                        <li><strong>Track changes over time</strong> - Query: "What was Costco's traffic 3 months ago?"</li>
+                    </ul>
+                </div>
+
+                <h2>Schema Overview</h2>
+
+                <h3>Companies Table</h3>
+                <pre>
+CREATE TABLE companies (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  domain VARCHAR(255) UNIQUE NOT NULL,
+  name VARCHAR(255),
+
+  -- Metadata
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_companies_domain ON companies(domain);
+                </pre>
+
+                <h3>Audits Table</h3>
+                <pre>
+CREATE TABLE audits (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_id UUID NOT NULL REFERENCES companies(id),
+
+  -- Audit metadata
+  audit_type VARCHAR(50) NOT NULL,  -- 'partner-intel' or 'search-audit'
+  status VARCHAR(50) NOT NULL,      -- 'pending', 'running', 'completed', 'failed'
+
+  -- Enrichment data (all API responses)
+  data JSONB NOT NULL,
+
+  -- Scoring
+  score NUMERIC(5,2),
+  score_breakdown JSONB,
+
+  -- Metadata
+  created_at TIMESTAMP DEFAULT NOW(),
+  created_by UUID,
+  completed_at TIMESTAMP
+);
+
+CREATE INDEX idx_audits_company_id ON audits(company_id);
+CREATE INDEX idx_audits_audit_type ON audits(audit_type);
+CREATE INDEX idx_audits_status ON audits(status);
+CREATE INDEX idx_audits_created_at ON audits(created_at DESC);
+                </pre>
+
+                <h3>Enrichment Cache Table</h3>
+                <pre>
+CREATE TABLE enrichment_cache (
+  key VARCHAR(255) PRIMARY KEY,
+  provider VARCHAR(50) NOT NULL,
+  endpoint VARCHAR(255) NOT NULL,
+
+  -- Cached data
+  data JSONB NOT NULL,
+
+  -- Cache metadata
+  created_at TIMESTAMP DEFAULT NOW(),
+  expires_at TIMESTAMP NOT NULL,
+  hit_count INTEGER DEFAULT 0
+);
+
+CREATE INDEX idx_cache_provider ON enrichment_cache(provider);
+CREATE INDEX idx_cache_expires_at ON enrichment_cache(expires_at);
+                </pre>
+
+                <h2>Why JSONB?</h2>
+                <ul>
+                    <li><strong>Flexible schema</strong> - Different audit types have different data</li>
+                    <li><strong>Fast queries</strong> - GIN indexes for JSONB queries</li>
+                    <li><strong>No complex migrations</strong> - Add new fields without schema changes</li>
+                    <li><strong>Point-in-time snapshots</strong> - Preserve exact API responses</li>
+                </ul>
+
+                <h2>Example Queries</h2>
+
+                <h3>Get Latest Audit for a Company</h3>
+                <pre>
+SELECT * FROM audits
+WHERE company_id = '...'
+ORDER BY created_at DESC
+LIMIT 1;
+                </pre>
+
+                <h3>Get Audit History</h3>
+                <pre>
+SELECT
+  created_at,
+  score,
+  data->'similarweb'->>'monthlyVisits' as visits
+FROM audits
+WHERE company_id = '...'
+ORDER BY created_at DESC;
+                </pre>
+
+                <h3>Find Hot Leads (Score > 80)</h3>
+                <pre>
+SELECT
+  c.domain,
+  a.score,
+  a.data->'builtwith'->'technologies' as tech_stack
+FROM audits a
+JOIN companies c ON a.company_id = c.id
+WHERE a.audit_type = 'partner-intel'
+  AND a.score > 80
+  AND a.created_at > NOW() - INTERVAL '30 days'
+ORDER BY a.score DESC;
+                </pre>
+
+                <h2>Performance Optimization</h2>
+
+                <h3>GIN Index for JSONB</h3>
+                <pre>
+-- GIN index for JSONB queries
+CREATE INDEX idx_audits_data_gin ON audits USING GIN (data);
+
+-- Example query using GIN index:
+SELECT * FROM audits
+WHERE data @> '{"similarweb": {"monthlyVisits": 100000000}}';
+                </pre>
+
+                <h3>Partitioning (Future)</h3>
+                <pre>
+-- Partition audits by created_at (monthly)
+CREATE TABLE audits_2026_03 PARTITION OF audits
+  FOR VALUES FROM ('2026-03-01') TO ('2026-04-01');
+                </pre>
+
+                <h2>Migration Files</h2>
+                <p>All migration files are located in <code>data/migrations/</code></p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>File</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>001-initial-schema.sql</code></td>
+                            <td>Companies, audits, enrichment_cache tables</td>
+                        </tr>
+                        <tr>
+                            <td><code>002-add-indexes.sql</code></td>
+                            <td>Performance indexes (Week 2)</td>
+                        </tr>
+                        <tr>
+                            <td><code>003-add-rls.sql</code></td>
+                            <td>Row-level security policies (Week 1)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="nav-buttons">
+                    <a class="nav-button nav-button-secondary" onclick="showSection('architecture')">← Previous: Architecture</a>
+                    <a class="nav-button" onclick="showSection('backend')">Next: Backend Setup →</a>
+                </div>
+            </section>
+
+            <!-- Backend Section -->
+            <section id="backend" class="content-section">
+                <h1>Backend Setup <span class="badge badge-pending">Week 1-2</span></h1>
+
+                <p style="font-size: 18px;">
+                    All server-side code for Algolia-Arian application. Node.js + TypeScript + Express.
+                </p>
+
+                <div class="warning-box info-box">
+                    <h4>⚠️ Status: To Be Built</h4>
+                    <p>Backend infrastructure is planned for Week 1-2 of implementation roadmap. This section documents the intended structure and setup instructions.</p>
+                </div>
+
+                <h2>Directory Structure</h2>
+                <pre>
+backend/
+├── api/                    # API endpoints (Express routes)
+│   ├── partners/           # Partner Intelligence APIs
+│   ├── audits/             # Search Audit APIs
+│   └── enrichment/         # Enrichment APIs
+│
+├── services/               # Business logic & API clients
+│   ├── http-client.ts      # Base HTTP client (retry, cache, rate limit)
+│   ├── similarweb.ts       # SimilarWeb API client (14 endpoints)
+│   ├── builtwith.ts        # BuiltWith API client (7 endpoints)
+│   ├── yahoo-finance.ts    # Yahoo Finance client (5 endpoints)
+│   ├── apify.ts            # Apify client (3 actors)
+│   ├── apollo.ts           # Apollo.io client (2 endpoints)
+│   └── scoring.ts          # Composite scoring logic
+│
+├── workers/                # Background jobs (BullMQ)
+│   ├── enrichment-worker.ts    # Enrichment queue worker
+│   └── audit-worker.ts         # Audit execution worker
+│
+├── cache/                  # Redis cache layer
+│   └── redis-client.ts     # Redis connection & helpers
+│
+├── middleware/             # Express middleware
+│   ├── auth.ts             # Authentication
+│   ├── rate-limit.ts       # Rate limiting
+│   └── error-handler.ts    # Error handling
+│
+└── server.ts               # Express server entry point
+                </pre>
+
+                <h2>Technology Stack</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Technology</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Runtime</td>
+                            <td>Node.js</td>
+                            <td>JavaScript runtime</td>
+                        </tr>
+                        <tr>
+                            <td>Language</td>
+                            <td>TypeScript</td>
+                            <td>Type safety</td>
+                        </tr>
+                        <tr>
+                            <td>Framework</td>
+                            <td>Express</td>
+                            <td>REST API server</td>
+                        </tr>
+                        <tr>
+                            <td>Queue</td>
+                            <td>BullMQ + Redis</td>
+                            <td>Background job processing</td>
+                        </tr>
+                        <tr>
+                            <td>Cache</td>
+                            <td>Redis</td>
+                            <td>7-day TTL caching</td>
+                        </tr>
+                        <tr>
+                            <td>Database</td>
+                            <td>PostgreSQL (Supabase)</td>
+                            <td>Data persistence</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>Setup Instructions</h2>
+
+                <h3>Step 1: Initialize Project</h3>
+                <pre>
+cd backend/
+npm init -y
+npm install express typescript ts-node @types/node @types/express
+npm install bullmq redis ioredis
+npm install axios axios-retry
+npm install dotenv cors helmet compression
+npm install winston pino  # Logging
+                </pre>
+
+                <h3>Step 2: TypeScript Configuration</h3>
+                <pre>
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "outDir": "./dist",
+    "rootDir": "./",
+    "strict": true,
+    "esModuleInterop": true
+  }
+}
+                </pre>
+
+                <h3>Step 3: Environment Variables</h3>
+                <pre>
+# Server
+PORT=3001
+NODE_ENV=development
+
+# Database
+DATABASE_URL=postgresql://...
+
+# Redis
+REDIS_URL=redis://localhost:6379
+
+# API Keys (server-side only!)
+SIMILARWEB_API_KEY=...
+BUILTWITH_API_KEY=...
+YAHOO_FINANCE_API_KEY=...
+APIFY_API_KEY=...
+APOLLO_API_KEY=...
+
+# Cache TTLs (seconds)
+CACHE_TTL_STABLE=604800   # 7 days
+CACHE_TTL_DYNAMIC=86400   # 24 hours
+                </pre>
+
+                <h2>API Clients to Implement</h2>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Client</th>
+                            <th>Endpoints</th>
+                            <th>Key Data</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>SimilarWeb</strong></td>
+                            <td>14</td>
+                            <td>Traffic, engagement, competitors, keywords</td>
+                        </tr>
+                        <tr>
+                            <td><strong>BuiltWith</strong></td>
+                            <td>7</td>
+                            <td>Tech stack, partner relationships, financials</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Yahoo Finance</strong></td>
+                            <td>5</td>
+                            <td>Stock info, financials, analyst ratings</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Apify</strong></td>
+                            <td>3</td>
+                            <td>LinkedIn company data, jobs, profiles</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Apollo.io</strong></td>
+                            <td>2</td>
+                            <td>People search, intent signals</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>Running the Server</h2>
+
+                <h3>Development</h3>
+                <pre>
+npm run dev
+# Server runs on http://localhost:3001
+                </pre>
+
+                <h3>Production</h3>
+                <pre>
+npm run build
+npm start
+                </pre>
+
+                <div class="nav-buttons">
+                    <a class="nav-button nav-button-secondary" onclick="showSection('database')">← Previous: Database</a>
+                    <a class="nav-button" onclick="showSection('roadmap')">Next: Roadmap →</a>
+                </div>
+            </section>
+
+            <!-- Roadmap Section -->
+            <section id="roadmap" class="content-section">
+                <h1>Implementation Roadmap</h1>
+                <p style="font-size: 18px;">12-week plan to production-ready system with 1 FTE.</p>
+
+                <h2>Week 1-2: Foundation & Security</h2>
+                <div class="info-box">
+                    <h4>Days 1-5: Backend Setup</h4>
+                    <ul>
+                        <li>Set up Supabase Edge Functions</li>
+                        <li>Configure Google OAuth SSO (restrict to @algolia.com)</li>
+                        <li>Set up Redis (Upstash free tier)</li>
+                        <li>Create environment variable management</li>
+                        <li>Implement user roles (admin, user, viewer)</li>
+                    </ul>
+                </div>
+
+                <div class="info-box">
+                    <h4>Days 6-10: Security Migration</h4>
+                    <ul>
+                        <li>Move API keys to Edge Functions</li>
+                        <li>Remove all API keys from frontend code</li>
+                        <li>Test SSO flow end-to-end</li>
+                        <li>Verify RLS policies</li>
+                    </ul>
+                </div>
+
+                <h2>Week 3-4: Job Queue & Enrichment</h2>
+                <div class="info-box">
+                    <h4>Days 11-15: Job Queue</h4>
+                    <ul>
+                        <li>Implement Redis job queue (BullMQ)</li>
+                        <li>Create background worker</li>
+                        <li>Move enrichment orchestrator to server-side</li>
+                        <li>Add progress tracking</li>
+                    </ul>
+                </div>
+
+                <div class="info-box">
+                    <h4>Days 16-20: Rate Limiting & Caching</h4>
+                    <ul>
+                        <li>Implement rate limiting per service (Bottleneck)</li>
+                        <li>Add Redis caching layer (7-day TTL)</li>
+                        <li>Test cache hit rates</li>
+                        <li>Monitor API costs</li>
+                    </ul>
+                </div>
+
+                <h2>Week 5-6: Testing & Monitoring</h2>
+                <div class="info-box">
+                    <h4>Days 21-25: Testing</h4>
+                    <ul>
+                        <li>Unit tests (80%+ coverage required)</li>
+                        <li>Integration tests (real API calls)</li>
+                        <li>E2E tests (Playwright)</li>
+                        <li>Load testing (100 concurrent audits)</li>
+                    </ul>
+                </div>
+
+                <div class="info-box">
+                    <h4>Days 26-30: Monitoring</h4>
+                    <ul>
+                        <li>Structured logging (Pino)</li>
+                        <li>Distributed tracing (OpenTelemetry)</li>
+                        <li>Set up Grafana + Loki</li>
+                        <li>Cost tracking dashboard</li>
+                        <li>Error alerting (Slack)</li>
+                    </ul>
+                </div>
+
+                <h2>Week 7-8: Operational Features</h2>
+                <ul>
+                    <li>Webhook notifications (Slack)</li>
+                    <li>Deduplication service</li>
+                    <li>Manual cache refresh</li>
+                    <li>Audit retry logic</li>
+                </ul>
+
+                <h2>Week 9-10: User Experience</h2>
+                <ul>
+                    <li>Real-time progress (WebSocket)</li>
+                    <li>User activity dashboard</li>
+                    <li>Audit history & filtering</li>
+                    <li>Export to CSV/PDF</li>
+                </ul>
+
+                <h2>Week 11-12: Advanced Features</h2>
+                <ul>
+                    <li>Batch enrichment (CSV upload)</li>
+                    <li>Scheduled audits (cron)</li>
+                    <li>API rate limit dashboard</li>
+                    <li>Cost attribution per team</li>
+                </ul>
+
+                <h2>Milestones</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Week</th>
+                            <th>Milestone</th>
+                            <th>Deliverable</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2</td>
+                            <td>Secure Backend</td>
+                            <td>API keys moved to Edge Functions, SSO working</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Background Jobs</td>
+                            <td>Job queue operational, enrichment async</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Production Ready</td>
+                            <td>80% test coverage, monitoring in place</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>Operational Excellence</td>
+                            <td>Webhooks, dedup, retry logic</td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td>Enhanced UX</td>
+                            <td>Real-time updates, activity dashboard</td>
+                        </tr>
+                        <tr>
+                            <td>12</td>
+                            <td>Feature Complete</td>
+                            <td>Batch enrichment, scheduled audits</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="nav-buttons">
+                    <a class="nav-button nav-button-secondary" onclick="showSection('backend')">← Previous: Backend</a>
+                    <a class="nav-button" onclick="showSection('code-standards')">Next: Code Standards →</a>
+                </div>
+            </section>
+
+            <!-- Code Standards Section -->
+            <section id="code-standards" class="content-section">
+                <h1>Code Standards <span class="badge badge-warning">Mandatory</span></h1>
+                <p style="font-size: 18px;">23 non-negotiable golden rules enforced via pre-commit hooks and CI/CD.</p>
+
+                <h2>The Three Commandments</h2>
+                <div class="warning-box info-box">
+                    <h4>NON-NEGOTIABLE</h4>
+                    <ol>
+                        <li><strong>Every async function MUST have try-catch</strong></li>
+                        <li><strong>Every function MUST log entry/exit/errors</strong></li>
+                        <li><strong>Every function MUST have inline documentation</strong></li>
+                    </ol>
+                    <p>Code without these will be rejected in PR review.</p>
+                </div>
+
+                <h2>Quality Metrics (Enforced in CI)</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Threshold</th>
+                            <th>Tool</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Test Coverage</strong></td>
+                            <td>≥80%</td>
+                            <td>Jest/Vitest</td>
+                        </tr>
+                        <tr>
+                            <td><strong>TypeScript Strict</strong></td>
+                            <td>100%</td>
+                            <td>tsc --noEmit</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Linting Errors</strong></td>
+                            <td>0</td>
+                            <td>ESLint</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cyclomatic Complexity</strong></td>
+                            <td>≤10 per function</td>
+                            <td>ESLint plugin</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Function Length</strong></td>
+                            <td>≤50 lines</td>
+                            <td>ESLint plugin</td>
+                        </tr>
+                        <tr>
+                            <td><strong>File Length</strong></td>
+                            <td>≤500 lines</td>
+                            <td>Manual review</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>The 23 Golden Rules</h2>
+
+                <h3>Error Handling (Rules 1-5)</h3>
+                <ol>
+                    <li>Every async function has try-catch</li>
+                    <li>Use custom error classes</li>
+                    <li>Global error handler middleware</li>
+                    <li>Graceful degradation for optional data</li>
+                    <li>Retry logic with exponential backoff</li>
+                </ol>
+
+                <h3>Logging & Tracing (Rules 6-8)</h3>
+                <ol start="6">
+                    <li>Structured logging with Pino</li>
+                    <li>Log entry, exit, and errors</li>
+                    <li>Distributed tracing</li>
+                </ol>
+
+                <h3>TypeScript (Rules 9-12)</h3>
+                <ol start="9">
+                    <li>TypeScript strict mode always</li>
+                    <li>Type everything, no implicit any</li>
+                    <li>Use unknown instead of any</li>
+                    <li>Zod for runtime validation</li>
+                </ol>
+
+                <h3>Testing (Rules 13-15)</h3>
+                <ol start="13">
+                    <li>80% test coverage minimum</li>
+                    <li>Test naming: describe(name) > it(should...when...)</li>
+                    <li>AAA pattern: Arrange, Act, Assert</li>
+                </ol>
+
+                <h3>Documentation (Rules 16-17)</h3>
+                <ol start="16">
+                    <li>JSDoc for all public functions</li>
+                    <li>README per module</li>
+                </ol>
+
+                <h3>Security (Rules 18-20)</h3>
+                <ol start="18">
+                    <li>Never log sensitive data</li>
+                    <li>Input validation with Zod</li>
+                    <li>Rate limiting</li>
+                </ol>
+
+                <h3>Performance (Rules 21-23)</h3>
+                <ol start="21">
+                    <li>Cache expensive operations</li>
+                    <li>Parallel API calls</li>
+                    <li>Database query optimization</li>
+                </ol>
+
+                <h2>Example: Correct Error Handling</h2>
+                <pre>
+// ✅ CORRECT
+async function enrichCompany(domain: string): Promise<EnrichmentResult> {
+  logger.info({ domain }, 'Starting company enrichment');
+
+  try {
+    const traffic = await getTrafficData(domain);
+    const techStack = await getTechStack(domain);
+
+    logger.info({ domain, traffic, techStack }, 'Enrichment successful');
+    return { traffic, techStack };
+
+  } catch (error) {
+    logger.error({
+      domain,
+      error: error.message,
+      stack: error.stack,
+      context: 'enrichCompany'
+    }, 'Enrichment failed');
+
+    throw new AppError(
+      `Failed to enrich company: ${domain}`,
+      'ENRICHMENT_ERROR',
+      500,
+      { domain, originalError: error.message }
+    );
+  }
+}
+                </pre>
+
+                <h2>Enforcement</h2>
+
+                <h3>Pre-Commit Hooks</h3>
+                <pre>
+# .husky/pre-commit
+echo "🔍 Running pre-commit checks..."
+
+# 1. Type check
+npm run type-check || exit 1
+
+# 2. Lint
+npm run lint || exit 1
+
+# 3. Format
+npm run format:check || exit 1
+
+# 4. Test
+npm test || exit 1
+
+echo "✅ All checks passed!"
+                </pre>
+
+                <h3>CI/CD Pipeline (GitHub Actions)</h3>
+                <ul>
+                    <li>Type check</li>
+                    <li>Lint check</li>
+                    <li>Format check</li>
+                    <li>Test with coverage (80% minimum)</li>
+                    <li>Build</li>
+                    <li>Deploy (if all pass)</li>
+                </ul>
+
+                <div class="success-box info-box">
+                    <h4>✅ Result</h4>
+                    <p>PRs that don't meet these standards will be automatically rejected. No exceptions.</p>
+                </div>
+
+                <div class="nav-buttons">
+                    <a class="nav-button nav-button-secondary" onclick="showSection('roadmap')">← Previous: Roadmap</a>
+                    <a class="nav-button" onclick="showSection('executive-summary')">Next: Executive Summary →</a>
+                </div>
+            </section>
+
+            <!-- Executive Summary Section -->
+            <section id="executive-summary" class="content-section">
+                <h1>Executive Summary</h1>
+                <p style="font-size: 20px; font-weight: 600; color: var(--algolia-blue);">Budget approval document for leadership</p>
+
+                <h2>Bottom Line Up Front</h2>
+                <div class="metric-cards">
+                    <div class="metric-card">
+                        <div class="metric-label">Total Year 1 Cost</div>
+                        <div class="metric-value">$1,066</div>
+                        <div class="metric-subtext">free tiers + API calls</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Cost per Audit</div>
+                        <div class="metric-value">$1.07</div>
+                        <div class="metric-subtext">fully loaded</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">ROI</div>
+                        <div class="metric-value">704x</div>
+                        <div class="metric-subtext">$750K pipeline / $1,066 cost</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Payback Period</div>
+                        <div class="metric-value">&lt;1</div>
+                        <div class="metric-subtext">month</div>
+                    </div>
+                </div>
+
+                <div class="success-box info-box" style="margin-top: 32px;">
+                    <h4>Budget Request: $1,279</h4>
+                    <p>Includes 20% contingency buffer</p>
+                </div>
+
+                <h2>What You Get for $1,066/Year</h2>
+                <ul>
+                    <li>✅ <strong>1,000 audits/year</strong> capacity (can scale to 5,000 on free tier)</li>
+                    <li>✅ <strong>Multi-source enrichment</strong> (SimilarWeb, BuiltWith, Yahoo Finance, SEC Edgar, JSearch)</li>
+                    <li>✅ <strong>7-day caching</strong> (saves 25% on API costs)</li>
+                    <li>✅ <strong>Production-ready hosting</strong> (Supabase + Vercel + Redis - all FREE tiers)</li>
+                    <li>✅ <strong>Google SSO</strong> (restricted to @algolia.com)</li>
+                    <li>✅ <strong>User roles</strong> (admin, user, viewer)</li>
+                    <li>✅ <strong>Slack webhooks</strong> (hot lead notifications)</li>
+                    <li>✅ <strong>Real-time progress</strong> (WebSocket updates)</li>
+                </ul>
+
+                <h2>Cost Breakdown</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Annual Cost</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Hosting (Free Tier)</strong></td>
+                            <td>$15</td>
+                            <td>Domain only</td>
+                        </tr>
+                        <tr>
+                            <td><strong>API Costs</strong></td>
+                            <td>$1,051</td>
+                            <td>1,000 audits with 25% caching</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Monitoring</strong></td>
+                            <td>$0</td>
+                            <td>Grafana free tier</td>
+                        </tr>
+                        <tr style="font-weight: 700; background: var(--gray-100);">
+                            <td><strong>Total</strong></td>
+                            <td><strong>$1,066</strong></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>Critical Decisions Required</h2>
+
+                <div class="info-box">
+                    <h4>Decision #1: Database Strategy</h4>
+                    <p><strong>Question:</strong> PostgreSQL only, or Hybrid (PostgreSQL + Neo4j)?</p>
+                    <p><strong>Recommendation:</strong> <span style="color: green; font-weight: 600;">PostgreSQL only for 1,000 audits/year</span></p>
+                    <p><strong>Rationale:</strong> Neo4j adds $780/year (73% cost increase). At 1,000 audits/year, graph queries not critical.</p>
+                    <table>
+                        <tr>
+                            <td>PostgreSQL only:</td>
+                            <td><strong>$1,066/year</strong></td>
+                        </tr>
+                        <tr>
+                            <td>With Neo4j:</td>
+                            <td><strong>$1,846/year</strong></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="info-box">
+                    <h4>Decision #2: Infrastructure Tier</h4>
+                    <p><strong>Question:</strong> Free tier or Pro tier?</p>
+                    <p><strong>Recommendation:</strong> <span style="color: green; font-weight: 600;">Free tier for first year</span></p>
+                    <p><strong>Rationale:</strong> Free tier supports up to 5,000 audits/year. Save $600/year while proving product-market fit.</p>
+                    <table>
+                        <tr>
+                            <td>Free tier:</td>
+                            <td><strong>$1,066/year</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Pro tier:</td>
+                            <td><strong>$1,666/year</strong></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="info-box warning-box">
+                    <h4>Decision #3: Budget Approval</h4>
+                    <p><strong>Budget Request:</strong> <span style="font-size: 24px; font-weight: 700; color: var(--algolia-blue);">$1,279</span></p>
+                    <table>
+                        <tr>
+                            <td>Operating costs:</td>
+                            <td>$1,066</td>
+                        </tr>
+                        <tr>
+                            <td>Contingency (20%):</td>
+                            <td>$213</td>
+                        </tr>
+                        <tr style="font-weight: 700;">
+                            <td><strong>Total:</strong></td>
+                            <td><strong>$1,279</strong></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <h2>ROI Analysis</h2>
+                <p><strong>Conservative Estimate:</strong></p>
+                <ul>
+                    <li>1,000 audits/year</li>
+                    <li>0.5% conversion rate = 5 deals</li>
+                    <li>$150K average deal size</li>
+                </ul>
+                <p style="font-size: 20px; margin: 24px 0;">
+                    <strong>Pipeline influenced:</strong> 5 deals × $150K = <span style="color: green; font-weight: 700; font-size: 24px;">$750,000</span>
+                </p>
+                <p style="font-size: 20px;">
+                    <strong>ROI:</strong> $750,000 / $1,066 = <span style="color: var(--algolia-blue); font-weight: 700; font-size: 24px;">704x</span>
+                </p>
+
+                <h2>Timeline</h2>
+                <p><strong>Total:</strong> 12 weeks with 1 FTE to production-ready system</p>
+
+                <div class="nav-buttons">
+                    <a class="nav-button nav-button-secondary" onclick="showSection('code-standards')">← Previous: Code Standards</a>
+                    <a class="nav-button" onclick="showSection('budget')">Next: Budget Details →</a>
+                </div>
+            </section>
+
+            <!-- Budget Section -->
+            <section id="budget" class="content-section">
+                <h1>Budget & Cost Analysis</h1>
+
+                <h2>Per Audit Cost Breakdown</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Endpoints</th>
+                            <th>Cost/Call</th>
+                            <th>Calls/Audit</th>
+                            <th>Cost/Audit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>SimilarWeb</td>
+                            <td>14</td>
+                            <td>$0.05</td>
+                            <td>14</td>
+                            <td>$0.70</td>
+                        </tr>
+                        <tr>
+                            <td>BuiltWith</td>
+                            <td>7</td>
+                            <td>$0.10</td>
+                            <td>7</td>
+                            <td>$0.70</td>
+                        </tr>
+                        <tr>
+                            <td>Yahoo Finance</td>
+                            <td>5</td>
+                            <td>$0.00</td>
+                            <td>5</td>
+                            <td>$0.00</td>
+                        </tr>
+                        <tr>
+                            <td>JSearch</td>
+                            <td>2</td>
+                            <td>$0.001</td>
+                            <td>2</td>
+                            <td>$0.002</td>
+                        </tr>
+                        <tr style="font-weight: 700; background: var(--gray-100);">
+                            <td><strong>Total</strong></td>
+                            <td>31</td>
+                            <td>-</td>
+                            <td>31</td>
+                            <td><strong>$1.40</strong></td>
+                        </tr>
+                        <tr style="color: green; font-weight: 600;">
+                            <td colspan="4"><strong>With 25% cache hit rate</strong></td>
+                            <td><strong>$1.05</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>Scaling Economics</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Audits/Year</th>
+                            <th>API Costs</th>
+                            <th>Hosting</th>
+                            <th>Total</th>
+                            <th>Cost/Audit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1,000</td>
+                            <td>$1,051</td>
+                            <td>$15</td>
+                            <td>$1,066</td>
+                            <td>$1.07</td>
+                        </tr>
+                        <tr>
+                            <td>2,500</td>
+                            <td>$2,627</td>
+                            <td>$615</td>
+                            <td>$3,242</td>
+                            <td>$1.30</td>
+                        </tr>
+                        <tr>
+                            <td>5,000</td>
+                            <td>$5,253</td>
+                            <td>$1,230</td>
+                            <td>$6,483</td>
+                            <td>$1.30</td>
+                        </tr>
+                        <tr>
+                            <td>10,000</td>
+                            <td>$10,506</td>
+                            <td>$2,460</td>
+                            <td>$12,966</td>
+                            <td>$1.30</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>Free Tier Capacity</h2>
+                <ul>
+                    <li><strong>Supabase free tier:</strong> 500K Edge Function invocations/month</li>
+                    <li><strong>1,000 audits/year:</strong> 31K invocations/year = 2.6K/month</li>
+                    <li><strong>Utilization:</strong> Using 0.5% of free tier capacity ✅</li>
+                </ul>
+
+                <p style="font-weight: 600; color: green; font-size: 18px;">
+                    No paid hosting needed until 5,000+ audits/year
+                </p>
+
+                <h2>Key Insights</h2>
+
+                <h3>1. Caching Less Effective at Low Volume</h3>
+                <ul>
+                    <li>At high volume (500K audits): 86% cache hit rate</li>
+                    <li>At low volume (1K audits): 25% cache hit rate</li>
+                    <li><strong>Why:</strong> Auditing mostly unique companies, not repeatedly auditing the same 500</li>
+                </ul>
+
+                <h3>2. API Costs Dominate</h3>
+                <ul>
+                    <li>API costs: $1,051 (99% of total)</li>
+                    <li>Hosting: $15 (1% of total)</li>
+                    <li><strong>Focus:</strong> Optimize API calls, not hosting costs</li>
+                </ul>
+
+                <h3>3. Neo4j Not Worth It Yet</h3>
+                <ul>
+                    <li>Neo4j Professional: $780/year</li>
+                    <li>At 1,000 audits: $0.78/audit overhead</li>
+                    <li><strong>Decision:</strong> Wait until 5K+ audits/year when graph queries become valuable</li>
+                </ul>
+
+                <div class="nav-buttons">
+                    <a class="nav-button nav-button-secondary" onclick="showSection('executive-summary')">← Previous: Executive Summary</a>
+                    <a class="nav-button" onclick="showSection('documentation-audit')">Next: Documentation Audit →</a>
+                </div>
+            </section>
+
+            <!-- Documentation Audit Section -->
+            <section id="documentation-audit" class="content-section">
+                <h1>Documentation Audit <span class="badge badge-success">95% Complete</span></h1>
+
+                <h2>Coverage Analysis</h2>
+                <p>Does the current structure capture ALL discussions, decisions, plans, recommendations, and designs?</p>
+
+                <div class="success-box info-box">
+                    <h4>✅ Answer: YES - 95% Captured</h4>
+                    <p>The current structure captures 95% of all discussions, decisions, plans, and designs. The 5% gap is integration work, not missing content.</p>
+                </div>
+
+                <h2>What IS Captured</h2>
+
+                <h3>1. Search Audit Feature (Complete) ✅</h3>
+                <p><strong>Location:</strong> <code>docs/features/search-audit/</code></p>
+                <p><strong>Total:</strong> 125 KB of documentation, 7 comprehensive files</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Document</th>
+                            <th>Content</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>PROJECT_STATUS.md</td>
+                            <td>Complete handoff document</td>
+                            <td><span class="badge badge-success">Complete</span></td>
+                        </tr>
+                        <tr>
+                            <td>MASTER_PLAN.md</td>
+                            <td>8-chapter technical guide</td>
+                            <td><span class="badge badge-success">Complete</span></td>
+                        </tr>
+                        <tr>
+                            <td>ARCHITECTURE_APPROVED.md</td>
+                            <td>Architecture decisions</td>
+                            <td><span class="badge badge-success">Complete</span></td>
+                        </tr>
+                        <tr>
+                            <td>API_CLIENT_SPECIFICATIONS.md</td>
+                            <td>31 API endpoints</td>
+                            <td><span class="badge badge-success">Complete</span></td>
+                        </tr>
+                        <tr>
+                            <td>COST_MODEL_REALISTIC.md</td>
+                            <td>Cost projections</td>
+                            <td><span class="badge badge-success">Complete</span></td>
+                        </tr>
+                        <tr>
+                            <td>DATA_SOURCES_ANALYSIS.md</td>
+                            <td>Data source evaluation</td>
+                            <td><span class="badge badge-success">Complete</span></td>
+                        </tr>
+                        <tr>
+                            <td>SOURCE_CITATION_REQUIREMENTS.md</td>
+                            <td>Citation specs</td>
+                            <td><span class="badge badge-success">Complete</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>2. Partner Intelligence (Arian) - Partial ✅⚠️</h3>
+                <p><strong>Location:</strong> <code>docs/</code> (scattered across multiple folders)</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Document</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>ICP Definitions</td>
+                            <td>docs/icp-analysis/</td>
+                            <td><span class="badge badge-success">Complete</span></td>
+                        </tr>
+                        <tr>
+                            <td>Architecture</td>
+                            <td>docs/architecture/</td>
+                            <td><span class="badge badge-success">Complete</span></td>
+                        </tr>
+                        <tr>
+                            <td>Operations</td>
+                            <td>docs/operations/</td>
+                            <td><span class="badge badge-success">Complete</span></td>
+                        </tr>
+                        <tr>
+                            <td>Sales System</td>
+                            <td>docs/sales-system/</td>
+                            <td><span class="badge badge-success">Complete</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>3. Implementation Guides ✅</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Document</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Backend Setup</td>
+                            <td>backend/README.md</td>
+                            <td><span class="badge badge-success">Complete</span></td>
+                        </tr>
+                        <tr>
+                            <td>Database Guide</td>
+                            <td>data/README.md</td>
+                            <td><span class="badge badge-success">Complete</span></td>
+                        </tr>
+                        <tr>
+                            <td>Restructure Summary</td>
+                            <td>RESTRUCTURE_COMPLETE.md</td>
+                            <td><span class="badge badge-success">Complete</span></td>
+                        </tr>
+                        <tr>
+                            <td>Folder Structure</td>
+                            <td>docs/FOLDER_STRUCTURE.md</td>
+                            <td><span class="badge badge-success">Complete</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>What Might Be MISSING (5%)</h2>
+
+                <div class="warning-box info-box">
+                    <h4>⚠️ 1. Partner Intelligence Feature Consolidation</h4>
+                    <p><strong>Issue:</strong> Partner Intelligence docs are scattered across multiple folders</p>
+                    <p><strong>Recommendation:</strong> Consolidate into <code>docs/features/partner-intelligence/</code></p>
+                </div>
+
+                <div class="warning-box info-box">
+                    <h4>⚠️ 2. Implementation Progress Tracking</h4>
+                    <p><strong>Missing:</strong> Project tracker (what's done, what's pending)</p>
+                    <p><strong>Recommendation:</strong> Create PROJECT_TRACKER.md</p>
+                </div>
+
+                <h2>By Feature Coverage</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Specification</th>
+                            <th>Architecture</th>
+                            <th>Implementation Guide</th>
+                            <th>Cost Model</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Search Audit</strong></td>
+                            <td>✅</td>
+                            <td>✅</td>
+                            <td>✅</td>
+                            <td>✅</td>
+                            <td>100% Documented</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Partner Intelligence</strong></td>
+                            <td>✅</td>
+                            <td>✅</td>
+                            <td>⚠️ Scattered</td>
+                            <td>⚠️ Old version</td>
+                            <td>75% Documented</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>Next Steps</h2>
+                <h3>Priority 1: Critical for Week 1</h3>
+                <ol>
+                    <li>Audit <code>database/</code> folder and consolidate</li>
+                    <li>Create PROJECT_TRACKER.md</li>
+                </ol>
+
+                <h3>Priority 2: Organization (Before Week 2)</h3>
+                <ol>
+                    <li>Consolidate Partner Intelligence docs into <code>docs/features/partner-intelligence/</code></li>
+                    <li>Extract key learnings from conversation history</li>
+                </ol>
+
+                <div class="nav-buttons">
+                    <a class="nav-button nav-button-secondary" onclick="showSection('budget')">← Previous: Budget</a>
+                    <a class="nav-button" onclick="showSection('folder-structure')">Next: Folder Structure →</a>
+                </div>
+            </section>
+
+            <!-- Folder Structure Section -->
+            <section id="folder-structure" class="content-section">
+                <h1>Folder Structure</h1>
+
+                <h2>One Application, Multiple Features</h2>
+                <p>Algolia-Arian is ONE unified application with two feature sets:</p>
+
+                <ol>
+                    <li><strong>Partner Intelligence</strong> (Existing - Production)</li>
+                    <li><strong>Search Audit</strong> (NEW - To Be Built)</li>
+                </ol>
+
+                <h2>Clean Structure</h2>
+                <pre>
+algolia-arian/
+│
+├── frontend/                    # ALL UI CODE - React app (ONE frontend)
+│   ├── src/
+│   │   ├── pages/               # All screens
+│   │   │   ├── Dashboard.tsx           # Main dashboard
+│   │   │   ├── TargetList.tsx          # Partner Intelligence view (existing)
+│   │   │   ├── CompanyDrawer.tsx       # Company details (existing)
+│   │   │   ├── AuditCreation.tsx       # NEW - Search Audit creation
+│   │   │   ├── AuditExecution.tsx      # NEW - Search Audit execution
+│   │   │   └── AuditResults.tsx        # NEW - Search Audit results
+│   │   ├── components/          # Shared UI components
+│   │   ├── services/            # Frontend services (API calls)
+│   │   ├── contexts/            # React contexts
+│   │   └── hooks/               # Custom hooks
+│   ├── public/
+│   ├── package.json
+│   └── vite.config.ts
+│
+├── backend/                     # ALL SERVER-SIDE CODE (to be built)
+│   ├── api/                     # API endpoints
+│   │   ├── partners/            # Partner Intelligence APIs
+│   │   ├── audits/              # Search Audit APIs
+│   │   └── enrichment/          # Enrichment APIs
+│   ├── services/                # Business logic
+│   │   ├── similarweb.ts        # SimilarWeb API client
+│   │   ├── builtwith.ts         # BuiltWith API client
+│   │   ├── yahoo-finance.ts     # Yahoo Finance client
+│   │   ├── apify.ts             # Apify client
+│   │   ├── apollo.ts            # Apollo.io client
+│   │   └── scoring.ts           # Composite scoring logic
+│   ├── workers/                 # Background jobs (BullMQ)
+│   │   ├── enrichment-worker.ts # Enrichment queue worker
+│   │   └── audit-worker.ts      # Audit execution worker
+│   ├── cache/                   # Redis cache layer
+│   │   └── redis-client.ts      # Redis connection & helpers
+│   └── middleware/              # Express middleware
+│       ├── auth.ts              # Authentication
+│       ├── rate-limit.ts        # Rate limiting
+│       └── error-handler.ts     # Error handling
+│
+├── docs/                        # ALL DOCUMENTATION
+│   ├── architecture/            # Architecture decisions
+│   ├── features/                # Feature specifications
+│   │   ├── partner-intelligence/     # Partner Intelligence docs
+│   │   └── search-audit/             # Search Audit docs
+│   │       ├── README.md             # Feature overview
+│   │       ├── PROJECT_STATUS.md     # Implementation status
+│   │       ├── MASTER_PLAN.md        # Complete technical spec
+│   │       ├── ARCHITECTURE_APPROVED.md
+│   │       ├── API_CLIENT_SPECIFICATIONS.md
+│   │       ├── COST_MODEL_REALISTIC.md
+│   │       └── ...
+│   ├── operations/              # Operational docs
+│   ├── icp-analysis/            # ICP definitions & scoring
+│   ├── sales-system/            # Sales methodology
+│   ├── presentations/           # Presentation materials
+│   └── archived/                # Old versions
+│
+├── data/                        # DATABASE STUFF
+│   ├── migrations/              # SQL migration scripts
+│   │   └── (to be created in Week 1)
+│   └── seeds/                   # Seed data
+│
+├── prototypes/                  # UI MOCKUPS & PROTOTYPES
+│   ├── index-v2.html            # Search Audit UI mockup (10 screens)
+│   └── _archive/                # 26 consolidated old planning docs
+│
+└── scripts/                     # Build & deployment scripts
+                </pre>
+
+                <h2>Technology Stack</h2>
+
+                <h3>Frontend (Existing)</h3>
+                <ul>
+                    <li><strong>Framework:</strong> React 18 + TypeScript</li>
+                    <li><strong>Build:</strong> Vite</li>
+                    <li><strong>UI Library:</strong> Mantine v7</li>
+                    <li><strong>Styling:</strong> Tailwind CSS</li>
+                    <li><strong>State:</strong> React Context + TanStack Query</li>
+                    <li><strong>Hosting:</strong> Vercel (https://algolia-arian.vercel.app)</li>
+                </ul>
+
+                <h3>Backend (To Be Built)</h3>
+                <ul>
+                    <li><strong>Runtime:</strong> Node.js + Express</li>
+                    <li><strong>Language:</strong> TypeScript</li>
+                    <li><strong>Queue:</strong> BullMQ + Redis</li>
+                    <li><strong>Cache:</strong> Redis (7-day TTL)</li>
+                    <li><strong>Database:</strong> PostgreSQL (Supabase)</li>
+                    <li><strong>File Storage:</strong> S3 or Vercel Blob</li>
+                    <li><strong>Real-Time:</strong> Socket.IO</li>
+                </ul>
+
+                <div class="nav-buttons">
+                    <a class="nav-button nav-button-secondary" onclick="showSection('documentation-audit')">← Previous: Documentation Audit</a>
+                    <a class="nav-button" onclick="showSection('overview')">↺ Back to Overview</a>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Remove active class from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+
+            // Highlight active nav item
+            event.target.classList.add('active');
+
+            // Scroll to top
+            window.scrollTo(0, 0);
+
+            // Close mobile sidebar if open
+            if (window.innerWidth <= 768) {
+                document.querySelector('.sidebar').classList.remove('open');
+            }
+        }
+
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+        }
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768) {
+                const sidebar = document.querySelector('.sidebar');
+                const toggle = document.querySelector('.mobile-toggle');
+
+                if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                    sidebar.classList.remove('open');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

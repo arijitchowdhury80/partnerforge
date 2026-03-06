@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algolia Search Audit Platform - Architecture Overview</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --algolia-blue: #003DFF;
+            --algolia-purple: #5468FF;
+            --space-gray: #21243D;
+            --text-secondary: #6B7280;
+            --bg-light: #F9FAFB;
+            --border: #E5E7EB;
+            --success: #36B37E;
+            --warning: #FFAB00;
+            --error: #E8513D;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--space-gray);
+            background: #ffffff;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--algolia-blue) 0%, var(--algolia-purple) 100%);
+            color: white;
+            padding: 3rem 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .header .meta {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Navigation */
+        .nav {
+            background: var(--space-gray);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+
+        .nav a:hover {
+            opacity: 0.7;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--space-gray);
+            border-bottom: 3px solid var(--algolia-blue);
+            padding-bottom: 0.5rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.5rem;
+            margin: 2rem 0 1rem;
+            color: var(--algolia-purple);
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 61, 255, 0.15);
+        }
+
+        .card h3 {
+            color: var(--algolia-purple);
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .card ul {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .card li {
+            padding: 0.3rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .card li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        /* Architecture Diagram */
+        .architecture-diagram {
+            background: var(--bg-light);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+        }
+
+        .architecture-diagram pre {
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        /* Screen Mockup */
+        .screen-mockup {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin: 2rem 0;
+            overflow: hidden;
+        }
+
+        .mockup-browser-bar {
+            background: linear-gradient(180deg, #f0f0f0 0%, #e0e0e0 100%);
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .mockup-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .mockup-dot.red { background: #FF5F56; }
+        .mockup-dot.yellow { background: #FFBD2E; }
+        .mockup-dot.green { background: #27C93F; }
+
+        .mockup-content {
+            padding: 2rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            background: #fafafa;
+            min-height: 300px;
+        }
+
+        /* User Flow */
+        .flow-step {
+            background: white;
+            border-left: 4px solid var(--algolia-blue);
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .flow-step-number {
+            display: inline-block;
+            background: var(--algolia-blue);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 1rem;
+        }
+
+        .flow-arrow {
+            text-align: center;
+            font-size: 2rem;
+            color: var(--algolia-purple);
+            margin: 0.5rem 0;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+            margin: 2rem 0;
+        }
+
+        .timeline:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--algolia-blue);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+            padding-left: 2rem;
+        }
+
+        .timeline-item:before {
+            content: '';
+            position: absolute;
+            left: -1rem;
+            top: 0.5rem;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            border: 4px solid var(--algolia-blue);
+        }
+
+        .timeline-item h4 {
+            color: var(--algolia-purple);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Tech Stack Badge */
+        .tech-badge {
+            display: inline-block;
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            margin: 0.3rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .tech-badge.frontend { border-color: #61DAFB; color: #61DAFB; }
+        .tech-badge.backend { border-color: #68A063; color: #68A063; }
+        .tech-badge.data { border-color: #336791; color: #336791; }
+
+        /* Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, var(--algolia-blue) 0%, var(--algolia-purple) 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        th {
+            background: var(--space-gray);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:hover {
+            background: var(--bg-light);
+        }
+
+        /* Button */
+        .btn {
+            display: inline-block;
+            background: var(--algolia-blue);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--algolia-purple);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--algolia-blue);
+            border: 2px solid var(--algolia-blue);
+        }
+
+        .btn-secondary:hover {
+            background: var(--algolia-blue);
+            color: white;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 6px;
+            margin: 1.5rem 0;
+            border-left: 4px solid;
+        }
+
+        .alert.info {
+            background: #EBF5FF;
+            border-color: var(--algolia-blue);
+            color: #1E40AF;
+        }
+
+        .alert.success {
+            background: #ECFDF5;
+            border-color: var(--success);
+            color: #065F46;
+        }
+
+        .alert.warning {
+            background: #FFFBEB;
+            border-color: var(--warning);
+            color: #92400E;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 1.5rem;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--space-gray);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .nav ul {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .status-badge.completed {
+            background: #ECFDF5;
+            color: var(--success);
+        }
+
+        .status-badge.in-progress {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .status-badge.pending {
+            background: #F3F4F6;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="container">
+            <h1>🔍 Algolia Search Audit Platform</h1>
+            <p>Transform the CLI skill into a self-service SaaS dashboard accessible to all Algolia employees</p>
+            <div class="meta">
+                <strong>Status:</strong> Architecture Design Complete |
+                <strong>Timeline:</strong> 16 weeks (4 months) |
+                <strong>Cost:</strong> $11.85/audit at scale
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <ul>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#architecture">Architecture</a></li>
+            <li><a href="#modules">Modules</a></li>
+            <li><a href="#screens">Screen Mockups</a></li>
+            <li><a href="#flows">User Flows</a></li>
+            <li><a href="#tech-stack">Tech Stack</a></li>
+            <li><a href="#roadmap">Roadmap</a></li>
+            <li><a href="#metrics">Metrics</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <!-- Overview Section -->
+        <section id="overview" class="section">
+            <h2 class="section-title">📋 Executive Overview</h2>
+
+            <div class="alert info">
+                <strong>The Opportunity:</strong> The <code>/algolia-search-audit</code> CLI skill produces high-quality audits but is limited to technical users. This platform democratizes that capability for Sales, Marketing, CS, and Leadership.
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value">98.5%</div>
+                    <div class="metric-label">Time Savings</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">35 min</div>
+                    <div class="metric-label">Avg Runtime</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">$11.85</div>
+                    <div class="metric-label">Cost per Audit</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">16 weeks</div>
+                    <div class="metric-label">Time to Launch</div>
+                </div>
+            </div>
+
+            <h3 class="section-subtitle">What Users Get</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-icon">📕</div>
+                    <h3>PDF Audit Book</h3>
+                    <p>40-50 page branded report with screenshots, industry benchmarks, Algolia solutions, and ROI estimates.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📄</div>
+                    <h3>AE Pre-Call Brief</h3>
+                    <p>Internal intelligence brief with discovery questions, stakeholder targets, and competitive context.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📊</div>
+                    <h3>Strategic Signal Brief</h3>
+                    <p>LLM-ready 1-page brief with timing signals, executive quotes, and ICP mapping.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Section -->
+        <section id="architecture" class="section">
+            <h2 class="section-title">🏗️ System Architecture</h2>
+
+            <div class="architecture-diagram">
+                <pre>
+┌─────────────────────────────────────────────────────────────────┐
+│                     FRONTEND (React SPA)                         │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
+│  │  Dashboard   │  │  Audit Exec  │  │  Deliverables│          │
+│  │  (Audit List)│  │  (Progress)  │  │  (Viewer)    │          │
+│  └──────────────┘  └──────────────┘  └──────────────┘          │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              │ REST API + WebSocket
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    API GATEWAY (Express)                         │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
+│  │ Auth Service │  │ Audit API    │  │ Deliverable  │          │
+│  │ (Okta SSO)   │  │ (REST)       │  │ Generator    │          │
+│  └──────────────┘  └──────────────┘  └──────────────┘          │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    ORCHESTRATION LAYER                           │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
+│  │ Audit Engine │  │ Agent Teams  │  │ Status Mgr   │          │
+│  │ (State Mgmt) │  │ Coordinator  │  │ (WebSocket)  │          │
+│  └──────────────┘  └──────────────┘  └──────────────┘          │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                 ┌────────────┼────────────┐
+                 ▼            ▼            ▼
+        ┌─────────────┐ ┌──────────┐ ┌──────────┐
+        │ MCP Proxies │ │ Browser  │ │ File     │
+        │ (5 servers) │ │ Pool     │ │ Storage  │
+        │             │ │ (Chrome) │ │ (S3/GCS) │
+        └─────────────┘ └──────────┘ └──────────┘
+                 │
+    ┌────────────┼────────────┬────────────┐
+    ▼            ▼            ▼            ▼
+┌────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐
+│BuiltWith│ │SimilarWeb│ │  Chrome  │ │  Yahoo   │
+│  API    │ │   API    │ │   MCP    │ │ Finance  │
+└────────┘ └──────────┘ └──────────┘ └──────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                       DATA LAYER                                 │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
+│  │ PostgreSQL   │  │  Redis       │  │  S3 Storage  │          │
+│  │ (audit data) │  │  (queue)     │  │  (assets)    │          │
+│  └──────────────┘  └──────────────┘  └──────────────┘          │
+└─────────────────────────────────────────────────────────────────┘
+                </pre>
+            </div>
+
+            <div class="alert success">
+                <strong>Key Design Decisions:</strong>
+                <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                    <li>React SPA for responsive, modern UI with real-time updates</li>
+                    <li>BullMQ job queue for scalable background processing</li>
+                    <li>WebSocket for live progress tracking (no polling)</li>
+                    <li>Playwright browser pool for reliable screenshot capture</li>
+                    <li>Redis caching for MCP responses (24-hour TTL)</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Modules Section -->
+        <section id="modules" class="section">
+            <h2 class="section-title">🧩 Module Breakdown</h2>
+
+            <h3 class="section-subtitle">Backend Modules</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <h3>1️⃣ Audit Engine</h3>
+                    <p><strong>Purpose:</strong> Orchestrate 5-phase audit process with state management</p>
+                    <ul>
+                        <li>Phase 1: Pre-Audit Research (14 steps)</li>
+                        <li>Phase 2: Browser Testing (20 steps)</li>
+                        <li>Phase 3: Scoring (10 areas)</li>
+                        <li>Phase 4-5: Deliverables (3 files)</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><strong>Files:</strong> <code>audit-engine.ts</code>, <code>phases/phase1-5.ts</code></p>
+                </div>
+
+                <div class="card">
+                    <h3>2️⃣ MCP Proxy Service</h3>
+                    <p><strong>Purpose:</strong> Wrap 5 MCP servers with REST APIs, handle retries, caching</p>
+                    <ul>
+                        <li>BuiltWith API (7 endpoints)</li>
+                        <li>SimilarWeb API (14 endpoints)</li>
+                        <li>Yahoo Finance API (8 tools)</li>
+                        <li>Perplexity WebSearch</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><strong>Files:</strong> <code>mcp-proxy/builtwith.ts</code>, <code>similarweb.ts</code>, etc.</p>
+                </div>
+
+                <div class="card">
+                    <h3>3️⃣ Browser Pool Service</h3>
+                    <p><strong>Purpose:</strong> Manage Chrome instances, screenshot capture, WAF handling</p>
+                    <ul>
+                        <li>Pool of 10 Chrome instances</li>
+                        <li>Screenshot persistence to S3</li>
+                        <li>CAPTCHA detection & user handoff</li>
+                        <li>WAF recovery with retries</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><strong>Files:</strong> <code>browser-pool.ts</code></p>
+                </div>
+
+                <div class="card">
+                    <h3>4️⃣ Job Queue (BullMQ)</h3>
+                    <p><strong>Purpose:</strong> Manage long-running audit jobs, retry failed steps</p>
+                    <ul>
+                        <li>Redis-backed queue</li>
+                        <li>3 retry attempts with exponential backoff</li>
+                        <li>Concurrency: 5 audits at once</li>
+                        <li>Job lifecycle events</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><strong>Files:</strong> <code>jobs/audit-queue.ts</code></p>
+                </div>
+
+                <div class="card">
+                    <h3>5️⃣ WebSocket Server</h3>
+                    <p><strong>Purpose:</strong> Real-time progress updates to frontend</p>
+                    <ul>
+                        <li>Socket.IO server</li>
+                        <li>Subscribe/unsubscribe per audit</li>
+                        <li>Broadcast progress, phase completion, errors</li>
+                        <li>Auto-reconnect handling</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><strong>Files:</strong> <code>websocket/server.ts</code></p>
+                </div>
+
+                <div class="card">
+                    <h3>6️⃣ API Gateway</h3>
+                    <p><strong>Purpose:</strong> REST API with auth, validation, rate limiting</p>
+                    <ul>
+                        <li>Express.js server</li>
+                        <li>Okta SSO authentication</li>
+                        <li>JWT token validation</li>
+                        <li>Request/response validation</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><strong>Files:</strong> <code>api/routes/*.ts</code>, <code>controllers/*.ts</code></p>
+                </div>
+            </div>
+
+            <h3 class="section-subtitle">Frontend Modules</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <h3>1️⃣ Dashboard Page</h3>
+                    <p><strong>Purpose:</strong> Central hub for all audits</p>
+                    <ul>
+                        <li>Audit list with filters</li>
+                        <li>Status badges (completed, in-progress, failed)</li>
+                        <li>Search & sorting</li>
+                        <li>Quick actions (view, download, star)</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><strong>Files:</strong> <code>pages/Dashboard.tsx</code></p>
+                </div>
+
+                <div class="card">
+                    <h3>2️⃣ Create Audit Wizard</h3>
+                    <p><strong>Purpose:</strong> 4-step guided form</p>
+                    <ul>
+                        <li>Step 1: Enter domain</li>
+                        <li>Step 2: Select phases</li>
+                        <li>Step 3: Custom queries (optional)</li>
+                        <li>Step 4: Review & launch</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><strong>Files:</strong> <code>pages/CreateAudit.tsx</code></p>
+                </div>
+
+                <div class="card">
+                    <h3>3️⃣ Execution Monitor</h3>
+                    <p><strong>Purpose:</strong> Real-time progress tracking</p>
+                    <ul>
+                        <li>Overall progress bar</li>
+                        <li>Phase-by-phase breakdown</li>
+                        <li>Live logs (WebSocket-driven)</li>
+                        <li>Pause/cancel controls</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><strong>Files:</strong> <code>pages/ExecutionMonitor.tsx</code></p>
+                </div>
+
+                <div class="card">
+                    <h3>4️⃣ Audit Details</h3>
+                    <p><strong>Purpose:</strong> Post-completion drill-down</p>
+                    <ul>
+                        <li>Tab 1: Overview (KPIs, score)</li>
+                        <li>Tab 2: Research Data (12 scratchpad files)</li>
+                        <li>Tab 3: Findings (screenshot gallery)</li>
+                        <li>Tab 4: Deliverables (PDF viewer + downloads)</li>
+                        <li>Tab 5: Settings (re-run, fact-check, export)</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><strong>Files:</strong> <code>pages/AuditDetails.tsx</code></p>
+                </div>
+
+                <div class="card">
+                    <h3>5️⃣ API Client</h3>
+                    <p><strong>Purpose:</strong> Axios-based API wrapper</p>
+                    <ul>
+                        <li>REST endpoints for audits, scratchpad, screenshots</li>
+                        <li>Auth token injection</li>
+                        <li>Error handling & retries</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><strong>Files:</strong> <code>api/client.ts</code>, <code>api/audits.ts</code></p>
+                </div>
+
+                <div class="card">
+                    <h3>6️⃣ State Management</h3>
+                    <p><strong>Purpose:</strong> Zustand stores for global state</p>
+                    <ul>
+                        <li>Audit store (list, current audit)</li>
+                        <li>User store (profile, permissions)</li>
+                        <li>UI store (modals, toasts)</li>
+                    </ul>
+                    <p style="margin-top: 1rem;"><strong>Files:</strong> <code>stores/audit-store.ts</code></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Screen Mockups Section -->
+        <section id="screens" class="section">
+            <h2 class="section-title">🖥️ Screen Mockups</h2>
+
+            <h3 class="section-subtitle">1. Dashboard (Home)</h3>
+            <div class="screen-mockup">
+                <div class="mockup-browser-bar">
+                    <div class="mockup-dot red"></div>
+                    <div class="mockup-dot yellow"></div>
+                    <div class="mockup-dot green"></div>
+                    <span style="margin-left: 1rem; color: #666;">https://searchaudit.algolia.com</span>
+                </div>
+                <div class="mockup-content">
+┌─────────────────────────────────────────────────────────────────┐
+│  🔍 Algolia Search Audit Platform            [+ New Audit]      │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                   │
+│  My Audits                                [Search: _________] 🔍 │
+│  ┌──────┬──────┬────────┬─────────┐                             │
+│  │ All  │ Mine │ Team   │ Starred │                             │
+│  └──────┴──────┴────────┴─────────┘                             │
+│                                                                   │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │ Costco Wholesale                          🟢 COMPLETED   │    │
+│  │ Created: Feb 21, 2026 by Alex Rivera                     │    │
+│  │ Score: 4.4/10 | 47-page book | 6 deliverables           │    │
+│  │ [View Report] [Download All] [⭐ Star]                    │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                                                                   │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │ The RealReal                              🟡 IN PROGRESS │    │
+│  │ Created: Mar 2, 2026 by Jordan Kim                       │    │
+│  │ Phase 2: Browser Testing (Step 12/20)    [View Live]    │    │
+│  │ ████████████░░░░░░░░ 60%                                 │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                                                                   │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │ Boden                                     🔴 FAILED      │    │
+│  │ Created: Mar 1, 2026 by Jordan Kim                       │    │
+│  │ Error: MCP tools not loaded              [Retry] [Debug]│    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                                                                   │
+└─────────────────────────────────────────────────────────────────┘
+                </div>
+            </div>
+
+            <h3 class="section-subtitle">2. Execution Monitor (Real-Time)</h3>
+            <div class="screen-mockup">
+                <div class="mockup-browser-bar">
+                    <div class="mockup-dot red"></div>
+                    <div class="mockup-dot yellow"></div>
+                    <div class="mockup-dot green"></div>
+                    <span style="margin-left: 1rem; color: #666;">https://searchaudit.algolia.com/audits/abc123/monitor</span>
+                </div>
+                <div class="mockup-content">
+┌─────────────────────────────────────────────────────────────────┐
+│  Costco Wholesale Audit                  🟡 Phase 2 In Progress │
+│  Started: Mar 2, 2026 2:34 PM                Elapsed: 18m 32s   │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                   │
+│  Overall Progress                                                 │
+│  ████████████████████████████░░░░░░░░ 72% (36/50 steps)         │
+│                                                                   │
+│  ┌───────────────────────────────────────────────────────┐      │
+│  │ Phase 1: Pre-Audit Research          ✅ COMPLETED     │      │
+│  │ └─ Company Context                   ✅ 2m 15s        │      │
+│  │ └─ Tech Stack                        ✅ 1m 42s        │      │
+│  │ └─ Traffic Data (SimilarWeb)         ✅ 3m 08s        │      │
+│  │ └─ Competitors                       ✅ 2m 31s        │      │
+│  │ └─ Financials (Yahoo Finance)        ✅ 1m 54s        │      │
+│  │ └─ Hiring Signals                    ✅ 1m 22s        │      │
+│  │ └─ Investor Intelligence             ✅ 4m 11s        │      │
+│  │ └─ Buying Committee                  ✅ 2m 47s        │      │
+│  └───────────────────────────────────────────────────────┘      │
+│                                                                   │
+│  ┌───────────────────────────────────────────────────────┐      │
+│  │ Phase 2: Browser Testing             🔵 IN PROGRESS   │      │
+│  │ ████████████████████████████░░░░░░░░ 14/20 steps      │      │
+│  │                                                        │      │
+│  │ ✅ 01. Homepage screenshot                             │      │
+│  │ ✅ 02. Empty state test                                │      │
+│  │ ✅ 03. SAYT test                                       │      │
+│  │ ✅ 04. Full results                                    │      │
+│  │ 🔵 15. Dynamic facets...                [Live]        │      │
+│  │ ⏳ 16. Personalization                                 │      │
+│  │ ⏳ 17. Recommendations                                 │      │
+│  │                                                        │      │
+│  │ 📸 Screenshots: 14/20 captured                        │      │
+│  └───────────────────────────────────────────────────────┘      │
+│                                                                   │
+│  Live Logs                               [Filter: ▼] [Export]   │
+│  ┌───────────────────────────────────────────────────────┐      │
+│  │ 2:52 PM  [Browser] Typing query: "dynamic facets"     │      │
+│  │ 2:52 PM  [Browser] Waiting for SAYT dropdown...       │      │
+│  │ 2:52 PM  [Browser] Screenshot saved: 15-dynamic.png   │      │
+│  │ 2:51 PM  [Chrome] ✅ Network: no Constructor API calls│      │
+│  │ 2:51 PM  [Chrome] ℹ️ Search powered by native Shopify│      │
+│  └───────────────────────────────────────────────────────┘      │
+│                                                                   │
+│                            [⏸️ Pause]  [❌ Cancel]  [📊 View Data]│
+└─────────────────────────────────────────────────────────────────┘
+                </div>
+            </div>
+
+            <h3 class="section-subtitle">3. Audit Details (Deliverables Tab)</h3>
+            <div class="screen-mockup">
+                <div class="mockup-browser-bar">
+                    <div class="mockup-dot red"></div>
+                    <div class="mockup-dot yellow"></div>
+                    <div class="mockup-dot green"></div>
+                    <span style="margin-left: 1rem; color: #666;">https://searchaudit.algolia.com/audits/abc123</span>
+                </div>
+                <div class="mockup-content">
+┌─────────────────────────────────────────────────────────────────┐
+│  Costco Wholesale Audit                         ✅ COMPLETED    │
+├─────────────────────────────────────────────────────────────────┤
+│  [Overview] [Research Data] [Findings] [Deliverables] [Settings]│
+├─────────────────────────────────────────────────────────────────┤
+│                                                                   │
+│  Deliverables (3 Files)                                           │
+│                                                                   │
+│  ┌───────────────────────────────────────────────────────┐      │
+│  │ 📕 Search Audit Book                                   │      │
+│  │    costco-search-audit-book.pdf                        │      │
+│  │    47 pages | 3.8 MB | Brand Score: 9.2/10 ✅         │      │
+│  │                                                        │      │
+│  │    [👁️ Preview in Browser] [📥 Download] [📧 Email]    │      │
+│  └───────────────────────────────────────────────────────┘      │
+│                                                                   │
+│  ┌───────────────────────────────────────────────────────┐      │
+│  │ 📄 AE Pre-Call Brief                                   │      │
+│  │    costco-ae-precall-brief.md                          │      │
+│  │    12 pages | 42 KB | For internal use only           │      │
+│  │                                                        │      │
+│  │    [👁️ Preview] [📥 Download] [📋 Copy to Clipboard]   │      │
+│  └───────────────────────────────────────────────────────┘      │
+│                                                                   │
+│  ┌───────────────────────────────────────────────────────┐      │
+│  │ 📊 Strategic Signal Brief                              │      │
+│  │    costco-strategic-signal-brief.md                    │      │
+│  │    3 pages | 18 KB | LLM-ready format                 │      │
+│  │                                                        │      │
+│  │    [👁️ Preview] [📥 Download] [🤖 Send to Slack Bot]   │      │
+│  └───────────────────────────────────────────────────────┘      │
+│                                                                   │
+│  Bulk Actions                                                     │
+│  [📥 Download All (ZIP)] [📧 Email Package] [🔗 Share Link]     │
+│                                                                   │
+└─────────────────────────────────────────────────────────────────┘
+                </div>
+            </div>
+        </section>
+
+        <!-- User Flows Section -->
+        <section id="flows" class="section">
+            <h2 class="section-title">🔄 User Flows</h2>
+
+            <h3 class="section-subtitle">Flow 1: Create & Monitor Audit (Happy Path)</h3>
+
+            <div class="flow-step">
+                <span class="flow-step-number">1</span>
+                <strong>Dashboard → Click [+ New Audit]</strong><br>
+                User lands on dashboard, clicks the primary CTA button
+            </div>
+
+            <div class="flow-arrow">↓</div>
+
+            <div class="flow-step">
+                <span class="flow-step-number">2</span>
+                <strong>Wizard Page 1 — Enter Domain</strong><br>
+                Input: <code>costco.com</code>, Click: [Next: Phases →]
+            </div>
+
+            <div class="flow-arrow">↓</div>
+
+            <div class="flow-step">
+                <span class="flow-step-number">3</span>
+                <strong>Wizard Page 2 — Select Phases</strong><br>
+                Default: ☑ Full Audit (all phases), Click: [Next: Custom Queries →]
+            </div>
+
+            <div class="flow-arrow">↓</div>
+
+            <div class="flow-step">
+                <span class="flow-step-number">4</span>
+                <strong>Wizard Page 3 — Queries (Optional)</strong><br>
+                Default: ○ Auto-generate from vertical, Click: [Next: Review & Launch →]
+            </div>
+
+            <div class="flow-arrow">↓</div>
+
+            <div class="flow-step">
+                <span class="flow-step-number">5</span>
+                <strong>Wizard Page 4 — Review & Launch</strong><br>
+                Review domain, phases, MCP health check ✅, Click: [🚀 Launch Audit]
+            </div>
+
+            <div class="flow-arrow">↓</div>
+
+            <div class="flow-step">
+                <span class="flow-step-number">6</span>
+                <strong>Redirect to Execution Monitor</strong><br>
+                Real-time progress: Phase 1 ████████████████░░░░░░░░ 67% (8/12 steps)<br>
+                Live logs scrolling, WebSocket-driven updates
+            </div>
+
+            <div class="flow-arrow">↓</div>
+
+            <div class="flow-step">
+                <span class="flow-step-number">7</span>
+                <strong>Completion Notification</strong><br>
+                Browser: ✅ Audit complete! [View Report]<br>
+                Email: "Your Costco audit is ready"<br>
+                Slack: "@jordan Your Costco audit scored 4.4/10"
+            </div>
+
+            <div class="flow-arrow">↓</div>
+
+            <div class="flow-step">
+                <span class="flow-step-number">8</span>
+                <strong>View Report (Audit Details)</strong><br>
+                5 tabs: Overview (KPIs) | Research Data (12 files) | Findings (screenshots) | Deliverables (PDFs) | Settings
+            </div>
+
+            <div class="flow-arrow">↓</div>
+
+            <div class="flow-step">
+                <span class="flow-step-number">9</span>
+                <strong>Download PDF Book</strong><br>
+                Click: [📥 Download] → Browser downloads <code>costco-search-audit-book.pdf</code> (3.8 MB)
+            </div>
+
+            <h3 class="section-subtitle" style="margin-top: 3rem;">Flow 2: Re-Run Failed Audit</h3>
+
+            <div class="flow-step">
+                <span class="flow-step-number">1</span>
+                <strong>Dashboard → See Audit with 🔴 FAILED Status</strong><br>
+                Audit card: "Boden | 🔴 FAILED | Error: MCP tools not loaded"
+            </div>
+
+            <div class="flow-arrow">↓</div>
+
+            <div class="flow-step">
+                <span class="flow-step-number">2</span>
+                <strong>Click [View Details] or [Retry]</strong><br>
+                Opens Audit Details page → Navigate to Settings tab
+            </div>
+
+            <div class="flow-arrow">↓</div>
+
+            <div class="flow-step">
+                <span class="flow-step-number">3</span>
+                <strong>Select Phases to Re-Run</strong><br>
+                ☑ Phase 1: Pre-Audit Research<br>
+                ☑ Phase 2: Browser Testing<br>
+                ☐ Phase 3: Scoring<br>
+                ☐ Phase 4-5: Deliverables
+            </div>
+
+            <div class="flow-arrow">↓</div>
+
+            <div class="flow-step">
+                <span class="flow-step-number">4</span>
+                <strong>Click [🔄 Re-Run Selected Phases]</strong><br>
+                Confirmation modal: "Re-run will overwrite existing data. Continue?"<br>
+                Click: [Confirm]
+            </div>
+
+            <div class="flow-arrow">↓</div>
+
+            <div class="flow-step">
+                <span class="flow-step-number">5</span>
+                <strong>Redirect to Execution Monitor</strong><br>
+                Status changes to 🟡 IN PROGRESS<br>
+                Real-time progress resumes from Phase 1
+            </div>
+        </section>
+
+        <!-- Tech Stack Section -->
+        <section id="tech-stack" class="section">
+            <h2 class="section-title">⚙️ Technology Stack</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Layer</th>
+                        <th>Technology</th>
+                        <th>Why We Chose It</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Frontend</strong></td>
+                        <td>
+                            <span class="tech-badge frontend">React 18</span>
+                            <span class="tech-badge frontend">TypeScript</span>
+                            <span class="tech-badge frontend">Mantine UI</span>
+                        </td>
+                        <td>Industry standard, mature ecosystem, excellent TypeScript support</td>
+                    </tr>
+                    <tr>
+                        <td><strong>State Mgmt</strong></td>
+                        <td>
+                            <span class="tech-badge frontend">Zustand</span>
+                            <span class="tech-badge frontend">Socket.IO Client</span>
+                        </td>
+                        <td>Lightweight alternative to Redux, real-time WebSocket updates</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Backend</strong></td>
+                        <td>
+                            <span class="tech-badge backend">Node.js 20</span>
+                            <span class="tech-badge backend">Express.js</span>
+                            <span class="tech-badge backend">TypeScript</span>
+                        </td>
+                        <td>Fast, scalable, TypeScript support, large community</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Job Queue</strong></td>
+                        <td>
+                            <span class="tech-badge backend">BullMQ</span>
+                            <span class="tech-badge backend">Socket.IO</span>
+                        </td>
+                        <td>Redis-backed queue, reliable job processing, WebSocket for live updates</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Browser</strong></td>
+                        <td>
+                            <span class="tech-badge backend">Playwright</span>
+                        </td>
+                        <td>More reliable than Puppeteer, better WAF handling, cross-browser support</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Database</strong></td>
+                        <td>
+                            <span class="tech-badge data">PostgreSQL 15</span>
+                            <span class="tech-badge data">Redis 7</span>
+                        </td>
+                        <td>Relational data with JSONB support, Redis for caching and job queue</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Storage</strong></td>
+                        <td>
+                            <span class="tech-badge data">AWS S3</span>
+                        </td>
+                        <td>Object storage for screenshots, PDFs, scratchpad files</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Auth</strong></td>
+                        <td>
+                            <span class="tech-badge backend">Okta SSO</span>
+                            <span class="tech-badge backend">JWT</span>
+                        </td>
+                        <td>Enterprise SSO, secure token-based authentication</td>
+                    </tr>
+                    <tr>
+                        <td><strong>APIs</strong></td>
+                        <td>
+                            <span class="tech-badge">BuiltWith API</span>
+                            <span class="tech-badge">SimilarWeb API</span>
+                            <span class="tech-badge">Yahoo Finance</span>
+                            <span class="tech-badge">Perplexity AI</span>
+                        </td>
+                        <td>Tech stack, traffic data, financial data, web search</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="section-subtitle">Database Schema (8 Tables)</h3>
+            <div class="code-block">
+users (id, okta_id, email, name, team, role)
+audits (id, domain, company_name, status, progress_pct, overall_score, config)
+scratchpad_files (id, audit_id, file_name, content, data_quality)
+screenshots (id, audit_id, file_name, query, severity, storage_url)
+deliverables (id, audit_id, type, storage_url, brand_score)
+execution_logs (id, audit_id, timestamp, phase, message)
+mcp_calls (id, audit_id, server_name, endpoint, response_data, latency_ms)
+templates (id, name, created_by, config, usage_count)
+            </div>
+        </section>
+
+        <!-- Roadmap Section -->
+        <section id="roadmap" class="section">
+            <h2 class="section-title">🗓️ Implementation Roadmap</h2>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4>Phase 1: MVP (8 weeks) <span class="status-badge pending">Pending</span></h4>
+                    <p><strong>Goal:</strong> Core audit flow with sequential execution (no agent teams yet)</p>
+                    <ul style="padding-left: 1.5rem; margin-top: 0.5rem;">
+                        <li><strong>Week 1-2:</strong> Infrastructure (DB, Redis, S3, Express API, React boilerplate)</li>
+                        <li><strong>Week 3-4:</strong> Phase 1 Research (MCP proxies, scratchpad storage, WebSocket)</li>
+                        <li><strong>Week 5-6:</strong> Phase 2 Browser Testing (Playwright pool, 20-step suite, screenshots)</li>
+                        <li><strong>Week 7:</strong> Phase 3-5 (Scoring, deliverable generation, PDF rendering)</li>
+                        <li><strong>Week 8:</strong> UI Polish (dashboard, wizard, execution monitor, deliverable viewer)</li>
+                    </ul>
+                    <div class="alert success" style="margin-top: 1rem;">
+                        <strong>Deliverable:</strong> Working platform with sequential audit execution (~60 min runtime)
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <h4>Phase 2: Agent Teams (4 weeks) <span class="status-badge pending">Pending</span></h4>
+                    <p><strong>Goal:</strong> Parallel execution for 2x speed improvement</p>
+                    <ul style="padding-left: 1.5rem; margin-top: 0.5rem;">
+                        <li><strong>Week 9-10:</strong> Agent Teams Coordinator (Wave 1-4 orchestration)</li>
+                        <li><strong>Week 11-12:</strong> Optimization (MCP caching, browser pool scaling)</li>
+                    </ul>
+                    <div class="alert success" style="margin-top: 1rem;">
+                        <strong>Deliverable:</strong> 35-minute runtime (down from 60+ minutes in MVP)
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <h4>Phase 3: Polish & Scale (4 weeks) <span class="status-badge pending">Pending</span></h4>
+                    <p><strong>Goal:</strong> Production-ready with enterprise features</p>
+                    <ul style="padding-left: 1.5rem; margin-top: 0.5rem;">
+                        <li><strong>Week 13-14:</strong> Fact-Check Integration (7-dimension validation)</li>
+                        <li><strong>Week 15-16:</strong> Enterprise Features (templates, admin dashboard, Salesforce integration)</li>
+                    </ul>
+                    <div class="alert success" style="margin-top: 1rem;">
+                        <strong>Deliverable:</strong> Production launch ready with all enterprise features
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert info">
+                <strong>Total Timeline:</strong> 16 weeks (4 months) from kickoff to production launch
+            </div>
+        </section>
+
+        <!-- Metrics Section -->
+        <section id="metrics" class="section">
+            <h2 class="section-title">📊 Success Metrics & ROI</h2>
+
+            <h3 class="section-subtitle">Cost Analysis</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Monthly Cost</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>BuiltWith API</td>
+                        <td>$140</td>
+                        <td>7 endpoints × 100 audits × $0.20/call</td>
+                    </tr>
+                    <tr>
+                        <td>SimilarWeb API</td>
+                        <td>$700</td>
+                        <td>14 endpoints × 100 audits × $0.50/call</td>
+                    </tr>
+                    <tr>
+                        <td>Perplexity API</td>
+                        <td>$200</td>
+                        <td>200 queries × 100 audits × $0.01/query</td>
+                    </tr>
+                    <tr>
+                        <td>AWS EC2</td>
+                        <td>$70</td>
+                        <td>t3.large instance</td>
+                    </tr>
+                    <tr>
+                        <td>AWS RDS PostgreSQL</td>
+                        <td>$50</td>
+                        <td>db.t3.medium</td>
+                    </tr>
+                    <tr>
+                        <td>AWS S3 + Transfer</td>
+                        <td>$10</td>
+                        <td>50 GB storage + 100 GB transfer</td>
+                    </tr>
+                    <tr>
+                        <td>Redis (ElastiCache)</td>
+                        <td>$15</td>
+                        <td>t3.micro</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total</strong></td>
+                        <td><strong>$1,185/month</strong></td>
+                        <td><strong>$11.85 per audit</strong> (at 100 audits/month)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="alert warning">
+                <strong>Scaling:</strong> At 1,000 audits/month, cost drops to ~$11,000/month = <strong>$11/audit</strong> (economies of scale)
+            </div>
+
+            <h3 class="section-subtitle">ROI Calculation</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <h3>Manual Process (Current)</h3>
+                    <ul>
+                        <li>40 hours per audit</li>
+                        <li>$100/hour blended rate</li>
+                        <li><strong style="color: var(--error);">$4,000 per audit</strong> in labor</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Automated Process (Platform)</h3>
+                    <ul>
+                        <li>35 minutes (zero human time)</li>
+                        <li>$11.85 in API/infrastructure costs</li>
+                        <li><strong style="color: var(--success);">$11.85 per audit</strong></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="alert success" style="text-align: center; font-size: 1.2rem;">
+                <strong>Savings: $3,988 per audit (99.7% reduction)</strong><br>
+                Break-even at 300 audits (~3 months at 100/month scale)
+            </div>
+
+            <h3 class="section-subtitle">Target Metrics</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Metric</th>
+                        <th>Target</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td rowspan="2"><strong>User Adoption</strong></td>
+                        <td>AE Usage</td>
+                        <td>80% of AEs run ≥1 audit per quarter (within 6 months)</td>
+                    </tr>
+                    <tr>
+                        <td>PMM Usage</td>
+                        <td>50% of PMMs run ≥2 audits per month (within 6 months)</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3"><strong>Quality</strong></td>
+                        <td>Fact-check Score</td>
+                        <td>≥8.0/10 on 95% of audits</td>
+                    </tr>
+                    <tr>
+                        <td>Brand Compliance</td>
+                        <td>≥9.0/10 on 95% of audits</td>
+                    </tr>
+                    <tr>
+                        <td>User Satisfaction</td>
+                        <td>≥4.5/5 (post-audit survey)</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3"><strong>Performance</strong></td>
+                        <td>Average Runtime</td>
+                        <td>≤35 minutes (P50)</td>
+                    </tr>
+                    <tr>
+                        <td>Success Rate</td>
+                        <td>≥95% (no failures)</td>
+                    </tr>
+                    <tr>
+                        <td>MCP Latency</td>
+                        <td>P95 ≤3 seconds</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3"><strong>Business Impact</strong></td>
+                        <td>Audit Volume</td>
+                        <td>3x increase (more prospects qualified)</td>
+                    </tr>
+                    <tr>
+                        <td>Time Savings</td>
+                        <td>98.5% (40 hours → 35 minutes)</td>
+                    </tr>
+                    <tr>
+                        <td>Cost per Audit</td>
+                        <td>≤$15 at scale</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Next Steps Section -->
+        <section id="next-steps" class="section">
+            <h2 class="section-title">🚀 Next Steps</h2>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h3>Week 1: Stakeholder Review</h3>
+                    <ul>
+                        <li>Share docs with Sales Ops, Marketing Ops, Engineering</li>
+                        <li>Gather feedback on UI mockups</li>
+                        <li>Align on budget approval ($1,185/month)</li>
+                    </ul>
+                    <p style="margin-top: 1rem;">
+                        <a href="EXECUTIVE_SUMMARY.md" class="btn btn-secondary">📄 Executive Summary</a>
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h3>Week 2: Technical Spike</h3>
+                    <ul>
+                        <li>Prototype MCP Proxy Service</li>
+                        <li>Prototype Playwright browser pool</li>
+                        <li>Validate PDF generation</li>
+                        <li>Confirm Okta SSO integration</li>
+                    </ul>
+                    <p style="margin-top: 1rem;">
+                        <a href="IMPLEMENTATION_GUIDE.md" class="btn btn-secondary">💻 Implementation Guide</a>
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h3>Week 3-4: Finalize Spec</h3>
+                    <ul>
+                        <li>Incorporate stakeholder feedback</li>
+                        <li>Finalize database schema and API contracts</li>
+                        <li>Assign engineering team (4 people)</li>
+                        <li>Setup GitHub repo, CI/CD, dev environment</li>
+                    </ul>
+                    <p style="margin-top: 1rem;">
+                        <a href="SAAS_ARCHITECTURE.md" class="btn btn-secondary">🏗️ Architecture Doc</a>
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h3>Week 5: Sprint 1 Kickoff</h3>
+                    <ul>
+                        <li>Begin Phase 1 MVP development</li>
+                        <li>Weekly demos to stakeholders</li>
+                        <li>Beta testing with 5 AEs in Week 12</li>
+                    </ul>
+                    <p style="margin-top: 1rem;">
+                        <a href="SCREEN_MOCKUPS.md" class="btn btn-secondary">🖥️ Screen Mockups</a>
+                    </p>
+                </div>
+            </div>
+
+            <div class="alert info" style="margin-top: 2rem; text-align: center;">
+                <strong>📚 All Documentation Available:</strong><br>
+                This index page + 4 comprehensive documents (Executive Summary, Architecture, Screen Mockups, Implementation Guide)<br>
+                <strong>Total:</strong> 126 pages of detailed specifications
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p><strong>Algolia Search Audit Platform</strong> — Architecture Design v1.0</p>
+        <p>Created: March 2, 2026 | Status: Ready for Stakeholder Review</p>
+        <p style="margin-top: 1rem; opacity: 0.8;">
+            Designed by Claude Sonnet 4.5 for Algolia
+        </p>
+    </div>
+
+    <script>
+        // Smooth scroll for navigation
+        document.querySelectorAll('.nav a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        // Highlight active section in nav
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.nav a');
+
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= (sectionTop - 100)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.style.opacity = '0.7';
+                if (link.getAttribute('href').slice(1) === current) {
+                    link.style.opacity = '1';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

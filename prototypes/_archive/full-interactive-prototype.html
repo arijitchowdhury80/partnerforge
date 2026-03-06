@@ -1,0 +1,2666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algolia Search Audit Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --nebula-blue: #003DFF;
+            --space-gray: #21243D;
+            --algolia-purple: #5468FF;
+            --cloud-white: #FFFFFF;
+            --mist-gray: #F5F7FA;
+            --steel-gray: #6B7280;
+            --success-green: #10B981;
+            --warning-yellow: #F59E0B;
+            --error-red: #EF4444;
+            --info-blue: #3B82F6;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--mist-gray);
+            color: var(--space-gray);
+            line-height: 1.6;
+        }
+
+        /* Navigation Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid #E5E7EB;
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--nebula-blue);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-link {
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--steel-gray);
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            background: var(--mist-gray);
+            color: var(--space-gray);
+        }
+
+        .nav-link.active {
+            background: #EFF6FF;
+            color: var(--nebula-blue);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .user-menu:hover {
+            background: var(--mist-gray);
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--nebula-blue), var(--algolia-purple));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Screen */
+        .screen {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--space-gray);
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            font-size: 16px;
+            color: var(--steel-gray);
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--space-gray);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Quick Start Hero */
+        .quick-start {
+            background: linear-gradient(135deg, var(--nebula-blue), var(--algolia-purple));
+            color: white;
+            padding: 48px;
+            border-radius: 16px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(0,61,255,0.2);
+        }
+
+        .quick-start h2 {
+            font-size: 28px;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .quick-start p {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 24px;
+        }
+
+        .quick-start-form {
+            display: flex;
+            gap: 12px;
+            max-width: 700px;
+        }
+
+        .input {
+            flex: 1;
+            padding: 14px 18px;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .input:focus {
+            border-color: var(--algolia-purple);
+            box-shadow: 0 0 0 3px rgba(84,104,255,0.1);
+        }
+
+        .input::placeholder {
+            color: #9CA3AF;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--nebula-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0031CC;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,61,255,0.3);
+        }
+
+        .btn-secondary {
+            background: var(--mist-gray);
+            color: var(--space-gray);
+        }
+
+        .btn-secondary:hover {
+            background: #E5E7EB;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+
+        .btn-icon {
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        /* Audit Grid */
+        .audit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        .audit-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .audit-card:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+            border-color: var(--nebula-blue);
+        }
+
+        .audit-card-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .audit-icon {
+            font-size: 36px;
+            line-height: 1;
+        }
+
+        .audit-card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--space-gray);
+            margin-bottom: 4px;
+        }
+
+        .audit-card-meta {
+            font-size: 14px;
+            color: var(--steel-gray);
+            margin-bottom: 4px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .status-complete {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .status-running {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .status-failed {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .audit-card-score {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--nebula-blue);
+            margin: 16px 0;
+            line-height: 1;
+        }
+
+        .audit-card-score span {
+            font-size: 20px;
+            color: var(--steel-gray);
+            font-weight: 400;
+        }
+
+        .progress-bar {
+            background: #E5E7EB;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+
+        .progress-bar-fill {
+            background: linear-gradient(90deg, var(--success-green), var(--info-blue));
+            height: 100%;
+            transition: width 0.5s ease-out;
+            border-radius: 4px;
+        }
+
+        .audit-card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        /* System Status */
+        .system-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-dot.green { background: var(--success-green); }
+        .status-dot.yellow { background: var(--warning-yellow); }
+        .status-dot.red { background: var(--error-red); }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.2s;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: scaleIn 0.2s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--space-gray);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--steel-gray);
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--mist-gray);
+        }
+
+        /* Wizard */
+        .wizard-progress {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 48px;
+            position: relative;
+        }
+
+        .wizard-progress::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            height: 2px;
+            background: #E5E7EB;
+            z-index: 0;
+        }
+
+        .wizard-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .wizard-step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #E5E7EB;
+            color: var(--steel-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .wizard-step.active .wizard-step-circle {
+            background: var(--nebula-blue);
+            color: white;
+            border-color: var(--nebula-blue);
+            box-shadow: 0 0 0 4px rgba(0,61,255,0.1);
+        }
+
+        .wizard-step.complete .wizard-step-circle {
+            background: var(--success-green);
+            color: white;
+            border-color: var(--success-green);
+        }
+
+        .wizard-step-label {
+            font-size: 14px;
+            color: var(--steel-gray);
+            font-weight: 500;
+        }
+
+        .wizard-step.active .wizard-step-label {
+            color: var(--space-gray);
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--space-gray);
+            margin-bottom: 8px;
+        }
+
+        .form-help {
+            font-size: 13px;
+            color: var(--steel-gray);
+            margin-top: 6px;
+        }
+
+        select.input {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236B7280' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+        }
+
+        .wizard-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #E5E7EB;
+        }
+
+        /* Mode Cards */
+        .mode-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .mode-card {
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .mode-card:hover {
+            border-color: var(--nebula-blue);
+            box-shadow: 0 4px 12px rgba(0,61,255,0.1);
+        }
+
+        .mode-card.selected {
+            border-color: var(--nebula-blue);
+            background: #EFF6FF;
+            box-shadow: 0 0 0 3px rgba(0,61,255,0.1);
+        }
+
+        .mode-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+        }
+
+        .mode-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--space-gray);
+        }
+
+        .mode-description {
+            font-size: 14px;
+            color: var(--steel-gray);
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .mode-meta {
+            font-size: 13px;
+            color: var(--steel-gray);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: #EFF6FF;
+            border-left: 4px solid var(--info-blue);
+            padding: 16px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: flex;
+            gap: 12px;
+        }
+
+        .info-box-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            border-bottom: 2px solid #E5E7EB;
+            margin-bottom: 32px;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            color: var(--steel-gray);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: var(--space-gray);
+            background: var(--mist-gray);
+        }
+
+        .tab.active {
+            color: var(--nebula-blue);
+            border-bottom-color: var(--nebula-blue);
+        }
+
+        /* Phase Progress */
+        .phase-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .phase-item {
+            background: white;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.2s;
+        }
+
+        .phase-item.active {
+            border-color: var(--info-blue);
+            background: #EFF6FF;
+        }
+
+        .phase-item.complete {
+            border-color: var(--success-green);
+            background: #F0FDF4;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .phase-icon {
+            font-size: 24px;
+        }
+
+        .phase-steps {
+            margin-left: 36px;
+            margin-top: 12px;
+            font-size: 14px;
+            color: var(--steel-gray);
+        }
+
+        .phase-step {
+            padding: 4px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Activity Log */
+        .activity-log {
+            background: var(--space-gray);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            padding: 4px 0;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .log-entry:hover {
+            opacity: 1;
+        }
+
+        .log-time {
+            color: #9CA3AF;
+        }
+
+        /* Screenshot Grid */
+        .screenshot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .screenshot-card {
+            background: white;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .screenshot-card:hover {
+            border-color: var(--nebula-blue);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .screenshot-thumbnail {
+            width: 100%;
+            height: 140px;
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            font-size: 48px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .screenshot-thumbnail::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .screenshot-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--space-gray);
+            margin-bottom: 6px;
+        }
+
+        .screenshot-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Score Meter */
+        .score-meter {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .score-value {
+            font-size: 72px;
+            font-weight: 700;
+            color: var(--nebula-blue);
+            line-height: 1;
+        }
+
+        .score-value span {
+            font-size: 36px;
+            color: var(--steel-gray);
+        }
+
+        .score-label {
+            font-size: 18px;
+            color: var(--steel-gray);
+            margin-top: 12px;
+        }
+
+        /* Scoring Table */
+        .scoring-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .scoring-table th,
+        .scoring-table td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .scoring-table th {
+            background: var(--mist-gray);
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--space-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .scoring-table tr:hover {
+            background: #F9FAFB;
+        }
+
+        .severity-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .severity-high {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .severity-medium {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .severity-low {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        /* Deliverable Cards */
+        .deliverable-card {
+            background: white;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            transition: all 0.2s;
+        }
+
+        .deliverable-card:hover {
+            border-color: var(--nebula-blue);
+            box-shadow: 0 4px 12px rgba(0,61,255,0.1);
+        }
+
+        .deliverable-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .deliverable-icon {
+            font-size: 40px;
+        }
+
+        .deliverable-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--space-gray);
+        }
+
+        .deliverable-meta {
+            font-size: 14px;
+            color: var(--steel-gray);
+            margin-bottom: 16px;
+        }
+
+        .deliverable-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 80px;
+            right: 24px;
+            background: white;
+            padding: 16px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            display: none;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .toast.show {
+            display: flex;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .toast-icon {
+            font-size: 24px;
+        }
+
+        .toast-message {
+            font-weight: 500;
+            color: var(--space-gray);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 16px;
+            }
+
+            .audit-grid,
+            .mode-grid,
+            .screenshot-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-start {
+                padding: 32px 24px;
+            }
+
+            .quick-start-form {
+                flex-direction: column;
+            }
+
+            .header {
+                padding: 0 16px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid var(--nebula-blue);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .empty-state-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--space-gray);
+            margin-bottom: 8px;
+        }
+
+        .empty-state-description {
+            font-size: 14px;
+            color: var(--steel-gray);
+            margin-bottom: 24px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <a href="#" class="logo" onclick="showScreen('dashboard')">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm0-10c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z"/>
+                </svg>
+                Search Audit Platform
+            </a>
+            <nav class="nav-links">
+                <a class="nav-link active" onclick="showScreen('dashboard')">Dashboard</a>
+                <a class="nav-link" onclick="showScreen('library')">Library</a>
+                <a class="nav-link" onclick="showScreen('documentation')">Documentation</a>
+                <a class="nav-link" onclick="showScreen('settings')">Settings</a>
+            </nav>
+        </div>
+        <div class="header-right">
+            <button class="btn btn-primary" onclick="openNewAuditModal()">
+                + New Audit
+            </button>
+            <div class="user-menu">
+                <div class="avatar">AR</div>
+                <span style="font-weight: 500; font-size: 14px;">Alex Rivera</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Dashboard Screen -->
+    <div id="dashboard" class="screen active">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="page-title">Dashboard</h1>
+                <p class="page-subtitle">Run comprehensive search audits on prospect websites</p>
+            </div>
+
+            <div class="quick-start">
+                <h2>+ New Audit</h2>
+                <p>Enter prospect URL to start a comprehensive search audit</p>
+                <div class="quick-start-form">
+                    <input type="text" class="input" placeholder="e.g., costco.com or https://www.costco.com" value="costco.com">
+                    <button class="btn btn-primary" onclick="openNewAuditModal()" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid rgba(255,255,255,0.3);">
+                        Start Full Audit →
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-header">Recent Audits (3)</div>
+            <div class="audit-grid">
+                <div class="audit-card" onclick="showScreen('audit-overview')">
+                    <div class="audit-card-header">
+                        <div class="audit-icon">🏢</div>
+                        <div style="flex: 1;">
+                            <div class="audit-card-title">Costco Wholesale</div>
+                            <span class="status-badge status-complete">
+                                <span class="status-dot green"></span>
+                                Complete
+                            </span>
+                        </div>
+                    </div>
+                    <div class="audit-card-meta">costco.com • Grocery & CPG</div>
+                    <div class="audit-card-score">4.4<span>/10</span></div>
+                    <div class="audit-card-meta">Completed 2 days ago • 47-page book</div>
+                    <div class="audit-card-actions">
+                        <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); showScreen('audit-overview')">View</button>
+                        <button class="btn btn-secondary btn-small" onclick="event.stopPropagation(); showToast('Downloaded audit book')">Download</button>
+                        <button class="btn btn-secondary btn-small" onclick="event.stopPropagation(); showToast('Share link copied')">Share</button>
+                    </div>
+                </div>
+
+                <div class="audit-card" onclick="showScreen('audit-overview')">
+                    <div class="audit-card-header">
+                        <div class="audit-icon">🏢</div>
+                        <div style="flex: 1;">
+                            <div class="audit-card-title">Tapestry (Coach)</div>
+                            <span class="status-badge status-running">
+                                <span class="spinner"></span>
+                                Running
+                            </span>
+                        </div>
+                    </div>
+                    <div class="audit-card-meta">coach.com • Fashion & Apparel</div>
+                    <div style="margin: 16px 0;">
+                        <div style="font-size: 14px; color: #6B7280; margin-bottom: 8px;">Phase 2/5 — Browser Testing</div>
+                        <div class="progress-bar">
+                            <div class="progress-bar-fill" style="width: 42%"></div>
+                        </div>
+                        <div style="font-size: 13px; color: #6B7280; margin-top: 4px;">42% complete • 12m elapsed</div>
+                    </div>
+                    <div class="audit-card-actions">
+                        <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); showScreen('audit-overview')">Monitor</button>
+                        <button class="btn btn-secondary btn-small" onclick="event.stopPropagation(); showToast('Audit paused')">Pause</button>
+                    </div>
+                </div>
+
+                <div class="audit-card" onclick="showScreen('audit-overview')">
+                    <div class="audit-card-header">
+                        <div class="audit-icon">🏢</div>
+                        <div style="flex: 1;">
+                            <div class="audit-card-title">AutoZone</div>
+                            <span class="status-badge status-complete">
+                                <span class="status-dot green"></span>
+                                Complete
+                            </span>
+                        </div>
+                    </div>
+                    <div class="audit-card-meta">autozone.com • Auto Parts</div>
+                    <div class="audit-card-score">3.2<span>/10</span></div>
+                    <div class="audit-card-meta">Completed 5 days ago • 38-page book</div>
+                    <div class="audit-card-actions">
+                        <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); showScreen('audit-overview')">View</button>
+                        <button class="btn btn-secondary btn-small" onclick="event.stopPropagation(); showToast('Downloaded audit book')">Download</button>
+                        <button class="btn btn-secondary btn-small" onclick="event.stopPropagation(); showToast('Share link copied')">Share</button>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 40px;">
+                <div class="card-header">System Status</div>
+                <div class="system-status">
+                    <div class="status-item">
+                        <span class="status-dot green"></span>
+                        Chrome MCP
+                    </div>
+                    <div class="status-item">
+                        <span class="status-dot green"></span>
+                        SimilarWeb MCP
+                    </div>
+                    <div class="status-item">
+                        <span class="status-dot green"></span>
+                        BuiltWith MCP
+                    </div>
+                    <div class="status-item">
+                        <span class="status-dot green"></span>
+                        Yahoo Finance
+                    </div>
+                    <div class="status-item">
+                        <span class="status-dot green"></span>
+                        SEC EDGAR MCP
+                    </div>
+                    <div class="status-item">
+                        <span class="status-dot yellow"></span>
+                        1,247 BuiltWith credits
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audit Overview Screen -->
+    <div id="audit-overview" class="screen">
+        <div class="container">
+            <div style="margin-bottom: 24px;">
+                <button class="btn btn-secondary" onclick="showScreen('dashboard')">← Back to Dashboard</button>
+            </div>
+
+            <div class="page-header">
+                <h1 class="page-title">Costco Wholesale</h1>
+                <p class="page-subtitle">costco.com • Started 18 minutes ago</p>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="showAuditTab('overview')">Overview</button>
+                <button class="tab" onclick="showAuditTab('research')">Research</button>
+                <button class="tab" onclick="showAuditTab('browser')">Browser Tests</button>
+                <button class="tab" onclick="showAuditTab('scoring')">Scoring</button>
+                <button class="tab" onclick="showAuditTab('deliverables')">Deliverables</button>
+            </div>
+
+            <div id="tab-overview" class="tab-content">
+                <div class="card">
+                    <div style="font-size: 20px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 12px;">
+                        <span class="spinner"></span>
+                        Status: Phase 2 of 5 (Browser Testing)
+                    </div>
+                    <div class="progress-bar" style="height: 12px;">
+                        <div class="progress-bar-fill" style="width: 68%"></div>
+                    </div>
+                    <div style="margin-top: 8px; font-size: 14px; color: #6B7280;">
+                        68% complete • Estimated completion: 12 minutes
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">Phase Progress</div>
+                    <div class="phase-list">
+                        <div class="phase-item complete">
+                            <div class="phase-header">
+                                <span class="phase-icon">✅</span>
+                                <span>Phase 0: Workspace Setup</span>
+                            </div>
+                            <div style="margin-left: 36px; font-size: 14px; color: #6B7280; margin-top: 8px;">
+                                Completed in 2s
+                            </div>
+                        </div>
+
+                        <div class="phase-item complete">
+                            <div class="phase-header">
+                                <span class="phase-icon">✅</span>
+                                <span>Phase 1: Pre-Audit Research</span>
+                            </div>
+                            <div class="phase-steps">
+                                <div class="phase-step">✅ Wave 1: Company, Tech, Traffic, Competitors</div>
+                                <div class="phase-step">✅ Wave 2: Queries, Strategic, Hiring, Financials</div>
+                                <div class="phase-step">✅ Wave 3: Investor Intel, Deep Hiring</div>
+                                <div class="phase-step">✅ Wave 4: ICP Mapping</div>
+                                <div style="margin-top: 8px; font-weight: 600;">Completed in 16m 23s</div>
+                            </div>
+                        </div>
+
+                        <div class="phase-item active">
+                            <div class="phase-header">
+                                <span class="phase-icon">⏱️</span>
+                                <span>Phase 2: Browser Testing (ACTIVE)</span>
+                            </div>
+                            <div class="phase-steps">
+                                <div class="phase-step">✅ Step 2a: Initial Observations</div>
+                                <div class="phase-step">✅ Step 2b: Empty State Test</div>
+                                <div class="phase-step">✅ Step 2c: SAYT Test</div>
+                                <div class="phase-step">✅ Step 2d: Full Search Results</div>
+                                <div class="phase-step"><span class="spinner" style="width: 16px; height: 16px; border-width: 2px;"></span> Step 2e: Typo Tolerance (4/6 queries)</div>
+                                <div class="phase-step">⏳ Step 2f-2t: Pending...</div>
+                                <div style="margin-top: 8px; font-weight: 600;">7/20 steps complete — 2m 18s elapsed</div>
+                            </div>
+                        </div>
+
+                        <div class="phase-item">
+                            <div class="phase-header">
+                                <span class="phase-icon">⏳</span>
+                                <span>Phase 3: Scoring & Analysis</span>
+                            </div>
+                            <div style="margin-left: 36px; font-size: 14px; color: #6B7280; margin-top: 8px;">
+                                Pending Phase 2 completion
+                            </div>
+                        </div>
+
+                        <div class="phase-item">
+                            <div class="phase-header">
+                                <span class="phase-icon">⏳</span>
+                                <span>Phase 5: Deliverable Generation</span>
+                            </div>
+                            <div style="margin-left: 36px; font-size: 14px; color: #6B7280; margin-top: 8px;">
+                                Pending Phase 3 completion
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">Live Activity Log</div>
+                    <div class="activity-log">
+                        <div class="log-entry"><span class="log-time">18:43:12</span> | Screenshot captured: 05-typo-headlite.png</div>
+                        <div class="log-entry"><span class="log-time">18:43:09</span> | Typo query "headlite" — 0 results found</div>
+                        <div class="log-entry"><span class="log-time">18:42:54</span> | Typo query "vaccuum" — 8 results found</div>
+                        <div class="log-entry"><span class="log-time">18:42:38</span> | Screenshot captured: 04-full-results.png</div>
+                        <div class="log-entry"><span class="log-time">18:42:35</span> | Full search for "laptop" — 347 results</div>
+                        <div class="log-entry"><span class="log-time">18:42:18</span> | SAYT latency: 280ms (good)</div>
+                        <div class="log-entry"><span class="log-time">18:42:05</span> | Empty state test passed</div>
+                        <div class="log-entry"><span class="log-time">18:41:52</span> | Homepage screenshot captured</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 24px; display: flex; gap: 12px;">
+                    <button class="btn btn-secondary" onclick="showToast('Audit paused')">Pause Audit</button>
+                    <button class="btn btn-secondary" onclick="if(confirm('Cancel this audit?')) showToast('Audit cancelled')">Cancel Audit</button>
+                    <button class="btn btn-secondary" onclick="showToast('Log exported')">Export Log</button>
+                </div>
+            </div>
+
+            <div id="tab-research" class="tab-content" style="display: none;">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                        <div class="card-header" style="margin: 0;">Scratchpad Files (12)</div>
+                        <button class="btn btn-secondary btn-small" onclick="showToast('Downloaded all files')">Download All (.zip)</button>
+                    </div>
+
+                    <div class="deliverable-card">
+                        <div class="deliverable-header">
+                            <div class="deliverable-icon">📄</div>
+                            <div>
+                                <div class="deliverable-title">01-company-context.md</div>
+                                <div style="font-size: 14px; color: #6B7280;">Company overview, financials, leadership</div>
+                            </div>
+                        </div>
+                        <div style="background: #F5F7FA; padding: 16px; border-radius: 8px; margin: 16px 0; font-size: 14px; font-family: monospace;">
+                            • Revenue: $254.2B (FY2024) <a href="#" style="color: #003DFF">[Yahoo Finance]</a><br>
+                            • Employees: 316,000<br>
+                            • Vertical: Grocery & CPG<br>
+                            • CEO: Ron Vachris (Jan 2024)<br>
+                            • CFO: Richard Galanti (retired Feb 2024)
+                        </div>
+                        <div class="deliverable-actions">
+                            <button class="btn btn-primary btn-small">View Full File</button>
+                            <button class="btn btn-secondary btn-small" onclick="showToast('File downloaded')">Download</button>
+                        </div>
+                    </div>
+
+                    <div class="deliverable-card">
+                        <div class="deliverable-header">
+                            <div class="deliverable-icon">📄</div>
+                            <div>
+                                <div class="deliverable-title">02-tech-stack.md</div>
+                                <div style="font-size: 14px; color: #6B7280;">Technology analysis from BuiltWith</div>
+                            </div>
+                        </div>
+                        <div style="background: #F5F7FA; padding: 16px; border-radius: 8px; margin: 16px 0; font-size: 14px; font-family: monospace;">
+                            • Current Search: Native (no third-party vendor)<br>
+                            • E-commerce: Custom platform<br>
+                            • Analytics: Google Analytics, Adobe Analytics<br>
+                            • ⚠️ No enterprise search vendor detected<br>
+                            • Opportunity: Greenfield deployment
+                        </div>
+                        <div class="deliverable-actions">
+                            <button class="btn btn-primary btn-small">View Full File</button>
+                            <button class="btn btn-secondary btn-small" onclick="showToast('File downloaded')">Download</button>
+                        </div>
+                    </div>
+
+                    <div class="deliverable-card">
+                        <div class="deliverable-header">
+                            <div class="deliverable-icon">📄</div>
+                            <div>
+                                <div class="deliverable-title">03-traffic-data.md</div>
+                                <div style="font-size: 14px; color: #6B7280;">SimilarWeb traffic analysis</div>
+                            </div>
+                        </div>
+                        <div style="background: #F5F7FA; padding: 16px; border-radius: 8px; margin: 16px 0; font-size: 14px; font-family: monospace;">
+                            • Monthly Visits: 187M <a href="#" style="color: #003DFF">[SimilarWeb]</a><br>
+                            • Bounce Rate: 28.6%<br>
+                            • Direct: 52.4% | Organic: 31.8% | Paid: 8.2%<br>
+                            • Top Keywords: "costco", "costco near me", "costco membership"
+                        </div>
+                        <div class="deliverable-actions">
+                            <button class="btn btn-primary btn-small">View Full File</button>
+                            <button class="btn btn-secondary btn-small" onclick="showToast('File downloaded')">Download</button>
+                        </div>
+                    </div>
+
+                    <div style="font-size: 14px; color: #6B7280; margin-top: 20px; text-align: center;">
+                        + 9 more scratchpad files
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-browser" class="tab-content" style="display: none;">
+                <div class="card">
+                    <div class="card-header">Test Results Summary</div>
+                    <div style="display: flex; gap: 24px; font-size: 16px; font-weight: 600;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 24px;">✅</span>
+                            <span>Passed: 14</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 24px;">⚠️</span>
+                            <span>Warning: 4</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 24px;">❌</span>
+                            <span>Failed: 2</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">Screenshot Gallery (24)</div>
+                    <div class="screenshot-grid">
+                        <div class="screenshot-card">
+                            <div class="screenshot-thumbnail">📸</div>
+                            <div class="screenshot-label">01-homepage</div>
+                            <span class="screenshot-status status-complete">✅ Pass</span>
+                        </div>
+                        <div class="screenshot-card">
+                            <div class="screenshot-thumbnail">📸</div>
+                            <div class="screenshot-label">02-empty-state</div>
+                            <span class="screenshot-status status-complete">✅ Pass</span>
+                        </div>
+                        <div class="screenshot-card">
+                            <div class="screenshot-thumbnail">📸</div>
+                            <div class="screenshot-label">03-sayt</div>
+                            <span class="screenshot-status status-complete">✅ Pass</span>
+                        </div>
+                        <div class="screenshot-card">
+                            <div class="screenshot-thumbnail">📸</div>
+                            <div class="screenshot-label">04-full-results</div>
+                            <span class="screenshot-status status-complete">✅ Pass</span>
+                        </div>
+                        <div class="screenshot-card">
+                            <div class="screenshot-thumbnail">📸</div>
+                            <div class="screenshot-label">05-typo-headlite</div>
+                            <span class="screenshot-status severity-high">❌ Fail</span>
+                        </div>
+                        <div class="screenshot-card">
+                            <div class="screenshot-thumbnail">📸</div>
+                            <div class="screenshot-label">06-synonym-couch</div>
+                            <span class="screenshot-status severity-medium">⚠️ Warn</span>
+                        </div>
+                        <div class="screenshot-card">
+                            <div class="screenshot-thumbnail">📸</div>
+                            <div class="screenshot-label">07-no-results</div>
+                            <span class="screenshot-status status-complete">✅ Pass</span>
+                        </div>
+                        <div class="screenshot-card">
+                            <div class="screenshot-thumbnail">📸</div>
+                            <div class="screenshot-label">08-non-product</div>
+                            <span class="screenshot-status severity-high">❌ Fail</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">Detailed Test Results</div>
+
+                    <div class="deliverable-card" style="border-color: #FEE2E2;">
+                        <div style="font-size: 18px; font-weight: 600; color: #EF4444; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                            ❌ Step 2e: Typo Tolerance — "headlite"
+                        </div>
+                        <div style="font-size: 14px; color: #6B7280; line-height: 1.6;">
+                            <div><strong>Query:</strong> "headlite" (should find "headlight")</div>
+                            <div><strong>Result:</strong> 0 results found</div>
+                            <div><strong>Expected:</strong> >0 results OR "Did you mean headlight?"</div>
+                            <div><strong>Screenshot:</strong> 05-typo-headlite.png</div>
+                            <div><strong>Severity:</strong> <span class="severity-badge severity-high">HIGH</span></div>
+                        </div>
+                        <div class="deliverable-actions" style="margin-top: 16px;">
+                            <button class="btn btn-primary btn-small">View Screenshot</button>
+                            <button class="btn btn-secondary btn-small">View in Browser</button>
+                        </div>
+                    </div>
+
+                    <div class="deliverable-card" style="border-color: #FEF3C7;">
+                        <div style="font-size: 18px; font-weight: 600; color: #F59E0B; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                            ⚠️ Step 2f: Synonym Test — "couch"
+                        </div>
+                        <div style="font-size: 14px; color: #6B7280; line-height: 1.6;">
+                            <div><strong>Query:</strong> "couch" (should find sofas)</div>
+                            <div><strong>Result:</strong> 8 results found (expected >50)</div>
+                            <div><strong>Expected:</strong> Treat "couch" = "sofa"</div>
+                            <div><strong>Screenshot:</strong> 06-synonym-couch.png</div>
+                            <div><strong>Severity:</strong> <span class="severity-badge severity-medium">MEDIUM</span></div>
+                        </div>
+                        <div class="deliverable-actions" style="margin-top: 16px;">
+                            <button class="btn btn-primary btn-small">View Screenshot</button>
+                            <button class="btn btn-secondary btn-small">View in Browser</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-scoring" class="tab-content" style="display: none;">
+                <div class="card">
+                    <div class="score-meter">
+                        <div class="score-value">4.4<span>/10</span></div>
+                        <div class="score-label">Overall Score</div>
+                        <div style="margin: 20px auto; max-width: 300px;">
+                            <svg viewBox="0 0 200 100" style="width: 100%;">
+                                <path d="M 10 90 A 80 80 0 0 1 190 90" fill="none" stroke="#E5E7EB" stroke-width="20" stroke-linecap="round"/>
+                                <path d="M 10 90 A 80 80 0 0 1 110 20" fill="none" stroke="#003DFF" stroke-width="20" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div style="font-size: 16px; color: #6B7280;">Above Average</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">Scoring Matrix (10 Challenge Areas)</div>
+                    <table class="scoring-table">
+                        <thead>
+                            <tr>
+                                <th>Area</th>
+                                <th>Score</th>
+                                <th>Severity</th>
+                                <th>Weight</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1. Latency</td>
+                                <td style="font-weight: 600;">8/10</td>
+                                <td><span class="severity-badge severity-low">LOW</span></td>
+                                <td>0.5x</td>
+                            </tr>
+                            <tr>
+                                <td>2. Typo Tolerance</td>
+                                <td style="font-weight: 600;">2/10</td>
+                                <td><span class="severity-badge severity-high">HIGH 🔴</span></td>
+                                <td>2.0x</td>
+                            </tr>
+                            <tr>
+                                <td>3. Query Suggestions</td>
+                                <td style="font-weight: 600;">6/10</td>
+                                <td><span class="severity-badge severity-medium">MEDIUM</span></td>
+                                <td>1.0x</td>
+                            </tr>
+                            <tr>
+                                <td>4. Intent Detection</td>
+                                <td style="font-weight: 600;">4/10</td>
+                                <td><span class="severity-badge severity-medium">MEDIUM</span></td>
+                                <td>1.0x</td>
+                            </tr>
+                            <tr>
+                                <td>5. Merchandising</td>
+                                <td style="font-weight: 600;">7/10</td>
+                                <td><span class="severity-badge severity-low">LOW</span></td>
+                                <td>0.5x</td>
+                            </tr>
+                            <tr>
+                                <td>6. Content Commerce</td>
+                                <td style="font-weight: 600;">3/10</td>
+                                <td><span class="severity-badge severity-high">HIGH 🔴</span></td>
+                                <td>2.0x</td>
+                            </tr>
+                            <tr>
+                                <td>7. Semantic/NLP Search</td>
+                                <td style="font-weight: 600;">2/10</td>
+                                <td><span class="severity-badge severity-high">HIGH 🔴</span></td>
+                                <td>2.0x</td>
+                            </tr>
+                            <tr>
+                                <td>8. Dynamic Facets</td>
+                                <td style="font-weight: 600;">5/10</td>
+                                <td><span class="severity-badge severity-medium">MEDIUM</span></td>
+                                <td>1.0x</td>
+                            </tr>
+                            <tr>
+                                <td>9. Recommendations</td>
+                                <td style="font-weight: 600;">1/10</td>
+                                <td><span class="severity-badge severity-high">HIGH 🔴</span></td>
+                                <td>2.0x</td>
+                            </tr>
+                            <tr>
+                                <td>10. Search Intelligence</td>
+                                <td style="font-weight: 600;">4/10</td>
+                                <td><span class="severity-badge severity-medium">MEDIUM</span></td>
+                                <td>1.0x</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">Top 3 Critical Gaps</div>
+
+                    <div class="deliverable-card">
+                        <div style="font-size: 20px; font-weight: 600; color: #EF4444; margin-bottom: 8px;">
+                            🔴 1. Recommendations (1/10)
+                        </div>
+                        <div style="font-size: 14px; color: #6B7280; margin-bottom: 12px;">
+                            Zero product recommendations on PDPs
+                        </div>
+                        <div style="font-weight: 600; color: #003DFF;">→ Algolia Recommend</div>
+                    </div>
+
+                    <div class="deliverable-card">
+                        <div style="font-size: 20px; font-weight: 600; color: #EF4444; margin-bottom: 8px;">
+                            🔴 2. Typo Tolerance (2/10)
+                        </div>
+                        <div style="font-size: 14px; color: #6B7280; margin-bottom: 12px;">
+                            "headlite" returns 0 results (should find "headlight")
+                        </div>
+                        <div style="font-weight: 600; color: #003DFF;">→ Algolia Typo Tolerance</div>
+                    </div>
+
+                    <div class="deliverable-card">
+                        <div style="font-size: 20px; font-weight: 600; color: #EF4444; margin-bottom: 8px;">
+                            🔴 3. Semantic/NLP Search (2/10)
+                        </div>
+                        <div style="font-size: 14px; color: #6B7280; margin-bottom: 12px;">
+                            "best TV for gaming under $1000" returns insurance plans
+                        </div>
+                        <div style="font-weight: 600; color: #003DFF;">→ Algolia NeuralSearch</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 24px; display: flex; gap: 12px;">
+                    <button class="btn btn-secondary" onclick="showToast('Formula details shown')">View Scoring Formula</button>
+                    <button class="btn btn-secondary" onclick="showToast('Matrix exported as CSV')">Export Matrix (.csv)</button>
+                </div>
+            </div>
+
+            <div id="tab-deliverables" class="tab-content" style="display: none;">
+                <div class="deliverable-card">
+                    <div class="deliverable-header">
+                        <div class="deliverable-icon">📕</div>
+                        <div style="flex: 1;">
+                            <div class="deliverable-title">Search Audit Book (PDF)</div>
+                            <div class="deliverable-meta">costco-search-audit-book.pdf</div>
+                        </div>
+                    </div>
+                    <div class="deliverable-meta">
+                        3.8 MB • 36 pages • Brand-validated<br>
+                        Generated 2 hours ago
+                    </div>
+                    <div style="background: #F5F7FA; padding: 16px; border-radius: 8px; margin: 16px 0; font-size: 14px;">
+                        <strong>Table of Contents:</strong>
+                        <ul style="margin-left: 20px; margin-top: 8px; line-height: 1.8;">
+                            <li>Cover</li>
+                            <li>Act I: The Verdict (Ch 1-4)</li>
+                            <li>Act II: The Proof (Ch 5-13) — 8 findings</li>
+                            <li>Act III: Why Now (Ch 14-18)</li>
+                            <li>Act IV: The Path (Ch 19-22)</li>
+                            <li>Appendices (A-F)</li>
+                        </ul>
+                    </div>
+                    <div class="deliverable-actions">
+                        <button class="btn btn-primary" onclick="showToast('Preview opened')">Preview</button>
+                        <button class="btn btn-secondary" onclick="showToast('PDF downloaded')">Download</button>
+                        <button class="btn btn-secondary" onclick="showToast('Email sent')">Email</button>
+                        <button class="btn btn-secondary" onclick="showToast('Share link copied')">Share Link</button>
+                    </div>
+                </div>
+
+                <div class="deliverable-card">
+                    <div class="deliverable-header">
+                        <div class="deliverable-icon">📄</div>
+                        <div style="flex: 1;">
+                            <div class="deliverable-title">AE Pre-Call Brief (Markdown)</div>
+                            <div class="deliverable-meta">costco-ae-precall-brief.md</div>
+                        </div>
+                    </div>
+                    <div class="deliverable-meta">
+                        42 KB • 8 sections • Hyperlinked sources<br>
+                        Generated 2 hours ago
+                    </div>
+                    <div style="background: #F5F7FA; padding: 16px; border-radius: 8px; margin: 16px 0; font-size: 14px;">
+                        <strong>Sections:</strong>
+                        <ul style="margin-left: 20px; margin-top: 8px; line-height: 1.8;">
+                            <li>Company Snapshot</li>
+                            <li>Strategic Intelligence</li>
+                            <li>In Their Own Words (5 exec quotes)</li>
+                            <li>Technology Stack</li>
+                            <li>Buying Committee (6 stakeholders)</li>
+                            <li>Search Audit Findings (8 gaps)</li>
+                            <li>Revenue Impact ($3.2M conservative est.)</li>
+                            <li>Discovery Questions</li>
+                        </ul>
+                    </div>
+                    <div class="deliverable-actions">
+                        <button class="btn btn-primary" onclick="showToast('Preview opened')">Preview</button>
+                        <button class="btn btn-secondary" onclick="showToast('File downloaded')">Download</button>
+                        <button class="btn btn-secondary" onclick="showToast('Copied to clipboard')">Copy to Clipboard</button>
+                        <button class="btn btn-secondary" onclick="showToast('Share link copied')">Share</button>
+                    </div>
+                </div>
+
+                <div class="deliverable-card">
+                    <div class="deliverable-header">
+                        <div class="deliverable-icon">📋</div>
+                        <div style="flex: 1;">
+                            <div class="deliverable-title">Strategic Signal Brief (Markdown)</div>
+                            <div class="deliverable-meta">costco-strategic-signal-brief.md</div>
+                        </div>
+                    </div>
+                    <div class="deliverable-meta">
+                        12 KB • 1 page • LLM-optimized<br>
+                        Generated 2 hours ago
+                    </div>
+                    <div style="background: #F5F7FA; padding: 16px; border-radius: 8px; margin: 16px 0; font-size: 14px;">
+                        <strong>Purpose:</strong> Downstream LLM consumption<br>
+                        <strong>Format:</strong> Standalone facts with full context per line<br>
+                        <strong>Use Case:</strong> Feed into ChatGPT/Claude for sales prep
+                    </div>
+                    <div class="deliverable-actions">
+                        <button class="btn btn-primary" onclick="showToast('Preview opened')">Preview</button>
+                        <button class="btn btn-secondary" onclick="showToast('File downloaded')">Download</button>
+                        <button class="btn btn-secondary" onclick="showToast('Sent to CRM')">Send to CRM</button>
+                    </div>
+                </div>
+
+                <div style="margin-top: 24px; display: flex; gap: 12px;">
+                    <button class="btn btn-secondary" onclick="showToast('All files downloaded')">Download All Deliverables (.zip)</button>
+                    <button class="btn btn-secondary" onclick="if(confirm('Regenerate deliverables?')) showToast('Regenerating...')">Regenerate Deliverables</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Library Screen -->
+    <div id="library" class="screen">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="page-title">Audit Library</h1>
+                <p class="page-subtitle">Browse, search, and manage all past audits</p>
+            </div>
+
+            <div class="card">
+                <input type="text" class="input" placeholder="🔍 Search audits by company name, domain, or keyword..." style="margin-bottom: 20px;">
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px;">
+                    <select class="input">
+                        <option>Status: All</option>
+                        <option>Complete</option>
+                        <option>Running</option>
+                        <option>Failed</option>
+                    </select>
+                    <select class="input">
+                        <option>Vertical: All</option>
+                        <option>Fashion & Apparel</option>
+                        <option>Grocery & CPG</option>
+                        <option>Auto Parts</option>
+                    </select>
+                    <select class="input">
+                        <option>Score: All</option>
+                        <option>0-3</option>
+                        <option>4-6</option>
+                        <option>7-10</option>
+                    </select>
+                    <select class="input">
+                        <option>Date: Last 30 days</option>
+                        <option>Last 7 days</option>
+                        <option>Last 90 days</option>
+                        <option>All time</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                    <strong>Sort:</strong>
+                    <select class="input" style="width: auto; padding: 8px 40px 8px 12px;">
+                        <option>Most Recent</option>
+                        <option>Oldest First</option>
+                        <option>Highest Score</option>
+                        <option>Lowest Score</option>
+                        <option>Company Name (A-Z)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="audit-grid">
+                <div class="audit-card" onclick="showScreen('audit-overview')">
+                    <div class="audit-card-header">
+                        <div class="audit-icon">🏢</div>
+                        <div style="flex: 1;">
+                            <div class="audit-card-title">Costco Wholesale</div>
+                            <span class="status-badge status-complete">
+                                <span class="status-dot green"></span>
+                                Complete
+                            </span>
+                        </div>
+                    </div>
+                    <div class="audit-card-meta">costco.com • Grocery & CPG</div>
+                    <div class="audit-card-score">4.4<span>/10</span></div>
+                    <div class="audit-card-meta">Completed 2 days ago • 36-page PDF</div>
+                    <div class="audit-card-actions">
+                        <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); showScreen('audit-overview')">View</button>
+                        <button class="btn btn-secondary btn-small" onclick="event.stopPropagation(); showToast('Downloaded')">Download</button>
+                        <button class="btn btn-secondary btn-small" onclick="event.stopPropagation(); showToast('Share link copied')">Share</button>
+                    </div>
+                </div>
+
+                <div class="audit-card" onclick="showScreen('audit-overview')">
+                    <div class="audit-card-header">
+                        <div class="audit-icon">🏢</div>
+                        <div style="flex: 1;">
+                            <div class="audit-card-title">Tapestry (Coach)</div>
+                            <span class="status-badge status-complete">
+                                <span class="status-dot green"></span>
+                                Complete
+                            </span>
+                        </div>
+                    </div>
+                    <div class="audit-card-meta">coach.com • Fashion & Apparel</div>
+                    <div class="audit-card-score">4.2<span>/10</span></div>
+                    <div class="audit-card-meta">Completed 3 days ago • 38-page PDF</div>
+                    <div class="audit-card-actions">
+                        <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); showScreen('audit-overview')">View</button>
+                        <button class="btn btn-secondary btn-small" onclick="event.stopPropagation(); showToast('Downloaded')">Download</button>
+                        <button class="btn btn-secondary btn-small" onclick="event.stopPropagation(); showToast('Share link copied')">Share</button>
+                    </div>
+                </div>
+
+                <div class="audit-card" onclick="showScreen('audit-overview')">
+                    <div class="audit-card-header">
+                        <div class="audit-icon">🏢</div>
+                        <div style="flex: 1;">
+                            <div class="audit-card-title">TheRealReal</div>
+                            <span class="status-badge status-running">
+                                <span class="spinner" style="width: 14px; height: 14px; border-width: 2px;"></span>
+                                Running
+                            </span>
+                        </div>
+                    </div>
+                    <div class="audit-card-meta">therealreal.com • Fashion & Apparel</div>
+                    <div style="margin: 16px 0;">
+                        <div style="font-size: 14px; color: #6B7280; margin-bottom: 8px;">Phase 2/5 — 18m elapsed</div>
+                        <div class="progress-bar">
+                            <div class="progress-bar-fill" style="width: 42%"></div>
+                        </div>
+                        <div style="font-size: 13px; color: #6B7280; margin-top: 4px;">42% complete</div>
+                    </div>
+                    <div class="audit-card-actions">
+                        <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); showScreen('audit-overview')">Monitor</button>
+                        <button class="btn btn-secondary btn-small" onclick="event.stopPropagation(); showToast('Audit paused')">Pause</button>
+                    </div>
+                </div>
+
+                <div class="audit-card">
+                    <div class="audit-card-header">
+                        <div class="audit-icon">🏢</div>
+                        <div style="flex: 1;">
+                            <div class="audit-card-title">AutoZone</div>
+                            <span class="status-badge status-complete">
+                                <span class="status-dot green"></span>
+                                Complete
+                            </span>
+                        </div>
+                    </div>
+                    <div class="audit-card-meta">autozone.com • Auto Parts</div>
+                    <div class="audit-card-score">3.2<span>/10</span></div>
+                    <div class="audit-card-meta">Completed 5 days ago • 38-page PDF</div>
+                    <div class="audit-card-actions">
+                        <button class="btn btn-primary btn-small" onclick="showScreen('audit-overview')">View</button>
+                        <button class="btn btn-secondary btn-small" onclick="showToast('Downloaded')">Download</button>
+                        <button class="btn btn-secondary btn-small" onclick="showToast('Share link copied')">Share</button>
+                    </div>
+                </div>
+
+                <div class="audit-card">
+                    <div class="audit-card-header">
+                        <div class="audit-icon">🏢</div>
+                        <div style="flex: 1;">
+                            <div class="audit-card-title">Uncommon Goods</div>
+                            <span class="status-badge status-complete">
+                                <span class="status-dot green"></span>
+                                Complete
+                            </span>
+                        </div>
+                    </div>
+                    <div class="audit-card-meta">uncommongoods.com • Home & Garden</div>
+                    <div class="audit-card-score">4.0<span>/10</span></div>
+                    <div class="audit-card-meta">Completed 1 week ago • 34-page PDF</div>
+                    <div class="audit-card-actions">
+                        <button class="btn btn-primary btn-small" onclick="showScreen('audit-overview')">View</button>
+                        <button class="btn btn-secondary btn-small" onclick="showToast('Downloaded')">Download</button>
+                        <button class="btn btn-secondary btn-small" onclick="showToast('Share link copied')">Share</button>
+                    </div>
+                </div>
+
+                <div class="audit-card">
+                    <div class="audit-card-header">
+                        <div class="audit-icon">🏢</div>
+                        <div style="flex: 1;">
+                            <div class="audit-card-title">Oriental Trading</div>
+                            <span class="status-badge status-complete">
+                                <span class="status-dot green"></span>
+                                Complete
+                            </span>
+                        </div>
+                    </div>
+                    <div class="audit-card-meta">orientaltrading.com • Party Supplies</div>
+                    <div class="audit-card-score">4.1<span>/10</span></div>
+                    <div class="audit-card-meta">Completed 2 weeks ago • 35-page PDF</div>
+                    <div class="audit-card-actions">
+                        <button class="btn btn-primary btn-small" onclick="showScreen('audit-overview')">View</button>
+                        <button class="btn btn-secondary btn-small" onclick="showToast('Downloaded')">Download</button>
+                        <button class="btn btn-secondary btn-small" onclick="showToast('Share link copied')">Share</button>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 32px; display: flex; gap: 12px;">
+                <button class="btn btn-secondary">☐ Select All</button>
+                <button class="btn btn-secondary" onclick="showToast('Exporting selected audits')">Export Selected</button>
+                <button class="btn btn-secondary" onclick="if(confirm('Delete selected audits?')) showToast('Deleted')">Delete Selected</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Documentation Screen -->
+    <div id="documentation" class="screen">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="page-title">📚 Documentation</h1>
+                <p class="page-subtitle">Architecture, modules, and implementation roadmap</p>
+            </div>
+
+            <!-- Quick Navigation -->
+            <div class="card" style="margin-bottom: 32px;">
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <a href="#doc-architecture" class="btn btn-secondary btn-small">Architecture</a>
+                    <a href="#doc-modules" class="btn btn-secondary btn-small">Modules</a>
+                    <a href="#doc-roadmap" class="btn btn-secondary btn-small">Roadmap</a>
+                </div>
+            </div>
+
+            <!-- Architecture Section -->
+            <div id="doc-architecture" class="card" style="margin-bottom: 32px;">
+                <div class="card-header">🏗️ Architecture Overview</div>
+                <div style="font-size: 15px; line-height: 1.8; color: #374151;">
+                    <p style="margin-bottom: 20px;"><strong>Key Decision:</strong> Production will call APIs directly, NOT through MCP servers</p>
+
+                    <div style="background: #EFF6FF; border-left: 4px solid #3B82F6; padding: 16px; margin: 20px 0; border-radius: 8px;">
+                        <div style="font-weight: 600; margin-bottom: 12px;">Direct API Approach:</div>
+                        <ul style="padding-left: 20px; line-height: 2;">
+                            <li><strong>BuiltWith:</strong> <code>api.builtwith.com</code> REST API</li>
+                            <li><strong>SimilarWeb:</strong> <code>api.similarweb.com</code> REST API</li>
+                            <li><strong>Yahoo Finance:</strong> <code>query2.finance.yahoo.com</code> public API</li>
+                            <li><strong>Browser:</strong> Playwright library directly (no MCP)</li>
+                            <li><strong>WebSearch:</strong> Perplexity API or Google Search API</li>
+                        </ul>
+                        <p style="margin-top: 12px; font-style: italic; opacity: 0.9;">MCP servers are for CLI/local dev only. Production needs better caching, monitoring, and rate limiting.</p>
+                    </div>
+
+                    <p style="margin-top: 20px;"><strong>For detailed architecture diagrams, database schemas, and API endpoints:</strong></p>
+                    <p style="margin-top: 8px;">See <a href="architecture-diagram.md" style="color: #003DFF; font-weight: 500;">architecture-diagram.md</a> in the Dashboard folder.</p>
+                </div>
+            </div>
+
+            <!-- Modules Section -->
+            <div id="doc-modules" class="card" style="margin-bottom: 32px;">
+                <div class="card-header">🧩 Module Breakdown</div>
+
+                <div style="background: #EFF6FF; padding: 16px; border-radius: 8px; margin: 20px 0;">
+                    <strong>Legend:</strong>
+                    <span style="margin-left: 16px;"><strong style="color: #059669;">✅ REUSABLE</strong> - Already exists in algolia-arian project</span>
+                    <span style="margin-left: 16px;"><strong style="color: #D97706;">⚠️ NEW</strong> - Needs to be built</span>
+                </div>
+
+                <h3 style="font-size: 18px; font-weight: 600; margin: 24px 0 16px;">Backend Modules</h3>
+
+                <div style="display: grid; gap: 16px;">
+                    <div style="border: 2px solid #E5E7EB; border-left: 4px solid #059669; padding: 20px; border-radius: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                            <h4 style="font-size: 16px; font-weight: 600;">Data Enrichment Service</h4>
+                            <span style="background: #D1FAE5; color: #065F46; padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: 600;">✅ REUSABLE</span>
+                        </div>
+                        <p style="color: #6B7280; margin-bottom: 12px;">Multi-source data enrichment (Phase 1)</p>
+                        <ul style="list-style: none; padding: 0; font-size: 14px; line-height: 1.8;">
+                            <li>✓ SimilarWeb API (14 endpoints) - COMPLETE</li>
+                            <li>✓ BuiltWith API (7 endpoints) - COMPLETE</li>
+                            <li>✓ Yahoo Finance API (8 tools) - COMPLETE</li>
+                            <li>✓ WebSearch Proxy - COMPLETE</li>
+                            <li>✓ Built-in caching (24-hour TTL)</li>
+                        </ul>
+                        <div style="margin-top: 12px; padding: 12px; background: #ECFDF5; border-radius: 6px; font-size: 13px;">
+                            <strong style="color: #065F46;">Source:</strong> <code>algolia-arian/frontend/src/services/enrichment/</code>
+                        </div>
+                    </div>
+
+                    <div style="border: 2px solid #E5E7EB; border-left: 4px solid #D97706; padding: 20px; border-radius: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                            <h4 style="font-size: 16px; font-weight: 600;">Browser Pool Service</h4>
+                            <span style="background: #FEF3C7; color: #92400E; padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: 600;">⚠️ NEW</span>
+                        </div>
+                        <p style="color: #6B7280; margin-bottom: 12px;">Manage Chrome instances for Phase 2 testing</p>
+                        <ul style="list-style: none; padding: 0; font-size: 14px; line-height: 1.8;">
+                            <li>○ Pool of 10 Chrome instances</li>
+                            <li>○ Screenshot persistence to S3</li>
+                            <li>○ CAPTCHA detection & handoff</li>
+                            <li>○ WAF recovery with retries</li>
+                        </ul>
+                        <div style="margin-top: 12px; padding: 12px; background: #FFF4E6; border-radius: 6px; font-size: 13px;">
+                            <strong style="color: #92400E;">Complexity:</strong> Medium - Playwright pool management + WAF handling
+                        </div>
+                    </div>
+
+                    <div style="border: 2px solid #E5E7EB; border-left: 4px solid #D97706; padding: 20px; border-radius: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                            <h4 style="font-size: 16px; font-weight: 600;">Job Queue (BullMQ)</h4>
+                            <span style="background: #FEF3C7; color: #92400E; padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: 600;">⚠️ NEW</span>
+                        </div>
+                        <p style="color: #6B7280; margin-bottom: 12px;">Manage long-running audit jobs (~40 min)</p>
+                        <ul style="list-style: none; padding: 0; font-size: 14px; line-height: 1.8;">
+                            <li>○ Redis-backed queue</li>
+                            <li>○ 3 retry attempts with backoff</li>
+                            <li>○ Concurrency: 5 audits at once</li>
+                            <li>○ Job lifecycle events</li>
+                        </ul>
+                    </div>
+
+                    <div style="border: 2px solid #E5E7EB; border-left: 4px solid #D97706; padding: 20px; border-radius: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                            <h4 style="font-size: 16px; font-weight: 600;">Audit Engine</h4>
+                            <span style="background: #FEF3C7; color: #92400E; padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: 600;">⚠️ NEW</span>
+                        </div>
+                        <p style="color: #6B7280; margin-bottom: 12px;">Orchestrate 5-phase audit process</p>
+                        <div style="font-size: 14px; line-height: 1.8;">
+                            <p><strong>Phase 1:</strong> Pre-Audit Research (14 steps)</p>
+                            <p><strong>Phase 2:</strong> Browser Testing (20 steps)</p>
+                            <p><strong>Phase 3:</strong> Scoring (10 areas)</p>
+                            <p><strong>Phase 4-5:</strong> Deliverables (3 files: PDF Book, AE Brief, Signal Brief)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="font-size: 18px; font-weight: 600; margin: 32px 0 16px;">Frontend Modules</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                    <div style="border: 2px solid #E5E7EB; padding: 16px; border-radius: 8px;">
+                        <h4 style="font-size: 15px; font-weight: 600; margin-bottom: 8px;">Dashboard Page</h4>
+                        <p style="color: #6B7280; font-size: 14px;">Central hub with audit list, filters, and quick actions</p>
+                    </div>
+                    <div style="border: 2px solid #E5E7EB; padding: 16px; border-radius: 8px;">
+                        <h4 style="font-size: 15px; font-weight: 600; margin-bottom: 8px;">Create Audit Wizard</h4>
+                        <p style="color: #6B7280; font-size: 14px;">4-step guided form with configuration options</p>
+                    </div>
+                    <div style="border: 2px solid #E5E7EB; padding: 16px; border-radius: 8px;">
+                        <h4 style="font-size: 15px; font-weight: 600; margin-bottom: 8px;">Execution Monitor</h4>
+                        <p style="color: #6B7280; font-size: 14px;">Real-time progress with WebSocket updates</p>
+                    </div>
+                    <div style="border: 2px solid #E5E7EB; padding: 16px; border-radius: 8px;">
+                        <h4 style="font-size: 15px; font-weight: 600; margin-bottom: 8px;">Audit Details</h4>
+                        <p style="color: #6B7280; font-size: 14px;">5 tabs: Overview, Research, Browser, Scoring, Deliverables</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Roadmap Section -->
+            <div id="doc-roadmap" class="card">
+                <div class="card-header">🗓️ Implementation Roadmap</div>
+
+                <div style="background: #EFF6FF; border-left: 4px solid #3B82F6; padding: 16px; margin: 20px 0; border-radius: 8px;">
+                    <strong>🚀 Major Update:</strong> By reusing components from the Arian project, we've cut development time from <strong>16 weeks to 7.5 weeks</strong> (50% savings)
+                </div>
+
+                <div style="overflow-x: auto; margin: 20px 0;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: #F3F4F6;">
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #E5E7EB;">Phase</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #E5E7EB;">Duration</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #E5E7EB;">Goal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="background: #ECFDF5;">
+                                <td style="padding: 12px; border-bottom: 1px solid #E5E7EB;"><strong>Phase 1: Copy & Adapt</strong></td>
+                                <td style="padding: 12px; border-bottom: 1px solid #E5E7EB;">1.5 weeks</td>
+                                <td style="padding: 12px; border-bottom: 1px solid #E5E7EB;">Port reusable components from Arian project</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 12px; border-bottom: 1px solid #E5E7EB;"><strong>Phase 2: Build New Services</strong></td>
+                                <td style="padding: 12px; border-bottom: 1px solid #E5E7EB;">4 weeks</td>
+                                <td style="padding: 12px; border-bottom: 1px solid #E5E7EB;">Build audit-specific services (Browser, Queue, Orchestrator)</td>
+                            </tr>
+                            <tr style="background: #F9FAFB;">
+                                <td style="padding: 12px; border-bottom: 1px solid #E5E7EB;"><strong>Phase 3: Frontend & Integration</strong></td>
+                                <td style="padding: 12px; border-bottom: 1px solid #E5E7EB;">2 weeks</td>
+                                <td style="padding: 12px; border-bottom: 1px solid #E5E7EB;">Build UI + integrate services + end-to-end testing</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 24px;">
+                    <div style="background: linear-gradient(135deg, #EFF6FF, #DBEAFE); padding: 24px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 36px; font-weight: 700; color: #1E40AF; margin-bottom: 8px;">7.5</div>
+                        <div style="font-size: 14px; color: #1E3A8A; font-weight: 500;">Weeks to Production</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #ECFDF5, #D1FAE5); padding: 24px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 36px; font-weight: 700; color: #065F46; margin-bottom: 8px;">50%</div>
+                        <div style="font-size: 14px; color: #064E3B; font-weight: 500;">Time Savings</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #FEF3C7, #FDE68A); padding: 24px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 36px; font-weight: 700; color: #92400E; margin-bottom: 8px;">$11.85</div>
+                        <div style="font-size: 14px; color: #78350F; font-weight: 500;">Cost per Audit</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #E0E7FF, #C7D2FE); padding: 24px; border-radius: 12px; text-align: center;">
+                        <div style="font-size: 36px; font-weight: 700; color: #3730A3; margin-bottom: 8px;">~40min</div>
+                        <div style="font-size: 14px; color: #312E81; font-weight: 500;">Runtime per Audit</div>
+                    </div>
+                </div>
+
+                <div style="background: #D1FAE5; border: 2px solid #10B981; padding: 20px; border-radius: 12px; text-align: center; margin-top: 32px;">
+                    <div style="font-size: 18px; font-weight: 600; color: #065F46; margin-bottom: 8px;">
+                        Timeline: 7.5 weeks (2 months) from kickoff to production
+                    </div>
+                    <div style="font-size: 14px; color: #047857;">
+                        Was 16 weeks / 4 months without reuse
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Screen -->
+    <div id="settings" class="screen">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="page-title">Settings</h1>
+                <p class="page-subtitle">Manage MCP servers, API credits, and preferences</p>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active">MCP Servers</button>
+                <button class="tab">API Credits</button>
+                <button class="tab">Preferences</button>
+                <button class="tab">Team</button>
+            </div>
+
+            <div class="card-header">MCP Server Status</div>
+
+            <div class="card" style="border-left: 4px solid var(--success-green); margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                    <div>
+                        <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">✅ Chrome MCP</div>
+                        <div style="font-size: 14px; color: #6B7280; line-height: 1.6;">
+                            Version: 1.2.4<br>
+                            Last health check: 2 minutes ago
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--success-green);">
+                        <span class="status-dot green"></span>
+                        Connected
+                    </div>
+                </div>
+                <button class="btn btn-secondary btn-small" onclick="showToast('Testing connection...')">Test Connection</button>
+            </div>
+
+            <div class="card" style="border-left: 4px solid var(--success-green); margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                    <div>
+                        <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">✅ SimilarWeb MCP</div>
+                        <div style="font-size: 14px; color: #6B7280; line-height: 1.6;">
+                            API Key: ••••••••••••3a7f<br>
+                            Credits Remaining: 3,892 (updated 1 hour ago)
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--success-green);">
+                        <span class="status-dot green"></span>
+                        Connected
+                    </div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-secondary btn-small" onclick="showToast('Testing connection...')">Test Connection</button>
+                    <button class="btn btn-secondary btn-small" onclick="showToast('API key update modal would open')">Update API Key</button>
+                </div>
+            </div>
+
+            <div class="card" style="border-left: 4px solid var(--warning-yellow); margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                    <div>
+                        <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">⚠️ BuiltWith MCP</div>
+                        <div style="font-size: 14px; color: #6B7280; line-height: 1.6;">
+                            API Key: ••••••••••••9b2c<br>
+                            Credits Remaining: 1,247 (updated 30 min ago)<br>
+                            <strong style="color: #F59E0B;">⚠️ Low balance — each audit uses ~70 credits</strong>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--warning-yellow);">
+                        <span class="status-dot yellow"></span>
+                        Low Balance
+                    </div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-primary btn-small" onclick="showToast('Redirecting to BuiltWith...')">Top Up Credits</button>
+                    <button class="btn btn-secondary btn-small" onclick="showToast('Testing connection...')">Test Connection</button>
+                    <button class="btn btn-secondary btn-small" onclick="showToast('API key update modal would open')">Update API Key</button>
+                </div>
+            </div>
+
+            <div class="card" style="border-left: 4px solid var(--success-green); margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                    <div>
+                        <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">✅ Yahoo Finance MCP</div>
+                        <div style="font-size: 14px; color: #6B7280;">
+                            Free tier (no credits required)
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--success-green);">
+                        <span class="status-dot green"></span>
+                        Connected
+                    </div>
+                </div>
+                <button class="btn btn-secondary btn-small" onclick="showToast('Testing connection...')">Test Connection</button>
+            </div>
+
+            <div class="card" style="border-left: 4px solid var(--error-red); margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                    <div>
+                        <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">⚠️ SEC EDGAR MCP</div>
+                        <div style="font-size: 14px; color: #6B7280; line-height: 1.6;">
+                            Last error: Connection timeout (2 min ago)<br>
+                            <strong style="color: #EF4444;">Impact:</strong> Investor intelligence (Phase 1 Step 12) will fall back to web search
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--error-red);">
+                        <span class="status-dot red"></span>
+                        Disconnected
+                    </div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-primary btn-small" onclick="showToast('Retrying connection...')">Retry Connection</button>
+                    <button class="btn btn-secondary btn-small" onclick="showToast('Troubleshooting guide would open')">Troubleshoot</button>
+                </div>
+            </div>
+
+            <div style="margin-top: 32px;">
+                <button class="btn btn-primary" onclick="showToast('Testing all connections...')">Test All Connections</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Audit Modal -->
+    <div id="newAuditModal" class="modal-overlay">
+        <div class="modal" style="max-width: 900px;">
+            <div class="modal-header">
+                <div class="modal-title">New Audit</div>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+
+            <div id="wizard-step-1" class="wizard-step-content">
+                <div class="wizard-progress">
+                    <div class="wizard-step active">
+                        <div class="wizard-step-circle">1</div>
+                        <div class="wizard-step-label">Company Info</div>
+                    </div>
+                    <div class="wizard-step">
+                        <div class="wizard-step-circle">2</div>
+                        <div class="wizard-step-label">Audit Mode</div>
+                    </div>
+                    <div class="wizard-step">
+                        <div class="wizard-step-circle">3</div>
+                        <div class="wizard-step-label">Configuration</div>
+                    </div>
+                    <div class="wizard-step">
+                        <div class="wizard-step-circle">4</div>
+                        <div class="wizard-step-label">Review & Launch</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Company Website * (required)</label>
+                    <input type="text" class="input" id="audit-url" placeholder="e.g., costco.com or https://www.costco.com" value="costco.com">
+                    <div class="form-help">We'll automatically detect the company name and industry</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Company Name (optional)</label>
+                    <input type="text" class="input" placeholder="Leave blank to auto-detect">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Industry Vertical (optional)</label>
+                    <select class="input">
+                        <option>Select vertical (or auto-detect)</option>
+                        <option>Fashion & Apparel</option>
+                        <option>Grocery & CPG</option>
+                        <option>Consumer Electronics</option>
+                        <option>Home & Garden</option>
+                        <option>Sporting Goods</option>
+                        <option>Auto Parts</option>
+                        <option>B2B Tech</option>
+                        <option>Healthcare</option>
+                    </select>
+                    <div class="form-help">We'll use this to select relevant test queries and benchmarks</div>
+                </div>
+
+                <div class="info-box">
+                    <span class="info-box-icon">💡</span>
+                    <div>
+                        <strong>Tip:</strong> We'll use the vertical to select relevant test queries and industry benchmarks. You can customize these in Step 3.
+                    </div>
+                </div>
+
+                <div class="wizard-actions">
+                    <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="goToWizardStep(2)">Next: Audit Mode →</button>
+                </div>
+            </div>
+
+            <div id="wizard-step-2" class="wizard-step-content" style="display: none;">
+                <div class="wizard-progress">
+                    <div class="wizard-step complete">
+                        <div class="wizard-step-circle">✓</div>
+                        <div class="wizard-step-label">Company Info</div>
+                    </div>
+                    <div class="wizard-step active">
+                        <div class="wizard-step-circle">2</div>
+                        <div class="wizard-step-label">Audit Mode</div>
+                    </div>
+                    <div class="wizard-step">
+                        <div class="wizard-step-circle">3</div>
+                        <div class="wizard-step-label">Configuration</div>
+                    </div>
+                    <div class="wizard-step">
+                        <div class="wizard-step-circle">4</div>
+                        <div class="wizard-step-label">Review & Launch</div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <h3 style="margin-bottom: 16px;">Select Audit Mode</h3>
+                    <p style="color: #6B7280; font-size: 14px;">Choose what you want to run</p>
+                </div>
+
+                <div class="mode-card selected">
+                    <div class="mode-icon">🎯</div>
+                    <div class="mode-title">Full Audit (Recommended)</div>
+                    <div class="mode-description">Complete end-to-end audit with all phases: research, browser testing, scoring, and deliverables</div>
+                    <div class="mode-meta">
+                        <span>⏱️ 35-50 min</span>
+                        <span>•</span>
+                        <span>🎁 PDF + 2 briefs</span>
+                    </div>
+                </div>
+
+                <div style="margin: 24px 0; font-weight: 600; color: #6B7280;">Or choose individual phases:</div>
+
+                <div class="mode-grid">
+                    <div class="mode-card">
+                        <div class="mode-icon">📊</div>
+                        <div class="mode-title">Research Only</div>
+                        <div class="mode-description">Phase 1 only — no browser testing</div>
+                        <div class="mode-meta">⏱️ ~20-25 min</div>
+                    </div>
+
+                    <div class="mode-card">
+                        <div class="mode-icon">🧪</div>
+                        <div class="mode-title">Browser Testing</div>
+                        <div class="mode-description">Phase 2+3 — requires Phase 1 data</div>
+                        <div class="mode-meta">⏱️ ~15-20 min</div>
+                    </div>
+
+                    <div class="mode-card">
+                        <div class="mode-icon">📄</div>
+                        <div class="mode-title">Deliverables</div>
+                        <div class="mode-description">Phase 5 only — needs Phase 1-3</div>
+                        <div class="mode-meta">⏱️ ~5-8 min</div>
+                    </div>
+                </div>
+
+                <div class="wizard-actions">
+                    <button class="btn btn-secondary" onclick="goToWizardStep(1)">← Back</button>
+                    <button class="btn btn-primary" onclick="goToWizardStep(3)">Next: Configuration →</button>
+                </div>
+            </div>
+
+            <div id="wizard-step-3" class="wizard-step-content" style="display: none;">
+                <div class="wizard-progress">
+                    <div class="wizard-step complete">
+                        <div class="wizard-step-circle">✓</div>
+                        <div class="wizard-step-label">Company Info</div>
+                    </div>
+                    <div class="wizard-step complete">
+                        <div class="wizard-step-circle">✓</div>
+                        <div class="wizard-step-label">Audit Mode</div>
+                    </div>
+                    <div class="wizard-step active">
+                        <div class="wizard-step-circle">3</div>
+                        <div class="wizard-step-label">Configuration</div>
+                    </div>
+                    <div class="wizard-step">
+                        <div class="wizard-step-circle">4</div>
+                        <div class="wizard-step-label">Review & Launch</div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <h3 style="margin-bottom: 8px;">Configuration (Optional)</h3>
+                    <p style="color: #6B7280; font-size: 14px;">Most users can skip this step and use defaults</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Test Queries</label>
+                    <div class="info-box">
+                        <span class="info-box-icon">✅</span>
+                        <div>
+                            <strong>Use vertical-calibrated queries (recommended)</strong><br>
+                            14-18 queries auto-generated based on Grocery & CPG vertical
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Output Preferences</label>
+                    <div style="background: #F9FAFB; padding: 16px; border-radius: 8px;">
+                        <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; cursor: pointer;">
+                            <input type="checkbox" checked style="width: 18px; height: 18px; cursor: pointer;">
+                            <span style="font-weight: 500;">Generate PDF Book (primary deliverable)</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; cursor: pointer;">
+                            <input type="checkbox" checked style="width: 18px; height: 18px; cursor: pointer;">
+                            <span style="font-weight: 500;">Generate AE Pre-Call Brief</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; cursor: pointer;">
+                            <input type="checkbox" checked style="width: 18px; height: 18px; cursor: pointer;">
+                            <span style="font-weight: 500;">Generate Strategic Signal Brief</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" style="width: 18px; height: 18px; cursor: pointer;">
+                            <span style="font-weight: 500;">Email deliverables when complete</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <span class="info-box-icon">💡</span>
+                    <div>
+                        Most users can skip this step and use defaults. Advanced options are available in the documentation.
+                    </div>
+                </div>
+
+                <div class="wizard-actions">
+                    <button class="btn btn-secondary" onclick="goToWizardStep(2)">← Back</button>
+                    <button class="btn btn-secondary" onclick="goToWizardStep(4)">Skip</button>
+                    <button class="btn btn-primary" onclick="goToWizardStep(4)">Next: Review & Launch →</button>
+                </div>
+            </div>
+
+            <div id="wizard-step-4" class="wizard-step-content" style="display: none;">
+                <div class="wizard-progress">
+                    <div class="wizard-step complete">
+                        <div class="wizard-step-circle">✓</div>
+                        <div class="wizard-step-label">Company Info</div>
+                    </div>
+                    <div class="wizard-step complete">
+                        <div class="wizard-step-circle">✓</div>
+                        <div class="wizard-step-label">Audit Mode</div>
+                    </div>
+                    <div class="wizard-step complete">
+                        <div class="wizard-step-circle">✓</div>
+                        <div class="wizard-step-label">Configuration</div>
+                    </div>
+                    <div class="wizard-step active">
+                        <div class="wizard-step-circle">4</div>
+                        <div class="wizard-step-label">Review & Launch</div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <h3 style="margin-bottom: 8px;">Review & Launch</h3>
+                    <p style="color: #6B7280; font-size: 14px;">Review your audit configuration before starting</p>
+                </div>
+
+                <div style="background: #F9FAFB; padding: 24px; border-radius: 12px; margin-bottom: 24px;">
+                    <div style="display: grid; gap: 20px;">
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 8px; display: flex; justify-content: space-between;">
+                                <span>Company</span>
+                                <a href="#" onclick="goToWizardStep(1); return false;" style="color: #003DFF; text-decoration: none; font-size: 14px;">Edit</a>
+                            </div>
+                            <div style="font-size: 14px; color: #6B7280; line-height: 1.8;">
+                                • Website: costco.com<br>
+                                • Name: Costco Wholesale<br>
+                                • Vertical: Grocery & CPG
+                            </div>
+                        </div>
+
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 8px; display: flex; justify-content: space-between;">
+                                <span>Audit Mode</span>
+                                <a href="#" onclick="goToWizardStep(2); return false;" style="color: #003DFF; text-decoration: none; font-size: 14px;">Edit</a>
+                            </div>
+                            <div style="font-size: 14px; color: #6B7280; line-height: 1.8;">
+                                • Type: Full Audit (Phases 1-5)<br>
+                                • Estimated duration: 35-50 minutes
+                            </div>
+                        </div>
+
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 8px; display: flex; justify-content: space-between;">
+                                <span>Configuration</span>
+                                <a href="#" onclick="goToWizardStep(3); return false;" style="color: #003DFF; text-decoration: none; font-size: 14px;">Edit</a>
+                            </div>
+                            <div style="font-size: 14px; color: #6B7280; line-height: 1.8;">
+                                • Test queries: 16 vertical-calibrated<br>
+                                • Output: PDF Book + AE Brief + Signal Brief<br>
+                                • Notifications: None
+                            </div>
+                        </div>
+
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 8px;">Resources Required</div>
+                            <div style="font-size: 14px; color: #6B7280; line-height: 1.8;">
+                                • BuiltWith API: ~7 calls (~70 credits)<br>
+                                • SimilarWeb API: ~14 calls (~140 credits)<br>
+                                • Yahoo Finance: ~6 calls (free)<br>
+                                • Chrome MCP: ~25 screenshots
+                            </div>
+                        </div>
+
+                        <div style="background: #EFF6FF; padding: 16px; border-radius: 8px; border-left: 4px solid #3B82F6;">
+                            <div style="font-size: 14px; font-weight: 500; margin-bottom: 4px;">✅ Sufficient Credits</div>
+                            <div style="font-size: 13px; color: #6B7280;">
+                                BuiltWith: 1,247 remaining (sufficient)<br>
+                                SimilarWeb: 3,892 remaining (sufficient)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <label style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 24px; cursor: pointer;">
+                    <input type="checkbox" style="width: 18px; height: 18px; margin-top: 2px; cursor: pointer;">
+                    <span style="font-size: 14px; color: #6B7280;">
+                        I understand this audit will run in the background and may take up to 50 minutes to complete.
+                    </span>
+                </label>
+
+                <div class="wizard-actions">
+                    <button class="btn btn-secondary" onclick="goToWizardStep(3)">← Back</button>
+                    <button class="btn btn-primary" onclick="launchAudit()" style="font-size: 16px; padding: 14px 32px;">
+                        Launch Audit 🚀
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <span class="toast-icon">✅</span>
+        <span class="toast-message" id="toast-message"></span>
+    </div>
+
+    <script>
+        // Screen Navigation
+        function showScreen(screenId) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+
+            // Show selected screen
+            document.getElementById(screenId).classList.add('active');
+
+            // Update nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            event.target.classList.add('active');
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Audit Detail Tabs
+        function showAuditTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.style.display = 'none';
+            });
+
+            // Show selected tab content
+            document.getElementById('tab-' + tabName).style.display = 'block';
+
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Modal Functions
+        function openNewAuditModal() {
+            document.getElementById('newAuditModal').classList.add('active');
+            goToWizardStep(1);
+        }
+
+        function closeModal() {
+            document.getElementById('newAuditModal').classList.remove('active');
+        }
+
+        // Wizard Navigation
+        function goToWizardStep(step) {
+            // Hide all wizard steps
+            for (let i = 1; i <= 4; i++) {
+                const stepEl = document.getElementById('wizard-step-' + i);
+                if (stepEl) {
+                    stepEl.style.display = 'none';
+                }
+            }
+
+            // Show selected step
+            const currentStep = document.getElementById('wizard-step-' + step);
+            if (currentStep) {
+                currentStep.style.display = 'block';
+            }
+        }
+
+        // Launch Audit
+        function launchAudit() {
+            closeModal();
+            showToast('Audit launched! You\'ll receive an email when complete.');
+            showScreen('audit-overview');
+        }
+
+        // Toast Notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Close modal on outside click
+        document.getElementById('newAuditModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Mode card selection
+        document.querySelectorAll('.mode-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove selected from all cards in the same group
+                const parent = this.closest('.mode-grid, .modal');
+                if (parent) {
+                    parent.querySelectorAll('.mode-card').forEach(c => {
+                        c.classList.remove('selected');
+                    });
+                }
+                // Add selected to clicked card
+                this.classList.add('selected');
+            });
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Algolia Search Audit Platform loaded');
+        });
+    </script>
+</body>
+</html>

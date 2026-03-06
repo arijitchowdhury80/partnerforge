@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algolia Search Audit Platform - Architecture Overview</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --algolia-blue: #003DFF;
+            --algolia-purple: #5468FF;
+            --space-gray: #21243D;
+            --text-secondary: #6B7280;
+            --bg-light: #F9FAFB;
+            --border: #E5E7EB;
+            --success: #36B37E;
+            --warning: #FFAB00;
+            --error: #E8513D;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--space-gray);
+            background: #ffffff;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--algolia-blue) 0%, var(--algolia-purple) 100%);
+            color: white;
+            padding: 3rem 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .header .meta {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Navigation */
+        .nav {
+            background: var(--space-gray);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+
+        .nav a:hover {
+            opacity: 0.7;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--space-gray);
+            border-bottom: 3px solid var(--algolia-blue);
+            padding-bottom: 0.5rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.5rem;
+            margin: 2rem 0 1rem;
+            color: var(--algolia-purple);
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 61, 255, 0.15);
+        }
+
+        .card h3 {
+            color: var(--algolia-purple);
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, var(--algolia-blue) 0%, var(--algolia-purple) 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Architecture Diagram (SVG) */
+        .architecture-svg {
+            width: 100%;
+            max-width: 1200px;
+            margin: 2rem auto;
+            display: block;
+        }
+
+        /* Screen Mockup - Visual */
+        .mockup-browser {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin: 2rem 0;
+            overflow: hidden;
+        }
+
+        .mockup-titlebar {
+            background: linear-gradient(180deg, #f5f5f5 0%, #e8e8e8 100%);
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid #d0d0d0;
+        }
+
+        .mockup-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .mockup-dot.red { background: #FF5F56; }
+        .mockup-dot.yellow { background: #FFBD2E; }
+        .mockup-dot.green { background: #27C93F; }
+
+        .mockup-url {
+            background: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: #666;
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid #ddd;
+        }
+
+        .mockup-content {
+            padding: 1.5rem;
+            background: #fafafa;
+            min-height: 400px;
+        }
+
+        /* Dashboard Mockup Elements */
+        .mock-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .mock-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--space-gray);
+        }
+
+        .mock-btn {
+            background: var(--algolia-blue);
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+        }
+
+        .mock-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .mock-tab {
+            padding: 0.5rem 1rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .mock-tab.active {
+            color: var(--algolia-blue);
+            border-bottom: 3px solid var(--algolia-blue);
+            margin-bottom: -2px;
+        }
+
+        .mock-audit-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .mock-audit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .mock-audit-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--space-gray);
+        }
+
+        .mock-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .mock-badge.completed {
+            background: #ECFDF5;
+            color: var(--success);
+        }
+
+        .mock-badge.in-progress {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .mock-badge.failed {
+            background: #FEE2E2;
+            color: var(--error);
+        }
+
+        .mock-audit-meta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.8rem;
+        }
+
+        .mock-audit-metrics {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 0.8rem;
+            font-size: 0.9rem;
+        }
+
+        .mock-audit-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .mock-action-btn {
+            padding: 0.4rem 1rem;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .mock-action-btn:hover {
+            background: var(--bg-light);
+        }
+
+        /* Progress Monitor Elements */
+        .mock-progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .mock-progress-bar-container {
+            background: #e5e7eb;
+            height: 24px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .mock-progress-bar {
+            background: linear-gradient(90deg, var(--algolia-blue) 0%, var(--algolia-purple) 100%);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            padding-left: 1rem;
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .mock-phase-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .mock-phase-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .mock-phase-title {
+            font-weight: 600;
+            color: var(--space-gray);
+        }
+
+        .mock-step-list {
+            list-style: none;
+            padding-left: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .mock-step {
+            padding: 0.3rem 0;
+            font-size: 0.9rem;
+            position: relative;
+        }
+
+        .mock-step:before {
+            content: "✓";
+            position: absolute;
+            left: -1.5rem;
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        .mock-step.pending:before {
+            content: "○";
+            color: var(--text-secondary);
+        }
+
+        .mock-step.active:before {
+            content: "◉";
+            color: var(--algolia-blue);
+        }
+
+        .mock-logs {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 1rem;
+        }
+
+        .mock-log-entry {
+            margin-bottom: 0.3rem;
+        }
+
+        .mock-log-time {
+            color: #61afef;
+        }
+
+        .mock-log-tag {
+            color: #98c379;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 6px;
+            margin: 1.5rem 0;
+            border-left: 4px solid;
+        }
+
+        .alert.info {
+            background: #EBF5FF;
+            border-color: var(--algolia-blue);
+            color: #1E40AF;
+        }
+
+        .alert.success {
+            background: #ECFDF5;
+            border-color: var(--success);
+            color: #065F46;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        th {
+            background: var(--space-gray);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:hover {
+            background: var(--bg-light);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--space-gray);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .nav ul {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="container">
+            <h1>🔍 Algolia Search Audit Platform</h1>
+            <p>Transform the CLI skill into a self-service SaaS dashboard accessible to all Algolia employees</p>
+            <div class="meta">
+                <strong>Status:</strong> Architecture Design Complete |
+                <strong>Timeline:</strong> 16 weeks (4 months) |
+                <strong>Cost:</strong> $11.85/audit at scale
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <ul>
+            <li><a href="#architecture">Architecture</a></li>
+            <li><a href="#screens">Screen Mockups</a></li>
+            <li><a href="#modules">Modules</a></li>
+            <li><a href="#roadmap">Roadmap</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+
+        <!-- Architecture Section -->
+        <section id="architecture" class="section">
+            <h2 class="section-title">🏗️ System Architecture</h2>
+
+            <svg class="architecture-svg" viewBox="0 0 800 900" xmlns="http://www.w3.org/2000/svg">
+                <!-- Definitions -->
+                <defs>
+                    <marker id="arrowblue" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                        <path d="M0,0 L0,6 L9,3 z" fill="#003DFF" />
+                    </marker>
+                    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#003DFF;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#5468FF;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+
+                <!-- Frontend Layer -->
+                <rect x="50" y="20" width="700" height="100" rx="8" fill="url(#grad1)" opacity="0.1" stroke="#003DFF" stroke-width="2"/>
+                <text x="400" y="45" text-anchor="middle" font-size="16" font-weight="bold" fill="#003DFF">FRONTEND (React SPA)</text>
+
+                <rect x="80" y="60" width="180" height="50" rx="6" fill="white" stroke="#003DFF" stroke-width="2"/>
+                <text x="170" y="90" text-anchor="middle" font-size="14" fill="#21243D">Dashboard</text>
+
+                <rect x="310" y="60" width="180" height="50" rx="6" fill="white" stroke="#003DFF" stroke-width="2"/>
+                <text x="400" y="90" text-anchor="middle" font-size="14" fill="#21243D">Execution Monitor</text>
+
+                <rect x="540" y="60" width="180" height="50" rx="6" fill="white" stroke="#003DFF" stroke-width="2"/>
+                <text x="630" y="90" text-anchor="middle" font-size="14" fill="#21243D">Deliverables</text>
+
+                <!-- Connection Line -->
+                <line x1="400" y1="120" x2="400" y2="170" stroke="#003DFF" stroke-width="2" marker-end="url(#arrowblue)"/>
+                <text x="420" y="145" font-size="12" fill="#6B7280">REST API + WebSocket</text>
+
+                <!-- API Gateway Layer -->
+                <rect x="50" y="170" width="700" height="100" rx="8" fill="#5468FF" opacity="0.1" stroke="#5468FF" stroke-width="2"/>
+                <text x="400" y="195" text-anchor="middle" font-size="16" font-weight="bold" fill="#5468FF">API GATEWAY (Express.js)</text>
+
+                <rect x="80" y="210" width="180" height="50" rx="6" fill="white" stroke="#5468FF" stroke-width="2"/>
+                <text x="170" y="240" text-anchor="middle" font-size="14" fill="#21243D">Auth Service (Okta)</text>
+
+                <rect x="310" y="210" width="180" height="50" rx="6" fill="white" stroke="#5468FF" stroke-width="2"/>
+                <text x="400" y="240" text-anchor="middle" font-size="14" fill="#21243D">Audit API (REST)</text>
+
+                <rect x="540" y="210" width="180" height="50" rx="6" fill="white" stroke="#5468FF" stroke-width="2"/>
+                <text x="630" y="240" text-anchor="middle" font-size="14" fill="#21243D">Deliverable Generator</text>
+
+                <!-- Connection Line -->
+                <line x1="400" y1="270" x2="400" y2="320" stroke="#003DFF" stroke-width="2" marker-end="url(#arrowblue)"/>
+
+                <!-- Orchestration Layer -->
+                <rect x="50" y="320" width="700" height="100" rx="8" fill="#21243D" opacity="0.1" stroke="#21243D" stroke-width="2"/>
+                <text x="400" y="345" text-anchor="middle" font-size="16" font-weight="bold" fill="#21243D">ORCHESTRATION LAYER</text>
+
+                <rect x="80" y="360" width="180" height="50" rx="6" fill="white" stroke="#21243D" stroke-width="2"/>
+                <text x="170" y="390" text-anchor="middle" font-size="14" fill="#21243D">Audit Engine</text>
+
+                <rect x="310" y="360" width="180" height="50" rx="6" fill="white" stroke="#21243D" stroke-width="2"/>
+                <text x="400" y="390" text-anchor="middle" font-size="14" fill="#21243D">Agent Teams</text>
+
+                <rect x="540" y="360" width="180" height="50" rx="6" fill="white" stroke="#21243D" stroke-width="2"/>
+                <text x="630" y="390" text-anchor="middle" font-size="14" fill="#21243D">Status Manager</text>
+
+                <!-- Connection Lines to Services -->
+                <line x1="170" y1="420" x2="170" y2="470" stroke="#003DFF" stroke-width="2" marker-end="url(#arrowblue)"/>
+                <line x1="400" y1="420" x2="400" y2="470" stroke="#003DFF" stroke-width="2" marker-end="url(#arrowblue)"/>
+                <line x1="630" y1="420" x2="630" y2="470" stroke="#003DFF" stroke-width="2" marker-end="url(#arrowblue)"/>
+
+                <!-- Services Layer -->
+                <rect x="50" y="470" width="200" height="80" rx="6" fill="white" stroke="#36B37E" stroke-width="2"/>
+                <text x="150" y="495" text-anchor="middle" font-size="14" font-weight="bold" fill="#21243D">MCP Proxies</text>
+                <text x="150" y="515" text-anchor="middle" font-size="12" fill="#6B7280">BuiltWith, SimilarWeb</text>
+                <text x="150" y="535" text-anchor="middle" font-size="12" fill="#6B7280">Yahoo Finance, WebSearch</text>
+
+                <rect x="300" y="470" width="200" height="80" rx="6" fill="white" stroke="#FFAB00" stroke-width="2"/>
+                <text x="400" y="495" text-anchor="middle" font-size="14" font-weight="bold" fill="#21243D">Browser Pool</text>
+                <text x="400" y="515" text-anchor="middle" font-size="12" fill="#6B7280">Playwright</text>
+                <text x="400" y="535" text-anchor="middle" font-size="12" fill="#6B7280">Chrome Instances</text>
+
+                <rect x="550" y="470" width="200" height="80" rx="6" fill="white" stroke="#5468FF" stroke-width="2"/>
+                <text x="650" y="495" text-anchor="middle" font-size="14" font-weight="bold" fill="#21243D">File Storage</text>
+                <text x="650" y="515" text-anchor="middle" font-size="12" fill="#6B7280">AWS S3</text>
+                <text x="650" y="535" text-anchor="middle" font-size="12" fill="#6B7280">Screenshots, PDFs</text>
+
+                <!-- Connection Lines to External APIs -->
+                <line x1="150" y1="550" x2="100" y2="620" stroke="#36B37E" stroke-width="2" marker-end="url(#arrowblue)"/>
+                <line x1="150" y1="550" x2="200" y2="620" stroke="#36B37E" stroke-width="2" marker-end="url(#arrowblue)"/>
+                <line x1="150" y1="550" x2="300" y2="620" stroke="#36B37E" stroke-width="2" marker-end="url(#arrowblue)"/>
+                <line x1="150" y1="550" x2="400" y2="620" stroke="#36B37E" stroke-width="2" marker-end="url(#arrowblue)"/>
+
+                <!-- External APIs -->
+                <rect x="50" y="620" width="100" height="60" rx="6" fill="#36B37E" opacity="0.2" stroke="#36B37E" stroke-width="2"/>
+                <text x="100" y="650" text-anchor="middle" font-size="12" font-weight="bold" fill="#21243D">BuiltWith</text>
+                <text x="100" y="665" text-anchor="middle" font-size="10" fill="#6B7280">7 endpoints</text>
+
+                <rect x="170" y="620" width="110" height="60" rx="6" fill="#36B37E" opacity="0.2" stroke="#36B37E" stroke-width="2"/>
+                <text x="225" y="650" text-anchor="middle" font-size="12" font-weight="bold" fill="#21243D">SimilarWeb</text>
+                <text x="225" y="665" text-anchor="middle" font-size="10" fill="#6B7280">14 endpoints</text>
+
+                <rect x="300" y="620" width="100" height="60" rx="6" fill="#FFAB00" opacity="0.2" stroke="#FFAB00" stroke-width="2"/>
+                <text x="350" y="650" text-anchor="middle" font-size="12" font-weight="bold" fill="#21243D">Chrome</text>
+                <text x="350" y="665" text-anchor="middle" font-size="10" fill="#6B7280">Browser</text>
+
+                <rect x="420" y="620" width="130" height="60" rx="6" fill="#36B37E" opacity="0.2" stroke="#36B37E" stroke-width="2"/>
+                <text x="485" y="650" text-anchor="middle" font-size="12" font-weight="bold" fill="#21243D">Yahoo Finance</text>
+                <text x="485" y="665" text-anchor="middle" font-size="10" fill="#6B7280">8 tools</text>
+
+                <!-- Connection Line to Data Layer -->
+                <line x1="400" y1="570" x2="400" y2="730" stroke="#003DFF" stroke-width="2" marker-end="url(#arrowblue)"/>
+
+                <!-- Data Layer -->
+                <rect x="50" y="730" width="700" height="120" rx="8" fill="#336791" opacity="0.1" stroke="#336791" stroke-width="2"/>
+                <text x="400" y="755" text-anchor="middle" font-size="16" font-weight="bold" fill="#336791">DATA LAYER</text>
+
+                <rect x="100" y="775" width="180" height="60" rx="6" fill="white" stroke="#336791" stroke-width="2"/>
+                <text x="190" y="800" text-anchor="middle" font-size="14" font-weight="bold" fill="#21243D">PostgreSQL 15</text>
+                <text x="190" y="820" text-anchor="middle" font-size="12" fill="#6B7280">Audit metadata, users</text>
+
+                <rect x="310" y="775" width="180" height="60" rx="6" fill="white" stroke="#E8513D" stroke-width="2"/>
+                <text x="400" y="800" text-anchor="middle" font-size="14" font-weight="bold" fill="#21243D">Redis 7</text>
+                <text x="400" y="820" text-anchor="middle" font-size="12" fill="#6B7280">Job queue, cache</text>
+
+                <rect x="520" y="775" width="180" height="60" rx="6" fill="white" stroke="#FF9900" stroke-width="2"/>
+                <text x="610" y="800" text-anchor="middle" font-size="14" font-weight="bold" fill="#21243D">AWS S3</text>
+                <text x="610" y="820" text-anchor="middle" font-size="12" fill="#6B7280">Screenshots, PDFs</text>
+            </svg>
+
+            <div class="alert success">
+                <strong>Key Design Decisions:</strong>
+                <ul style="margin-top: 0.5rem; padding-left: 1.5rem;">
+                    <li>React SPA for responsive, modern UI with real-time updates</li>
+                    <li>BullMQ job queue for scalable background processing</li>
+                    <li>WebSocket for live progress tracking (no polling)</li>
+                    <li>Playwright browser pool for reliable screenshot capture</li>
+                    <li>Redis caching for MCP responses (24-hour TTL)</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Screen Mockups Section -->
+        <section id="screens" class="section">
+            <h2 class="section-title">🖥️ Screen Mockups</h2>
+
+            <h3 class="section-subtitle">1. Dashboard (Home Page)</h3>
+            <div class="mockup-browser">
+                <div class="mockup-titlebar">
+                    <div class="mockup-dot red"></div>
+                    <div class="mockup-dot yellow"></div>
+                    <div class="mockup-dot green"></div>
+                    <div class="mockup-url">https://searchaudit.algolia.com</div>
+                </div>
+                <div class="mockup-content">
+                    <div class="mock-header">
+                        <div class="mock-title">🔍 Algolia Search Audit Platform</div>
+                        <button class="mock-btn">+ New Audit</button>
+                    </div>
+
+                    <div class="mock-tabs">
+                        <div class="mock-tab active">All</div>
+                        <div class="mock-tab">Mine</div>
+                        <div class="mock-tab">Team</div>
+                        <div class="mock-tab">Starred</div>
+                    </div>
+
+                    <div class="mock-audit-card">
+                        <div class="mock-audit-header">
+                            <div class="mock-audit-title">Costco Wholesale</div>
+                            <div class="mock-badge completed">✓ COMPLETED</div>
+                        </div>
+                        <div class="mock-audit-meta">Created: Feb 21, 2026 by Alex Rivera</div>
+                        <div class="mock-audit-metrics">
+                            <span><strong>Score:</strong> 4.4/10</span>
+                            <span><strong>Book:</strong> 47 pages</span>
+                            <span><strong>Deliverables:</strong> 3 files</span>
+                        </div>
+                        <div class="mock-audit-actions">
+                            <button class="mock-action-btn">View Report</button>
+                            <button class="mock-action-btn">Download All</button>
+                            <button class="mock-action-btn">⭐ Star</button>
+                        </div>
+                    </div>
+
+                    <div class="mock-audit-card">
+                        <div class="mock-audit-header">
+                            <div class="mock-audit-title">The RealReal</div>
+                            <div class="mock-badge in-progress">◉ IN PROGRESS</div>
+                        </div>
+                        <div class="mock-audit-meta">Created: Mar 2, 2026 by Jordan Kim</div>
+                        <div class="mock-audit-metrics">
+                            <span><strong>Phase 2:</strong> Browser Testing (Step 12/20)</span>
+                        </div>
+                        <div class="mock-progress-bar-container">
+                            <div class="mock-progress-bar" style="width: 60%">60%</div>
+                        </div>
+                        <div class="mock-audit-actions">
+                            <button class="mock-action-btn">View Live</button>
+                        </div>
+                    </div>
+
+                    <div class="mock-audit-card">
+                        <div class="mock-audit-header">
+                            <div class="mock-audit-title">Boden</div>
+                            <div class="mock-badge failed">✗ FAILED</div>
+                        </div>
+                        <div class="mock-audit-meta">Created: Mar 1, 2026 by Jordan Kim</div>
+                        <div class="mock-audit-metrics">
+                            <span style="color: #E8513D;"><strong>Error:</strong> MCP tools not loaded</span>
+                        </div>
+                        <div class="mock-audit-actions">
+                            <button class="mock-action-btn">Retry</button>
+                            <button class="mock-action-btn">Debug</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="section-subtitle">2. Execution Monitor (Real-Time)</h3>
+            <div class="mockup-browser">
+                <div class="mockup-titlebar">
+                    <div class="mockup-dot red"></div>
+                    <div class="mockup-dot yellow"></div>
+                    <div class="mockup-dot green"></div>
+                    <div class="mockup-url">https://searchaudit.algolia.com/audits/abc123/monitor</div>
+                </div>
+                <div class="mockup-content">
+                    <div class="mock-progress-header">
+                        <div>
+                            <div style="font-size: 1.2rem; font-weight: 600; color: #21243D;">Costco Wholesale Audit</div>
+                            <div style="font-size: 0.9rem; color: #6B7280;">Started: Mar 2, 2026 2:34 PM | Elapsed: 18m 32s</div>
+                        </div>
+                        <div class="mock-badge in-progress">Phase 2 In Progress</div>
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <div style="margin-bottom: 0.5rem; font-weight: 600;">Overall Progress</div>
+                        <div class="mock-progress-bar-container">
+                            <div class="mock-progress-bar" style="width: 72%">72% (36/50 steps)</div>
+                        </div>
+                    </div>
+
+                    <div class="mock-phase-card">
+                        <div class="mock-phase-header">
+                            <div class="mock-phase-title">Phase 1: Pre-Audit Research</div>
+                            <div class="mock-badge completed">✓ COMPLETED</div>
+                        </div>
+                        <ul class="mock-step-list">
+                            <li class="mock-step">Company Context (2m 15s)</li>
+                            <li class="mock-step">Tech Stack (1m 42s)</li>
+                            <li class="mock-step">Traffic Data (3m 08s)</li>
+                            <li class="mock-step">Competitors (2m 31s)</li>
+                        </ul>
+                    </div>
+
+                    <div class="mock-phase-card">
+                        <div class="mock-phase-header">
+                            <div class="mock-phase-title">Phase 2: Browser Testing</div>
+                            <div class="mock-badge in-progress">◉ IN PROGRESS</div>
+                        </div>
+                        <div class="mock-progress-bar-container">
+                            <div class="mock-progress-bar" style="width: 70%">14/20 steps</div>
+                        </div>
+                        <ul class="mock-step-list">
+                            <li class="mock-step">01. Homepage screenshot</li>
+                            <li class="mock-step">02. Empty state test</li>
+                            <li class="mock-step">03. SAYT test</li>
+                            <li class="mock-step active">15. Dynamic facets...</li>
+                            <li class="mock-step pending">16. Personalization</li>
+                            <li class="mock-step pending">17. Recommendations</li>
+                        </ul>
+                    </div>
+
+                    <div style="margin-top: 1rem;">
+                        <div style="font-weight: 600; margin-bottom: 0.5rem;">Live Logs</div>
+                        <div class="mock-logs">
+                            <div class="mock-log-entry"><span class="mock-log-time">2:52 PM</span> <span class="mock-log-tag">[Browser]</span> Typing query: "dynamic facets"</div>
+                            <div class="mock-log-entry"><span class="mock-log-time">2:52 PM</span> <span class="mock-log-tag">[Browser]</span> Waiting for SAYT dropdown...</div>
+                            <div class="mock-log-entry"><span class="mock-log-time">2:52 PM</span> <span class="mock-log-tag">[Browser]</span> Screenshot saved: 15-dynamic.png</div>
+                            <div class="mock-log-entry"><span class="mock-log-time">2:51 PM</span> <span class="mock-log-tag">[Chrome]</span> ✓ Network: no Constructor API calls</div>
+                            <div class="mock-log-entry"><span class="mock-log-time">2:51 PM</span> <span class="mock-log-tag">[Chrome]</span> ℹ Search powered by native Shopify</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="section-subtitle">3. Audit Details (Deliverables Tab)</h3>
+            <div class="mockup-browser">
+                <div class="mockup-titlebar">
+                    <div class="mockup-dot red"></div>
+                    <div class="mockup-dot yellow"></div>
+                    <div class="mockup-dot green"></div>
+                    <div class="mockup-url">https://searchaudit.algolia.com/audits/abc123</div>
+                </div>
+                <div class="mockup-content">
+                    <div class="mock-header">
+                        <div class="mock-title">Costco Wholesale Audit</div>
+                        <div class="mock-badge completed">✓ COMPLETED</div>
+                    </div>
+
+                    <div class="mock-tabs">
+                        <div class="mock-tab">Overview</div>
+                        <div class="mock-tab">Research Data</div>
+                        <div class="mock-tab">Findings</div>
+                        <div class="mock-tab active">Deliverables</div>
+                        <div class="mock-tab">Settings</div>
+                    </div>
+
+                    <div style="margin-top: 1rem;">
+                        <div class="mock-phase-card">
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <div style="font-size: 2rem;">📕</div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; font-size: 1.1rem; margin-bottom: 0.3rem;">Search Audit Book</div>
+                                    <div style="font-size: 0.85rem; color: #6B7280;">costco-search-audit-book.pdf</div>
+                                    <div style="font-size: 0.85rem; color: #6B7280; margin-top: 0.3rem;">47 pages | 3.8 MB | Brand Score: 9.2/10 ✓</div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                                <button class="mock-action-btn">👁️ Preview in Browser</button>
+                                <button class="mock-action-btn">📥 Download</button>
+                                <button class="mock-action-btn">📧 Email</button>
+                            </div>
+                        </div>
+
+                        <div class="mock-phase-card">
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <div style="font-size: 2rem;">📄</div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; font-size: 1.1rem; margin-bottom: 0.3rem;">AE Pre-Call Brief</div>
+                                    <div style="font-size: 0.85rem; color: #6B7280;">costco-ae-precall-brief.md</div>
+                                    <div style="font-size: 0.85rem; color: #6B7280; margin-top: 0.3rem;">12 pages | 42 KB | For internal use only</div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                                <button class="mock-action-btn">👁️ Preview</button>
+                                <button class="mock-action-btn">📥 Download</button>
+                                <button class="mock-action-btn">📋 Copy to Clipboard</button>
+                            </div>
+                        </div>
+
+                        <div class="mock-phase-card">
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <div style="font-size: 2rem;">📊</div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; font-size: 1.1rem; margin-bottom: 0.3rem;">Strategic Signal Brief</div>
+                                    <div style="font-size: 0.85rem; color: #6B7280;">costco-strategic-signal-brief.md</div>
+                                    <div style="font-size: 0.85rem; color: #6B7280; margin-top: 0.3rem;">3 pages | 18 KB | LLM-ready format</div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                                <button class="mock-action-btn">👁️ Preview</button>
+                                <button class="mock-action-btn">📥 Download</button>
+                                <button class="mock-action-btn">🤖 Send to Slack Bot</button>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid #E5E7EB;">
+                            <div style="font-weight: 600; margin-bottom: 0.8rem;">Bulk Actions</div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="mock-action-btn">📥 Download All (ZIP)</button>
+                                <button class="mock-action-btn">📧 Email Package</button>
+                                <button class="mock-action-btn">🔗 Share Link</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Modules Section -->
+        <section id="modules" class="section">
+            <h2 class="section-title">🧩 Module Breakdown</h2>
+
+            <h3 class="section-subtitle">Backend Modules</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <h3>1️⃣ Audit Engine</h3>
+                    <p><strong>Purpose:</strong> Orchestrate 5-phase audit process</p>
+
+                    <details style="margin-top: 1rem;">
+                        <summary style="cursor: pointer; font-weight: 600; color: #5468FF; padding: 0.5rem 0;">Phase 1: Pre-Audit Research (14 steps)</summary>
+                        <ul style="list-style: none; margin-top: 0.5rem; padding-left: 1rem; font-size: 0.9rem;">
+                            <li style="padding: 0.2rem 0;">1. Company Context (overview, revenue, employees)</li>
+                            <li style="padding: 0.2rem 0;">2. Tech Stack (BuiltWith 7 endpoints)</li>
+                            <li style="padding: 0.2rem 0;">3. Traffic (SimilarWeb 14 endpoints)</li>
+                            <li style="padding: 0.2rem 0;">4. Competitor Identification</li>
+                            <li style="padding: 0.2rem 0;">5. Test Queries Generation</li>
+                            <li style="padding: 0.2rem 0;">6. Competitor Search Analysis</li>
+                            <li style="padding: 0.2rem 0;">7. Strategic Angle Mining</li>
+                            <li style="padding: 0.2rem 0;">8. Hiring Signal Detection</li>
+                            <li style="padding: 0.2rem 0;">9. Financial Synthesis + ROI (Yahoo Finance)</li>
+                            <li style="padding: 0.2rem 0;">10. Trigger Event Synthesis</li>
+                            <li style="padding: 0.2rem 0;">11. Vertical Matching</li>
+                            <li style="padding: 0.2rem 0;">12. Investor Intelligence (SEC/earnings)</li>
+                            <li style="padding: 0.2rem 0;">13. Deep Hiring + Buying Committee</li>
+                            <li style="padding: 0.2rem 0;">14. ICP-to-Priority Mapping</li>
+                        </ul>
+                    </details>
+
+                    <details style="margin-top: 0.5rem;">
+                        <summary style="cursor: pointer; font-weight: 600; color: #5468FF; padding: 0.5rem 0;">Phase 2: Browser Testing (20 steps)</summary>
+                        <ul style="list-style: none; margin-top: 0.5rem; padding-left: 1rem; font-size: 0.9rem;">
+                            <li style="padding: 0.2rem 0;"><strong>Core Tests (12):</strong></li>
+                            <li style="padding: 0.2rem 0;">1. Homepage observation</li>
+                            <li style="padding: 0.2rem 0;">2. Empty state test</li>
+                            <li style="padding: 0.2rem 0;">3. SAYT (Search As You Type)</li>
+                            <li style="padding: 0.2rem 0;">4. Full results page</li>
+                            <li style="padding: 0.2rem 0;">5. Typo tolerance</li>
+                            <li style="padding: 0.2rem 0;">6. Synonyms handling</li>
+                            <li style="padding: 0.2rem 0;">7. No results handling</li>
+                            <li style="padding: 0.2rem 0;">8. Non-product content search</li>
+                            <li style="padding: 0.2rem 0;">9. Intent detection</li>
+                            <li style="padding: 0.2rem 0;">10. Merchandising consistency</li>
+                            <li style="padding: 0.2rem 0;">11. Federated search</li>
+                            <li style="padding: 0.2rem 0;">12. Mobile experience</li>
+                            <li style="padding: 0.2rem 0; margin-top: 0.5rem;"><strong>Algolia Value-Prop Tests (8):</strong></li>
+                            <li style="padding: 0.2rem 0;">13. Semantic/NLP search</li>
+                            <li style="padding: 0.2rem 0;">14. Dynamic facets</li>
+                            <li style="padding: 0.2rem 0;">15. Popular searches</li>
+                            <li style="padding: 0.2rem 0;">16. Dynamic categories</li>
+                            <li style="padding: 0.2rem 0;">17. Personalization</li>
+                            <li style="padding: 0.2rem 0;">18. Recommendations</li>
+                            <li style="padding: 0.2rem 0;">19. Merchandising rules</li>
+                            <li style="padding: 0.2rem 0;">20. Analytics visibility</li>
+                        </ul>
+                    </details>
+
+                    <details style="margin-top: 0.5rem;">
+                        <summary style="cursor: pointer; font-weight: 600; color: #5468FF; padding: 0.5rem 0;">Phase 3: Scoring (10 areas)</summary>
+                        <ul style="list-style: none; margin-top: 0.5rem; padding-left: 1rem; font-size: 0.9rem;">
+                            <li style="padding: 0.2rem 0;">1. Search-as-You-Type (SAYT)</li>
+                            <li style="padding: 0.2rem 0;">2. Query Understanding (typos, synonyms)</li>
+                            <li style="padding: 0.2rem 0;">3. Results Quality</li>
+                            <li style="padding: 0.2rem 0;">4. Faceting & Filtering</li>
+                            <li style="padding: 0.2rem 0;">5. Federated Search</li>
+                            <li style="padding: 0.2rem 0;">6. Mobile Experience</li>
+                            <li style="padding: 0.2rem 0;">7. Semantic/NLP</li>
+                            <li style="padding: 0.2rem 0;">8. Dynamic Facets & Personalization</li>
+                            <li style="padding: 0.2rem 0;">9. Recommendations & Merchandising</li>
+                            <li style="padding: 0.2rem 0;">10. Search Intelligence</li>
+                        </ul>
+                    </details>
+
+                    <details style="margin-top: 0.5rem;">
+                        <summary style="cursor: pointer; font-weight: 600; color: #5468FF; padding: 0.5rem 0;">Phase 4-5: Deliverables (3 files)</summary>
+                        <ul style="list-style: none; margin-top: 0.5rem; padding-left: 1rem; font-size: 0.9rem;">
+                            <li style="padding: 0.2rem 0;">1. <strong>Search Audit Book</strong> (PDF, 40-50 pages)</li>
+                            <li style="padding: 0.2rem 0;">   → Executive summary, findings, screenshots</li>
+                            <li style="padding: 0.2rem 0;">   → Industry stats, competitor analysis</li>
+                            <li style="padding: 0.2rem 0;">2. <strong>AE Pre-Call Brief</strong> (Markdown, 10-15 pages)</li>
+                            <li style="padding: 0.2rem 0;">   → Buying committee, talking points</li>
+                            <li style="padding: 0.2rem 0;">   → Pain points, ROI opportunities</li>
+                            <li style="padding: 0.2rem 0;">3. <strong>Strategic Signal Brief</strong> (Markdown, 3-5 pages)</li>
+                            <li style="padding: 0.2rem 0;">   → LLM-ready format for downstream</li>
+                            <li style="padding: 0.2rem 0;">   → Trigger events, hiring signals</li>
+                        </ul>
+                    </details>
+                </div>
+
+                <div class="card">
+                    <h3>2️⃣ MCP Proxy Service</h3>
+                    <p><strong>Purpose:</strong> Wrap 5 MCP servers with REST APIs</p>
+                    <ul style="list-style: none; margin-top: 0.5rem; padding-left: 0;">
+                        <li style="padding: 0.2rem 0;">✓ BuiltWith API (7 endpoints)</li>
+                        <li style="padding: 0.2rem 0;">✓ SimilarWeb API (14 endpoints)</li>
+                        <li style="padding: 0.2rem 0;">✓ Yahoo Finance API (8 tools)</li>
+                        <li style="padding: 0.2rem 0;">✓ Perplexity WebSearch</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>3️⃣ Browser Pool Service</h3>
+                    <p><strong>Purpose:</strong> Manage Chrome instances</p>
+                    <ul style="list-style: none; margin-top: 0.5rem; padding-left: 0;">
+                        <li style="padding: 0.2rem 0;">✓ Pool of 10 Chrome instances</li>
+                        <li style="padding: 0.2rem 0;">✓ Screenshot persistence to S3</li>
+                        <li style="padding: 0.2rem 0;">✓ CAPTCHA detection & handoff</li>
+                        <li style="padding: 0.2rem 0;">✓ WAF recovery with retries</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>4️⃣ Job Queue (BullMQ)</h3>
+                    <p><strong>Purpose:</strong> Manage long-running audit jobs</p>
+                    <ul style="list-style: none; margin-top: 0.5rem; padding-left: 0;">
+                        <li style="padding: 0.2rem 0;">✓ Redis-backed queue</li>
+                        <li style="padding: 0.2rem 0;">✓ 3 retry attempts with backoff</li>
+                        <li style="padding: 0.2rem 0;">✓ Concurrency: 5 audits at once</li>
+                        <li style="padding: 0.2rem 0;">✓ Job lifecycle events</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>5️⃣ WebSocket Server</h3>
+                    <p><strong>Purpose:</strong> Real-time progress updates</p>
+                    <ul style="list-style: none; margin-top: 0.5rem; padding-left: 0;">
+                        <li style="padding: 0.2rem 0;">✓ Socket.IO server</li>
+                        <li style="padding: 0.2rem 0;">✓ Subscribe/unsubscribe per audit</li>
+                        <li style="padding: 0.2rem 0;">✓ Broadcast progress, errors</li>
+                        <li style="padding: 0.2rem 0;">✓ Auto-reconnect handling</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>6️⃣ API Gateway</h3>
+                    <p><strong>Purpose:</strong> REST API with auth</p>
+                    <ul style="list-style: none; margin-top: 0.5rem; padding-left: 0;">
+                        <li style="padding: 0.2rem 0;">✓ Express.js server</li>
+                        <li style="padding: 0.2rem 0;">✓ Okta SSO authentication</li>
+                        <li style="padding: 0.2rem 0;">✓ JWT token validation</li>
+                        <li style="padding: 0.2rem 0;">✓ Request/response validation</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3 class="section-subtitle">Frontend Modules</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <h3>1️⃣ Dashboard Page</h3>
+                    <p>Central hub with audit list, filters, search, and quick actions</p>
+                </div>
+
+                <div class="card">
+                    <h3>2️⃣ Create Audit Wizard</h3>
+                    <p>4-step guided form: Domain → Phases → Queries → Review & Launch</p>
+                </div>
+
+                <div class="card">
+                    <h3>3️⃣ Execution Monitor</h3>
+                    <p>Real-time progress with WebSocket updates, live logs, pause/cancel</p>
+                </div>
+
+                <div class="card">
+                    <h3>4️⃣ Audit Details</h3>
+                    <p>5 tabs: Overview, Research Data, Findings, Deliverables, Settings</p>
+                </div>
+
+                <div class="card">
+                    <h3>5️⃣ API Client</h3>
+                    <p>Axios-based wrapper with auth token injection and error handling</p>
+                </div>
+
+                <div class="card">
+                    <h3>6️⃣ State Management</h3>
+                    <p>Zustand stores for audits, user profile, and UI state</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Roadmap Section -->
+        <section id="roadmap" class="section">
+            <h2 class="section-title">🗓️ Implementation Roadmap</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Phase</th>
+                        <th>Duration</th>
+                        <th>Goal</th>
+                        <th>Deliverable</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Phase 1: MVP</strong></td>
+                        <td>8 weeks</td>
+                        <td>Core audit flow with sequential execution</td>
+                        <td>Working platform (~60 min runtime)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Phase 2: Agent Teams</strong></td>
+                        <td>4 weeks</td>
+                        <td>Parallel execution for 2x speed improvement</td>
+                        <td>35-minute runtime</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Phase 3: Polish & Scale</strong></td>
+                        <td>4 weeks</td>
+                        <td>Production-ready with enterprise features</td>
+                        <td>Production launch with templates, admin dashboard</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="alert success" style="text-align: center; font-size: 1.1rem; margin-top: 2rem;">
+                <strong>Total Timeline: 16 weeks (4 months) from kickoff to production</strong>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p><strong>Algolia Search Audit Platform</strong> — Architecture Design v2.0</p>
+        <p>Created: March 2, 2026 | Status: Ready for Stakeholder Review</p>
+        <p style="margin-top: 1rem; opacity: 0.8;">Designed by Claude Sonnet 4.5 for Algolia</p>
+    </div>
+
+    <script>
+        // Smooth scroll for navigation
+        document.querySelectorAll('.nav a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        // Highlight active section in nav
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.nav a');
+
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (scrollY >= (sectionTop - 100)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.style.opacity = '0.7';
+                if (link.getAttribute('href').slice(1) === current) {
+                    link.style.opacity = '1';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
