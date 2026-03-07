@@ -24,6 +24,7 @@ import { BuiltWithClient } from './builtwith';
 import { YahooFinanceClient } from './yahoo-finance';
 import { ApifyClient } from './apify';
 import { ApolloClient } from './apollo';
+import { EdgarClient } from './edgar';
 
 export interface EnrichmentProgress {
   wave: number;
@@ -42,6 +43,7 @@ export class EnrichmentOrchestrator {
   private yahooFinance: YahooFinanceClient;
   private apify: ApifyClient;
   private apollo: ApolloClient;
+  private edgar: EdgarClient;
 
   constructor(db: SupabaseClient, ws?: WebSocketManager) {
     this.db = db;
@@ -53,12 +55,13 @@ export class EnrichmentOrchestrator {
     this.yahooFinance = new YahooFinanceClient();
     this.apify = new ApifyClient();
     this.apollo = new ApolloClient();
+    this.edgar = new EdgarClient();
 
-    logger.info('EnrichmentOrchestrator initialized with all API clients');
+    logger.info('EnrichmentOrchestrator initialized with all 6 API clients (including EDGAR)');
   }
 
   /**
-   * Enrich a company with data from all 5 API sources
+   * Enrich a company with data from all 6 API sources
    *
    * Calls all API clients in parallel and returns structured data.
    * Used for initial data collection before saving to database.
@@ -80,7 +83,15 @@ export class EnrichmentOrchestrator {
   ) {
     logger.info('Starting company enrichment', { domain, auditId });
 
+    // Emit start event
+    this.ws?.emitAuditEvent(auditId, {
+      type: 'enrichment:started',
+      data: { domain, message: 'Starting company enrichment - calling 6 APIs in parallel...' },
+      timestamp: new Date()
+    });
+
     const startTime = Date.now();
+    const errors: Array<{ source: string; error: string }> = [];
 
     // Default to last 3 months for time-series data
     const dateRange: DateRange = options?.dateRange || {
@@ -88,124 +99,157 @@ export class EnrichmentOrchestrator {
       end: new Date().toISOString().slice(0, 7)
     };
 
-    // Execute all API calls in parallel with error handling
-    const results = await Promise.allSettled([
-      // SimilarWeb (14 endpoints)
-      this.similarweb.fetchAllData(domain, dateRange),
+    // Execute all API calls in PARALLEL for speed
+    const apiCalls = [
+      // SimilarWeb
+      (async () => {
+        this.ws?.emitAuditEvent(auditId, {
+          type: 'enrichment:api:started',
+          data: { source: 'SimilarWeb', message: 'Fetching SimilarWeb data (14 endpoints)...' },
+          timestamp: new Date()
+        });
+        try {
+          const data = await this.similarweb.fetchAllData(domain, dateRange);
+          this.ws?.emitAuditEvent(auditId, {
+            type: 'enrichment:api:completed',
+            data: { source: 'SimilarWeb', message: `SimilarWeb: ${data.meta.cacheHits}/14 cached`, progress: 20 },
+            timestamp: new Date()
+          });
+          return { status: 'fulfilled', value: data };
+        } catch (error) {
+          this.ws?.emitAuditEvent(auditId, {
+            type: 'enrichment:api:failed',
+            data: { source: 'SimilarWeb', error: String(error) },
+            timestamp: new Date()
+          });
+          return { status: 'rejected', reason: error };
+        }
+      })(),
 
-      // BuiltWith (7 endpoints)
-      Promise.all([
-        this.builtwith.getDomainTechnologies(domain),
-        this.builtwith.getRelationships(domain),
-        this.builtwith.getFinancials(domain),
-        this.builtwith.getSocialProfiles(domain),
-        this.builtwith.getTrustIndicators(domain),
-        this.builtwith.getKeywords(domain),
-        this.builtwith.getRecommendations(domain)
-      ]),
+      // BuiltWith
+      (async () => {
+        this.ws?.emitAuditEvent(auditId, {
+          type: 'enrichment:api:started',
+          data: { source: 'BuiltWith', message: 'Fetching BuiltWith data (7 endpoints)...' },
+          timestamp: new Date()
+        });
+        try {
+          const results = await Promise.all([
+            this.builtwith.getDomainTechnologies(domain),
+            this.builtwith.getRelationships(domain),
+            this.builtwith.getFinancials(domain),
+            this.builtwith.getSocialProfiles(domain),
+            this.builtwith.getTrustIndicators(domain),
+            this.builtwith.getKeywords(domain),
+            this.builtwith.getRecommendations(domain)
+          ]);
+          this.ws?.emitAuditEvent(auditId, {
+            type: 'enrichment:api:completed',
+            data: { source: 'BuiltWith', message: 'BuiltWith: 7/7 endpoints complete', progress: 40 },
+            timestamp: new Date()
+          });
+          return { status: 'fulfilled', value: results };
+        } catch (error) {
+          this.ws?.emitAuditEvent(auditId, {
+            type: 'enrichment:api:failed',
+            data: { source: 'BuiltWith', error: String(error) },
+            timestamp: new Date()
+          });
+          return { status: 'rejected', reason: error };
+        }
+      })(),
 
-      // Yahoo Finance (5 endpoints) - skip if not public company
-      options?.skipYahooFinance ? null : this.fetchYahooFinanceData(domain),
+      // Yahoo Finance
+      (async () => {
+        if (options?.skipYahooFinance) return { status: 'fulfilled', value: null };
+        this.ws?.emitAuditEvent(auditId, {
+          type: 'enrichment:api:started',
+          data: { source: 'Yahoo Finance', message: 'Fetching Yahoo Finance data...' },
+          timestamp: new Date()
+        });
+        try {
+          const data = await this.fetchYahooFinanceData(domain);
+          this.ws?.emitAuditEvent(auditId, {
+            type: 'enrichment:api:completed',
+            data: { source: 'Yahoo Finance', message: 'Yahoo Finance: Stock data retrieved', progress: 60 },
+            timestamp: new Date()
+          });
+          return { status: 'fulfilled', value: data };
+        } catch (error) {
+          this.ws?.emitAuditEvent(auditId, {
+            type: 'enrichment:api:failed',
+            data: { source: 'Yahoo Finance', error: String(error) },
+            timestamp: new Date()
+          });
+          return { status: 'rejected', reason: error };
+        }
+      })(),
 
-      // Apify (3 actors) - only if LinkedIn URL provided
-      options?.linkedInCompanyUrl
-        ? Promise.all([
+      // Apify
+      (async () => {
+        if (!options?.linkedInCompanyUrl) return { status: 'fulfilled', value: null };
+        this.ws?.emitAuditEvent(auditId, {
+          type: 'enrichment:api:started',
+          data: { source: 'Apify', message: 'Scraping LinkedIn with Apify...' },
+          timestamp: new Date()
+        });
+        try {
+          const [company, jobs] = await Promise.all([
             this.apify.scrapeLinkedInCompany(options.linkedInCompanyUrl),
             this.apify.scrapeLinkedInJobs(options.companyName || domain, 100)
-          ])
-        : null,
+          ]);
+          this.ws?.emitAuditEvent(auditId, {
+            type: 'enrichment:api:completed',
+            data: { source: 'Apify', message: 'Apify: LinkedIn data scraped', progress: 80 },
+            timestamp: new Date()
+          });
+          return { status: 'fulfilled', value: [company, jobs] };
+        } catch (error) {
+          this.ws?.emitAuditEvent(auditId, {
+            type: 'enrichment:api:failed',
+            data: { source: 'Apify', error: String(error) },
+            timestamp: new Date()
+          });
+          return { status: 'rejected', reason: error };
+        }
+      })(),
 
-      // Apollo.io (2 endpoints)
-      Promise.all([
-        this.apollo.searchPeople(domain, [
-          'CEO', 'CFO', 'CTO', 'CIO', 'COO',
-          'VP Engineering', 'VP Technology', 'VP Product',
-          'Director of Engineering', 'Head of Engineering'
-        ], 25),
-        this.apollo.getIntentSignals(domain)
-      ])
-    ]);
+      // Apollo.io
+      (async () => {
+        this.ws?.emitAuditEvent(auditId, {
+          type: 'enrichment:api:started',
+          data: { source: 'Apollo.io', message: 'Fetching Apollo.io contact data...' },
+          timestamp: new Date()
+        });
+        try {
+          const [people, signals] = await Promise.all([
+            this.apollo.searchPeople(domain, [
+              'CEO', 'CFO', 'CTO', 'CIO', 'COO',
+              'VP Engineering', 'VP Technology', 'VP Product',
+              'Director of Engineering', 'Head of Engineering'
+            ], 25),
+            this.apollo.getIntentSignals(domain)
+          ]);
+          const cachedCount = [people, signals].filter(r => r.meta.cached).length;
+          this.ws?.emitAuditEvent(auditId, {
+            type: 'enrichment:api:completed',
+            data: { source: 'Apollo.io', message: `Apollo.io: ${cachedCount}/2 cached`, progress: 90 },
+            timestamp: new Date()
+          });
+          return { status: 'fulfilled', value: [people, signals] };
+        } catch (error) {
+          this.ws?.emitAuditEvent(auditId, {
+            type: 'enrichment:api:failed',
+            data: { source: 'Apollo.io', error: String(error) },
+            timestamp: new Date()
+          });
+          return { status: 'rejected', reason: error };
+        }
+      })()
+    ];
 
-    const totalTime = Date.now() - startTime;
-
-    // Parse results
-    const [
-      similarwebResult,
-      builtwithResult,
-      yahooFinanceResult,
-      apifyResult,
-      apolloResult
-    ] = results;
-
-    // Calculate cost and cache hit rate
-    let totalCost = 0;
-    let totalCalls = 0;
-    let cacheHits = 0;
-    const errors: Array<{ source: string; error: string }> = [];
-
-    // Process SimilarWeb
-    let similarwebData = null;
-    if (similarwebResult.status === 'fulfilled') {
-      similarwebData = similarwebResult.value;
-      totalCost += similarwebData.meta.estimatedCost;
-      totalCalls += 14;
-      cacheHits += similarwebData.meta.cacheHits;
-    } else {
-      errors.push({ source: 'SimilarWeb', error: String(similarwebResult.reason) });
-      logger.error('SimilarWeb enrichment failed', similarwebResult.reason);
-    }
-
-    // Process BuiltWith
-    let builtwithData = null;
-    if (builtwithResult.status === 'fulfilled') {
-      const [tech, relationships, financials, social, trust, keywords, recommendations] = builtwithResult.value;
-      builtwithData = { tech, relationships, financials, social, trust, keywords, recommendations };
-      totalCalls += 7;
-      // BuiltWith cost: $0.02 per call, check cache from meta
-      const cachedCount = builtwithResult.value.filter(r => r.meta.cached).length;
-      cacheHits += cachedCount;
-      totalCost += (7 - cachedCount) * 0.02;
-    } else {
-      errors.push({ source: 'BuiltWith', error: String(builtwithResult.reason) });
-      logger.error('BuiltWith enrichment failed', builtwithResult.reason);
-    }
-
-    // Process Yahoo Finance
-    let yahooFinanceData = null;
-    if (!options?.skipYahooFinance && yahooFinanceResult?.status === 'fulfilled') {
-      yahooFinanceData = yahooFinanceResult.value;
-      totalCalls += 5;
-      // Yahoo Finance is free
-    } else if (yahooFinanceResult?.status === 'rejected') {
-      errors.push({ source: 'Yahoo Finance', error: String(yahooFinanceResult.reason) });
-      logger.warn('Yahoo Finance enrichment failed (likely not a public company)', yahooFinanceResult.reason);
-    }
-
-    // Process Apify
-    let apifyData = null;
-    if (apifyResult && apifyResult.status === 'fulfilled' && apifyResult.value !== null) {
-      const [company, jobs] = apifyResult.value;
-      apifyData = { company, jobs };
-      totalCost += 0.35; // Apify cost
-      totalCalls += 2;
-    } else if (apifyResult && apifyResult.status === 'rejected') {
-      errors.push({ source: 'Apify', error: String(apifyResult.reason) });
-      logger.error('Apify enrichment failed', apifyResult.reason);
-    }
-
-    // Process Apollo.io
-    let apolloData = null;
-    if (apolloResult.status === 'fulfilled') {
-      const [people, signals] = apolloResult.value;
-      apolloData = { people, signals };
-      totalCalls += 2;
-      const cachedCount = [people, signals].filter(r => r.meta.cached).length;
-      cacheHits += cachedCount;
-      totalCost += (2 - cachedCount) * 0.02;
-    } else {
-      errors.push({ source: 'Apollo.io', error: String(apolloResult.reason) });
-      logger.error('Apollo.io enrichment failed', apolloResult.reason);
-    }
+    // Wait for all API calls to complete
+    const results = await Promise.all(apiCalls) as any;
 
     logger.info('Company enrichment completed', {
       domain,
@@ -935,43 +979,96 @@ export class EnrichmentOrchestrator {
 
   /**
    * M08: Investor Intelligence
-   * Extract executive quotes from 10-K, 10-Q, earnings calls via WebSearch
+   * Extract risk factors from 10-K filings via SEC EDGAR API
    */
   private async runM08_InvestorIntelligence(companyId: string, auditId: string): Promise<void> {
     const moduleName = 'M08: Investor Intelligence';
     this.emitProgress(auditId, 3, moduleName, 'running', 0);
 
     try {
-      // TODO: WebSearch for SEC filings and earnings transcripts
-      // For now, use placeholder data
-      const quotes = [
-        {
-          company_id: companyId,
-          audit_id: auditId,
-          executive_name: 'John Doe',
-          quote_text: 'We are investing heavily in our digital capabilities and search infrastructure.',
-          context: 'Q4 2025 Earnings Call',
-          keywords: ['digital', 'search', 'infrastructure'],
-          source_type: 'earnings_call',
-          source_date: new Date('2026-02-15'),
-          source_url: 'https://seekingalpha.com/...',
-          fetched_at: new Date(),
-        },
-      ];
+      // Get company info
+      const company = await this.db.query<any>('companies', { id: companyId });
+      const domain = company[0].domain;
 
-      // Save to executive_quotes table
-      for (const quote of quotes) {
-        await this.db.insert('executive_quotes', quote);
+      // Try to resolve ticker
+      const ticker = this.guessTicker(domain);
+      if (!ticker) {
+        logger.warn(`Cannot resolve ticker for ${domain} - skipping investor intelligence`);
+        this.emitProgress(auditId, 3, moduleName, 'completed', 100, 'Not a public company - SEC filings unavailable');
+        return;
       }
 
-      const insight = `${quotes.length} executive quotes extracted`;
+      // Step 1: Search for latest 10-K filing
+      this.emitProgress(auditId, 3, moduleName, 'running', 25, `Searching SEC filings for ${ticker}...`);
+      const filingsResponse = await this.edgar.searchFilings(ticker, '10-K', 1);
+
+      if (!filingsResponse.data.filings || filingsResponse.data.filings.length === 0) {
+        logger.warn(`No 10-K filings found for ${ticker}`);
+        this.emitProgress(auditId, 3, moduleName, 'completed', 100, 'No recent 10-K filings found');
+        return;
+      }
+
+      const latestFiling = filingsResponse.data.filings[0];
+      const cik = filingsResponse.data.company.cik;
+
+      // Step 2: Get filing content
+      this.emitProgress(auditId, 3, moduleName, 'running', 50, `Fetching 10-K content (${latestFiling.fiscal_year})...`);
+      const contentResponse = await this.edgar.getFilingContent(
+        latestFiling.accession_number,
+        cik
+      );
+
+      // Step 3: Parse risk factors
+      this.emitProgress(auditId, 3, moduleName, 'running', 75, 'Parsing risk factors and scoring Algolia relevance...');
+      const risksResponse = await this.edgar.parseRiskFactors(contentResponse.data.text);
+      const riskFactors = risksResponse.data.risk_factors;
+
+      // Step 4: Save high-relevance risks to executive_quotes table
+      const savedRisks = [];
+      for (const risk of riskFactors) {
+        // Only save risks with Algolia relevance > 0.5 (high relevance to search)
+        if (risk.algolia_relevance > 0.5) {
+          const quoteData = {
+            company_id: companyId,
+            audit_id: auditId,
+            executive_name: 'SEC Filing',
+            quote_text: risk.risk,
+            context: `10-K ${latestFiling.fiscal_year} - Item 1A Risk Factors`,
+            keywords: [risk.category.toLowerCase(), risk.severity, 'search', 'infrastructure'],
+            source_type: '10-K Risk Factor',
+            source_date: new Date(latestFiling.filing_date),
+            source_url: latestFiling.file_url,
+            fetched_at: new Date(),
+          };
+
+          await this.db.insert('executive_quotes', quoteData);
+          savedRisks.push(risk);
+        }
+      }
+
+      // Generate insight
+      const highSeverityCount = savedRisks.filter(r => r.severity === 'high').length;
+      let insight = `SEC 10-K (${latestFiling.fiscal_year}): ${savedRisks.length} high-relevance risk factors`;
+      if (highSeverityCount > 0) {
+        insight += ` (${highSeverityCount} high severity)`;
+      }
+
       this.emitProgress(auditId, 3, moduleName, 'completed', 100, insight);
 
-      logger.info('M08 completed', { companyId, auditId });
+      logger.info('M08 completed', {
+        companyId,
+        auditId,
+        ticker,
+        fiscalYear: latestFiling.fiscal_year,
+        totalRisks: riskFactors.length,
+        savedRisks: savedRisks.length,
+        highSeverity: highSeverityCount,
+        cached: filingsResponse.source.cache_hit
+      });
     } catch (error) {
       this.emitProgress(auditId, 3, moduleName, 'failed', 0, undefined, String(error));
       logger.error('M08 failed', { companyId, auditId, error });
-      throw error;
+      // Don't throw - SEC data is nice-to-have for public companies only
     }
   }
 
