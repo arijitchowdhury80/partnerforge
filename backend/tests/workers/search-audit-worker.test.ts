@@ -109,15 +109,16 @@ describe('Search Audit Worker Integration Tests', () => {
   it('should save test results to database', async () => {
     // Execute a single test
     const page = await browser.newPage();
-    const testId = '2a'; // Test 2a: Homepage Navigation
-    const result = await testLibrary.executeTest(testId, page, testDomain);
+    const testContext = { screenshotDir: './screenshots' };
+    const testId = 'homepage-load';
+    const result = await testLibrary.executeTest(testId, page, testDomain, testContext);
     await page.close();
 
-    // Save to database (using migration 009 schema)
+    // Save to database (using migration 009 schema with short ID)
     await db.insert('search_audit_tests', {
       company_id: testCompanyId,
       audit_id: testAuditId,
-      test_id: testId,
+      test_id: '2a', // Short ID for VARCHAR(10)
       test_name: result.testName,
       query: '',
       passed: result.status === 'passed',
@@ -140,8 +141,8 @@ describe('Search Audit Worker Integration Tests', () => {
     });
 
     expect(saved).toHaveLength(1);
-    expect(saved[0].test_id).toBe(testId);
-    expect(saved[0].passed).toBe(result.status === 'passed');
+    expect(saved[0].test_id).toBe('2a');
+    expect(saved[0].passed).toBe(result.status === 'passed' || result.status === 'warning');
     expect(saved[0].score).toBe(result.score);
 
     console.log('Test result saved successfully to database');
@@ -228,68 +229,69 @@ describe('Search Audit Worker Integration Tests', () => {
   }, 60000);
 
   describe('Individual Test Validation', () => {
-    it('test 2a: homepage navigation should work', async () => {
+    it('homepage-load: homepage navigation should work', async () => {
       const page = await browser.newPage();
-      const result = await testLibrary.executeTest('2a', page, testDomain);
+      const testContext = { screenshotDir: './screenshots' };
+      const result = await testLibrary.executeTest('homepage-load', page, testDomain, testContext);
       await page.close();
 
-      expect(result.testId).toBe('2a');
+      expect(result.testId).toBe('homepage-load');
       // Homepage should load successfully for well-known sites
       expect(result.status).toBe('passed');
       expect(result.score).toBeGreaterThan(0);
     }, 15000);
 
-    it('test 2c: simple query should work', async () => {
+    it('first-search: simple query should work', async () => {
       const page = await browser.newPage();
       const testContext = {
         screenshotDir: './screenshots',
         testQueries: { basic: 'laptop', brand: 'laptop', typo: 'laptop', synonym: 'laptop', nlp: 'laptop' }
       };
-      const result = await testLibrary.executeTest('2c', page, testDomain, testContext);
+      const result = await testLibrary.executeTest('first-search', page, testDomain, testContext);
       await page.close();
 
-      expect(result.testId).toBe('2c');
+      expect(result.testId).toBe('first-search');
       // Should have some results
       expect(result.score).toBeGreaterThanOrEqual(0);
     }, 15000);
 
-    it('test 2f: typo handling should work', async () => {
+    it('typo-handling: typo handling should work', async () => {
       const page = await browser.newPage();
       const testContext = {
         screenshotDir: './screenshots',
-        testQueries: { basic: 'headlamp', brand: 'headlamp', typo: 'headlamp', synonym: 'headlamp', nlp: 'headlamp' }
+        testQueries: { basic: 'headlamp', brand: 'headlamp', typo: 'hedlamp', synonym: 'headlamp', nlp: 'headlamp' }
       };
-      const result = await testLibrary.executeTest('2f', page, testDomain, testContext);
+      const result = await testLibrary.executeTest('typo-handling', page, testDomain, testContext);
       await page.close();
 
-      expect(result.testId).toBe('2f');
+      expect(result.testId).toBe('typo-handling');
       expect(result.score).toBeGreaterThanOrEqual(0);
       expect(result.score).toBeLessThanOrEqual(10);
     }, 15000);
 
-    it('test 2m: SAYT/autocomplete should work', async () => {
+    it('sayt-basic: SAYT/autocomplete should work', async () => {
       const page = await browser.newPage();
       const testContext = {
         screenshotDir: './screenshots',
         testQueries: { basic: 'sh', brand: 'sh', typo: 'sh', synonym: 'sh', nlp: 'sh' }
       };
-      const result = await testLibrary.executeTest('2m', page, testDomain, testContext);
+      const result = await testLibrary.executeTest('sayt-basic', page, testDomain, testContext);
       await page.close();
 
-      expect(result.testId).toBe('2m');
+      expect(result.testId).toBe('sayt-basic');
       expect(result.score).toBeGreaterThanOrEqual(0);
     }, 15000);
 
-    it('test 2k: zero-results handling should work', async () => {
+    it('empty-state: zero-results handling should work', async () => {
       const page = await browser.newPage();
       const testContext = {
         screenshotDir: './screenshots',
         testQueries: { basic: 'xyzabc123', brand: 'xyzabc123', typo: 'xyzabc123', synonym: 'xyzabc123', nlp: 'xyzabc123' }
       };
-      const result = await testLibrary.executeTest('2k', page, testDomain, testContext);
+      const result = await testLibrary.executeTest('empty-state', page, testDomain, testContext);
       await page.close();
 
-      expect(result.testId).toBe('2k');
+      expect(result.testId).toBe('empty-state');
       // Should have empty state messaging
       expect(result.score).toBeGreaterThanOrEqual(0);
     }, 15000);
@@ -299,9 +301,10 @@ describe('Search Audit Worker Integration Tests', () => {
     it('should handle invalid domain gracefully', async () => {
       const invalidDomain = 'invalid-domain-that-does-not-exist-12345.com';
       const page = await browser.newPage();
+      const testContext = { screenshotDir: './screenshots' };
 
       try {
-        await testLibrary.executeTest('2a', page, invalidDomain);
+        await testLibrary.executeTest('homepage-load', page, invalidDomain, testContext);
       } catch (error: any) {
         expect(error).toBeDefined();
         console.log('Invalid domain handled correctly:', error.message);
@@ -312,8 +315,9 @@ describe('Search Audit Worker Integration Tests', () => {
 
     it('should handle test execution failures', async () => {
       // Try to execute with null page (should fail)
+      const testContext = { screenshotDir: './screenshots' };
       try {
-        await testLibrary.executeTest('2a', null as any, testDomain);
+        await testLibrary.executeTest('homepage-load', null as any, testDomain, testContext);
         throw new Error('Should have thrown error');
       } catch (error: any) {
         expect(error).toBeDefined();
@@ -324,22 +328,20 @@ describe('Search Audit Worker Integration Tests', () => {
 
   describe('Database Schema Validation', () => {
     it('should enforce composite primary key constraint', async () => {
-      // Insert a test result
+      // Insert a test result (using migration 009 schema with short IDs)
       await db.insert('search_audit_tests', {
         company_id: testCompanyId,
         audit_id: testAuditId,
-        test_name: '2a',
-        test_category: 'search_ux',
-        test_phase: 'phase2',
-        test_query: '',
-        executed_at: new Date(),
-        test_status: 'passed',
+        test_id: '2a', // VARCHAR(10) - must be short
+        test_name: 'Homepage Load Test',
+        query: null,
+        passed: true,
         score: 10,
-        severity: 'low',
-        finding_summary: 'Test passed',
-        finding_details: {},
-        screenshot_count: 0,
-        duration_ms: 0,
+        finding: 'Test passed',
+        severity: 'LOW',
+        evidence: null,
+        screenshot_path: null,
+        metadata: {},
       });
 
       // Try to insert duplicate (should fail)
@@ -347,18 +349,16 @@ describe('Search Audit Worker Integration Tests', () => {
         await db.insert('search_audit_tests', {
           company_id: testCompanyId,
           audit_id: testAuditId,
-          test_name: '2a', // Same test_name = duplicate
-          test_category: 'search_ux',
-          test_phase: 'phase2',
-          test_query: '',
-          executed_at: new Date(),
-          test_status: 'passed',
+          test_id: '2a', // Same test_id = duplicate
+          test_name: 'Homepage Load Test',
+          query: null,
+          passed: true,
           score: 10,
-          severity: 'low',
-          finding_summary: 'Test passed',
-          finding_details: {},
-          screenshot_count: 0,
-          duration_ms: 0,
+          finding: 'Test passed',
+          severity: 'LOW',
+          evidence: null,
+          screenshot_path: null,
+          metadata: {},
         });
         throw new Error('Should have thrown duplicate key error');
       } catch (error: any) {
@@ -373,18 +373,16 @@ describe('Search Audit Worker Integration Tests', () => {
         await db.insert('search_audit_tests', {
           company_id: testCompanyId,
           audit_id: testAuditId,
-          test_name: '2z',
-          test_category: 'search_ux',
-          test_phase: 'phase2',
-          test_query: '',
-          executed_at: new Date(),
-          test_status: 'passed',
+          test_id: '2z', // VARCHAR(10) - short ID
+          test_name: 'Invalid Score Test',
+          query: null,
+          passed: true,
           score: 15, // Invalid: > 10
-          severity: 'low',
-          finding_summary: 'Test passed',
-          finding_details: {},
-          screenshot_count: 0,
-          duration_ms: 0,
+          finding: 'Test passed',
+          severity: 'LOW',
+          evidence: null,
+          screenshot_path: null,
+          metadata: {},
         });
         throw new Error('Should have thrown constraint violation');
       } catch (error: any) {
