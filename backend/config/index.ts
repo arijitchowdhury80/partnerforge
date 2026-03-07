@@ -31,6 +31,7 @@ interface Config {
     yahoo: number;
     apify: number;
     apollo: number;
+    edgar: number;
   };
   costs: {
     similarweb: number;
@@ -38,6 +39,7 @@ interface Config {
     yahoo: number;
     apify: number;
     apollo: number;
+    edgar: number;
   };
   bullmq: {
     enrichmentConcurrency: number;
@@ -90,14 +92,16 @@ function loadConfig(): Config {
       builtwith: parseInt(process.env.RATE_LIMIT_BUILTWITH || '5', 10),
       yahoo: parseInt(process.env.RATE_LIMIT_YAHOO || '10', 10),
       apify: parseInt(process.env.RATE_LIMIT_APIFY || '3', 10),
-      apollo: parseInt(process.env.RATE_LIMIT_APOLLO || '5', 10)
+      apollo: parseInt(process.env.RATE_LIMIT_APOLLO || '5', 10),
+      edgar: parseInt(process.env.RATE_LIMIT_EDGAR || '10', 10) // SEC enforced limit
     },
     costs: {
       similarweb: parseFloat(process.env.COST_SIMILARWEB_PER_CALL || '0.03'),
       builtwith: parseFloat(process.env.COST_BUILTWITH_PER_CALL || '0.02'),
       yahoo: parseFloat(process.env.COST_YAHOO_PER_CALL || '0.01'),
       apify: parseFloat(process.env.COST_APIFY_PER_CALL || '0.05'),
-      apollo: parseFloat(process.env.COST_APOLLO_PER_CALL || '0.02')
+      apollo: parseFloat(process.env.COST_APOLLO_PER_CALL || '0.02'),
+      edgar: parseFloat(process.env.COST_EDGAR_PER_CALL || '0') // Free API
     },
     bullmq: {
       enrichmentConcurrency: parseInt(process.env.BULLMQ_CONCURRENCY_ENRICHMENT || '5', 10),
