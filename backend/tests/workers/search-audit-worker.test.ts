@@ -35,7 +35,20 @@ describe('Search Audit Worker Integration Tests', () => {
       timeout: 30000,
     });
 
+    // Create test company once for all tests
+    const company = await db.insert('companies', {
+      domain: testDomain,
+      name: 'Test Company',
+      industry: 'e-commerce',
+    });
+    testCompanyId = company.id;
+
+    // Create test audit once for all tests
+    const audit = await db.createAudit(testCompanyId, 'search_audit');
+    testAuditId = audit.id;
+
     console.log('Test setup complete: Database and browser initialized');
+    console.log(`Created test audit: ${testAuditId} for company ${testCompanyId}`);
   });
 
   afterAll(async () => {
@@ -44,29 +57,14 @@ describe('Search Audit Worker Integration Tests', () => {
       await browser.close();
     }
 
-    // Optionally delete test data
-    // await db.delete('audits', testAuditId);
-    // await db.delete('companies', testCompanyId);
+    // Delete test data
+    if (testAuditId && testCompanyId) {
+      await db.query('DELETE FROM companies WHERE id = $1', [testCompanyId]);
+    }
 
     await db.disconnect();
 
     console.log('Test teardown complete');
-  });
-
-  beforeEach(async () => {
-    // Create test company
-    const company = await db.insert('companies', {
-      domain: testDomain,
-      name: 'Test Company',
-      industry: 'e-commerce',
-    });
-    testCompanyId = company.id;
-
-    // Create test audit
-    const audit = await db.createAudit(testCompanyId, 'search_audit');
-    testAuditId = audit.id;
-
-    console.log(`Created test audit: ${testAuditId} for company ${testCompanyId}`);
   });
 
   it('should execute all 20 tests', async () => {

@@ -128,7 +128,7 @@ export class StrategicAnalysisEngine {
       const analysis: StrategicAnalysis = {
         company_id: companyId,
         audit_id: auditId,
-        primary_value_prop: primary.prop,
+        primary_value_prop: primary?.prop || 'strategic_opportunities',
         secondary_value_props: secondaries.map(s => s.prop),
         sales_pitch: salesPitch,
         business_impact: businessImpact,
@@ -400,14 +400,14 @@ export class StrategicAnalysisEngine {
     // Opening: Primary value prop
     sections.push(
       `Based on comprehensive analysis of ${insights.length} data points across enrichment modules, ` +
-      `the primary opportunity for Algolia is ${this.valuePropToLabel(primary.prop)}.`
+      `the primary opportunity for Algolia is ${this.valuePropToLabel(primary?.prop || 'strategic opportunities')}.`
     );
 
     // Business impact
     sections.push(businessImpact);
 
     // Key supporting insights (top 3 from primary value prop)
-    if (primary.supporting_insights.length > 0) {
+    if (primary?.supporting_insights && primary.supporting_insights.length > 0) {
       sections.push(
         'Key findings supporting this opportunity:\n' +
         primary.supporting_insights
@@ -438,9 +438,11 @@ export class StrategicAnalysisEngine {
     const recommendations: string[] = ['## How Algolia Can Help\n'];
 
     // Primary recommendation
-    recommendations.push(`**${this.valuePropToLabel(primary.prop)}**`);
-    recommendations.push(this.getValuePropSolution(primary.prop));
-    recommendations.push('');
+    if (primary?.prop) {
+      recommendations.push(`**${this.valuePropToLabel(primary.prop)}**`);
+      recommendations.push(this.getValuePropSolution(primary.prop));
+      recommendations.push('');
+    }
 
     // Secondary recommendations
     if (secondaries.length > 0) {

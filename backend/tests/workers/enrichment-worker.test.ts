@@ -34,10 +34,8 @@ describe('Enrichment Worker', () => {
         enableReadyCheck: false,
       },
     });
-  });
 
-  beforeEach(async () => {
-    // Create test company
+    // Create test company once for all tests
     const company = await db.insert<any>('companies', {
       domain: 'test-company.com',
       name: 'Test Company Inc.',
@@ -45,7 +43,7 @@ describe('Enrichment Worker', () => {
     });
     testCompanyId = company.id;
 
-    // Create test audit
+    // Create test audit once for all tests
     const audit = await db.insert<any>('audits', {
       company_id: testCompanyId,
       audit_type: 'partner_intel',
