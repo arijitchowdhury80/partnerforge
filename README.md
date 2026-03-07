@@ -75,6 +75,17 @@ Displacement Targets = Companies Using Partner Tech − Existing Algolia Custome
 | **Backend** | Node.js + Express + TypeScript | 🏗️ Week 1-2 |
 | **Repository** | https://github.com/arijitchowdhury80/arian | ✅ Active |
 
+### Security Model
+
+**Backend-Only Architecture** - Security enforced at API layer
+
+- ✅ No client-side database access
+- ✅ All requests authenticated at backend
+- ✅ RLS disabled (security at API, not database)
+- ✅ Full audit logging
+
+**See**: [SECURITY.md](SECURITY.md) for detailed security model
+
 ### Technology Stack
 
 ```

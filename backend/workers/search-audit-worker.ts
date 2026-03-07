@@ -98,7 +98,13 @@ async function processSearchAudit(job: Job<SearchAuditJobData>): Promise<void> {
 
         const testContext = {
           screenshotDir,
-          testQueries: queries?.[testId] ? { basic: queries[testId] } : undefined
+          testQueries: queries?.[testId] ? {
+            basic: queries[testId],
+            brand: queries[testId],
+            typo: queries[testId],
+            synonym: queries[testId],
+            nlp: queries[testId],
+          } : undefined
         };
 
         const result = await testLibrary.executeTest(testId, page, companyDomain, testContext);
@@ -148,27 +154,27 @@ async function processSearchAudit(job: Job<SearchAuditJobData>): Promise<void> {
         }
 
         // 5. Emit finding if test failed
-        if (!result.passed && result.finding) {
+        if (result.status !== 'passed' && result.findings.length > 0) {
           wsManager.emitFinding(auditId, {
-            testId: test.id,
-            testName: test.name,
-            severity: test.severity,
-            finding: result.finding,
+            testId: result.testId,
+            testName: result.testName,
+            severity: result.status === 'failed' ? 'HIGH' : 'MEDIUM',
+            finding: result.findings[0],
             evidence: result.evidence,
-            screenshotPath: result.screenshotPath,
+            screenshotPath: result.screenshots[0]?.filePath,
           });
         }
 
-        logger.info(`Test ${test.id} completed`, {
+        logger.info(`Test ${testId} completed`, {
           auditId,
           test_status: result.status,
           score: result.score,
         });
 
       } catch (error: any) {
-        logger.error(`Test ${test.id} failed with error`, {
+        logger.error(`Test ${testId} failed with error`, {
           auditId,
-          testId: test.id,
+          testId,
           error: error.message,
         });
 
@@ -176,10 +182,10 @@ async function processSearchAudit(job: Job<SearchAuditJobData>): Promise<void> {
         await db.insert('search_audit_tests', {
           company_id: companyId,
           audit_id: auditId,
-          test_name: test.id,
-          test_category: getCategoryForTest(test.id),
+          test_name: testId,
+          test_category: 'search',
           test_phase: 'phase2',
-          test_query: queries[test.id] || '',
+          test_query: queries?.[testId] || '',
           executed_at: new Date(),
           test_status: 'failed',
           score: 0,
@@ -192,18 +198,22 @@ async function processSearchAudit(job: Job<SearchAuditJobData>): Promise<void> {
 
         // Add failed result to array
         testResults.push({
-          testId: test.id,
-          test_status: 'failed',
+          testId,
+          testName: testId,
+          status: 'failed',
           score: 0,
-          finding: `Test execution failed: ${error.message}`,
+          duration: 0,
+          screenshots: [],
+          findings: [`Test execution failed: ${error.message}`],
+          evidence: [],
         });
 
         // Emit test failure
         wsManager.emitAuditEvent(auditId, {
           type: 'test:failed',
           data: {
-            testId: test.id,
-            testName: test.name,
+            testId,
+            testName: testId,
             error: error.message,
           },
           timestamp: new Date(),

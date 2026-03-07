@@ -60,7 +60,7 @@ export interface Finding {
   testName: string;
   finding: string;
   severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
-  evidence?: string;
+  evidence?: any;  // Can be Evidence[] or string
   screenshotPath?: string;
   businessImpact?: string;
   algoliaProduct?: string;

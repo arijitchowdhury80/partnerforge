@@ -293,7 +293,7 @@ describe('BuiltWithClient', () => {
 
   describe('missing API key', () => {
     it('should log warning when API key is not configured', () => {
-      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation();
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
       delete process.env.BUILTWITH_API_KEY;
 
       new BuiltWithClient();
