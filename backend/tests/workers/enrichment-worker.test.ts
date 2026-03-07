@@ -266,6 +266,72 @@ vi.mock('../../services/apollo', () => ({
   }))
 }));
 
+vi.mock('../../services/edgar', () => ({
+  EdgarClient: vi.fn().mockImplementation(() => ({
+    searchFilings: vi.fn().mockResolvedValue({
+      data: {
+        filings: [
+          {
+            accession_number: '0000909832-24-000012',
+            filing_date: '2024-09-27',
+            fiscal_year: '2024',
+            form_type: '10-K',
+            file_url: 'https://www.sec.gov/Archives/edgar/data/909832/000090983224000012.txt'
+          }
+        ],
+        company: {
+          cik: '0000909832',
+          name: 'Test Company Inc.',
+          ticker: 'TEST'
+        }
+      },
+      source: { provider: 'SEC EDGAR', endpoint: '/cgi-bin/browse-edgar' }
+    }),
+    getFilingContent: vi.fn().mockResolvedValue({
+      data: {
+        accession_number: '0000909832-24-000012',
+        cik: '0000909832',
+        text: `FORM 10-K
+
+        Item 1A. Risk Factors
+
+        Our business depends on technology infrastructure and search capabilities.
+        If our search platform fails to scale or becomes obsolete, we may
+        experience material adverse effects on operations and customer satisfaction.
+
+        We face intense competition from retailers with superior e-commerce
+        search experiences and recommendation engines.
+
+        Item 1B. Unresolved Staff Comments`,
+        size_bytes: 150000,
+        url: 'https://www.sec.gov/Archives/edgar/data/909832/000090983224000012.txt'
+      },
+      source: { provider: 'SEC EDGAR', endpoint: '/Archives/edgar/data' }
+    }),
+    parseRiskFactors: vi.fn().mockResolvedValue({
+      data: {
+        risk_factors: [
+          {
+            category: 'Technology',
+            risk: 'Our business depends on technology infrastructure and search capabilities...',
+            severity: 'high',
+            algolia_relevance: 0.85
+          },
+          {
+            category: 'Competition',
+            risk: 'We face intense competition from retailers with superior e-commerce search experiences...',
+            severity: 'medium',
+            algolia_relevance: 0.72
+          }
+        ],
+        total_risks: 2,
+        high_severity_count: 1
+      },
+      source: { provider: 'SEC EDGAR', endpoint: '/parse/risk-factors' }
+    })
+  }))
+}));
+
 describe('Enrichment Worker', () => {
   let db: SupabaseClient;
   let orchestrator: EnrichmentOrchestrator;
@@ -291,6 +357,9 @@ describe('Enrichment Worker', () => {
       },
     });
 
+    // Clean up any existing test company from previous runs
+    await db.getClient().from('companies').delete().eq('domain', 'test-company.com');
+
     // Create test company once for all tests
     const company = await db.insert<any>('companies', {
       domain: 'test-company.com',
@@ -315,7 +384,7 @@ describe('Enrichment Worker', () => {
 
     // Clean up database (CASCADE will delete related records)
     if (testCompanyId) {
-      await db.query('DELETE FROM companies WHERE id = $1', [testCompanyId]);
+      await db.getClient().from('companies').delete().eq('id', testCompanyId);
     }
   });
 
