@@ -19,6 +19,11 @@ import { SupabaseClient } from '../database/supabase';
 import { logger } from '../utils/logger';
 import { WebSocketManager } from './websocket-manager';
 import { SourceCitation } from '../types';
+import { SimilarWebClient, DateRange } from './similarweb';
+import { BuiltWithClient } from './builtwith';
+import { YahooFinanceClient } from './yahoo-finance';
+import { ApifyClient } from './apify';
+import { ApolloClient } from './apollo';
 
 export interface EnrichmentProgress {
   wave: number;
@@ -32,10 +37,279 @@ export interface EnrichmentProgress {
 export class EnrichmentOrchestrator {
   private db: SupabaseClient;
   private ws?: WebSocketManager;
+  private similarweb: SimilarWebClient;
+  private builtwith: BuiltWithClient;
+  private yahooFinance: YahooFinanceClient;
+  private apify: ApifyClient;
+  private apollo: ApolloClient;
 
   constructor(db: SupabaseClient, ws?: WebSocketManager) {
     this.db = db;
     this.ws = ws;
+
+    // Initialize API clients
+    this.similarweb = new SimilarWebClient();
+    this.builtwith = new BuiltWithClient();
+    this.yahooFinance = new YahooFinanceClient();
+    this.apify = new ApifyClient();
+    this.apollo = new ApolloClient();
+
+    logger.info('EnrichmentOrchestrator initialized with all API clients');
+  }
+
+  /**
+   * Enrich a company with data from all 5 API sources
+   *
+   * Calls all API clients in parallel and returns structured data.
+   * Used for initial data collection before saving to database.
+   *
+   * @param domain - Company domain (e.g., "costco.com")
+   * @param auditId - Audit ID for tracking
+   * @param options - Enrichment options (date range, limits, etc.)
+   * @returns Enriched company data from all sources
+   */
+  async enrichCompany(
+    domain: string,
+    auditId: string,
+    options?: {
+      dateRange?: DateRange;
+      skipYahooFinance?: boolean; // Skip if not public company
+      linkedInCompanyUrl?: string;
+      companyName?: string;
+    }
+  ) {
+    logger.info('Starting company enrichment', { domain, auditId });
+
+    const startTime = Date.now();
+
+    // Default to last 3 months for time-series data
+    const dateRange: DateRange = options?.dateRange || {
+      start: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().slice(0, 7), // YYYY-MM format
+      end: new Date().toISOString().slice(0, 7)
+    };
+
+    // Execute all API calls in parallel with error handling
+    const results = await Promise.allSettled([
+      // SimilarWeb (14 endpoints)
+      this.similarweb.fetchAllData(domain, dateRange),
+
+      // BuiltWith (7 endpoints)
+      Promise.all([
+        this.builtwith.getDomainTechnologies(domain),
+        this.builtwith.getRelationships(domain),
+        this.builtwith.getFinancials(domain),
+        this.builtwith.getSocialProfiles(domain),
+        this.builtwith.getTrustIndicators(domain),
+        this.builtwith.getKeywords(domain),
+        this.builtwith.getRecommendations(domain)
+      ]),
+
+      // Yahoo Finance (5 endpoints) - skip if not public company
+      options?.skipYahooFinance ? null : this.fetchYahooFinanceData(domain),
+
+      // Apify (3 actors) - only if LinkedIn URL provided
+      options?.linkedInCompanyUrl
+        ? Promise.all([
+            this.apify.scrapeLinkedInCompany(options.linkedInCompanyUrl),
+            this.apify.scrapeLinkedInJobs(options.companyName || domain, 100)
+          ])
+        : null,
+
+      // Apollo.io (2 endpoints)
+      Promise.all([
+        this.apollo.searchPeople(domain, [
+          'CEO', 'CFO', 'CTO', 'CIO', 'COO',
+          'VP Engineering', 'VP Technology', 'VP Product',
+          'Director of Engineering', 'Head of Engineering'
+        ], 25),
+        this.apollo.getIntentSignals(domain)
+      ])
+    ]);
+
+    const totalTime = Date.now() - startTime;
+
+    // Parse results
+    const [
+      similarwebResult,
+      builtwithResult,
+      yahooFinanceResult,
+      apifyResult,
+      apolloResult
+    ] = results;
+
+    // Calculate cost and cache hit rate
+    let totalCost = 0;
+    let totalCalls = 0;
+    let cacheHits = 0;
+    const errors: Array<{ source: string; error: string }> = [];
+
+    // Process SimilarWeb
+    let similarwebData = null;
+    if (similarwebResult.status === 'fulfilled') {
+      similarwebData = similarwebResult.value;
+      totalCost += similarwebData.meta.estimatedCost;
+      totalCalls += 14;
+      cacheHits += similarwebData.meta.cacheHits;
+    } else {
+      errors.push({ source: 'SimilarWeb', error: String(similarwebResult.reason) });
+      logger.error('SimilarWeb enrichment failed', similarwebResult.reason);
+    }
+
+    // Process BuiltWith
+    let builtwithData = null;
+    if (builtwithResult.status === 'fulfilled') {
+      const [tech, relationships, financials, social, trust, keywords, recommendations] = builtwithResult.value;
+      builtwithData = { tech, relationships, financials, social, trust, keywords, recommendations };
+      totalCalls += 7;
+      // BuiltWith cost: $0.02 per call, check cache from meta
+      const cachedCount = builtwithResult.value.filter(r => r.meta.cached).length;
+      cacheHits += cachedCount;
+      totalCost += (7 - cachedCount) * 0.02;
+    } else {
+      errors.push({ source: 'BuiltWith', error: String(builtwithResult.reason) });
+      logger.error('BuiltWith enrichment failed', builtwithResult.reason);
+    }
+
+    // Process Yahoo Finance
+    let yahooFinanceData = null;
+    if (!options?.skipYahooFinance && yahooFinanceResult?.status === 'fulfilled') {
+      yahooFinanceData = yahooFinanceResult.value;
+      totalCalls += 5;
+      // Yahoo Finance is free
+    } else if (yahooFinanceResult?.status === 'rejected') {
+      errors.push({ source: 'Yahoo Finance', error: String(yahooFinanceResult.reason) });
+      logger.warn('Yahoo Finance enrichment failed (likely not a public company)', yahooFinanceResult.reason);
+    }
+
+    // Process Apify
+    let apifyData = null;
+    if (apifyResult && apifyResult.status === 'fulfilled') {
+      const [company, jobs] = apifyResult.value;
+      apifyData = { company, jobs };
+      totalCost += 0.35; // Apify cost
+      totalCalls += 2;
+    } else if (apifyResult && apifyResult.status === 'rejected') {
+      errors.push({ source: 'Apify', error: String(apifyResult.reason) });
+      logger.error('Apify enrichment failed', apifyResult.reason);
+    }
+
+    // Process Apollo.io
+    let apolloData = null;
+    if (apolloResult.status === 'fulfilled') {
+      const [people, signals] = apolloResult.value;
+      apolloData = { people, signals };
+      totalCalls += 2;
+      const cachedCount = [people, signals].filter(r => r.meta.cached).length;
+      cacheHits += cachedCount;
+      totalCost += (2 - cachedCount) * 0.02;
+    } else {
+      errors.push({ source: 'Apollo.io', error: String(apolloResult.reason) });
+      logger.error('Apollo.io enrichment failed', apolloResult.reason);
+    }
+
+    logger.info('Company enrichment completed', {
+      domain,
+      auditId,
+      totalTimeMs: totalTime,
+      totalCost,
+      totalCalls,
+      cacheHits,
+      cacheHitRate: totalCalls > 0 ? (cacheHits / totalCalls * 100).toFixed(1) + '%' : '0%',
+      errorCount: errors.length
+    });
+
+    return {
+      domain,
+      auditId,
+      timestamp: new Date(),
+      data: {
+        similarweb: similarwebData,
+        builtwith: builtwithData,
+        yahooFinance: yahooFinanceData,
+        apify: apifyData,
+        apollo: apolloData
+      },
+      errors,
+      meta: {
+        totalTimeMs: totalTime,
+        totalCost,
+        totalCalls,
+        cacheHits,
+        cacheHitRate: totalCalls > 0 ? cacheHits / totalCalls : 0
+      }
+    };
+  }
+
+  /**
+   * Helper: Fetch Yahoo Finance data with ticker resolution
+   *
+   * @private
+   * @param domain - Company domain
+   * @returns Yahoo Finance data or null if not found
+   */
+  private async fetchYahooFinanceData(domain: string) {
+    try {
+      // TODO: Resolve ticker from domain using WebSearch
+      // For now, attempt common patterns (e.g., costco.com -> COST)
+      const ticker = this.guessTicker(domain);
+
+      if (!ticker) {
+        logger.warn(`Cannot resolve ticker for domain: ${domain}`);
+        return null;
+      }
+
+      const [stockInfo, financials, recommendations, holders, historicalPrices] = await Promise.all([
+        this.yahooFinance.getStockInfo(ticker),
+        this.yahooFinance.getFinancialStatements(ticker),
+        this.yahooFinance.getAnalystRecommendations(ticker),
+        this.yahooFinance.getHolderInfo(ticker),
+        this.yahooFinance.getHistoricalPrices(ticker, {
+          period1: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10), // 1 year ago
+          period2: new Date().toISOString().slice(0, 10),
+          interval: '1mo'
+        })
+      ]);
+
+      return {
+        ticker,
+        stockInfo,
+        financials,
+        recommendations,
+        holders,
+        historicalPrices
+      };
+    } catch (error) {
+      logger.error('Yahoo Finance data fetch failed', { domain, error });
+      throw error;
+    }
+  }
+
+  /**
+   * Helper: Guess stock ticker from domain
+   *
+   * @private
+   * @param domain - Company domain (e.g., "costco.com")
+   * @returns Stock ticker or null
+   */
+  private guessTicker(domain: string): string | null {
+    // Common patterns
+    const tickerMap: Record<string, string> = {
+      'costco.com': 'COST',
+      'target.com': 'TGT',
+      'walmart.com': 'WMT',
+      'amazon.com': 'AMZN',
+      'homedepot.com': 'HD',
+      'lowes.com': 'LOW',
+      'bestbuy.com': 'BBY',
+      'macys.com': 'M',
+      'nordstrom.com': 'JWN',
+      'kohls.com': 'KSS',
+      'tjx.com': 'TJX',
+      'gap.com': 'GPS',
+      'autozone.com': 'AZO'
+    };
+
+    return tickerMap[domain] || null;
   }
 
   /**
@@ -192,36 +466,69 @@ export class EnrichmentOrchestrator {
       const company = await this.db.query<any>('companies', { id: companyId });
       const domain = company[0].domain;
 
-      // TODO: Call BuiltWith API
-      // For now, use placeholder data
-      const technologies = [
-        {
-          company_id: companyId,
-          audit_id: auditId,
-          technology_name: 'React',
-          technology_category: 'frontend',
-          technology_vendor: 'Facebook',
-          confidence_level: 'high',
-          first_detected: new Date(),
-          last_detected: new Date(),
-          source_provider: 'builtwith',
-          source_url: `https://builtwith.com/${domain}`,
-          detected_at: new Date(),
-          insight: null,
-          confidence_score: null,
-          evidence_urls: null,
-        },
-      ];
+      // Call BuiltWith API
+      const response = await this.builtwith.getDomainTechnologies(domain);
+      const techData = response.data;
+
+      // Extract technologies from response
+      const technologies = [];
+      if (techData.Results && techData.Results.length > 0) {
+        const result = techData.Results[0].Result;
+        if (result.Paths && result.Paths.length > 0) {
+          for (const path of result.Paths) {
+            for (const tech of path.Technologies || []) {
+              technologies.push({
+                company_id: companyId,
+                audit_id: auditId,
+                technology_name: tech.Name,
+                technology_category: tech.Tag?.toLowerCase() || 'other',
+                technology_vendor: null,
+                confidence_level: tech.IsPremium ? 'high' : 'medium',
+                first_detected: new Date(tech.FirstDetected * 1000),
+                last_detected: new Date(tech.LastDetected * 1000),
+                source_provider: 'builtwith',
+                source_url: `https://builtwith.com/${domain}`,
+                detected_at: new Date(),
+                insight: null,
+                confidence_score: null,
+                evidence_urls: null,
+              });
+            }
+          }
+        }
+      }
 
       // Save to company_technologies table
       for (const tech of technologies) {
         await this.db.insert('company_technologies', tech);
       }
 
-      const insight = `Detected ${technologies.length} technologies on ${domain}`;
+      // Generate insight
+      const categoryCount = new Set(technologies.map(t => t.technology_category)).size;
+      let insight = `Detected ${technologies.length} technologies across ${categoryCount} categories`;
+
+      // Check for search-related technologies
+      const searchTechs = technologies.filter(t =>
+        t.technology_name.toLowerCase().includes('search') ||
+        t.technology_name.toLowerCase().includes('solr') ||
+        t.technology_name.toLowerCase().includes('elastic')
+      );
+
+      if (searchTechs.length > 0) {
+        insight += ` | Using ${searchTechs.map(t => t.technology_name).join(', ')} for search`;
+        // Update insight column for search technologies
+        for (const tech of searchTechs) {
+          await this.db.update('company_technologies', `${companyId}_${auditId}_${tech.technology_name}`, {
+            insight: `Current search provider: ${tech.technology_name} (displacement opportunity)`,
+            confidence_score: 0.9,
+            evidence_urls: [tech.source_url]
+          });
+        }
+      }
+
       this.emitProgress(auditId, 1, moduleName, 'completed', 100, insight);
 
-      logger.info('M02 completed', { companyId, auditId, techCount: technologies.length });
+      logger.info('M02 completed', { companyId, auditId, techCount: technologies.length, cached: response.meta.cached });
     } catch (error) {
       this.emitProgress(auditId, 1, moduleName, 'failed', 0, undefined, String(error));
       logger.error('M02 failed', { companyId, auditId, error });
@@ -242,55 +549,93 @@ export class EnrichmentOrchestrator {
       const company = await this.db.query<any>('companies', { id: companyId });
       const domain = company[0].domain;
 
-      // TODO: Call SimilarWeb API
-      // For now, use placeholder data
-      const trafficData = {
-        company_id: companyId,
-        audit_id: auditId,
-        month: new Date('2026-02-01'),
-        monthly_visits: 1500000,
-        unique_visitors: null,
-        page_views: null,
-        bounce_rate: 55.2,
-        avg_visit_duration: 180,
-        pages_per_visit: 3.5,
-        direct_traffic_pct: 30.0,
-        search_traffic_pct: 40.0,
-        social_traffic_pct: 10.0,
-        referral_traffic_pct: 15.0,
-        paid_traffic_pct: 5.0,
-        email_traffic_pct: 0.0,
-        top_country: 'US',
-        top_country_pct: 65.0,
-        desktop_pct: 55.0,
-        mobile_pct: 40.0,
-        tablet_pct: 5.0,
-        source_provider: 'similarweb',
-        source_url: `https://www.similarweb.com/website/${domain}/`,
-        fetched_at: new Date(),
-        insight: null,
-        confidence_score: null,
-        evidence_urls: null,
+      // Last 3 months date range
+      const dateRange: DateRange = {
+        start: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().slice(0, 7),
+        end: new Date().toISOString().slice(0, 7)
       };
 
-      // Save to company_traffic table
-      await this.db.insert('company_traffic', trafficData);
+      // Call SimilarWeb APIs in parallel
+      const [trafficResponse, engagementResponse, sourcesResponse, geoResponse] = await Promise.all([
+        this.similarweb.getTrafficData(domain, dateRange),
+        this.similarweb.getEngagementMetrics(domain, dateRange),
+        this.similarweb.getTrafficSources(domain, dateRange),
+        this.similarweb.getGeography(domain, dateRange)
+      ]);
 
-      // Generate insight if bounce rate is high
-      let insight = `Traffic: ${(trafficData.monthly_visits / 1000000).toFixed(1)}M visits/month`;
-      if (trafficData.bounce_rate && trafficData.bounce_rate > 50) {
-        insight += ` | HIGH bounce rate (${trafficData.bounce_rate}%) suggests poor search relevance`;
-        // Update insight column
-        await this.db.update('company_traffic', `${companyId}_${auditId}_${trafficData.month}`, {
-          insight,
-          confidence_score: 0.85,
-          evidence_urls: [trafficData.source_url],
-        });
+      // Process each month of data
+      const trafficRecords = [];
+      for (const visit of trafficResponse.data.visits || []) {
+        const month = new Date(visit.date + '-01');
+
+        // Find corresponding engagement data
+        const engagement = engagementResponse.data.bounce_rate.find(e => e.date === visit.date);
+        const pagesPerVisit = engagementResponse.data.pages_per_visit.find(e => e.date === visit.date);
+        const avgDuration = engagementResponse.data.avg_visit_duration.find(e => e.date === visit.date);
+
+        // Get top country (first in geo array)
+        const topCountry = geoResponse.data.countries[0];
+
+        const trafficData = {
+          company_id: companyId,
+          audit_id: auditId,
+          month,
+          monthly_visits: visit.visits,
+          unique_visitors: null,
+          page_views: null,
+          bounce_rate: engagement ? engagement.bounce_rate * 100 : null,
+          avg_visit_duration: avgDuration ? avgDuration.avg_visit_duration : null,
+          pages_per_visit: pagesPerVisit ? pagesPerVisit.pages_per_visit : null,
+          direct_traffic_pct: sourcesResponse.data.channels.direct * 100,
+          search_traffic_pct: sourcesResponse.data.channels.search * 100,
+          social_traffic_pct: sourcesResponse.data.channels.social * 100,
+          referral_traffic_pct: sourcesResponse.data.channels.referral * 100,
+          paid_traffic_pct: sourcesResponse.data.channels.display_ads * 100,
+          email_traffic_pct: sourcesResponse.data.channels.email * 100,
+          top_country: topCountry ? topCountry.country_code : null,
+          top_country_pct: topCountry ? topCountry.visits_share * 100 : null,
+          desktop_pct: null, // Not in this endpoint
+          mobile_pct: null,
+          tablet_pct: null,
+          source_provider: 'similarweb',
+          source_url: `https://www.similarweb.com/website/${domain}/`,
+          fetched_at: new Date(),
+          insight: null,
+          confidence_score: null,
+          evidence_urls: null,
+        };
+
+        trafficRecords.push(trafficData);
+
+        // Save to company_traffic table
+        await this.db.insert('company_traffic', trafficData);
+
+        // Generate insight if bounce rate is high
+        if (trafficData.bounce_rate && trafficData.bounce_rate > 50) {
+          const insight = `HIGH bounce rate (${trafficData.bounce_rate.toFixed(1)}%) suggests poor search relevance or site UX issues`;
+          await this.db.update('company_traffic', `${companyId}_${auditId}_${month.toISOString()}`, {
+            insight,
+            confidence_score: 0.85,
+            evidence_urls: [trafficData.source_url],
+          });
+        }
+      }
+
+      // Summary insight
+      const latestMonth = trafficRecords[trafficRecords.length - 1];
+      let insight = `Traffic: ${(latestMonth.monthly_visits / 1000000).toFixed(1)}M visits/month`;
+      if (latestMonth.bounce_rate && latestMonth.bounce_rate > 50) {
+        insight += ` | HIGH bounce rate (${latestMonth.bounce_rate.toFixed(1)}%)`;
       }
 
       this.emitProgress(auditId, 1, moduleName, 'completed', 100, insight);
 
-      logger.info('M03 completed', { companyId, auditId });
+      logger.info('M03 completed', {
+        companyId,
+        auditId,
+        months: trafficRecords.length,
+        cached: trafficResponse.meta.cached
+      });
     } catch (error) {
       this.emitProgress(auditId, 1, moduleName, 'failed', 0, undefined, String(error));
       logger.error('M03 failed', { companyId, auditId, error });
@@ -311,51 +656,92 @@ export class EnrichmentOrchestrator {
       const company = await this.db.query<any>('companies', { id: companyId });
       const domain = company[0].domain;
 
-      // TODO: Resolve ticker via WebSearch, then call Yahoo Finance API
-      // For now, use placeholder data
-      const financials = [
-        {
+      // Try to resolve ticker
+      const ticker = this.guessTicker(domain);
+      if (!ticker) {
+        logger.warn(`Cannot resolve ticker for ${domain} - skipping financial profile`);
+        this.emitProgress(auditId, 2, moduleName, 'completed', 100, 'Not a public company - financials unavailable');
+        return;
+      }
+
+      // Fetch financial statements
+      const financialsResponse = await this.yahooFinance.getFinancialStatements(ticker);
+      const statements = financialsResponse.data;
+
+      // Save income statements to company_financials table
+      const financialRecords = [];
+      for (const income of statements.incomeStatement) {
+        const balanceSheet = statements.balanceSheet.find(b => b.endDate === income.endDate);
+        const cashFlow = statements.cashFlow.find(c => c.endDate === income.endDate);
+
+        // Parse fiscal year and quarter from date
+        const endDate = new Date(income.endDate);
+        const fiscalYear = endDate.getFullYear();
+        const fiscalQuarter = null; // Annual data
+
+        const financialData = {
           company_id: companyId,
           audit_id: auditId,
-          fiscal_year: 2025,
-          fiscal_quarter: null,
-          revenue: 15000000000, // $15B
-          gross_profit: null,
-          operating_income: null,
-          net_income: 2500000000, // $2.5B
-          total_assets: null,
-          total_liabilities: null,
-          shareholders_equity: null,
-          cash_and_equivalents: null,
-          operating_cash_flow: null,
-          investing_cash_flow: null,
-          financing_cash_flow: null,
-          free_cash_flow: null,
-          ebitda: null,
+          fiscal_year: fiscalYear,
+          fiscal_quarter: fiscalQuarter,
+          revenue: income.totalRevenue,
+          gross_profit: income.grossProfit,
+          operating_income: income.operatingIncome,
+          net_income: income.netIncome,
+          total_assets: balanceSheet?.totalAssets || null,
+          total_liabilities: balanceSheet?.totalLiabilities || null,
+          shareholders_equity: balanceSheet?.totalStockholderEquity || null,
+          cash_and_equivalents: balanceSheet?.cash || null,
+          operating_cash_flow: cashFlow?.totalCashFromOperatingActivities || null,
+          investing_cash_flow: cashFlow?.totalCashFromInvestingActivities || null,
+          financing_cash_flow: cashFlow?.totalCashFromFinancingActivities || null,
+          free_cash_flow: cashFlow?.freeCashFlow || null,
+          ebitda: income.ebitda,
           earnings_per_share: null,
           price_to_earnings: null,
           source_provider: 'yahoo_finance',
-          source_url: null,
+          source_url: `https://finance.yahoo.com/quote/${ticker}/financials`,
           fetched_at: new Date(),
           insight: null,
           confidence_score: null,
           evidence_urls: null,
-        },
-      ];
+        };
 
-      // Save to company_financials table
-      for (const finance of financials) {
-        await this.db.insert('company_financials', finance);
+        financialRecords.push(financialData);
+        await this.db.insert('company_financials', financialData);
       }
 
-      const insight = `Revenue: $${(financials[0].revenue / 1000000000).toFixed(1)}B (FY${financials[0].fiscal_year})`;
+      // Generate insights
+      const latestYear = financialRecords[0];
+      let insight = `Revenue: $${(latestYear.revenue / 1000000000).toFixed(1)}B (FY${latestYear.fiscal_year})`;
+
+      // Check for growth
+      if (financialRecords.length >= 2) {
+        const previousYear = financialRecords[1];
+        const growthRate = ((latestYear.revenue - previousYear.revenue) / previousYear.revenue) * 100;
+        if (growthRate > 10) {
+          insight += ` | Strong growth: +${growthRate.toFixed(1)}% YoY`;
+          await this.db.update('company_financials', `${companyId}_${auditId}_${latestYear.fiscal_year}_${latestYear.fiscal_quarter || 'annual'}`, {
+            insight: `Strong revenue growth (+${growthRate.toFixed(1)}% YoY) indicates expansion and potential search infrastructure needs`,
+            confidence_score: 0.8,
+            evidence_urls: [financialData.source_url]
+          });
+        }
+      }
+
       this.emitProgress(auditId, 2, moduleName, 'completed', 100, insight);
 
-      logger.info('M04 completed', { companyId, auditId });
+      logger.info('M04 completed', {
+        companyId,
+        auditId,
+        ticker,
+        years: financialRecords.length,
+        cached: financialsResponse.meta.cached
+      });
     } catch (error) {
       this.emitProgress(auditId, 2, moduleName, 'failed', 0, undefined, String(error));
       logger.error('M04 failed', { companyId, auditId, error });
-      throw error;
+      // Don't throw - private companies are OK
     }
   }
 
@@ -372,37 +758,67 @@ export class EnrichmentOrchestrator {
       const company = await this.db.query<any>('companies', { id: companyId });
       const domain = company[0].domain;
 
-      // TODO: Call SimilarWeb similar-sites API
-      // For now, use placeholder data
-      const competitors = [
-        {
+      // Call SimilarWeb similar-sites API
+      const competitorsResponse = await this.similarweb.getSimilarSites(domain, 10);
+      const sites = competitorsResponse.data.sites || [];
+
+      // Fetch traffic data for each competitor (batch)
+      const competitorDomains = sites.map(s => s.domain);
+      const trafficPromises = competitorDomains.map(async (compDomain) => {
+        try {
+          const dateRange: DateRange = {
+            start: new Date().toISOString().slice(0, 7),
+            end: new Date().toISOString().slice(0, 7)
+          };
+          const traffic = await this.similarweb.getTrafficData(compDomain, dateRange);
+          return {
+            domain: compDomain,
+            visits: traffic.data.visits[0]?.visits || null
+          };
+        } catch (error) {
+          logger.warn(`Failed to fetch traffic for competitor ${compDomain}`, error);
+          return { domain: compDomain, visits: null };
+        }
+      });
+
+      const trafficData = await Promise.all(trafficPromises);
+
+      // Save competitors
+      const competitorRecords = [];
+      for (const site of sites) {
+        const traffic = trafficData.find(t => t.domain === site.domain);
+
+        const competitorData = {
           company_id: companyId,
           audit_id: auditId,
-          competitor_domain: 'competitor1.com',
-          competitor_name: 'Competitor 1',
-          similarity_score: 85.5,
+          competitor_domain: site.domain,
+          competitor_name: null, // Will be enriched later
+          similarity_score: site.similarity_score * 100,
           competitor_search_provider: null,
           competitor_ecommerce_platform: null,
-          competitor_monthly_visits: 2000000,
-          traffic_ratio: 0.75,
+          competitor_monthly_visits: traffic?.visits || null,
+          traffic_ratio: null,
           source_provider: 'similarweb',
           source_url: `https://www.similarweb.com/website/${domain}/`,
           detected_at: new Date(),
           insight: null,
           confidence_score: null,
           evidence_urls: null,
-        },
-      ];
+        };
 
-      // Save to company_competitors table
-      for (const competitor of competitors) {
-        await this.db.insert('company_competitors', competitor);
+        competitorRecords.push(competitorData);
+        await this.db.insert('company_competitors', competitorData);
       }
 
-      const insight = `Found ${competitors.length} similar competitors`;
+      const insight = `Found ${competitorRecords.length} similar competitors (avg similarity: ${(sites.reduce((sum, s) => sum + s.similarity_score, 0) / sites.length * 100).toFixed(0)}%)`;
       this.emitProgress(auditId, 1, moduleName, 'completed', 100, insight);
 
-      logger.info('M05 completed', { companyId, auditId });
+      logger.info('M05 completed', {
+        companyId,
+        auditId,
+        competitors: competitorRecords.length,
+        cached: competitorsResponse.meta.cached
+      });
     } catch (error) {
       this.emitProgress(auditId, 1, moduleName, 'failed', 0, undefined, String(error));
       logger.error('M05 failed', { companyId, auditId, error });
@@ -419,40 +835,71 @@ export class EnrichmentOrchestrator {
     this.emitProgress(auditId, 2, moduleName, 'running', 0);
 
     try {
-      // TODO: Call Apify LinkedIn Jobs actor
-      // For now, use placeholder data
-      const jobs = [
-        {
+      // Get company info
+      const company = await this.db.query<any>('companies', { id: companyId });
+      const companyName = company[0].company_name || company[0].domain;
+
+      // Call Apify LinkedIn Jobs scraper
+      const jobs = await this.apify.scrapeLinkedInJobs(companyName, 100);
+
+      // Save to company_hiring table
+      const jobRecords = [];
+      for (const job of jobs) {
+        // Extract keywords from job title and description
+        const searchKeywords = ['search', 'elasticsearch', 'solr', 'algolia', 'lucene', 'opensearch'];
+        const keywords = searchKeywords.filter(kw =>
+          job.title.toLowerCase().includes(kw) || job.description.toLowerCase().includes(kw)
+        );
+
+        const jobData = {
           company_id: companyId,
           audit_id: auditId,
-          job_title: 'Senior Software Engineer - Search',
-          job_url: 'https://linkedin.com/jobs/123',
-          job_location: 'San Francisco, CA',
-          job_department: 'Engineering',
-          posted_date: new Date(),
-          keywords: ['search', 'elasticsearch', 'java'],
-          is_remote: false,
+          job_title: job.title,
+          job_url: job.url,
+          job_location: job.location,
+          job_department: job.jobFunction || null,
+          posted_date: new Date(job.postedDate),
+          keywords,
+          is_remote: job.remote || false,
           source_actor: 'apify/linkedin-jobs-scraper',
           scraped_at: new Date(),
           insight: null,
           confidence_score: null,
           evidence_urls: null,
-        },
-      ];
+        };
 
-      // Save to company_hiring table
-      for (const job of jobs) {
-        await this.db.insert('company_hiring', job);
+        jobRecords.push(jobData);
+        await this.db.insert('company_hiring', jobData);
+
+        // Generate insight for search-related roles
+        if (keywords.length > 0) {
+          await this.db.update('company_hiring', `${companyId}_${auditId}_${job.title}_${job.postedDate}`, {
+            insight: `Search-related role: "${job.title}" (hiring signal for search infrastructure investment)`,
+            confidence_score: 0.9,
+            evidence_urls: [job.url]
+          });
+        }
       }
 
-      const insight = `${jobs.length} active job postings found`;
+      // Count search-related jobs
+      const searchJobs = jobRecords.filter(j => j.keywords.length > 0);
+      let insight = `${jobRecords.length} active job postings found`;
+      if (searchJobs.length > 0) {
+        insight += ` | ${searchJobs.length} search-related roles (strong hiring signal)`;
+      }
+
       this.emitProgress(auditId, 2, moduleName, 'completed', 100, insight);
 
-      logger.info('M06 completed', { companyId, auditId });
+      logger.info('M06 completed', {
+        companyId,
+        auditId,
+        totalJobs: jobRecords.length,
+        searchJobs: searchJobs.length
+      });
     } catch (error) {
       this.emitProgress(auditId, 2, moduleName, 'failed', 0, undefined, String(error));
       logger.error('M06 failed', { companyId, auditId, error });
-      throw error;
+      // Don't throw - job data is nice-to-have
     }
   }
 
@@ -522,43 +969,68 @@ export class EnrichmentOrchestrator {
 
   /**
    * M09: Executive Intelligence
-   * Find executives via Apollo.io or LinkedIn
+   * Find executives via Apollo.io
    */
   private async runM09_ExecutiveIntelligence(companyId: string, auditId: string): Promise<void> {
     const moduleName = 'M09: Executive Intelligence';
     this.emitProgress(auditId, 3, moduleName, 'running', 0);
 
     try {
-      // TODO: Call Apollo.io or LinkedIn API
-      // For now, use placeholder data
-      const executives = [
-        {
-          company_id: companyId,
-          audit_id: auditId,
-          full_name: 'Jane Smith',
-          title: 'Chief Technology Officer',
-          role_category: 'cto',
-          department: 'Technology',
-          email: null,
-          phone: null,
-          linkedin_url: 'https://linkedin.com/in/janesmith',
-          start_date: new Date('2020-01-01'),
-          is_current: true,
-          source_provider: 'apollo',
-          apollo_person_id: null,
-          fetched_at: new Date(),
-        },
-      ];
+      // Get company domain
+      const company = await this.db.query<any>('companies', { id: companyId });
+      const domain = company[0].domain;
+
+      // Call Apollo.io to find executives
+      const executiveTitles = ['CEO', 'CFO', 'CTO', 'CIO', 'COO', 'CMO', 'CPO'];
+      const response = await this.apollo.searchPeople(domain, executiveTitles, 25);
+      const people = response.data.people || [];
 
       // Save to company_executives table
-      for (const exec of executives) {
-        await this.db.insert('company_executives', exec);
+      const executiveRecords = [];
+      for (const person of people) {
+        // Categorize role
+        const titleLower = person.title.toLowerCase();
+        let roleCategory = 'other';
+        if (titleLower.includes('ceo') || titleLower.includes('chief executive')) roleCategory = 'ceo';
+        else if (titleLower.includes('cfo') || titleLower.includes('chief financial')) roleCategory = 'cfo';
+        else if (titleLower.includes('cto') || titleLower.includes('chief technology')) roleCategory = 'cto';
+        else if (titleLower.includes('cio') || titleLower.includes('chief information')) roleCategory = 'cio';
+        else if (titleLower.includes('coo') || titleLower.includes('chief operating')) roleCategory = 'coo';
+
+        const executiveData = {
+          company_id: companyId,
+          audit_id: auditId,
+          full_name: person.name,
+          title: person.title,
+          role_category: roleCategory,
+          department: null,
+          email: person.email,
+          phone: person.phone_numbers[0]?.sanitized_number || null,
+          linkedin_url: person.linkedin_url,
+          start_date: null,
+          is_current: true,
+          source_provider: 'apollo',
+          apollo_person_id: person.id,
+          fetched_at: new Date(),
+        };
+
+        executiveRecords.push(executiveData);
+        await this.db.insert('company_executives', executiveData);
       }
 
-      const insight = `${executives.length} executives identified`;
+      // Count C-level executives
+      const cLevel = executiveRecords.filter(e => ['ceo', 'cfo', 'cto', 'cio', 'coo'].includes(e.role_category));
+      const insight = `${executiveRecords.length} executives identified (${cLevel.length} C-level)`;
+
       this.emitProgress(auditId, 3, moduleName, 'completed', 100, insight);
 
-      logger.info('M09 completed', { companyId, auditId });
+      logger.info('M09 completed', {
+        companyId,
+        auditId,
+        executives: executiveRecords.length,
+        cLevel: cLevel.length,
+        cached: response.meta.cached
+      });
     } catch (error) {
       this.emitProgress(auditId, 3, moduleName, 'failed', 0, undefined, String(error));
       logger.error('M09 failed', { companyId, auditId, error });
@@ -575,36 +1047,91 @@ export class EnrichmentOrchestrator {
     this.emitProgress(auditId, 3, moduleName, 'running', 0);
 
     try {
-      // TODO: Call Apollo.io people search
-      // For now, use placeholder data
-      const committee = [
-        {
-          company_id: companyId,
-          audit_id: auditId,
-          full_name: 'Bob Johnson',
-          title: 'VP of Engineering',
-          role_category: 'decision_maker',
-          department: 'Engineering',
-          email: null,
-          phone: null,
-          linkedin_url: 'https://linkedin.com/in/bobjohnson',
-          seniority_level: 'vp',
-          is_decision_maker: true,
-          source_provider: 'apollo',
-          apollo_person_id: null,
-          fetched_at: new Date(),
-        },
+      // Get company domain
+      const company = await this.db.query<any>('companies', { id: companyId });
+      const domain = company[0].domain;
+
+      // Search for decision makers (VPs, Directors in Engineering/Product/Technology)
+      const decisionMakerTitles = [
+        'VP Engineering',
+        'VP Technology',
+        'VP Product',
+        'Director of Engineering',
+        'Director of Technology',
+        'Director of Product',
+        'Head of Engineering',
+        'Head of Technology',
+        'Head of Product',
+        'Engineering Manager',
+        'Technical Lead'
       ];
 
+      const response = await this.apollo.searchPeople(domain, decisionMakerTitles, 50);
+      const people = response.data.people || [];
+
       // Save to buying_committee table
-      for (const member of committee) {
-        await this.db.insert('buying_committee', member);
+      const committeeRecords = [];
+      for (const person of people) {
+        // Determine seniority level and decision maker status
+        const titleLower = person.title.toLowerCase();
+        let seniorityLevel = 'individual_contributor';
+        let isDecisionMaker = false;
+
+        if (titleLower.includes('vp') || titleLower.includes('vice president')) {
+          seniorityLevel = 'vp';
+          isDecisionMaker = true;
+        } else if (titleLower.includes('director') || titleLower.includes('head of')) {
+          seniorityLevel = 'director';
+          isDecisionMaker = true;
+        } else if (titleLower.includes('manager') || titleLower.includes('lead')) {
+          seniorityLevel = 'manager';
+          isDecisionMaker = false;
+        }
+
+        // Determine role category
+        let roleCategory = 'technical_evaluator';
+        if (isDecisionMaker && (titleLower.includes('vp') || titleLower.includes('director'))) {
+          roleCategory = 'decision_maker';
+        } else if (titleLower.includes('manager') || titleLower.includes('lead')) {
+          roleCategory = 'technical_influencer';
+        }
+
+        const committeeData = {
+          company_id: companyId,
+          audit_id: auditId,
+          full_name: person.name,
+          title: person.title,
+          role_category: roleCategory,
+          department: titleLower.includes('engineering') ? 'Engineering' :
+                      titleLower.includes('product') ? 'Product' :
+                      titleLower.includes('technology') ? 'Technology' : null,
+          email: person.email,
+          phone: person.phone_numbers[0]?.sanitized_number || null,
+          linkedin_url: person.linkedin_url,
+          seniority_level: seniorityLevel,
+          is_decision_maker: isDecisionMaker,
+          source_provider: 'apollo',
+          apollo_person_id: person.id,
+          fetched_at: new Date(),
+        };
+
+        committeeRecords.push(committeeData);
+        await this.db.insert('buying_committee', committeeData);
       }
 
-      const insight = `${committee.length} decision makers identified`;
+      // Count decision makers
+      const decisionMakers = committeeRecords.filter(c => c.is_decision_maker);
+      const insight = `${committeeRecords.length} buying committee members identified (${decisionMakers.length} decision makers)`;
+
       this.emitProgress(auditId, 3, moduleName, 'completed', 100, insight);
 
-      logger.info('M10 completed', { companyId, auditId });
+      logger.info('M10 completed', {
+        companyId,
+        auditId,
+        total: committeeRecords.length,
+        decisionMakers: decisionMakers.length,
+        cached: response.meta.cached
+      });
     } catch (error) {
       this.emitProgress(auditId, 3, moduleName, 'failed', 0, undefined, String(error));
       logger.error('M10 failed', { companyId, auditId, error });

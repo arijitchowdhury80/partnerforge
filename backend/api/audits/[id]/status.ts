@@ -82,8 +82,8 @@ router.get('/:id/status', async (req: Request, res: Response) => {
       progress_percent: progress.progress_percent,
       phases: progress.phases,
       error_message: progress.error_message,
-      created_at: audit.created_at.toISOString(),
-      updated_at: audit.updated_at.toISOString(),
+      created_at: typeof audit.created_at === 'string' ? audit.created_at : audit.created_at.toISOString(),
+      updated_at: typeof audit.updated_at === 'string' ? audit.updated_at : audit.updated_at.toISOString(),
     };
 
     res.status(200).json(response);

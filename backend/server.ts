@@ -13,6 +13,8 @@ import { MigrationRunner } from './database/migrate';
 import { metricsCollector } from './services/metrics';
 import { WebSocketManager } from './services/websocket-manager';
 import { HealthStatus } from './types';
+import { createAuditWorker, shutdownWorker } from './workers/audit-orchestrator-worker';
+import { Worker } from 'bullmq';
 
 // Import API routers
 import createAuditRouter from './api/audits/create';
@@ -33,6 +35,9 @@ const httpServer = createServer(app);
 
 // Initialize WebSocket manager
 const wsManager = new WebSocketManager(httpServer);
+
+// Worker reference (initialized during startup)
+let auditWorker: Worker | null = null;
 
 // Export WebSocket manager for use in workers
 export { wsManager };
@@ -153,6 +158,11 @@ async function start() {
       logger.warn('Redis not connected - caching will be disabled');
     }
 
+    // Start BullMQ workers
+    logger.info('Starting BullMQ workers...');
+    auditWorker = createAuditWorker(wsManager);
+    logger.info('Audit worker started and listening for jobs');
+
     // Start server
     const port = config.server.port;
     httpServer.listen(port, () => {
@@ -173,6 +183,9 @@ async function start() {
 // Graceful shutdown
 process.on('SIGTERM', async () => {
   logger.info('SIGTERM received, shutting down gracefully...');
+  if (auditWorker) {
+    await shutdownWorker(auditWorker);
+  }
   await redis.disconnect();
   await db.disconnect();
   process.exit(0);
@@ -180,6 +193,9 @@ process.on('SIGTERM', async () => {
 
 process.on('SIGINT', async () => {
   logger.info('SIGINT received, shutting down gracefully...');
+  if (auditWorker) {
+    await shutdownWorker(auditWorker);
+  }
   await redis.disconnect();
   await db.disconnect();
   process.exit(0);
