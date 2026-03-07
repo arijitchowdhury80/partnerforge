@@ -183,7 +183,7 @@ export class EnrichmentOrchestrator {
 
     // Process Apify
     let apifyData = null;
-    if (apifyResult && apifyResult.status === 'fulfilled') {
+    if (apifyResult && apifyResult.status === 'fulfilled' && apifyResult.value !== null) {
       const [company, jobs] = apifyResult.value;
       apifyData = { company, jobs };
       totalCost += 0.35; // Apify cost
@@ -724,7 +724,7 @@ export class EnrichmentOrchestrator {
           await this.db.update('company_financials', `${companyId}_${auditId}_${latestYear.fiscal_year}_${latestYear.fiscal_quarter || 'annual'}`, {
             insight: `Strong revenue growth (+${growthRate.toFixed(1)}% YoY) indicates expansion and potential search infrastructure needs`,
             confidence_score: 0.8,
-            evidence_urls: [financialData.source_url]
+            evidence_urls: [latestYear.source_url]
           });
         }
       }

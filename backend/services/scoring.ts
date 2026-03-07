@@ -859,15 +859,13 @@ export async function fetchEnrichmentData(companyId: string, auditId: string): P
   // Fetch latest traffic data (most recent month)
   const traffic = await db.query<any>(
     'company_traffic',
-    { company_id: companyId, audit_id: auditId },
-    { orderBy: 'month', orderDirection: 'DESC', limit: 1 }
+    { company_id: companyId, audit_id: auditId, order: 'month', limit: 1 }
   );
 
   // Fetch latest financials (most recent year)
   const financials = await db.query<any>(
     'company_financials',
-    { company_id: companyId, audit_id: auditId },
-    { orderBy: 'fiscal_year', orderDirection: 'DESC', limit: 1 }
+    { company_id: companyId, audit_id: auditId, order: 'fiscal_year', limit: 1 }
   );
 
   // Fetch technologies

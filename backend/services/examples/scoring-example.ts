@@ -228,12 +228,7 @@ async function example5_findHotLeads() {
   // Query audits with overall_score >= 70 (HOT)
   const hotLeads = await db.query<any>(
     'audits',
-    { status: 'completed' },
-    {
-      orderBy: 'overall_score',
-      orderDirection: 'DESC',
-      limit: 10,
-    }
+    { status: 'completed', order: 'overall_score', limit: 10 }
   );
 
   console.log('Top 10 Hot Leads:');
