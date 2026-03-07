@@ -12,7 +12,7 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 import { chromium, Browser } from 'playwright';
 import { SupabaseClient } from '../../database/supabase';
-import { SEARCH_TESTS, executeTest } from '../../services/search-test-library';
+import { SearchTestLibrary } from '../../services/search-test-library';
 import { calculateAuditScore } from '../../services/search-audit-scoring';
 import { v4 as uuidv4 } from 'uuid';
 import * as fs from 'fs/promises';
@@ -21,6 +21,7 @@ import * as path from 'path';
 describe('Search Audit Worker Integration Tests', () => {
   let db: SupabaseClient;
   let browser: Browser;
+  let testLibrary: SearchTestLibrary;
   let testCompanyId: string;
   let testAuditId: string;
   const testDomain = 'amazon.com'; // Well-known test domain
@@ -28,6 +29,9 @@ describe('Search Audit Worker Integration Tests', () => {
   beforeAll(async () => {
     // Initialize database connection
     db = new SupabaseClient();
+
+    // Initialize test library
+    testLibrary = new SearchTestLibrary();
 
     // Launch browser
     browser = await chromium.launch({
@@ -69,51 +73,60 @@ describe('Search Audit Worker Integration Tests', () => {
 
   it('should execute all 20 tests', async () => {
     const results = [];
+    const page = await browser.newPage();
+    const testIds = testLibrary.getTestIds();
 
-    for (const test of SEARCH_TESTS) {
+    for (const testId of testIds) {
       try {
-        const result = await executeTest(test.id, browser, `https://${testDomain}`);
+        const result = await testLibrary.executeTest(testId, page, testDomain);
         results.push(result);
-        expect(result.testId).toBe(test.id);
-        expect(typeof result.passed).toBe('boolean');
+        expect(result.testId).toBe(testId);
+        expect(result.status).toBeDefined();
         expect(typeof result.score).toBe('number');
         expect(result.score).toBeGreaterThanOrEqual(0);
         expect(result.score).toBeLessThanOrEqual(10);
       } catch (error: any) {
-        console.error(`Test ${test.id} failed:`, error.message);
+        console.error(`Test ${testId} failed:`, error.message);
         // Still push a failed result
         results.push({
-          testId: test.id,
-          passed: false,
+          testId: testId,
+          testName: `Test ${testId}`,
+          status: 'failed',
           score: 0,
-          finding: `Test execution failed: ${error.message}`,
+          duration: 0,
+          screenshots: [],
+          findings: [`Test execution failed: ${error.message}`],
+          evidence: [],
         });
       }
     }
 
+    await page.close();
     expect(results).toHaveLength(20);
     console.log(`Executed ${results.length} tests successfully`);
   }, 120000); // 2 minute timeout for all tests
 
   it('should save test results to database', async () => {
     // Execute a single test
-    const test = SEARCH_TESTS[0]; // Test 2a: Homepage Navigation
-    const result = await executeTest(test.id, browser, `https://${testDomain}`);
+    const page = await browser.newPage();
+    const testId = '2a'; // Test 2a: Homepage Navigation
+    const result = await testLibrary.executeTest(testId, page, testDomain);
+    await page.close();
 
-    // Save to database
+    // Save to database (using migration 009 schema)
     await db.insert('search_audit_tests', {
       company_id: testCompanyId,
       audit_id: testAuditId,
-      test_name: test.id,
-      test_category: 'search_ux',
-      test_phase: 'phase2',
-      test_query: '',
-      executed_at: new Date(),
-      passed: result.passed,
+      test_id: testId,
+      test_name: result.testName,
+      query: '',
+      passed: result.status === 'passed',
       score: result.score,
-      severity: 'high',
-      finding_summary: result.finding || 'Test passed',
-      finding_details: {
+      finding: result.findings.length > 0 ? result.findings[0] : 'Test passed',
+      severity: result.status === 'failed' ? 'HIGH' : 'LOW',
+      evidence: result.evidence.length > 0 ? JSON.stringify(result.evidence) : null,
+      screenshot_path: result.screenshots.length > 0 ? result.screenshots[0].filePath : null,
+      metadata: {
         evidence: result.evidence,
       },
       screenshot_count: result.screenshotPath ? 1 : 0,
@@ -127,8 +140,8 @@ describe('Search Audit Worker Integration Tests', () => {
     });
 
     expect(saved).toHaveLength(1);
-    expect(saved[0].test_name).toBe(test.id);
-    expect(saved[0].passed).toBe(result.passed);
+    expect(saved[0].test_id).toBe(testId);
+    expect(saved[0].passed).toBe(result.status === 'passed');
     expect(saved[0].score).toBe(result.score);
 
     console.log('Test result saved successfully to database');
@@ -136,23 +149,35 @@ describe('Search Audit Worker Integration Tests', () => {
 
   it('should capture screenshots for failures', async () => {
     // Run a test that's likely to produce a screenshot
-    const test = SEARCH_TESTS.find(t => t.id === '2c'); // Simple query test
-    if (!test) throw new Error('Test 2c not found');
+    const page = await browser.newPage();
+    const testId = '2c'; // Simple query test
+    const testContext = {
+      screenshotDir: './screenshots',
+      testQueries: {
+        basic: 'laptop',
+        brand: 'laptop',
+        typo: 'laptop',
+        synonym: 'laptop',
+        nlp: 'laptop',
+      }
+    };
 
-    const result = await executeTest(test.id, browser, `https://${testDomain}`, 'laptop');
+    const result = await testLibrary.executeTest(testId, page, testDomain, testContext);
+    await page.close();
 
     // Check if screenshot was captured
-    if (result.screenshotPath) {
+    if (result.screenshots.length > 0) {
+      const screenshotPath = result.screenshots[0].filePath;
       const screenshotExists = await fs
-        .access(result.screenshotPath)
+        .access(screenshotPath)
         .then(() => true)
         .catch(() => false);
 
       expect(screenshotExists).toBe(true);
-      console.log(`Screenshot captured: ${result.screenshotPath}`);
+      console.log(`Screenshot captured: ${screenshotPath}`);
 
       // Verify screenshot file is not empty
-      const stats = await fs.stat(result.screenshotPath);
+      const stats = await fs.stat(screenshotPath);
       expect(stats.size).toBeGreaterThan(0);
     } else {
       console.log('No screenshot captured (test may have passed)');
@@ -162,19 +187,28 @@ describe('Search Audit Worker Integration Tests', () => {
   it('should calculate overall score correctly', async () => {
     // Execute all tests
     const testResults = [];
-    for (const test of SEARCH_TESTS.slice(0, 5)) { // Just first 5 for speed
+    const page = await browser.newPage();
+    const testIds = testLibrary.getTestIds().slice(0, 5); // Just first 5 for speed
+
+    for (const testId of testIds) {
       try {
-        const result = await executeTest(test.id, browser, `https://${testDomain}`);
+        const result = await testLibrary.executeTest(testId, page, testDomain);
         testResults.push(result);
       } catch (error: any) {
         testResults.push({
-          testId: test.id,
-          passed: false,
+          testId: testId,
+          testName: `Test ${testId}`,
+          status: 'failed',
           score: 0,
-          finding: error.message,
+          duration: 0,
+          screenshots: [],
+          findings: [error.message],
+          evidence: [],
         });
       }
     }
+
+    await page.close();
 
     // Calculate score
     const auditScore = await calculateAuditScore(testCompanyId, testAuditId, testResults);
@@ -195,35 +229,66 @@ describe('Search Audit Worker Integration Tests', () => {
 
   describe('Individual Test Validation', () => {
     it('test 2a: homepage navigation should work', async () => {
-      const result = await executeTest('2a', browser, `https://${testDomain}`);
+      const page = await browser.newPage();
+      const result = await testLibrary.executeTest('2a', page, testDomain);
+      await page.close();
+
       expect(result.testId).toBe('2a');
       // Homepage should load successfully for well-known sites
-      expect(result.passed).toBe(true);
+      expect(result.status).toBe('passed');
       expect(result.score).toBeGreaterThan(0);
     }, 15000);
 
     it('test 2c: simple query should work', async () => {
-      const result = await executeTest('2c', browser, `https://${testDomain}`, 'laptop');
+      const page = await browser.newPage();
+      const testContext = {
+        screenshotDir: './screenshots',
+        testQueries: { basic: 'laptop', brand: 'laptop', typo: 'laptop', synonym: 'laptop', nlp: 'laptop' }
+      };
+      const result = await testLibrary.executeTest('2c', page, testDomain, testContext);
+      await page.close();
+
       expect(result.testId).toBe('2c');
       // Should have some results
       expect(result.score).toBeGreaterThanOrEqual(0);
     }, 15000);
 
     it('test 2f: typo handling should work', async () => {
-      const result = await executeTest('2f', browser, `https://${testDomain}`, 'headlamp');
+      const page = await browser.newPage();
+      const testContext = {
+        screenshotDir: './screenshots',
+        testQueries: { basic: 'headlamp', brand: 'headlamp', typo: 'headlamp', synonym: 'headlamp', nlp: 'headlamp' }
+      };
+      const result = await testLibrary.executeTest('2f', page, testDomain, testContext);
+      await page.close();
+
       expect(result.testId).toBe('2f');
       expect(result.score).toBeGreaterThanOrEqual(0);
       expect(result.score).toBeLessThanOrEqual(10);
     }, 15000);
 
     it('test 2m: SAYT/autocomplete should work', async () => {
-      const result = await executeTest('2m', browser, `https://${testDomain}`, 'sh');
+      const page = await browser.newPage();
+      const testContext = {
+        screenshotDir: './screenshots',
+        testQueries: { basic: 'sh', brand: 'sh', typo: 'sh', synonym: 'sh', nlp: 'sh' }
+      };
+      const result = await testLibrary.executeTest('2m', page, testDomain, testContext);
+      await page.close();
+
       expect(result.testId).toBe('2m');
       expect(result.score).toBeGreaterThanOrEqual(0);
     }, 15000);
 
     it('test 2k: zero-results handling should work', async () => {
-      const result = await executeTest('2k', browser, `https://${testDomain}`, 'xyzabc123');
+      const page = await browser.newPage();
+      const testContext = {
+        screenshotDir: './screenshots',
+        testQueries: { basic: 'xyzabc123', brand: 'xyzabc123', typo: 'xyzabc123', synonym: 'xyzabc123', nlp: 'xyzabc123' }
+      };
+      const result = await testLibrary.executeTest('2k', page, testDomain, testContext);
+      await page.close();
+
       expect(result.testId).toBe('2k');
       // Should have empty state messaging
       expect(result.score).toBeGreaterThanOrEqual(0);
@@ -233,19 +298,22 @@ describe('Search Audit Worker Integration Tests', () => {
   describe('Error Handling', () => {
     it('should handle invalid domain gracefully', async () => {
       const invalidDomain = 'invalid-domain-that-does-not-exist-12345.com';
+      const page = await browser.newPage();
 
       try {
-        await executeTest('2a', browser, `https://${invalidDomain}`);
+        await testLibrary.executeTest('2a', page, invalidDomain);
       } catch (error: any) {
         expect(error).toBeDefined();
         console.log('Invalid domain handled correctly:', error.message);
+      } finally {
+        await page.close();
       }
     }, 15000);
 
     it('should handle test execution failures', async () => {
-      // Try to execute with null browser (should fail)
+      // Try to execute with null page (should fail)
       try {
-        await executeTest('2a', null as any, `https://${testDomain}`);
+        await testLibrary.executeTest('2a', null as any, testDomain);
         throw new Error('Should have thrown error');
       } catch (error: any) {
         expect(error).toBeDefined();
@@ -265,7 +333,7 @@ describe('Search Audit Worker Integration Tests', () => {
         test_phase: 'phase2',
         test_query: '',
         executed_at: new Date(),
-        passed: true,
+        test_status: 'passed',
         score: 10,
         severity: 'low',
         finding_summary: 'Test passed',
@@ -284,7 +352,7 @@ describe('Search Audit Worker Integration Tests', () => {
           test_phase: 'phase2',
           test_query: '',
           executed_at: new Date(),
-          passed: true,
+          test_status: 'passed',
           score: 10,
           severity: 'low',
           finding_summary: 'Test passed',
@@ -310,7 +378,7 @@ describe('Search Audit Worker Integration Tests', () => {
           test_phase: 'phase2',
           test_query: '',
           executed_at: new Date(),
-          passed: true,
+          test_status: 'passed',
           score: 15, // Invalid: > 10
           severity: 'low',
           finding_summary: 'Test passed',

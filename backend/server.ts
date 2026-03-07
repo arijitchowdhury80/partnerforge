@@ -120,6 +120,101 @@ app.get('/metrics', async (req: Request, res: Response) => {
   }
 });
 
+// Enrichment endpoint
+app.post('/api/enrich', async (req: Request, res: Response) => {
+  try {
+    const { domain, companyName } = req.body;
+
+    if (!domain) {
+      return res.status(400).json({ error: 'domain is required' });
+    }
+
+    logger.info(`Enrichment request for ${domain}`);
+
+    // Import EnrichmentOrchestrator dynamically to avoid circular deps
+    const { EnrichmentOrchestrator } = await import('./services/enrichment-orchestrator');
+
+    // Create or get company
+    const { data: existingCompany } = await db['client']
+      .from('companies')
+      .select()
+      .eq('domain', domain)
+      .single();
+
+    let companyId: string;
+
+    if (existingCompany) {
+      companyId = existingCompany.id;
+      logger.info(`Using existing company: ${companyId}`);
+    } else {
+      const { data: newCompany, error: insertError } = await db['client']
+        .from('companies')
+        .insert({ domain, name: companyName || domain })
+        .select()
+        .single();
+
+      if (insertError || !newCompany) {
+        throw new Error(`Failed to create company: ${insertError?.message}`);
+      }
+
+      companyId = newCompany.id;
+      logger.info(`Created new company: ${companyId}`);
+    }
+
+    // Create audit
+    const { data: audit, error: auditError } = await db['client']
+      .from('audits')
+      .insert({
+        company_id: companyId,
+        audit_type: 'enrichment',
+        status: 'in_progress'
+      })
+      .select()
+      .single();
+
+    if (auditError || !audit) {
+      throw new Error(`Failed to create audit: ${auditError?.message}`);
+    }
+
+    logger.info(`Created audit: ${audit.id}`);
+
+    // Run enrichment
+    const orchestrator = new EnrichmentOrchestrator(db['client'], wsManager);
+    const result = await orchestrator.enrichCompany(companyId, audit.id, domain);
+
+    // Update audit status
+    await db['client']
+      .from('audits')
+      .update({ status: 'completed', completed_at: new Date().toISOString() })
+      .eq('id', audit.id);
+
+    logger.info(`Enrichment complete for ${domain}`);
+
+    res.status(200).json({
+      success: true,
+      companyId,
+      auditId: audit.id,
+      domain: result.domain,
+      timestamp: result.timestamp,
+      summary: {
+        similarweb: result.data.similarweb ? 'success' : 'failed',
+        builtwith: result.data.builtwith ? 'success' : 'failed',
+        yahooFinance: result.data.yahooFinance ? 'success' : 'failed',
+        apify: result.data.apify ? 'success' : 'failed',
+        apollo: result.data.apollo ? 'success' : 'failed',
+        errors: result.errors
+      }
+    });
+
+  } catch (error: any) {
+    logger.error('Enrichment failed', error);
+    res.status(500).json({
+      error: 'Enrichment failed',
+      message: error.message
+    });
+  }
+});
+
 // Mount API routes
 app.use('/api/audits', createAuditRouter);
 app.use('/api/audits', auditStatusRouter);
