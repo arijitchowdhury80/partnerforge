@@ -4,11 +4,267 @@
  * Tests all 15 modules across 4 waves with actual database writes.
  */
 
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
 import { Queue, Worker } from 'bullmq';
 import { SupabaseClient } from '../../database/supabase';
 import { EnrichmentOrchestrator } from '../../services/enrichment-orchestrator';
 import { EnrichmentJobData } from '../../workers/enrichment-worker';
+
+// Mock all API clients to prevent real API calls
+vi.mock('../../services/similarweb', () => ({
+  SimilarWebClient: vi.fn().mockImplementation(() => ({
+    fetchAllData: vi.fn().mockResolvedValue({
+      traffic: {
+        data: {
+          visits: [
+            { date: '2025-12', visits: 45000000, unique_visitors: 30000000 }
+          ]
+        },
+        source: { provider: 'SimilarWeb', endpoint: '/traffic' }
+      },
+      engagement: {
+        data: {
+          bounce_rate: [{ date: '2025-12', bounce_rate: 0.42 }],
+          pages_per_visit: [{ date: '2025-12', pages_per_visit: 5.8 }],
+          avg_duration: [{ date: '2025-12', duration: 285 }]
+        },
+        source: { provider: 'SimilarWeb', endpoint: '/engagement' }
+      },
+      traffic_sources: {
+        data: {
+          channels: {
+            direct: 0.45,
+            search: 0.28,
+            social: 0.08,
+            referral: 0.12,
+            paid: 0.07
+          }
+        },
+        source: { provider: 'SimilarWeb', endpoint: '/traffic-sources' }
+      },
+      geography: {
+        data: {
+          countries: [
+            { country_code: 'US', country_name: 'United States', share: 0.65 },
+            { country_code: 'CA', country_name: 'Canada', share: 0.15 }
+          ]
+        },
+        source: { provider: 'SimilarWeb', endpoint: '/geography' }
+      },
+      demographics: {
+        data: {
+          age_distribution: {
+            '18-24': 0.12,
+            '25-34': 0.28,
+            '35-44': 0.24,
+            '45-54': 0.20,
+            '55-64': 0.12,
+            '65+': 0.04
+          },
+          gender_distribution: {
+            male: 0.52,
+            female: 0.48
+          }
+        },
+        source: { provider: 'SimilarWeb', endpoint: '/demographics' }
+      },
+      keywords: {
+        data: {
+          keywords: [
+            { keyword: 'test company products', visits_share: 0.08, position: 1 },
+            { keyword: 'test company deals', visits_share: 0.05, position: 2 }
+          ]
+        },
+        source: { provider: 'SimilarWeb', endpoint: '/keywords' }
+      },
+      interests: {
+        data: {
+          interests: [
+            { category: 'Technology', affinity: 1.85 },
+            { category: 'Business', affinity: 1.62 }
+          ]
+        },
+        source: { provider: 'SimilarWeb', endpoint: '/interests' }
+      },
+      competitors: {
+        data: {
+          sites: [
+            { domain: 'competitor1.com', similarity_score: 0.82 },
+            { domain: 'competitor2.com', similarity_score: 0.75 }
+          ]
+        },
+        source: { provider: 'SimilarWeb', endpoint: '/similar-sites' }
+      },
+      technologies: {
+        data: {
+          technologies: [
+            { category: 'Analytics', name: 'Google Analytics' },
+            { category: 'CMS', name: 'WordPress' }
+          ]
+        },
+        source: { provider: 'SimilarWeb', endpoint: '/technologies' }
+      },
+      keyword_competitors: {
+        data: {
+          competitors: [
+            { domain: 'competitor1.com', keyword_overlap: 0.68 }
+          ]
+        },
+        source: { provider: 'SimilarWeb', endpoint: '/keyword-competitors' }
+      },
+      rank: {
+        data: {
+          global_rank: 1250,
+          category_rank: 45,
+          category: 'E-commerce & Shopping'
+        },
+        source: { provider: 'SimilarWeb', endpoint: '/website-rank' }
+      },
+      referrals: {
+        data: {
+          referrals: [
+            { domain: 'google.com', share: 0.35 }
+          ]
+        },
+        source: { provider: 'SimilarWeb', endpoint: '/referrals' }
+      },
+      popular_pages: {
+        data: {
+          pages: [
+            { page: '/products', share: 0.28 }
+          ]
+        },
+        source: { provider: 'SimilarWeb', endpoint: '/popular-pages' }
+      },
+      leading_folders: {
+        data: {
+          folders: [
+            { folder: '/shop', share: 0.45 }
+          ]
+        },
+        source: { provider: 'SimilarWeb', endpoint: '/leading-folders' }
+      }
+    })
+  }))
+}));
+
+vi.mock('../../services/builtwith', () => ({
+  BuiltWithClient: vi.fn().mockImplementation(() => ({
+    getDomainTechnologies: vi.fn().mockResolvedValue({
+      data: {
+        technologies: [
+          {
+            Name: 'React',
+            Category: 'JavaScript Framework',
+            FirstDetected: 1609459200, // Valid Unix timestamp (Jan 1, 2021)
+            LastDetected: 1704067200   // Valid Unix timestamp (Jan 1, 2024)
+          },
+          {
+            Name: 'Cloudflare',
+            Category: 'CDN',
+            FirstDetected: 1577836800, // Valid Unix timestamp (Jan 1, 2020)
+            LastDetected: 1704067200   // Valid Unix timestamp (Jan 1, 2024)
+          }
+        ]
+      },
+      source: { provider: 'BuiltWith', endpoint: '/domain-api' }
+    }),
+    getRelationships: vi.fn().mockResolvedValue({
+      data: { relationships: [] },
+      source: { provider: 'BuiltWith', endpoint: '/relationships-api' }
+    }),
+    getFinancials: vi.fn().mockResolvedValue({
+      data: { employees: '100-250', revenue: '$10M-$50M' },
+      source: { provider: 'BuiltWith', endpoint: '/financial-api' }
+    }),
+    getSocialData: vi.fn().mockResolvedValue({
+      data: {
+        twitter: { handle: '@testcompany', followers: 25000 },
+        linkedin: { url: 'linkedin.com/company/test-company', followers: 15000 }
+      },
+      source: { provider: 'BuiltWith', endpoint: '/social-api' }
+    }),
+    getTrustSignals: vi.fn().mockResolvedValue({
+      data: { ssl: true, age_years: 8 },
+      source: { provider: 'BuiltWith', endpoint: '/trust-api' }
+    }),
+    getKeywords: vi.fn().mockResolvedValue({
+      data: { keywords: ['test', 'company', 'products'] },
+      source: { provider: 'BuiltWith', endpoint: '/keywords-api' }
+    }),
+    getRecommendations: vi.fn().mockResolvedValue({
+      data: { recommendations: [] },
+      source: { provider: 'BuiltWith', endpoint: '/recommendations-api' }
+    })
+  }))
+}));
+
+vi.mock('../../services/yahoo-finance', () => ({
+  YahooFinanceClient: vi.fn().mockImplementation(() => ({
+    getStockInfo: vi.fn().mockResolvedValue({
+      data: {
+        symbol: 'TEST',
+        market_cap: 5000000000,
+        revenue: 2500000000,
+        employees: 5000
+      },
+      source: { provider: 'Yahoo Finance', endpoint: '/stock-info' }
+    }),
+    getFinancialStatement: vi.fn().mockResolvedValue({
+      data: {
+        revenue: [
+          { fiscal_year: '2024', value: 2500000000 },
+          { fiscal_year: '2023', value: 2200000000 }
+        ]
+      },
+      source: { provider: 'Yahoo Finance', endpoint: '/financial-statement' }
+    })
+  }))
+}));
+
+vi.mock('../../services/apify', () => ({
+  ApifyClient: vi.fn().mockImplementation(() => ({
+    scrapeLinkedInCompany: vi.fn().mockResolvedValue({
+      data: {
+        name: 'Test Company Inc.',
+        employees: '1001-5000',
+        headquarters: 'San Francisco, CA'
+      },
+      source: { provider: 'Apify', actor: 'linkedin-company-scraper' }
+    }),
+    scrapeJobListings: vi.fn().mockResolvedValue({
+      data: {
+        jobs: [
+          { title: 'Senior Software Engineer', department: 'Engineering', location: 'Remote' },
+          { title: 'Product Manager', department: 'Product', location: 'San Francisco' }
+        ]
+      },
+      source: { provider: 'Apify', actor: 'job-scraper' }
+    })
+  }))
+}));
+
+vi.mock('../../services/apollo', () => ({
+  ApolloClient: vi.fn().mockImplementation(() => ({
+    searchPeople: vi.fn().mockResolvedValue({
+      data: {
+        people: [
+          { name: 'John Smith', title: 'CEO', linkedin_url: 'linkedin.com/in/johnsmith' },
+          { name: 'Jane Doe', title: 'CTO', linkedin_url: 'linkedin.com/in/janedoe' }
+        ]
+      },
+      source: { provider: 'Apollo.io', endpoint: '/people/search' }
+    }),
+    enrichPerson: vi.fn().mockResolvedValue({
+      data: {
+        name: 'John Smith',
+        title: 'CEO',
+        email: 'john@test-company.com'
+      },
+      source: { provider: 'Apollo.io', endpoint: '/people/enrich' }
+    })
+  }))
+}));
 
 describe('Enrichment Worker', () => {
   let db: SupabaseClient;
