@@ -20,7 +20,7 @@ import { Worker, Job } from 'bullmq';
 import { chromium, Browser } from 'playwright';
 import { SupabaseClient } from '../database/supabase';
 import { WebSocketManager } from '../services/websocket-manager';
-import { SEARCH_TESTS, executeTest, SearchTestResult } from '../services/search-test-library';
+import { SearchTestLibrary, SearchTestResult } from '../services/search-test-library';
 import { calculateAuditScore, storeAuditScore } from '../services/search-audit-scoring';
 import { logger } from '../utils/logger';
 import { DatabaseError } from '../utils/errors';
@@ -60,10 +60,15 @@ async function processSearchAudit(job: Job<SearchAuditJobData>): Promise<void> {
 
     logger.info('Browser launched', { auditId });
 
+    // Initialize test library
+    const testLibrary = new SearchTestLibrary();
+    const page = await browser.newPage();
+    const totalTests = 20;
+
     // Notify frontend that audit has started
     wsManager.emitAuditStarted(auditId, {
       companyDomain,
-      totalTests: SEARCH_TESTS.length,
+      totalTests,
       startedAt: new Date(),
     });
 
@@ -75,21 +80,28 @@ async function processSearchAudit(job: Job<SearchAuditJobData>): Promise<void> {
 
     // 2. Execute all 20 tests sequentially
     const testResults: SearchTestResult[] = [];
+    const testIds = testLibrary.getTestIds(); // Get all test IDs
 
-    for (let i = 0; i < SEARCH_TESTS.length; i++) {
-      const test = SEARCH_TESTS[i];
+    for (let i = 0; i < testIds.length; i++) {
+      const testId = testIds[i];
       const testNumber = i + 1;
 
-      logger.info(`Executing test ${test.id}: ${test.name}`, { auditId, progress: `${testNumber}/${SEARCH_TESTS.length}` });
+      logger.info(`Executing test ${testId}`, { auditId, progress: `${testNumber}/${totalTests}` });
 
       // Emit progress update
-      wsManager.emitProgress(auditId, testNumber, SEARCH_TESTS.length, `Running: ${test.name}`);
+      wsManager.emitProgress(auditId, testNumber, totalTests, `Running test: ${testId}`);
 
       try {
         // Execute individual test
-        const customQuery = queries[test.id];
-        const url = `https://${companyDomain}`;
-        const result = await executeTest(test.id, browser, url, customQuery);
+        const screenshotDir = path.join(process.cwd(), 'output', 'screenshots', auditId);
+        await fs.mkdir(screenshotDir, { recursive: true });
+
+        const testContext = {
+          screenshotDir,
+          testQueries: queries?.[testId] ? { basic: queries[testId] } : undefined
+        };
+
+        const result = await testLibrary.executeTest(testId, page, companyDomain, testContext);
 
         testResults.push(result);
 
@@ -97,41 +109,41 @@ async function processSearchAudit(job: Job<SearchAuditJobData>): Promise<void> {
         await db.insert('search_audit_tests', {
           company_id: companyId,
           audit_id: auditId,
-          test_name: test.id,
-          test_category: getCategoryForTest(test.id),
+          test_name: result.testId,
+          test_category: 'search',
           test_phase: 'phase2', // Browser tests are Phase 2
-          test_query: result.metadata?.query || customQuery || '',
+          test_query: queries?.[testId] || '',
           executed_at: new Date(),
-          passed: result.passed,
+          test_status: result.status,
           score: result.score,
-          severity: mapSeverity(test.severity),
-          finding_summary: result.finding || 'Test passed',
+          severity: result.status === 'failed' ? 'HIGH' : 'LOW',
+          finding_summary: result.findings[0] || 'Test completed',
           finding_details: {
             evidence: result.evidence,
-            metadata: result.metadata,
+            findings: result.findings,
           },
-          screenshot_count: result.screenshotPath ? 1 : 0,
-          duration_ms: result.metadata?.duration || 0,
+          screenshot_count: result.screenshots.length,
+          duration_ms: result.duration,
         });
 
-        // 4. Save screenshot if captured
-        if (result.screenshotPath) {
+        // 4. Save screenshots if captured
+        for (const screenshot of result.screenshots) {
           await db.insert('search_audit_screenshots', {
             company_id: companyId,
             audit_id: auditId,
-            test_name: test.id,
-            sequence_number: 1,
-            file_path: result.screenshotPath,
-            caption: result.finding || test.name,
+            test_name: result.testId,
+            sequence_number: screenshot.sequenceNumber,
+            file_path: screenshot.filePath,
+            caption: screenshot.caption,
             captured_at: new Date(),
           });
 
           // Stream screenshot to frontend
           wsManager.emitScreenshot(auditId, {
-            testId: test.id,
-            testName: test.name,
-            path: result.screenshotPath,
-            finding: result.finding,
+            testId: result.testId,
+            testName: result.testName,
+            path: screenshot.filePath,
+            finding: result.findings[0],
           });
         }
 
@@ -149,7 +161,7 @@ async function processSearchAudit(job: Job<SearchAuditJobData>): Promise<void> {
 
         logger.info(`Test ${test.id} completed`, {
           auditId,
-          passed: result.passed,
+          test_status: result.status,
           score: result.score,
         });
 
@@ -169,7 +181,7 @@ async function processSearchAudit(job: Job<SearchAuditJobData>): Promise<void> {
           test_phase: 'phase2',
           test_query: queries[test.id] || '',
           executed_at: new Date(),
-          passed: false,
+          test_status: 'failed',
           score: 0,
           severity: 'high',
           finding_summary: `Test execution failed: ${error.message}`,
@@ -181,7 +193,7 @@ async function processSearchAudit(job: Job<SearchAuditJobData>): Promise<void> {
         // Add failed result to array
         testResults.push({
           testId: test.id,
-          passed: false,
+          test_status: 'failed',
           score: 0,
           finding: `Test execution failed: ${error.message}`,
         });
@@ -230,8 +242,8 @@ async function processSearchAudit(job: Job<SearchAuditJobData>): Promise<void> {
     // 8. Notify frontend of completion
     wsManager.emitAuditCompleted(auditId, {
       overallScore: auditScore.overallScore,
-      totalTests: SEARCH_TESTS.length,
-      passedTests: SEARCH_TESTS.length - auditScore.findings.length,
+      totalTests,
+      passedTests: totalTests - auditScore.findings.length,
       failedTests: auditScore.findings.length,
       dimensionScores: auditScore.dimensionScores,
       completedAt: new Date(),

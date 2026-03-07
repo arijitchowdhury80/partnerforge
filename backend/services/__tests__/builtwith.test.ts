@@ -1,20 +1,20 @@
-import { describe, it, expect, beforeEach, jest } from '@jest/globals';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { BuiltWithClient, TechStackData } from '../builtwith';
 import { HttpClient } from '../http-client';
 
 // Mock HttpClient
-jest.mock('../http-client');
+vi.mock('../http-client');
 
 describe('BuiltWithClient', () => {
   let client: BuiltWithClient;
-  let mockHttpGet: jest.Mock;
+  let mockHttpGet: any;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     // Mock HttpClient.get method
-    mockHttpGet = jest.fn();
-    (HttpClient as jest.MockedClass<typeof HttpClient>).prototype.get = mockHttpGet;
+    mockHttpGet = vi.fn();
+    (HttpClient as any).prototype.get = mockHttpGet;
 
     // Set test API key
     process.env.BUILTWITH_API_KEY = 'test_api_key_12345';
@@ -293,7 +293,7 @@ describe('BuiltWithClient', () => {
 
   describe('missing API key', () => {
     it('should log warning when API key is not configured', () => {
-      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation();
       delete process.env.BUILTWITH_API_KEY;
 
       new BuiltWithClient();

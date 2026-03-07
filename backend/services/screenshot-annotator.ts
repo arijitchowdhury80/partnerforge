@@ -20,7 +20,7 @@
  * 6. Slow load time (loading spinner)
  */
 
-import * as sharp from 'sharp';
+import sharp from 'sharp';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 

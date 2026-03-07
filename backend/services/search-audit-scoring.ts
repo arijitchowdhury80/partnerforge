@@ -83,7 +83,7 @@ function averageScore(testResults: SearchTestResult[], testIds: string[]): numbe
  */
 function allTestsPassed(testResults: SearchTestResult[], testIds: string[]): boolean {
   const relevantTests = testResults.filter(r => testIds.includes(r.testId));
-  return relevantTests.every(r => r.passed);
+  return relevantTests.every(r => r.status === 'passed');
 }
 
 /**
@@ -330,14 +330,14 @@ export async function calculateAuditScore(
 
   // 3. Generate findings from failed tests
   const findings: Finding[] = testResults
-    .filter(r => !r.passed)
+    .filter(r => r.status !== 'passed')
     .map(r => ({
       testId: r.testId,
       testName: TEST_NAMES[r.testId] || r.testId,
-      finding: r.finding || 'Test failed',
+      finding: r.findings[0] || 'Test failed',
       severity: getSeverity(r.testId, r.score),
       evidence: r.evidence,
-      screenshotPath: r.screenshotPath,
+      screenshotPath: r.screenshots[0]?.filePath,
       businessImpact: getBusinessImpact(r.testId, r.score),
       algoliaProduct: getAlgoliaProduct(r.testId),
     }))
@@ -446,7 +446,7 @@ export function formatDimensionScores(dimensionScores: DimensionScore[]): string
   output += '|-----------|-------|--------|----------|--------|\n';
 
   for (const dim of dimensionScores) {
-    const status = dim.passed ? '✅ Pass' : '❌ Fail';
+    const status = dim.score >= 7 ? '✅ Pass' : '❌ Fail';
     output += `| ${dim.dimension} | ${dim.score.toFixed(1)}/10 | ${(dim.weight * 100).toFixed(0)}% | ${dim.weightedScore.toFixed(2)} | ${status} |\n`;
   }
 
@@ -559,11 +559,11 @@ export async function getAuditScore(
 
   // Reconstruct findings from failed tests
   const findings = testResults
-    .filter(r => !r.passed)
+    .filter(r => r.status !== 'passed')
     .map(r => ({
       testId: r.test_id,
       testName: r.test_name,
-      finding: r.finding,
+      finding: r.findings[0] || 'Test issue',
       severity: r.severity,
       evidence: r.evidence,
       screenshotPath: r.screenshot_path,

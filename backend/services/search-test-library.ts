@@ -59,6 +59,9 @@ export interface TestResult {
   evidence: Evidence[];
 }
 
+// Type alias for compatibility
+export type SearchTestResult = TestResult;
+
 export interface Screenshot {
   sequenceNumber: number;
   caption: string;
@@ -128,6 +131,13 @@ export class SearchTestLibrary {
 
   private registerTest(test: SearchTest) {
     this.tests.set(test.id, test);
+  }
+
+  /**
+   * Get all test IDs
+   */
+  getTestIds(): string[] {
+    return Array.from(this.tests.keys());
   }
 
   /**

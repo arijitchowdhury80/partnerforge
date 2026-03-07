@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeAll } from 'vitest';
 import { YahooFinanceClient } from './yahoo-finance';
 
 /**
@@ -165,7 +166,7 @@ describe('YahooFinanceClient', () => {
       // For now, just verify error is thrown and logged
       try {
         await client.getStockInfo('');
-        fail('Should have thrown error');
+        throw new Error('Should have thrown error');
       } catch (error) {
         expect(error).toBeDefined();
       }

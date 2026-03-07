@@ -9,7 +9,6 @@ import { config } from './config';
 import { logger } from './utils/logger';
 import { RedisClient } from './cache/redis-client';
 import { SupabaseClient } from './database/supabase';
-import { MigrationRunner } from './database/migrate';
 import { metricsCollector } from './services/metrics';
 import { WebSocketManager } from './services/websocket-manager';
 import { HealthStatus } from './types';
@@ -147,10 +146,9 @@ async function start() {
   try {
     logger.info('Starting Algolia-Arian backend...');
 
-    // Run database migrations
-    logger.info('Running database migrations...');
-    const migrationRunner = new MigrationRunner();
-    await migrationRunner.run();
+    // Migrations: Run manually via Supabase CLI:
+    // cd /path/to/project && supabase db reset --linked
+    logger.info('Skipping automatic migrations (use Supabase CLI)');
 
     // Wait for Redis connection
     await new Promise(resolve => setTimeout(resolve, 1000));

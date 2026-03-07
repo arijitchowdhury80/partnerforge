@@ -53,7 +53,7 @@ function loadConfig(): Config {
   const required = [
     'PORT',
     'SUPABASE_URL',
-    'SUPABASE_SERVICE_ROLE_KEY',
+    'SUPABASE_KEY',
     'REDIS_URL'
   ];
 
@@ -70,7 +70,7 @@ function loadConfig(): Config {
     },
     database: {
       supabaseUrl: process.env.SUPABASE_URL!,
-      supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      supabaseKey: process.env.SUPABASE_KEY!,
       databaseUrl: process.env.DATABASE_URL || ''
     },
     redis: {
