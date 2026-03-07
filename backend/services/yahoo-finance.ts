@@ -147,7 +147,7 @@ export class YahooFinanceClient {
       }
 
       const statements: FinancialStatements = {
-        incomeStatement: (result.incomeStatementHistory?.incomeStatementHistory || []).map(stmt => ({
+        incomeStatement: (result.incomeStatementHistory?.incomeStatementHistory || []).map((stmt: any) => ({
           endDate: new Date(stmt.endDate?.raw * 1000).toISOString().split('T')[0],
           totalRevenue: stmt.totalRevenue?.raw || 0,
           costOfRevenue: stmt.costOfRevenue?.raw || null,
@@ -157,7 +157,7 @@ export class YahooFinanceClient {
           netIncome: stmt.netIncome?.raw || 0,
           netIncomeApplicableToCommonShares: stmt.netIncomeApplicableToCommonShares?.raw || null
         })),
-        balanceSheet: (result.balanceSheetHistory?.balanceSheetStatements || []).map(stmt => ({
+        balanceSheet: (result.balanceSheetHistory?.balanceSheetStatements || []).map((stmt: any) => ({
           endDate: new Date(stmt.endDate?.raw * 1000).toISOString().split('T')[0],
           totalAssets: stmt.totalAssets?.raw || 0,
           totalLiabilities: stmt.totalLiab?.raw || 0,
@@ -166,7 +166,7 @@ export class YahooFinanceClient {
           totalCurrentAssets: stmt.totalCurrentAssets?.raw || null,
           totalCurrentLiabilities: stmt.totalCurrentLiabilities?.raw || null
         })),
-        cashFlow: (result.cashflowStatementHistory?.cashflowStatements || []).map(stmt => ({
+        cashFlow: (result.cashflowStatementHistory?.cashflowStatements || []).map((stmt: any) => ({
           endDate: new Date(stmt.endDate?.raw * 1000).toISOString().split('T')[0],
           totalCashFromOperatingActivities: stmt.totalCashFromOperatingActivities?.raw || 0,
           totalCashFromInvestingActivities: stmt.totalCashflowsFromInvestingActivities?.raw || null,
@@ -290,7 +290,7 @@ export class YahooFinanceClient {
       const holderInfo: HolderInfo = {
         topInstitutions: (result.institutionOwnership?.ownershipList || [])
           .slice(0, 10)
-          .map(holder => ({
+          .map((holder: any) => ({
             name: holder.organization || 'Unknown',
             position: holder.position?.raw || 0,
             value: holder.value?.raw || 0,

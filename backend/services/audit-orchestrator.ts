@@ -153,19 +153,49 @@ export class AuditOrchestrator {
 
   /**
    * Run enrichment phase
-   * Calls enrichment-orchestrator.ts (will be built by another agent)
+   * Calls enrichment-orchestrator.ts to collect company data
    */
   async runEnrichment(auditId: string): Promise<void> {
     logger.info('Running enrichment phase', { audit_id: auditId });
 
-    // Emit progress updates
-    await this.updateProgress(auditId, 'enrichment', 10, 'Fetching traffic data (SimilarWeb)');
-    await this.updateProgress(auditId, 'enrichment', 15, 'Fetching technology stack (BuiltWith)');
-    await this.updateProgress(auditId, 'enrichment', 20, 'Fetching financials (Yahoo Finance)');
+    try {
+      // Get company domain from audit
+      const audits = await this.db.query<Audit>('audits', { id: auditId });
+      if (!audits || audits.length === 0) {
+        throw new Error(`Audit not found: ${auditId}`);
+      }
 
-    // TODO: Call enrichment-orchestrator.ts when available
-    // For now, this is a stub that will be implemented by another agent
-    logger.info('Enrichment phase completed (stub)', { audit_id: auditId });
+      const audit = audits[0];
+      const companies = await this.db.query<Company>('companies', { id: audit.company_id });
+      if (!companies || companies.length === 0) {
+        throw new Error(`Company not found: ${audit.company_id}`);
+      }
+
+      const company = companies[0];
+      const domain = company.domain;
+
+      logger.info('Starting enrichment for company', { domain, audit_id: auditId });
+
+      // Import and instantiate enrichment orchestrator
+      const { EnrichmentOrchestrator } = await import('./enrichment-orchestrator');
+      const enrichmentOrchestrator = new EnrichmentOrchestrator(this.db, this.wsManager);
+
+      // Run enrichment with progress updates
+      await this.updateProgress(auditId, 'enrichment', 5, 'Initializing data collection');
+
+      const enrichmentData = await enrichmentOrchestrator.enrichCompany(domain, auditId);
+
+      await this.updateProgress(auditId, 'enrichment', 25, 'Enrichment data collected successfully');
+
+      logger.info('Enrichment phase completed', {
+        audit_id: auditId,
+        domain,
+        data_sources: Object.keys(enrichmentData).length
+      });
+    } catch (error: any) {
+      logger.error('Enrichment phase failed', { audit_id: auditId, error: error.message });
+      throw error;
+    }
   }
 
   /**

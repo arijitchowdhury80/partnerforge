@@ -2,7 +2,7 @@
  * Audit Orchestrator Worker
  *
  * BullMQ worker that processes audit execution jobs.
- * Listens to the 'audits' queue and executes audits via AuditOrchestrator.
+ * Listens to the 'audit' queue and executes audits via AuditOrchestrator.
  */
 
 import { Worker, Job } from 'bullmq';
@@ -30,7 +30,7 @@ interface AuditJobData {
  */
 export function createAuditWorker(wsManager?: WebSocketManager): Worker {
   const worker = new Worker<AuditJobData>(
-    'audits',
+    'audit',
     async (job: Job<AuditJobData>) => {
       const { auditId } = job.data;
 
@@ -130,7 +130,7 @@ export function createAuditWorker(wsManager?: WebSocketManager): Worker {
   });
 
   logger.info('Audit worker started', {
-    queue: 'audits',
+    queue: 'audit',
     concurrency: 3,
     redis_host: redisConfig.host,
     redis_port: redisConfig.port,

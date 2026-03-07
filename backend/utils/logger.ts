@@ -42,7 +42,7 @@ export const logger = winston.createLogger({
 });
 
 // Create logs directory if it doesn't exist
-import fs from 'fs';
+import * as fs from 'fs';
 if (!fs.existsSync('logs')) {
   fs.mkdirSync('logs');
 }
