@@ -1,9 +1,11 @@
 # Algolia-Arian Backend
 
-**Status**: 🏗️ Phase 4 IN PROGRESS (March 8, 2026, 6:30 AM)
+**Status**: 🏗️ Phase 4 IN PROGRESS (March 8, 2026, 12:00 PM)
 **Purpose**: All server-side code for Algolia-Arian application
 **Language**: TypeScript + Node.js
-**Progress**: 90% Complete (~75 files, 27,000+ lines)
+**Progress**: 90% Complete (~80 files, 29,000+ lines)
+
+**Latest Update**: EDGAR client integrated into Module M08 (Investor Intelligence) ✅
 
 ---
 
@@ -33,6 +35,8 @@ backend/
 │   ├── yahoo-finance.ts                  # Yahoo Finance client (5 endpoints)
 │   ├── apify.ts                          # Apify client (3 actors)
 │   ├── apollo.ts                         # Apollo.io client (2 endpoints)
+│   ├── edgar.ts                          # SEC EDGAR client (3 endpoints) - FREE
+│   ├── enrichment-orchestrator.ts        # Multi-source enrichment pipeline (6 API clients)
 │   ├── enrichment-persistence.ts         # Database persistence (11 enrichment tables)
 │   ├── scoring.ts                        # Composite scoring logic (Fit/Intent/Value/Displacement)
 │   ├── strategic-analysis-engine.ts      # Strategic insights synthesis (Migration 008)
@@ -196,19 +200,26 @@ CACHE_TTL_DEFAULT=604800        # 7 days
 # API Keys (Phase 2)
 SIMILARWEB_API_KEY=...
 BUILTWITH_API_KEY=...
-YAHOO_FINANCE_API_KEY=...
+YAHOO_FINANCE_API_KEY=...          # Not required (free tier)
 APIFY_API_KEY=...
 APOLLO_API_KEY=...
+# SEC EDGAR - No key required (public API)
 
 # Rate Limits (requests per second)
 RATE_LIMIT_SIMILARWEB=2
 RATE_LIMIT_BUILTWITH=5
 RATE_LIMIT_YAHOO=10
+RATE_LIMIT_APIFY=3
+RATE_LIMIT_APOLLO=5
+RATE_LIMIT_EDGAR=10                 # SEC enforced limit
 
 # Cost Tracking
 COST_SIMILARWEB_PER_CALL=0.03
 COST_BUILTWITH_PER_CALL=0.02
 COST_YAHOO_PER_CALL=0.01
+COST_APIFY_PER_CALL=0.05
+COST_APOLLO_PER_CALL=0.02
+COST_EDGAR_PER_CALL=0               # FREE
 ```
 
 ---
@@ -320,18 +331,21 @@ COPILOT_CACHE_TTL=3600          # 1 hour cache for common queries
 
 ## 📊 Phase 2: API Clients (Week 2)
 
+**Status**: ✅ **COMPLETE** (March 8, 2026, 12:00 PM)
+
 **After Phase 1 completion**, build API client implementations.
 
-See [API_CLIENT_SPECIFICATIONS.md](../docs/features/search-audit/API_CLIENT_SPECIFICATIONS.md) for complete specs.
+See [API_CLIENT_SPECIFICATIONS.md](../docs/features/search-audit/API_CLIENT_SPECIFICATIONS.md) for complete specs and [PHASE2_COMPLETE.md](../PHASE2_COMPLETE.md) for implementation summary.
 
-**Clients to Build** (31 endpoints total):
+**Clients Built** (34 endpoints total):
 1. **SimilarWeb** (14 endpoints) - Traffic, engagement, keywords
 2. **BuiltWith** (7 endpoints) - Tech stack, relationships
 3. **Yahoo Finance** (5 endpoints) - Financials, stock data
 4. **Apify** (3 actors) - LinkedIn scraping
 5. **Apollo.io** (2 endpoints) - Buying committee
+6. **SEC EDGAR** (3 endpoints) - 10-K/10-Q filings, risk factors - **FREE** ✅
 
-**Parallel Strategy**: Build all 5 clients in parallel (1-2 hours each)
+**Parallel Strategy**: Built all 6 clients in parallel (1-2 hours each)
 
 ---
 
@@ -395,39 +409,49 @@ npm test
 
 ---
 
-## 📊 API Clients to Implement
+## 📊 API Clients (6 Clients, 34 Endpoints)
 
-See [`docs/features/search-audit/API_CLIENT_SPECIFICATIONS.md`](../docs/features/search-audit/API_CLIENT_SPECIFICATIONS.md) for complete specifications.
+**Status**: ✅ **ALL COMPLETE** (March 8, 2026)
 
-### 1. SimilarWeb Client (14 endpoints)
+See [`docs/features/search-audit/API_CLIENT_SPECIFICATIONS.md`](../docs/features/search-audit/API_CLIENT_SPECIFICATIONS.md) for complete specifications and [PHASE2_COMPLETE.md](../PHASE2_COMPLETE.md) for implementation summary.
+
+### 1. SimilarWeb Client (14 endpoints) ✅
 - Traffic & engagement metrics
 - Traffic sources breakdown
 - Keywords & search terms
 - Competitors analysis
 - Audience demographics & interests
 
-### 2. BuiltWith Client (7 endpoints)
+### 2. BuiltWith Client (7 endpoints) ✅
 - Technology detection
 - Partner relationships
 - Company financials
 - Social media presence
 - Trust indicators
 
-### 3. Yahoo Finance Client (5 endpoints)
+### 3. Yahoo Finance Client (5 endpoints) ✅
 - Stock information
 - Financial statements
 - Analyst recommendations
 - Company holders
 - Historical prices
 
-### 4. Apify Client (3 actors)
+### 4. Apify Client (3 actors) ✅
 - LinkedIn company scraper
 - LinkedIn jobs scraper
 - LinkedIn profile scraper
 
-### 5. Apollo.io Client (2 endpoints)
+### 5. Apollo.io Client (2 endpoints) ✅
 - People search (buying committee)
 - Intent signals
+
+### 6. SEC EDGAR Client (3 endpoints) ✅ **FREE**
+- Search filings (10-K, 10-Q, 8-K)
+- Get filing content (full document)
+- Parse risk factors (Item 1A with Algolia relevance scoring)
+- **Cost**: $0 (public API)
+- **Cache TTL**: 30 days (filings never change)
+- **Use Case**: Investor intelligence, executive quotes, risk factors for strategic insights
 
 ---
 
