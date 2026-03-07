@@ -3,12 +3,15 @@ import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 import dotenv from 'dotenv';
+import path from 'path';
+import { createServer } from 'http';
 import { config } from './config';
 import { logger } from './utils/logger';
 import { RedisClient } from './cache/redis-client';
 import { SupabaseClient } from './database/supabase';
 import { MigrationRunner } from './database/migrate';
 import { metricsCollector } from './services/metrics';
+import { WebSocketManager } from './services/websocket-manager';
 import { HealthStatus } from './types';
 
 // Import API routers
@@ -25,12 +28,26 @@ const db = new SupabaseClient();
 // Create Express app
 const app: Express = express();
 
+// Create HTTP server (needed for WebSocket)
+const httpServer = createServer(app);
+
+// Initialize WebSocket manager
+const wsManager = new WebSocketManager(httpServer);
+
+// Export WebSocket manager for use in workers
+export { wsManager };
+
 // Middleware
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false, // Allow inline scripts for Socket.IO
+}));
 app.use(cors());
 app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Request logging
 app.use((req, res, next) => {
@@ -138,12 +155,14 @@ async function start() {
 
     // Start server
     const port = config.server.port;
-    app.listen(port, () => {
+    httpServer.listen(port, () => {
       logger.info(`Server running on port ${port}`);
       logger.info(`Environment: ${config.server.nodeEnv}`);
       logger.info(`Health check: http://localhost:${port}/health`);
       logger.info(`Readiness check: http://localhost:${port}/ready`);
       logger.info(`Metrics: http://localhost:${port}/metrics`);
+      logger.info(`WebSocket: ws://localhost:${port}/ws`);
+      logger.info(`Frontend: http://localhost:${port}`);
     });
   } catch (error) {
     logger.error('Failed to start server', error);

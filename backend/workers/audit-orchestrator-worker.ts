@@ -121,7 +121,7 @@ export function createAuditWorker(wsManager?: WebSocketManager): Worker {
     logger.warn('Worker detected stalled job', { job_id: jobId });
   });
 
-  worker.on('progress', (job: Job, progress: number | object) => {
+  worker.on('progress', (job, progress) => {
     logger.info('Worker job progress', {
       job_id: job.id,
       audit_id: job.data.auditId,

@@ -158,8 +158,7 @@ export class SupabaseClient {
     return this.insert<Audit>('audits', {
       company_id: companyId,
       audit_type: type,
-      status: 'pending',
-      data: {}
+      status: 'pending'
     });
   }
 

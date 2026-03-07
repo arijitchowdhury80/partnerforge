@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algolia Arian - Search Audit Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --nebula-blue: #003DFF;
+            --space-gray: #21243D;
+            --algolia-purple: #5468FF;
+            --cloud-white: #FFFFFF;
+            --mist-gray: #F5F7FA;
+            --steel-gray: #6B7280;
+            --success-green: #10B981;
+            --warning-yellow: #F59E0B;
+            --error-red: #EF4444;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 50%, #F5F3FF 100%);
+            background-attachment: fixed;
+            color: var(--space-gray);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 61, 255, 0.1);
+            padding: 0 32px;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 24px rgba(0, 61, 255, 0.08);
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--nebula-blue) 0%, var(--algolia-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 48px 32px;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #003DFF 0%, #5468FF 50%, #7B68EE 100%);
+            color: white;
+            padding: 56px;
+            border-radius: 24px;
+            margin-bottom: 48px;
+            box-shadow: 0 20px 60px rgba(0, 61, 255, 0.25);
+        }
+
+        .hero h1 {
+            font-size: 36px;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 32px;
+        }
+
+        .form-group {
+            display: flex;
+            gap: 12px;
+            max-width: 700px;
+        }
+
+        .input {
+            flex: 1;
+            padding: 16px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            font-size: 16px;
+            outline: none;
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .input:focus {
+            border-color: white;
+            box-shadow: 0 0 0 4px rgba(255,255,255,0.2);
+        }
+
+        .btn {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--nebula-blue);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 255, 255, 0.3);
+            background: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 20px rgba(0, 61, 255, 0.08);
+            border: 1px solid rgba(0, 61, 255, 0.1);
+            margin-bottom: 24px;
+        }
+
+        .card h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--space-gray) 0%, var(--nebula-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .audit-item {
+            padding: 20px;
+            border: 1px solid rgba(0, 61, 255, 0.1);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            transition: all 0.3s;
+        }
+
+        .audit-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 61, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .audit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .audit-domain {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--space-gray);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .status-running {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+
+        .status-completed {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .status-failed {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .audit-meta {
+            font-size: 14px;
+            color: var(--steel-gray);
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--mist-gray);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--nebula-blue), var(--algolia-purple));
+            transition: width 0.3s ease;
+            border-radius: 8px;
+        }
+
+        .progress-text {
+            font-size: 13px;
+            color: var(--steel-gray);
+            margin-top: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px;
+            color: var(--steel-gray);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .alert {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .alert-success {
+            background: #D1FAE5;
+            color: #065F46;
+            border: 1px solid #6EE7B7;
+        }
+
+        .alert-error {
+            background: #FEE2E2;
+            color: #991B1B;
+            border: 1px solid #FCA5A5;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .connection-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success-green);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .status-dot.disconnected {
+            background: var(--error-red);
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">⚡ Algolia Arian</div>
+        <div style="font-size: 14px; color: var(--steel-gray);">Search Audit Platform</div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Hero Section with Audit Form -->
+        <div class="hero">
+            <h1>🔍 Search Audit Platform</h1>
+            <p>Analyze search experiences and get actionable insights powered by AI</p>
+
+            <div id="alert-container"></div>
+
+            <form id="audit-form" class="form-group">
+                <input
+                    type="text"
+                    id="domain-input"
+                    class="input"
+                    placeholder="Enter domain (e.g., costco.com)"
+                    required
+                    pattern="^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]?\.[a-zA-Z]{2,}$"
+                />
+                <button type="submit" class="btn" id="submit-btn">
+                    <span id="btn-text">Start Audit</span>
+                    <span id="btn-loading" class="loading hidden"></span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Active Audits -->
+        <div class="card">
+            <h2>📊 Recent Audits</h2>
+            <div id="audits-list">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <p>No audits yet. Start your first audit above!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Connection Status -->
+    <div class="connection-status">
+        <span class="status-dot" id="ws-status-dot"></span>
+        <span id="ws-status-text">Connected</span>
+    </div>
+
+    <!-- Socket.IO Client -->
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+
+    <script>
+        // Configuration
+        const API_BASE = window.location.origin;
+        const WS_URL = window.location.origin;
+
+        // State
+        let socket = null;
+        let audits = new Map();
+
+        // DOM Elements
+        const auditForm = document.getElementById('audit-form');
+        const domainInput = document.getElementById('domain-input');
+        const submitBtn = document.getElementById('submit-btn');
+        const btnText = document.getElementById('btn-text');
+        const btnLoading = document.getElementById('btn-loading');
+        const auditsList = document.getElementById('audits-list');
+        const alertContainer = document.getElementById('alert-container');
+        const wsStatusDot = document.getElementById('ws-status-dot');
+        const wsStatusText = document.getElementById('ws-status-text');
+
+        // Initialize WebSocket
+        function initWebSocket() {
+            socket = io(WS_URL);
+
+            socket.on('connect', () => {
+                console.log('✅ WebSocket connected');
+                wsStatusDot.classList.remove('disconnected');
+                wsStatusText.textContent = 'Connected';
+            });
+
+            socket.on('disconnect', () => {
+                console.log('❌ WebSocket disconnected');
+                wsStatusDot.classList.add('disconnected');
+                wsStatusText.textContent = 'Disconnected';
+            });
+
+            socket.on('audit:event', (data) => {
+                console.log('📨 Audit event:', data);
+                handleAuditEvent(data);
+            });
+
+            socket.on('error', (error) => {
+                console.error('WebSocket error:', error);
+                showAlert('WebSocket connection error', 'error');
+            });
+        }
+
+        // Handle audit events from WebSocket
+        function handleAuditEvent(event) {
+            const auditId = event.auditId;
+
+            if (!audits.has(auditId)) return;
+
+            const audit = audits.get(auditId);
+
+            switch (event.type) {
+                case 'audit:started':
+                    audit.status = 'running';
+                    audit.progress = 0;
+                    audit.message = 'Audit started...';
+                    break;
+
+                case 'audit:progress':
+                    audit.progress = event.data.progress || 0;
+                    audit.message = event.data.message || 'Processing...';
+                    break;
+
+                case 'audit:completed':
+                    audit.status = 'completed';
+                    audit.progress = 100;
+                    audit.message = 'Audit completed!';
+                    audit.completedAt = new Date().toISOString();
+                    showAlert(`✅ Audit completed for ${audit.domain}`, 'success');
+                    break;
+
+                case 'audit:error':
+                    audit.status = 'failed';
+                    audit.message = event.data.message || 'Audit failed';
+                    showAlert(`❌ Audit failed for ${audit.domain}`, 'error');
+                    break;
+            }
+
+            audits.set(auditId, audit);
+            renderAudits();
+        }
+
+        // Create new audit
+        async function createAudit(domain) {
+            try {
+                const response = await fetch(`${API_BASE}/api/audits`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        company_domain: domain,
+                        audit_type: 'search-audit'
+                    })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'Failed to create audit');
+                }
+
+                const data = await response.json();
+                console.log('✅ Audit created:', data);
+
+                // Add to local state
+                audits.set(data.audit_id, {
+                    id: data.audit_id,
+                    companyId: data.company_id,
+                    domain: data.company_domain,
+                    status: data.status,
+                    createdAt: data.created_at,
+                    progress: 0,
+                    message: 'Initializing...'
+                });
+
+                renderAudits();
+                showAlert(`✅ Audit started for ${domain}`, 'success');
+
+                // Subscribe to audit updates via WebSocket
+                if (socket && socket.connected) {
+                    socket.emit('subscribe', data.audit_id);
+                }
+
+                // Start polling for status updates
+                pollAuditStatus(data.audit_id);
+
+                return data;
+            } catch (error) {
+                console.error('Failed to create audit:', error);
+                showAlert(`❌ ${error.message}`, 'error');
+                throw error;
+            }
+        }
+
+        // Poll audit status
+        async function pollAuditStatus(auditId) {
+            const maxAttempts = 60; // 5 minutes
+            let attempts = 0;
+
+            const poll = async () => {
+                if (attempts >= maxAttempts) {
+                    console.log('⏱️ Polling timeout for audit:', auditId);
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`${API_BASE}/api/audits/${auditId}/status`);
+
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch audit status');
+                    }
+
+                    const data = await response.json();
+
+                    // Update local state
+                    if (audits.has(auditId)) {
+                        const audit = audits.get(auditId);
+                        audit.status = data.status;
+                        audits.set(auditId, audit);
+                        renderAudits();
+                    }
+
+                    // Continue polling if still running
+                    if (data.status === 'pending' || data.status === 'running') {
+                        attempts++;
+                        setTimeout(poll, 5000); // Poll every 5 seconds
+                    }
+                } catch (error) {
+                    console.error('Failed to poll audit status:', error);
+                    attempts++;
+                    setTimeout(poll, 5000);
+                }
+            };
+
+            poll();
+        }
+
+        // Render audits list
+        function renderAudits() {
+            if (audits.size === 0) {
+                auditsList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <p>No audits yet. Start your first audit above!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const auditsArray = Array.from(audits.values()).sort((a, b) =>
+                new Date(b.createdAt) - new Date(a.createdAt)
+            );
+
+            auditsList.innerHTML = auditsArray.map(audit => `
+                <div class="audit-item">
+                    <div class="audit-header">
+                        <div class="audit-domain">${audit.domain}</div>
+                        <span class="status-badge status-${audit.status}">
+                            ${getStatusEmoji(audit.status)} ${audit.status}
+                        </span>
+                    </div>
+                    <div class="audit-meta">
+                        Audit ID: ${audit.id.slice(0, 8)}... • Created: ${formatTime(audit.createdAt)}
+                    </div>
+                    ${audit.status === 'running' ? `
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${audit.progress}%"></div>
+                        </div>
+                        <div class="progress-text">${audit.message}</div>
+                    ` : ''}
+                    ${audit.completedAt ? `
+                        <div class="audit-meta" style="color: var(--success-green);">
+                            ✅ Completed: ${formatTime(audit.completedAt)}
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        // Show alert
+        function showAlert(message, type = 'success') {
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+            const icon = type === 'success' ? '✅' : '❌';
+
+            const alert = document.createElement('div');
+            alert.className = `alert ${alertClass}`;
+            alert.innerHTML = `${icon} ${message}`;
+
+            alertContainer.innerHTML = '';
+            alertContainer.appendChild(alert);
+
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        // Utility functions
+        function getStatusEmoji(status) {
+            const emojis = {
+                pending: '⏳',
+                running: '🔄',
+                completed: '✅',
+                failed: '❌'
+            };
+            return emojis[status] || '❓';
+        }
+
+        function formatTime(isoString) {
+            const date = new Date(isoString);
+            const now = new Date();
+            const diff = now - date;
+
+            if (diff < 60000) return 'just now';
+            if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+            if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+
+            return date.toLocaleDateString();
+        }
+
+        // Form submission
+        auditForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const domain = domainInput.value.trim();
+            if (!domain) return;
+
+            // Disable form
+            submitBtn.disabled = true;
+            btnText.classList.add('hidden');
+            btnLoading.classList.remove('hidden');
+
+            try {
+                await createAudit(domain);
+                domainInput.value = '';
+            } catch (error) {
+                console.error('Error creating audit:', error);
+            } finally {
+                // Re-enable form
+                submitBtn.disabled = false;
+                btnText.classList.remove('hidden');
+                btnLoading.classList.add('hidden');
+            }
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Algolia Arian initialized');
+            console.log('API Base:', API_BASE);
+            console.log('WebSocket URL:', WS_URL);
+
+            initWebSocket();
+            renderAudits();
+        });
+    </script>
+</body>
+</html>

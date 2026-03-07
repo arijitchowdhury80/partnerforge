@@ -170,8 +170,8 @@ export function startEnrichmentWorker(websocketManager?: WebSocketManager): Work
 
     // Emit completion event via WebSocket
     if (websocketManager) {
-      websocketManager.emit(`audit:${result.auditId}`, {
-        type: 'enrichment:completed',
+      websocketManager.emitAuditEvent(result.auditId, {
+        type: 'audit:completed',
         data: result,
         timestamp: new Date(),
       });
@@ -190,11 +190,7 @@ export function startEnrichmentWorker(websocketManager?: WebSocketManager): Work
 
     // Emit failure event via WebSocket
     if (job && websocketManager) {
-      websocketManager.emit(`audit:${job.data.auditId}`, {
-        type: 'enrichment:failed',
-        data: { error: String(error) },
-        timestamp: new Date(),
-      });
+      websocketManager.emitAuditError(job.data.auditId, error);
     }
   });
 

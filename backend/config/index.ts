@@ -18,6 +18,13 @@ interface Config {
     password?: string;
     cacheTTL: number;
   };
+  apiKeys: {
+    similarweb?: string;
+    builtwith?: string;
+    apollo?: string;
+    apify?: string;
+    rapidapi?: string;
+  };
   rateLimit: {
     similarweb: number;
     builtwith: number;
@@ -35,6 +42,10 @@ interface Config {
   bullmq: {
     enrichmentConcurrency: number;
     auditConcurrency: number;
+  };
+  browser: {
+    headless: boolean;
+    timeout: number;
   };
 }
 
@@ -67,6 +78,13 @@ function loadConfig(): Config {
       password: process.env.REDIS_PASSWORD,
       cacheTTL: parseInt(process.env.CACHE_TTL_DEFAULT || '604800', 10)
     },
+    apiKeys: {
+      similarweb: process.env.SIMILARWEB_API_KEY,
+      builtwith: process.env.BUILTWITH_API_KEY,
+      apollo: process.env.APOLLO_API_KEY,
+      apify: process.env.APIFY_API_KEY,
+      rapidapi: process.env.RAPIDAPI_KEY
+    },
     rateLimit: {
       similarweb: parseInt(process.env.RATE_LIMIT_SIMILARWEB || '2', 10),
       builtwith: parseInt(process.env.RATE_LIMIT_BUILTWITH || '5', 10),
@@ -84,6 +102,10 @@ function loadConfig(): Config {
     bullmq: {
       enrichmentConcurrency: parseInt(process.env.BULLMQ_CONCURRENCY_ENRICHMENT || '5', 10),
       auditConcurrency: parseInt(process.env.BULLMQ_CONCURRENCY_AUDIT || '3', 10)
+    },
+    browser: {
+      headless: process.env.BROWSER_HEADLESS !== 'false',
+      timeout: parseInt(process.env.BROWSER_TIMEOUT || '30000', 10)
     }
   };
 }

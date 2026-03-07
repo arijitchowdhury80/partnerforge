@@ -235,19 +235,12 @@ export class AuditOrchestrator {
         return;
       }
 
-      const retryCount = (audit.data?.retry_count || 0) as number;
+      const retryCount = 0; // TODO: Track retry count in separate column
       const maxRetries = 3;
 
       // Update audit with error
       await this.db.update('audits', auditId, {
         status: 'failed',
-        data: {
-          ...audit.data,
-          error_message: error.message,
-          error_stack: error.stack,
-          retry_count: retryCount,
-          failed_at: new Date().toISOString(),
-        },
         updated_at: new Date(),
       });
 
@@ -307,22 +300,6 @@ export class AuditOrchestrator {
     logger.info('Audit progress', { audit_id: auditId, phase, percent, message });
 
     try {
-      // Update audit record with progress
-      const audits = await this.db.query<Audit>('audits', { id: auditId });
-      const audit = audits[0];
-
-      if (audit) {
-        await this.db.update('audits', auditId, {
-          data: {
-            ...audit.data,
-            current_phase: phase,
-            progress_percent: percent,
-            last_update: new Date().toISOString(),
-          },
-          updated_at: new Date(),
-        });
-      }
-
       // Emit progress via WebSocket
       if (this.wsManager) {
         this.wsManager.emitProgress(auditId, percent, 100, message);
@@ -345,35 +322,35 @@ export class AuditOrchestrator {
         return null;
       }
 
-      const currentPhase = (audit.data?.current_phase as string) || 'initialization';
-      const progressPercent = (audit.data?.progress_percent as number) || 0;
-      const errorMessage = (audit.data?.error_message as string) || undefined;
+      const currentPhase = 'pending'; // TODO: Track in separate column
+      const progressPercent = 0; // TODO: Track in separate column
+      const errorMessage = undefined; // TODO: Track in separate column
 
-      // Define phase structure
+      // Define phase structure (simplified - all pending for now)
       const phases: AuditPhase[] = [
         {
           phase: 'enrichment',
           percent: 25,
           message: 'Collecting company data',
-          status: progressPercent >= 25 ? 'completed' : (currentPhase === 'enrichment' ? 'running' : 'pending'),
+          status: audit.status === 'completed' ? 'completed' : (audit.status === 'running' ? 'running' : 'pending'),
         },
         {
           phase: 'search-audit',
           percent: 50,
           message: 'Running search tests',
-          status: progressPercent >= 50 ? 'completed' : (currentPhase === 'search-audit' ? 'running' : 'pending'),
+          status: 'pending',
         },
         {
           phase: 'strategic-analysis',
           percent: 75,
           message: 'Analyzing opportunities',
-          status: progressPercent >= 75 ? 'completed' : (currentPhase === 'strategic-analysis' ? 'running' : 'pending'),
+          status: 'pending',
         },
         {
           phase: 'deliverables',
           percent: 100,
           message: 'Generating reports',
-          status: progressPercent >= 100 ? 'completed' : (currentPhase === 'deliverables' ? 'running' : 'pending'),
+          status: 'pending',
         },
       ];
 

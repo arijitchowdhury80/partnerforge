@@ -84,12 +84,12 @@ router.post('/', async (req: Request, res: Response) => {
       company_domain,
       status: audit.status,
       websocket_url: websocketUrl,
-      created_at: audit.created_at.toISOString(),
+      created_at: typeof audit.created_at === 'string' ? audit.created_at : audit.created_at.toISOString(),
     };
 
     res.status(201).json(response);
   } catch (error: any) {
-    logger.error('Failed to create audit', { error });
+    logger.error('Failed to create audit', { error, stack: error.stack });
 
     // Handle specific errors
     if (error.message && error.message.includes('Invalid domain')) {

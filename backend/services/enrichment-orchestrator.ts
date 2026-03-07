@@ -744,8 +744,8 @@ export class EnrichmentOrchestrator {
       error,
     };
 
-    this.ws.emit(`audit:${auditId}`, {
-      type: 'enrichment:progress',
+    this.ws.emitAuditEvent(auditId, {
+      type: 'test:started',
       data: progress,
       timestamp: new Date(),
     });

@@ -23,7 +23,7 @@ import { WebSocketManager } from '../services/websocket-manager';
 import { SEARCH_TESTS, executeTest, SearchTestResult } from '../services/search-test-library';
 import { calculateAuditScore, storeAuditScore } from '../services/search-audit-scoring';
 import { logger } from '../utils/logger';
-import { AppError } from '../utils/errors';
+import { DatabaseError } from '../utils/errors';
 import { config } from '../config';
 import * as path from 'path';
 import * as fs from 'fs/promises';
@@ -323,16 +323,19 @@ export function createSearchAuditWorker(
   db = supabase;
   wsManager = websocketManager;
 
+  // Parse Redis URL
+  const redisUrl = new URL(config.redis.url);
+
   const worker = new Worker<SearchAuditJobData>(
     'search-audit',
     processSearchAudit,
     {
       connection: {
-        host: config.redis.host,
-        port: config.redis.port,
+        host: redisUrl.hostname,
+        port: parseInt(redisUrl.port || '6379', 10),
         password: config.redis.password,
       },
-      concurrency: config.browser.maxConcurrent || 3, // Max 3 audits in parallel
+      concurrency: 3, // Max 3 audits in parallel
       limiter: {
         max: 5, // Max 5 jobs per...
         duration: 60000, // ...60 seconds
@@ -362,7 +365,7 @@ export function createSearchAuditWorker(
   });
 
   logger.info('Search audit worker created', {
-    concurrency: config.browser.maxConcurrent || 3,
+    concurrency: 3,
   });
 
   return worker;
