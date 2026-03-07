@@ -14,6 +14,7 @@ import {
   IconSettings,
   IconChartBar,
   IconBook,
+  IconSearch,
 } from '@tabler/icons-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -255,6 +256,12 @@ export function Sidebar() {
         >
           Tools
         </Text>
+        <ToolNavItem
+          label="Search Audits"
+          icon={IconSearch}
+          isActive={location.pathname.startsWith('/search-audit')}
+          onClick={() => navigate('/search-audit')}
+        />
         <ToolNavItem
           label="Upload Lists"
           icon={IconUpload}

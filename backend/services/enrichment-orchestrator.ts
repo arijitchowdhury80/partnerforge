@@ -477,6 +477,14 @@ export class EnrichmentOrchestrator {
         if (result.Paths && result.Paths.length > 0) {
           for (const path of result.Paths) {
             for (const tech of path.Technologies || []) {
+              // Validate timestamps (must be reasonable Unix timestamps)
+              const firstDetected = tech.FirstDetected && tech.FirstDetected > 0 && tech.FirstDetected < 2147483647
+                ? new Date(tech.FirstDetected * 1000)
+                : new Date();
+              const lastDetected = tech.LastDetected && tech.LastDetected > 0 && tech.LastDetected < 2147483647
+                ? new Date(tech.LastDetected * 1000)
+                : new Date();
+
               technologies.push({
                 company_id: companyId,
                 audit_id: auditId,
@@ -484,8 +492,8 @@ export class EnrichmentOrchestrator {
                 technology_category: tech.Tag?.toLowerCase() || 'other',
                 technology_vendor: null,
                 confidence_level: tech.IsPremium ? 'high' : 'medium',
-                first_detected: new Date(tech.FirstDetected * 1000),
-                last_detected: new Date(tech.LastDetected * 1000),
+                first_detected: firstDetected,
+                last_detected: lastDetected,
                 source_provider: 'builtwith',
                 source_url: `https://builtwith.com/${domain}`,
                 detected_at: new Date(),

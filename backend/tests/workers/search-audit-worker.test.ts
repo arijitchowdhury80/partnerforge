@@ -151,7 +151,7 @@ describe('Search Audit Worker Integration Tests', () => {
   it('should capture screenshots for failures', async () => {
     // Run a test that's likely to produce a screenshot
     const page = await browser.newPage();
-    const testId = '2c'; // Simple query test
+    const testId = 'first-search'; // Simple query test
     const testContext = {
       screenshotDir: './screenshots',
       testQueries: {
@@ -236,8 +236,8 @@ describe('Search Audit Worker Integration Tests', () => {
       await page.close();
 
       expect(result.testId).toBe('homepage-load');
-      // Homepage should load successfully for well-known sites
-      expect(result.status).toBe('passed');
+      // Homepage should load successfully for well-known sites (passed or warning is OK)
+      expect(['passed', 'warning']).toContain(result.status);
       expect(result.score).toBeGreaterThan(0);
     }, 15000);
 

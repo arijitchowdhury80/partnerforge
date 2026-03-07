@@ -27,6 +27,12 @@ import { AnalyticsPage } from './pages/AnalyticsPage';
 import { DocsPage } from './pages/DocsPage';
 import { ICPLandingPage } from './pages/ICPLandingPage';
 
+// Search Audit Pages
+import { SearchAuditDashboard } from './pages/SearchAuditDashboard';
+import { CreateAuditPage } from './pages/CreateAuditPage';
+import { AuditProgressPage } from './pages/AuditProgressPage';
+import { AuditDetailPage } from './pages/AuditDetailPage';
+
 // Styles
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
@@ -174,6 +180,12 @@ function App() {
 
               {/* Documentation */}
               <Route path="/docs" element={<DocsPage />} />
+
+              {/* Search Audit Routes */}
+              <Route path="/search-audit" element={<SearchAuditDashboard />} />
+              <Route path="/search-audit/new" element={<CreateAuditPage />} />
+              <Route path="/search-audit/:auditId/progress" element={<AuditProgressPage />} />
+              <Route path="/search-audit/:auditId" element={<AuditDetailPage />} />
 
               {/* Settings (placeholder) */}
               <Route

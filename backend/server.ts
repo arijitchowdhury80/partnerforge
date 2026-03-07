@@ -179,7 +179,7 @@ app.post('/api/enrich', async (req: Request, res: Response) => {
     logger.info(`Created audit: ${audit.id}`);
 
     // Run enrichment
-    const orchestrator = new EnrichmentOrchestrator(db['client'], wsManager);
+    const orchestrator = new EnrichmentOrchestrator(db, wsManager);
     const result = await orchestrator.enrichCompany(companyId, audit.id, domain);
 
     // Update audit status
@@ -211,6 +211,113 @@ app.post('/api/enrich', async (req: Request, res: Response) => {
     res.status(500).json({
       error: 'Enrichment failed',
       message: error.message
+    });
+  }
+});
+
+// GET /api/audits - List all audits
+app.get('/api/audits', async (req: Request, res: Response) => {
+  try {
+    const { status, audit_type, limit = 50, offset = 0 } = req.query;
+
+    let query = db['client']
+      .from('audits')
+      .select(`
+        *,
+        companies (
+          id,
+          domain,
+          name,
+          industry
+        )
+      `)
+      .is('deleted_at', null)
+      .order('created_at', { ascending: false })
+      .range(Number(offset), Number(offset) + Number(limit) - 1);
+
+    if (status) {
+      query = query.eq('status', status);
+    }
+
+    if (audit_type) {
+      query = query.eq('audit_type', audit_type);
+    }
+
+    const { data: audits, error, count } = await query;
+
+    if (error) {
+      throw new Error(`Failed to fetch audits: ${error.message}`);
+    }
+
+    res.status(200).json({
+      audits: audits || [],
+      total: count || 0,
+      limit: Number(limit),
+      offset: Number(offset),
+    });
+  } catch (error: any) {
+    logger.error('Failed to fetch audits', error);
+    res.status(500).json({
+      error: 'Failed to fetch audits',
+      message: error.message,
+    });
+  }
+});
+
+// GET /api/audits/:id - Get single audit with full details
+app.get('/api/audits/:id', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    // Fetch audit with company info
+    const { data: audit, error: auditError } = await db['client']
+      .from('audits')
+      .select(`
+        *,
+        companies (
+          id,
+          domain,
+          name,
+          industry,
+          sector,
+          employee_count,
+          annual_revenue,
+          headquarters_city,
+          headquarters_country,
+          website_url,
+          linkedin_url
+        )
+      `)
+      .eq('id', id)
+      .is('deleted_at', null)
+      .single();
+
+    if (auditError || !audit) {
+      return res.status(404).json({ error: 'Audit not found' });
+    }
+
+    // Fetch search audit tests if this is a search audit
+    let tests = null;
+    if (audit.audit_type === 'search-audit') {
+      const { data: testsData, error: testsError } = await db['client']
+        .from('search_audit_tests')
+        .select('*')
+        .eq('audit_id', id);
+
+      if (!testsError) {
+        tests = testsData;
+      }
+    }
+
+    res.status(200).json({
+      audit,
+      tests,
+    });
+  } catch (error: any) {
+    logger.error('Failed to fetch audit', error);
+    res.status(500).json({
+      error: 'Failed to fetch audit',
+      message: error.message,
     });
   }
 });
