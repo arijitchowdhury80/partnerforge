@@ -5,6 +5,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "pg": "^8.20.0",
     "yahoo-finance2": "^3.13.1"
   }
 }

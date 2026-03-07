@@ -11,6 +11,10 @@ import { MigrationRunner } from './database/migrate';
 import { metricsCollector } from './services/metrics';
 import { HealthStatus } from './types';
 
+// Import API routers
+import createAuditRouter from './api/audits/create';
+import auditStatusRouter from './api/audits/[id]/status';
+
 // Load environment variables
 dotenv.config();
 
@@ -94,6 +98,10 @@ app.get('/metrics', async (req: Request, res: Response) => {
     });
   }
 });
+
+// Mount API routes
+app.use('/api/audits', createAuditRouter);
+app.use('/api/audits', auditStatusRouter);
 
 // 404 handler
 app.use((req: Request, res: Response) => {
